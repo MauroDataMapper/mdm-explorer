@@ -1,0 +1,125 @@
+<!--
+Copyright 2022 University of Oxford
+and Health and Social Care Information Centre, also known as NHS Digital
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+SPDX-License-Identifier: Apache-2.0
+-->
+<div class="mdm-sign-in-form">
+  <!-- <h1 class="modal__title text-center">Sign in</h1>
+  <p class="mb-2 text-center">Please sign in to continue using Mauro</p> -->
+  <div class="mdm-sign-in-form__account">
+    <form
+      [formGroup]="signInForm"
+      role="form"
+      autocomplete="on"
+      name="signInForm"
+    >
+      <div class="mdm-sign-in-form__input">
+        <mat-form-field [appearance]="formFieldAppearance">
+          <mat-label>Email</mat-label>
+          <input
+            matInput
+            type="email"
+            name="email"
+            formControlName="userName"
+            autocomplete="on"
+            placeholder="Enter your email"
+            required
+          />
+          <mat-error *ngIf="userName?.errors?.required">
+            Email is required
+          </mat-error>
+          <mat-error *ngIf="userName?.errors?.pattern">
+            Invalid email address
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="mdm-sign-in-form__input">
+        <mat-form-field [appearance]="formFieldAppearance">
+          <mat-label>Password</mat-label>
+          <input
+            matInput
+            type="password"
+            name="password"
+            formControlName="password"
+            autocomplete="off"
+            placeholder="Enter your password"
+            required
+          />
+          <mat-error *ngIf="password?.errors?.required">
+            Password is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="mdm-sign-in-form__account--submit">
+        <button
+          type="submit"
+          (click)="signIn()"
+          mat-flat-button
+          color="primary"
+          [disabled]="authenticating"
+        >
+          Sign in
+        </button>
+      </div>
+      <div
+        *ngIf="this.forgotPasswordClicked.observed"
+        class="mdm-sign-in-form__account--forgot"
+      >
+        <button
+          (click)="forgotPassword()"
+          mat-stroked-button
+          color="primary"
+          [disabled]="authenticating"
+        >
+          Forgot Password
+        </button>
+      </div>
+
+      <mat-progress-bar
+        *ngIf="authenticating"
+        color="accent"
+        mode="indeterminate"
+      ></mat-progress-bar>
+
+      <mdm-alert *ngIf="signInError" alertStyle="error" [showIcon]="true">
+        {{ signInErrorMessage }}
+      </mdm-alert>
+    </form>
+  </div>
+  <div
+    *ngIf="openIdConnectProviders && openIdConnectProviders.length > 0"
+    class="mdm-sign-in-form__openid"
+  >
+    <p>Or, login using an account from one of these providers</p>
+    <div class="mdm-sign-in-form__openid--providers">
+      <button
+        *ngFor="let provider of openIdConnectProviders"
+        type="button"
+        mat-stroked-button
+        color="primary"
+        (click)="authenticateWithOpenIdConnect(provider)"
+      >
+        <img
+          *ngIf="provider.imageUrl"
+          class="mdm-sign-in-form__openid--icon"
+          [src]="provider.imageUrl"
+          [alt]="provider.label"
+        />
+        {{ provider.label }}
+      </button>
+    </div>
+  </div>
+</div>
