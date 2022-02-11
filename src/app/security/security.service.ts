@@ -107,6 +107,20 @@ export class SecurityService {
   }
 
   /**
+   * Send a password rest link to a user.
+   * @param email The email address of the user to send the reset link to.
+   * @returns An observable of true or false depending on success.
+   */
+  sendResetPasswordLink(email: string): Observable<boolean> {
+    return this.endpoints.catalogueUser
+      .resetPasswordLink(email)
+      .pipe(
+        switchMap(() => of(true)),
+        catchError(() => of(false)),
+      );
+  }
+
+  /**
    * Check if the current user session is authenticated. Will return `true` if signed in and the session
    * is still active.
    *

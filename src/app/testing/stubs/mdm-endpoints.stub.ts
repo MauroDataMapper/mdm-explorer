@@ -20,6 +20,13 @@ export interface MdmApiPropertiesResourceStub {
   listPublic: jest.Mock;
 }
 
+export type CatalogueUserResetPasswordLinkFn = (email: string) => any;
+export type CatalogueUserResetPasswordLinkMockedFn = jest.MockedFunction<CatalogueUserResetPasswordLinkFn>;
+
+export interface MdmCatalogueUserResourceStub {
+  resetPasswordLink: CatalogueUserResetPasswordLinkMockedFn;
+}
+
 export interface MdmSecurityResourceStub {
   login: jest.Mock;
   logout: jest.Mock;
@@ -32,6 +39,7 @@ export interface MdmSessionResourceStub {
 
 export interface MdmEndpointsServiceStub {
   apiProperties: MdmApiPropertiesResourceStub;
+  catalogueUser: MdmCatalogueUserResourceStub;
   security: MdmSecurityResourceStub;
   session: MdmSessionResourceStub;
 }
@@ -40,6 +48,9 @@ export const createMdmEndpointsStub = (): MdmEndpointsServiceStub => {
   return {
     apiProperties: {
       listPublic: jest.fn()
+    },
+    catalogueUser: {
+      resetPasswordLink: jest.fn() as CatalogueUserResetPasswordLinkMockedFn
     },
     security: {
       login: jest.fn(),

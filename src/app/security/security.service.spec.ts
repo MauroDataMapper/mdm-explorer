@@ -93,11 +93,11 @@ describe('SecurityService', () => {
     }));
   };
 
-  describe('login', () => {
+  describe('sign in', () => {
     it.each([
       ['123', 'user@test.com', false],
       ['456', 'admin@test.com', true]
-    ])('should login user %p %p', (id, userName, isAdmin) => {
+    ])('should sign in user %p %p', (id, userName, isAdmin) => {
       const payload: LoginPayload = {
         username: userName,
         password: 'test'
@@ -126,7 +126,7 @@ describe('SecurityService', () => {
       });
     });
 
-    it('should throw error if login fails', () => {
+    it('should throw error if sign in fails', () => {
       endpointsStub.security.login.mockImplementationOnce(() => cold('--#', null, new HttpErrorResponse({})));
 
       const expected$ = cold('--#');
@@ -135,8 +135,8 @@ describe('SecurityService', () => {
     });
   });
 
-  describe('logout', () => {
-    it('should log out user', () => {
+  describe('sign out', () => {
+    it('should sign out user', () => {
       endpointsStub.security.logout.mockImplementationOnce(() => cold('--a|', { a: EMPTY }));
 
       const expected$ = cold('--a|', { a: undefined });
@@ -147,7 +147,7 @@ describe('SecurityService', () => {
       });
     });
 
-    it('should throw error if logout fails', () => {
+    it('should throw error if sign out fails', () => {
       endpointsStub.security.logout.mockImplementationOnce(() => cold('--#', null, new HttpErrorResponse({})));
 
       const expected$ = cold('--#');
@@ -157,6 +157,28 @@ describe('SecurityService', () => {
         expect(userDetailsStub.clear).toHaveBeenCalled();
       });
     });
+  });
+
+  describe('reset password', () => {
+    beforeEach(() => {
+      endpointsStub.catalogueUser.resetPasswordLink.mockClear();
+    });
+
+    it('should return ok when password reset link sent', () => {
+      endpointsStub.catalogueUser.resetPasswordLink.mockImplementationOnce(() => cold('--a|', { a: EMPTY }));
+
+      const expected$ = cold('--a|', { a: true });
+      const actual$ = service.sendResetPasswordLink('test@test.com');
+      expect(actual$).toBeObservable(expected$);
+    });
+
+    it('should return fail when password rest link has error', () => {
+      endpointsStub.catalogueUser.resetPasswordLink.mockImplementationOnce(() => cold('--#', null, new HttpErrorResponse({})));
+
+      const expected$ = cold('--(a|)', { a: false });
+      const actual$ = service.sendResetPasswordLink('test@test.com');
+      expect(actual$).toBeObservable(expected$);
+    })
   });
 
   describe('isAuthenticated', () => {

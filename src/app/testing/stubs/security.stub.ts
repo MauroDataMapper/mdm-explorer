@@ -1,3 +1,5 @@
+import { Observable } from "rxjs";
+
 /*
 Copyright 2022 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
@@ -16,14 +18,19 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+export type SendResetPasswordLinkFn = (email: string) => Observable<boolean>;
+export type SendResetPasswordLinkMockedFn = jest.MockedFunction<SendResetPasswordLinkFn>;
+
 export interface SecurityServiceStub {
   signIn: jest.Mock;
+  sendResetPasswordLink: SendResetPasswordLinkMockedFn;
   getOpenIdConnectProviders: jest.Mock;
 }
 
 export const createSecurityServiceStub = (): SecurityServiceStub => {
   return {
     signIn: jest.fn(),
+    sendResetPasswordLink: jest.fn() as SendResetPasswordLinkMockedFn,
     getOpenIdConnectProviders: jest.fn()
   };
 };

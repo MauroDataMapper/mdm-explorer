@@ -15,6 +15,10 @@ export interface ResetPasswordClickEvent {
 export class ForgotPasswordFormComponent implements OnInit, OnChanges {
   @Input() isSending = false;
 
+  @Input() linkSent = false;
+
+  @Input() linkFailed = false;
+
   @Input() formFieldAppearance: MatFormFieldAppearance = 'outline';
 
   @Input() emailPattern?: RegExp;
