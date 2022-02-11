@@ -23,7 +23,7 @@ export class ForgotPasswordFormComponent implements OnInit, OnChanges {
 
   @Input() emailPattern?: RegExp;
 
-  @Input() cancelLabel: string = 'Cancel';
+  @Input() cancelLabel = 'Cancel';
 
   @Output() resetPasswordClicked = new EventEmitter<ResetPasswordClickEvent>();
 
@@ -34,8 +34,6 @@ export class ForgotPasswordFormComponent implements OnInit, OnChanges {
   get email() {
     return this.resetForm.get('email');
   }
-
-  constructor() { }
 
   ngOnInit(): void {
     this.resetForm = new FormGroup({

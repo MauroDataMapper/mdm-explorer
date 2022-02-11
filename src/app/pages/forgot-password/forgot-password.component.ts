@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { ToastrService } from 'ngx-toastr';
 import { finalize } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { ResetPasswordClickEvent } from 'src/app/security/forgot-password-form/forgot-password-form.component';

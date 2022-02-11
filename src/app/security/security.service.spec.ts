@@ -178,7 +178,7 @@ describe('SecurityService', () => {
       const expected$ = cold('--(a|)', { a: false });
       const actual$ = service.sendResetPasswordLink('test@test.com');
       expect(actual$).toBeObservable(expected$);
-    })
+    });
   });
 
   describe('isAuthenticated', () => {

@@ -108,6 +108,7 @@ export class SecurityService {
 
   /**
    * Send a password rest link to a user.
+   *
    * @param email The email address of the user to send the reset link to.
    * @returns An observable of true or false depending on success.
    */

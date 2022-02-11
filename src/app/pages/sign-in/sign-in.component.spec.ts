@@ -170,6 +170,6 @@ describe('SignInComponent', () => {
       harness.component.forgotPassword();
       expect(stateRouterStub.transitionTo).toHaveBeenCalledWith('app.container.forgot-password');
     });
-  })
+  });
 });
 
