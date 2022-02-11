@@ -19,6 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 import { Ng2StateDeclaration } from '@uirouter/angular';
 import { AboutComponent } from './about/about.component';
 import { AuthorizedOnlyComponent } from './authorized-only/authorized-only.component';
+import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { HomeComponent } from './home/home.component';
 import { SignInComponent } from './sign-in/sign-in.component';
 
@@ -43,6 +44,14 @@ export const states: Ng2StateDeclaration[] = [
     name: 'app.container.signin',
     url: '/sign-in',
     component: SignInComponent,
+    data: {
+      allowAnonymous: true
+    }
+  },
+  {
+    name: 'app.container.forgot-password',
+    url: '/forgot-password',
+    component: ForgotPasswordComponent,
     data: {
       allowAnonymous: true
     }

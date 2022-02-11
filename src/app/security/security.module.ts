@@ -27,12 +27,14 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SignInFormComponent } from './sign-in-form/sign-in-form.component';
 import { SharedModule } from '../shared/shared.module';
 import { OpenIdConnectAuthorizeComponent } from './open-id-connect-authorize/open-id-connect-authorize.component';
+import { ForgotPasswordFormComponent } from './forgot-password-form/forgot-password-form.component';
 
 
 @NgModule({
   declarations: [
     SignInFormComponent,
-    OpenIdConnectAuthorizeComponent
+    OpenIdConnectAuthorizeComponent,
+    ForgotPasswordFormComponent
   ],
   imports: [
     CommonModule,
@@ -47,7 +49,8 @@ import { OpenIdConnectAuthorizeComponent } from './open-id-connect-authorize/ope
   ],
   exports: [
     SignInFormComponent,
-    OpenIdConnectAuthorizeComponent
+    OpenIdConnectAuthorizeComponent,
+    ForgotPasswordFormComponent
   ]
 })
 export class SecurityModule { }

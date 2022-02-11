@@ -27,7 +27,8 @@ import { RawParams, TransitionOptions, UIRouter } from '@uirouter/angular';
 export type KnownRouterState =
   'app.container.default'
   | 'app.container.home'
-  | 'app.container.signin';
+  | 'app.container.signin'
+  | 'app.container.forgot-password';
 
 /**
  * Wrapper service around the {@link UIRouter} from `@ui-router/angular` package.

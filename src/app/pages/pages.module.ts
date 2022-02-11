@@ -24,13 +24,15 @@ import { SignInComponent } from './sign-in/sign-in.component';
 import { SharedModule } from '../shared/shared.module';
 import { SecurityModule } from '../security/security.module';
 import { AuthorizedOnlyComponent } from './authorized-only/authorized-only.component';
+import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 
 @NgModule({
   declarations: [
     HomeComponent,
     AboutComponent,
     SignInComponent,
-    AuthorizedOnlyComponent
+    AuthorizedOnlyComponent,
+    ForgotPasswordComponent
   ],
   imports: [
     CommonModule,

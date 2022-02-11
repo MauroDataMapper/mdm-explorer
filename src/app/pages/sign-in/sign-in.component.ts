@@ -89,7 +89,7 @@ export class SignInComponent implements OnInit {
   }
 
   forgotPassword() {
-
+    this.stateRouter.transitionTo('app.container.forgot-password');
   }
 
   private loadOpenIdConnectProviders() {

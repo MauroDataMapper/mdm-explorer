@@ -78,3 +78,6 @@ export interface OpenIdConnectSession {
   sessionState: string;
   code: string;
 }
+
+// eslint-disable-next-line no-useless-escape
+export const defaultEmailPattern = /^[_A-Za-z0-9-'!#%&=\/~\`\+\$\*\?\^\{\|\}]+(\.[_A-Za-z0-9-'!#%&=\/~\`\+\$\*\?\^\{\|\}]+)*@[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-\+]+)*(\.[A-Za-z]{2,})$/;
