@@ -21,6 +21,12 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatFormFieldAppearance } from '@angular/material/form-field';
 import { defaultEmailPattern } from '../security.types';
 
+export type ForgotPasswordFormState =
+  'none'
+  | 'sending-email'
+  | 'email-sent'
+  | 'error-sending-email';
+
 export interface ResetPasswordClickEvent {
   email: string;
 }
@@ -31,11 +37,7 @@ export interface ResetPasswordClickEvent {
   styleUrls: ['./forgot-password-form.component.scss']
 })
 export class ForgotPasswordFormComponent implements OnInit, OnChanges {
-  @Input() isSending = false;
-
-  @Input() linkSent = false;
-
-  @Input() linkFailed = false;
+  @Input() state: ForgotPasswordFormState = 'none';
 
   @Input() formFieldAppearance: MatFormFieldAppearance = 'outline';
 
@@ -64,7 +66,7 @@ export class ForgotPasswordFormComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.isSending !== undefined && this.resetForm) {
-      if (this.isSending) {
+      if (this.state === 'sending-email') {
         this.resetForm.disable();
       }
       else {

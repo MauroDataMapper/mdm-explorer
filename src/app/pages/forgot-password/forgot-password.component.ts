@@ -17,9 +17,8 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component } from '@angular/core';
-import { finalize } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
-import { ResetPasswordClickEvent } from 'src/app/security/forgot-password-form/forgot-password-form.component';
+import { ForgotPasswordFormState, ResetPasswordClickEvent } from 'src/app/security/forgot-password-form/forgot-password-form.component';
 import { SecurityService } from 'src/app/security/security.service';
 
 @Component({
@@ -28,25 +27,18 @@ import { SecurityService } from 'src/app/security/security.service';
   styleUrls: ['./forgot-password.component.scss']
 })
 export class ForgotPasswordComponent {
-  isSending = false;
-  emailSent = false;
-  emailFailed = false;
+  state: ForgotPasswordFormState = 'none';
 
   constructor(
     private security: SecurityService,
     private stateRouter: StateRouterService) { }
 
   resetPassword(event: ResetPasswordClickEvent) {
-    this.isSending = true;
+    this.state = 'sending-email';
 
-    this.security.sendResetPasswordLink(event.email)
-      .pipe(
-        finalize(() => this.isSending = false)
-      )
-      .subscribe(success => {
-        this.emailSent = success;
-        this.emailFailed = !success;
-      });
+    this.security
+      .sendResetPasswordLink(event.email)
+      .subscribe(success => this.state = success ? 'email-sent' : 'error-sending-email');
   }
 
   cancel() {

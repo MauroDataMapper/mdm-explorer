@@ -54,9 +54,7 @@ describe('ForgotPasswordComponent', () => {
 
   it('should create', () => {
     expect(harness.isComponentCreated).toBeTruthy();
-    expect(harness.component.isSending).toBeFalsy();
-    expect(harness.component.emailSent).toBeFalsy();
-    expect(harness.component.emailFailed).toBeFalsy();
+    expect(harness.component.state).toBe('none');
   });
 
   it('should go back to the sign-in page when cancelled', () => {
@@ -68,15 +66,13 @@ describe('ForgotPasswordComponent', () => {
     securityStub.sendResetPasswordLink.mockImplementationOnce(() => of(true));
 
     harness.component.resetPassword({ email: 'test@test.com' });
-    expect(harness.component.emailSent).toBeTruthy();
-    expect(harness.component.emailFailed).toBeFalsy();
+    expect(harness.component.state).toBe('email-sent');
   });
 
   it('should handle failed reset link emails', () => {
     securityStub.sendResetPasswordLink.mockImplementationOnce(() => of(false));
 
     harness.component.resetPassword({ email: 'test@test.com' });
-    expect(harness.component.emailSent).toBeFalsy();
-    expect(harness.component.emailFailed).toBeTruthy();
+    expect(harness.component.state).toBe('error-sending-email');
   });
 });
