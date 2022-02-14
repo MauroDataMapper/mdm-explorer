@@ -30,13 +30,10 @@ import { UserDetails } from 'src/app/security/user-details.service';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { LoginError, SignInErrorType } from 'src/app/security/security.types';
 import { HttpErrorResponse } from '@angular/common/http';
+import { createStateRouterStub } from 'src/app/testing/stubs/state-router.stub';
 
 interface BroadcastServiceStub {
   userSignedIn: jest.Mock;
-}
-
-interface StateRouterServiceStub {
-  transitionTo: jest.Mock;
 }
 
 describe('SignInComponent', () => {
@@ -52,9 +49,7 @@ describe('SignInComponent', () => {
     userSignedIn: jest.fn()
   };
 
-  const stateRouterStub: StateRouterServiceStub = {
-    transitionTo: jest.fn()
-  };
+  const stateRouterStub = createStateRouterStub();
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(
@@ -162,11 +157,18 @@ describe('SignInComponent', () => {
             status: 401
           }))));
 
-      harness.component.signIn({ userName: 'invalid', password: 'wrong'});
+      harness.component.signIn({ userName: 'invalid', password: 'wrong' });
 
       expect(broadcastSpy).not.toHaveBeenCalled();
       expect(stateRouterSpy).not.toHaveBeenCalled();
       expect(harness.component.signInError).toBe(SignInErrorType.InvalidCredentials);
+    });
+  });
+
+  describe('Forgot password', () => {
+    it('should transition to forgotten password page', () => {
+      harness.component.forgotPassword();
+      expect(stateRouterStub.transitionTo).toHaveBeenCalledWith('app.container.forgot-password');
     });
   });
 });

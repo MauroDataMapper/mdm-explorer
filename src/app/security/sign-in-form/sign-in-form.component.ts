@@ -20,10 +20,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatFormFieldAppearance } from '@angular/material/form-field';
 import { PublicOpenIdConnectProvider } from '@maurodatamapper/mdm-resources';
-import { SignInErrorType } from '../security.types';
-
-// eslint-disable-next-line no-useless-escape
-export const defaultEmailPattern = /^[_A-Za-z0-9-'!#%&=\/~\`\+\$\*\?\^\{\|\}]+(\.[_A-Za-z0-9-'!#%&=\/~\`\+\$\*\?\^\{\|\}]+)*@[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-\+]+)*(\.[A-Za-z]{2,})$/;
+import { defaultEmailPattern, SignInErrorType } from '../security.types';
 
 export interface SignInClickEvent {
   userName: string;

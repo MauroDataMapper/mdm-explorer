@@ -17,8 +17,6 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 -->
 <div class="mdm-sign-in-form">
-  <!-- <h1 class="modal__title text-center">Sign in</h1>
-  <p class="mb-2 text-center">Please sign in to continue using Mauro</p> -->
   <div class="mdm-sign-in-form__account">
     <form
       [formGroup]="signInForm"
@@ -69,7 +67,7 @@ SPDX-License-Identifier: Apache-2.0
           (click)="signIn()"
           mat-flat-button
           color="primary"
-          [disabled]="authenticating"
+          [disabled]="authenticating || signInForm.invalid"
         >
           Sign in
         </button>

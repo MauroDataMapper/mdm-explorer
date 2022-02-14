@@ -19,6 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 import { Injectable } from '@angular/core';
 import {
   MdmApiPropertyResources,
+  MdmCatalogueUserResource,
   MdmDataClassResource,
   MdmDataElementResource,
   MdmDataFlowResource,
@@ -31,7 +32,8 @@ import {
   MdmResourcesConfiguration,
   MdmSecurityResource,
   MdmSessionResource,
-  MdmSummaryMetadataResource } from '@maurodatamapper/mdm-resources';
+  MdmSummaryMetadataResource
+} from '@maurodatamapper/mdm-resources';
 import { MdmHttpClientService } from './mdm-http-client.service';
 
 @Injectable({
@@ -39,6 +41,7 @@ import { MdmHttpClientService } from './mdm-http-client.service';
 })
 export class MdmEndpointsService {
   apiProperties = new MdmApiPropertyResources(this.configuration, this.httpClient);
+  catalogueUser = new MdmCatalogueUserResource(this.configuration, this.httpClient);
   dataClass = new MdmDataClassResource(this.configuration, this.httpClient);
   dataElement = new MdmDataElementResource(this.configuration, this.httpClient);
   dataFlow = new MdmDataFlowResource(this.configuration, this.httpClient);
