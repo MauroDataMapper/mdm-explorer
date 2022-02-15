@@ -25,7 +25,13 @@ describe('UserRequestsService', () => {
 
   it("should replace '@' with '[at]'", () => {
     let username = 'hello@gmail.com';
-    let encodedUsername = service.encodeUserName(username);
+
+    // By using array access, we can get at the private method
+    // we'd like to test. This is in fact an intentional 'escape hatch'
+    // built into TS to give access to private members without losing
+    // type safety. The predominant use case being for unit testing.
+    let encodedUsername = service['encodeUsername'](username);
+
     expect(encodedUsername).toBe('hello[at]gmail.com');
   });
 });
