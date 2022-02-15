@@ -36,7 +36,7 @@ export class UserRequestsService {
    * @returns The input string with all instances of '@' replaced with
    * '[at]'
    */
-  encodeUsername(username: string): string {
+  private encodeUsername(username: string): string {
     return username.replace('@', '[at]');
   }
 
