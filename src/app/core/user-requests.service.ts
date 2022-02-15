@@ -31,7 +31,17 @@ export class UserRequestsService {
   }
 
   /**
-   * Simple ping if folder exists.
+   * Encode username to allow for use as a folder name in the backend.
+   * @param username
+   * @returns The input string with all instances of '@' replaced with
+   * '[at]'
+   */
+  encodeUsername(username: string): string {
+    return username.replace('@', '[at]');
+  }
+
+  /**
+   * Checks whether a folder exists.
    * @returns An observable that returns `true` if the folder exists, 'false' if not.
    */
   folderExists(folderId: string): Observable<boolean> {
