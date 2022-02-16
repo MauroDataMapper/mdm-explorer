@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { MdmFolderResource } from '@maurodatamapper/mdm-resources';
-import { Observable, of, pipe } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
 import { UserDetails } from '../security/user-details.service';
 import { BroadcastService } from './broadcast.service';
 
@@ -10,28 +10,31 @@ import { BroadcastService } from './broadcast.service';
 export class UserRequestsService {
   constructor(
     private broadcast: BroadcastService,
-    private folder: MdmFolderResource
+    private endpoints: MdmEndpointsService
   ) {}
 
   /**
-   * Check for existence of or create folder for storing researcher
-   * requests for data access.
+   * Ensure the data access requests folder exists for the signed in user.
+   * @param user - the details of the signed in user
    */
-  ensureDataAccessRequestsFolderExists(): void {
-    this.broadcast.onUserSignedIn().subscribe(pipe());
-    // pipe result and grab user info to ping server to see if folder exists
-
-    // pipe resulting T/F response to determine whether or not folder needs to be created
-
-    // if no, finish here
-
-    // if yes, one last call to api to create folder
-
-    // pipe result into error catch
+  ensureUserRequestsFolderExists(user: UserDetails): void {
+    let folderId = this.encodeUsername(user.userName);
+    this.folderExists(folderId).subscribe((exists: Boolean) => {
+      if (exists) return;
+      this.makeFolder(folderId);
+    });
   }
 
   /**
-   * Encode username to allow for use as a folder name in the backend.
+   * Make folder with the given folderId.
+   * @param folderId - unique Id for folder
+   */
+  private makeFolder(folderId: string): void {
+    // PUT: folder with encoded username
+  }
+
+  /**
+   * Encode username to allow for use as a folder name in the mdm-backend.
    * @param username
    * @returns The input string with all instances of '@' replaced with
    * '[at]'
@@ -44,7 +47,9 @@ export class UserRequestsService {
    * Checks whether a folder exists.
    * @returns An observable that returns `true` if the folder exists, 'false' if not.
    */
-  folderExists(folderId: string): Observable<boolean> {
+  private folderExists(folderId: string): Observable<boolean> {
+    // GET: folder with given folderId
+    //  this.endpoints.folder.get(folderId).subscribe();
     return of(true);
   }
 }
