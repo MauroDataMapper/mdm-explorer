@@ -27,10 +27,7 @@ import { StateRouterService } from './core/state-router.service';
 import { UserRequestsService } from './core/user-requests.service';
 import { MdmHttpError } from './mdm-rest-client/mdm-rest-client.types';
 import { SecurityService } from './security/security.service';
-import {
-  UserDetails,
-  UserDetailsService,
-} from './security/user-details.service';
+import { UserDetails, UserDetailsService } from './security/user-details.service';
 import { FooterLink } from './shared/footer/footer.component';
 import { HeaderImageLink, HeaderLink } from './shared/header/header.component';
 
@@ -127,19 +124,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this.signedInUser = this.userDetails.get();
 
-    this.subscribeHttpErrorEvent(
-      'http-not-authorized',
-      'app.container.not-authorized'
-    );
+    this.subscribeHttpErrorEvent('http-not-authorized', 'app.container.not-authorized');
     this.subscribeHttpErrorEvent('http-not-found', 'app.container.not-found');
-    this.subscribeHttpErrorEvent(
-      'http-not-implemented',
-      'app.container.not-implemented'
-    );
-    this.subscribeHttpErrorEvent(
-      'http-server-error',
-      'app.container.server-error'
-    );
+    this.subscribeHttpErrorEvent('http-not-implemented', 'app.container.not-implemented');
+    this.subscribeHttpErrorEvent('http-server-error', 'app.container.server-error');
 
     // Check immediately if the last authenticated session is expired and setup a recurring
     // check for this
@@ -207,10 +195,7 @@ export class AppComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         const now = new Date();
 
-        if (
-          now.valueOf() - lastCheck.valueOf() >
-          environment.checkSessionExpiryTimeout
-        ) {
+        if (now.valueOf() - lastCheck.valueOf() > environment.checkSessionExpiryTimeout) {
           this.checkSessionExpiry();
           this.userIdle.resetTimer();
         }
