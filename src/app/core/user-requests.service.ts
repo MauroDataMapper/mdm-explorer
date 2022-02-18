@@ -1,36 +1,22 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
 import { UserDetails } from '../security/user-details.service';
+import { FolderService } from './folder.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserRequestsService {
-  constructor(private endpoints: MdmEndpointsService) {}
+  constructor(private folderService: FolderService) {}
 
   /**
    * Ensure the data access requests folder exists for the signed in user.
    * @param user - the details of the signed in user
    */
   ensureUserRequestsFolderExists(user: UserDetails): void {
-    let folderId = `${environment.rootRequestFolder}/${this.encodeUsername(
-      user.userName
-    )}`;
-
-    this.folderExists(folderId).subscribe((exists: Boolean) => {
-      if (exists) return;
-      this.makeFolder(folderId);
-    });
-  }
-
-  /**
-   * Make folder with the given folderId.
-   * @param folderId - unique Id for folder
-   */
-  private makeFolder(folderId: string): void {
-    // PUT: folder with encoded username
+    // ensure root requests folder exists
+    this.folderService.ensureExists(environment.rootRequestFolder);
+    this.folderService.ensureExists(this.getUserRequestsFolderPath(user.userName));
   }
 
   /**
@@ -39,17 +25,11 @@ export class UserRequestsService {
    * @returns The input string with all instances of '@' replaced with
    * '[at]'
    */
-  private encodeUsername(username: string): string {
+  private sanitiseUsername(username: string): string {
     return username.replace('@', '[at]');
   }
 
-  /**
-   * Check whether a folder exists.
-   * @returns An observable that returns `true` if the folder exists, 'false' if not.
-   */
-  private folderExists(folderId: string): Observable<boolean> {
-    // GET: folder with given folderId
-    // this.endpoints.folder.get(folderId).subscribe();
-    return of(true);
+  private getUserRequestsFolderPath(username: string): string {
+    return `${environment.rootRequestFolder}/${this.sanitiseUsername(username)}`;
   }
 }
