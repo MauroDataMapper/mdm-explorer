@@ -1,4 +1,5 @@
 import { MdmFolderResource } from '@maurodatamapper/mdm-resources';
+import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
 import { createMdmEndpointsStub } from '../testing/stubs/mdm-endpoints.stub';
 import { setupTestModuleForService } from '../testing/testing.helpers';
 
@@ -12,7 +13,7 @@ describe('UserRequestsService', () => {
     service = setupTestModuleForService(UserRequestsService, {
       providers: [
         {
-          provide: MdmFolderResource,
+          provide: MdmEndpointsService,
           useValue: endpointsStub,
         },
       ],
