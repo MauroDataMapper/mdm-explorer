@@ -16,13 +16,21 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatFormFieldAppearance } from '@angular/material/form-field';
 import { defaultEmailPattern } from '../security.types';
 
 export type ForgotPasswordFormState =
-  'none'
+  | 'none'
   | 'sending-email'
   | 'email-sent'
   | 'error-sending-email';
@@ -34,7 +42,7 @@ export interface ResetPasswordClickEvent {
 @Component({
   selector: 'mdm-forgot-password-form',
   templateUrl: './forgot-password-form.component.html',
-  styleUrls: ['./forgot-password-form.component.scss']
+  styleUrls: ['./forgot-password-form.component.scss'],
 })
 export class ForgotPasswordFormComponent implements OnInit, OnChanges {
   @Input() state: ForgotPasswordFormState = 'none';
@@ -45,9 +53,11 @@ export class ForgotPasswordFormComponent implements OnInit, OnChanges {
 
   @Input() cancelLabel = 'Cancel';
 
-  @Output() resetPasswordClicked = new EventEmitter<ResetPasswordClickEvent>();
+  @Input() cancelRouteName?: string;
 
-  @Output() cancelClicked = new EventEmitter<void>();
+  @Input() retryRouteName?: string;
+
+  @Output() resetPasswordClicked = new EventEmitter<ResetPasswordClickEvent>();
 
   resetForm!: FormGroup;
 
@@ -58,9 +68,9 @@ export class ForgotPasswordFormComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.resetForm = new FormGroup({
       email: new FormControl('', [
-        Validators.required,  // eslint-disable-line @typescript-eslint/unbound-method
-        Validators.pattern(this.emailPattern ?? defaultEmailPattern)
-      ])
+        Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
+        Validators.pattern(this.emailPattern ?? defaultEmailPattern),
+      ]),
     });
   }
 
@@ -68,8 +78,7 @@ export class ForgotPasswordFormComponent implements OnInit, OnChanges {
     if (changes.isSending !== undefined && this.resetForm) {
       if (this.state === 'sending-email') {
         this.resetForm.disable();
-      }
-      else {
+      } else {
         this.resetForm.enable();
       }
     }
@@ -81,9 +90,5 @@ export class ForgotPasswordFormComponent implements OnInit, OnChanges {
     }
 
     this.resetPasswordClicked.emit({ email: this.email?.value });
-  }
-
-  cancel() {
-    this.cancelClicked.emit();
   }
 }

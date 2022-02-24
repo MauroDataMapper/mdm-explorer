@@ -31,3 +31,7 @@ Themes
 Import more theme SASS files here to make them available to the app
 */
 @import "styles/themes/default";
+
+@import "styles/base/all";
+@import "styles/layout";
+@import "styles/forms";

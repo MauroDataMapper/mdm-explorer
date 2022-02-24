@@ -18,13 +18,8 @@ SPDX-License-Identifier: Apache-2.0
 -->
 <div class="mdm-sign-in-form">
   <div class="mdm-sign-in-form__account">
-    <form
-      [formGroup]="signInForm"
-      role="form"
-      autocomplete="on"
-      name="signInForm"
-    >
-      <div class="mdm-sign-in-form__input">
+    <form [formGroup]="signInForm" role="form" autocomplete="on" name="signInForm">
+      <div class="form-input">
         <mat-form-field [appearance]="formFieldAppearance">
           <mat-label>Email</mat-label>
           <input
@@ -36,15 +31,11 @@ SPDX-License-Identifier: Apache-2.0
             placeholder="Enter your email"
             required
           />
-          <mat-error *ngIf="userName?.errors?.required">
-            Email is required
-          </mat-error>
-          <mat-error *ngIf="userName?.errors?.pattern">
-            Invalid email address
-          </mat-error>
+          <mat-error *ngIf="userName?.errors?.required"> Email is required </mat-error>
+          <mat-error *ngIf="userName?.errors?.pattern"> Invalid email address </mat-error>
         </mat-form-field>
       </div>
-      <div class="mdm-sign-in-form__input">
+      <div class="form-input">
         <mat-form-field [appearance]="formFieldAppearance">
           <mat-label>Password</mat-label>
           <input
@@ -56,12 +47,13 @@ SPDX-License-Identifier: Apache-2.0
             placeholder="Enter your password"
             required
           />
-          <mat-error *ngIf="password?.errors?.required">
-            Password is required
-          </mat-error>
+          <mat-error *ngIf="password?.errors?.required"> Password is required </mat-error>
         </mat-form-field>
       </div>
-      <div class="mdm-sign-in-form__account--submit">
+      <div *ngIf="forgotPasswordRouteName" class="form-secondary-action">
+        <a [uiSref]="forgotPasswordRouteName">Forgot password?</a>
+      </div>
+      <div class="form-submit">
         <button
           type="submit"
           (click)="signIn()"
@@ -72,25 +64,10 @@ SPDX-License-Identifier: Apache-2.0
           Sign in
         </button>
       </div>
-      <div
-        *ngIf="this.forgotPasswordClicked.observed"
-        class="mdm-sign-in-form__account--forgot"
-      >
-        <button
-          (click)="forgotPassword()"
-          mat-stroked-button
-          color="primary"
-          [disabled]="authenticating"
-        >
-          Forgot Password
-        </button>
-      </div>
 
-      <mat-progress-bar
-        *ngIf="authenticating"
-        color="accent"
-        mode="indeterminate"
-      ></mat-progress-bar>
+      <div *ngIf="authenticating" class="form-working">
+        <mat-progress-bar color="accent" mode="indeterminate"></mat-progress-bar>
+      </div>
 
       <mdm-alert *ngIf="signInError" alertStyle="error" [showIcon]="true">
         {{ signInErrorMessage }}
@@ -101,8 +78,8 @@ SPDX-License-Identifier: Apache-2.0
     *ngIf="openIdConnectProviders && openIdConnectProviders.length > 0"
     class="mdm-sign-in-form__openid"
   >
-    <p>Or, login using an account from one of these providers</p>
-    <div class="mdm-sign-in-form__openid--providers">
+    <p class="text-center">or</p>
+    <div class="mdm-sign-in-form__openid-providers">
       <button
         *ngFor="let provider of openIdConnectProviders"
         type="button"
@@ -112,11 +89,11 @@ SPDX-License-Identifier: Apache-2.0
       >
         <img
           *ngIf="provider.imageUrl"
-          class="mdm-sign-in-form__openid--icon"
+          class="mdm-sign-in-form__openid-icon"
           [src]="provider.imageUrl"
           [alt]="provider.label"
         />
-        {{ provider.label }}
+        Sign in with {{ provider.label }}
       </button>
     </div>
   </div>

@@ -30,7 +30,7 @@ import { SignInClickEvent } from 'src/app/security/sign-in-form/sign-in-form.com
 @Component({
   selector: 'mdm-sign-in',
   templateUrl: './sign-in.component.html',
-  styleUrls: ['./sign-in.component.scss']
+  styleUrls: ['./sign-in.component.scss'],
 })
 export class SignInComponent implements OnInit {
   authenticating = false;
@@ -42,7 +42,8 @@ export class SignInComponent implements OnInit {
     private broadcast: BroadcastService,
     private features: FeaturesService,
     private stateRouter: StateRouterService,
-    private toastr: ToastrService) { }
+    private toastr: ToastrService
+  ) {}
 
   ngOnInit(): void {
     this.loadOpenIdConnectProviders();
@@ -51,10 +52,11 @@ export class SignInComponent implements OnInit {
   signIn(credentials: SignInClickEvent) {
     this.authenticating = true;
 
-    this.security.signIn({
-      username: credentials.userName,
-      password: credentials.password
-    })
+    this.security
+      .signIn({
+        username: credentials.userName,
+        password: credentials.password,
+      })
       .pipe(
         catchError((error: LoginError) => {
           this.signInError = error.type;
@@ -64,21 +66,24 @@ export class SignInComponent implements OnInit {
           this.authenticating = false;
         })
       )
-      .subscribe(user => {
+      .subscribe((user) => {
         this.broadcast.userSignedIn(user);
         this.stateRouter.transitionTo(
           'app.container.home',
-          { },
+          {},
           {
             reload: true,
-            inherit: false
-          });
+            inherit: false,
+          }
+        );
       });
   }
 
   authenticateWithOpenIdConnect(provider: PublicOpenIdConnectProvider) {
     if (!provider.authorizationEndpoint) {
-      this.toastr.error(`Unable to authenticate with ${provider.label} because of a missing endpoint. Please contact your administrator for further support.`);
+      this.toastr.error(
+        `Unable to authenticate with ${provider.label} because of a missing endpoint. Please contact your administrator for further support.`
+      );
       return;
     }
 
@@ -88,15 +93,13 @@ export class SignInComponent implements OnInit {
     window.open(redirectUrl.toString(), '_self');
   }
 
-  forgotPassword() {
-    this.stateRouter.transitionTo('app.container.forgot-password');
-  }
-
   private loadOpenIdConnectProviders() {
     if (!this.features.useOpenIdConnect) {
       return;
     }
 
-    this.security.getOpenIdConnectProviders().subscribe(providers => this.openIdConnectProviders = providers);
+    this.security
+      .getOpenIdConnectProviders()
+      .subscribe((providers) => (this.openIdConnectProviders = providers));
   }
 }

@@ -16,12 +16,15 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<mdm-sign-in-form
-  [authenticating]="authenticating"
-  [signInError]="signInError"
-  [openIdConnectProviders]="openIdConnectProviders"
-  (signInClicked)="signIn($event)"
-  (openIdConnectClicked)="authenticateWithOpenIdConnect($event)"
-  (forgotPasswordClicked)="forgotPassword()"
->
-</mdm-sign-in-form>
+<div class="highlight-box">
+  <h1>Sign in</h1>
+  <mdm-sign-in-form
+    forgotPasswordRouteName="app.container.forgot-password"
+    [authenticating]="authenticating"
+    [signInError]="signInError"
+    [openIdConnectProviders]="openIdConnectProviders"
+    (signInClicked)="signIn($event)"
+    (openIdConnectClicked)="authenticateWithOpenIdConnect($event)"
+  >
+  </mdm-sign-in-form>
+</div>

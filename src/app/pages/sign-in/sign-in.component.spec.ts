@@ -19,8 +19,14 @@ SPDX-License-Identifier: Apache-2.0
 import { FeaturesService } from 'src/app/core/features.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { SecurityService } from 'src/app/security/security.service';
-import { SignInClickEvent, SignInFormComponent } from 'src/app/security/sign-in-form/sign-in-form.component';
-import { ComponentHarness, setupTestModuleForComponent } from 'src/app/testing/testing.helpers';
+import {
+  SignInClickEvent,
+  SignInFormComponent,
+} from 'src/app/security/sign-in-form/sign-in-form.component';
+import {
+  ComponentHarness,
+  setupTestModuleForComponent,
+} from 'src/app/testing/testing.helpers';
 import { SignInComponent } from './sign-in.component';
 import { MockComponent } from 'ng-mocks';
 import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
@@ -40,43 +46,39 @@ describe('SignInComponent', () => {
   let harness: ComponentHarness<SignInComponent>;
 
   const featuresStub = {
-    useOpenIdConnect: false
+    useOpenIdConnect: false,
   };
 
   const securityStub = createSecurityServiceStub();
 
   const broadcastStub: BroadcastServiceStub = {
-    userSignedIn: jest.fn()
+    userSignedIn: jest.fn(),
   };
 
   const stateRouterStub = createStateRouterStub();
 
   beforeEach(async () => {
-    harness = await setupTestModuleForComponent(
-      SignInComponent,
-      {
-        declarations: [
-          MockComponent(SignInFormComponent)
-        ],
-        providers: [
-          {
-            provide: SecurityService,
-            useValue: securityStub
-          },
-          {
-            provide: BroadcastService,
-            useValue: broadcastStub
-          },
-          {
-            provide: StateRouterService,
-            useValue: stateRouterStub
-          },
-          {
-            provide: FeaturesService,
-            useValue: featuresStub
-          }
-        ]
-      });
+    harness = await setupTestModuleForComponent(SignInComponent, {
+      declarations: [MockComponent(SignInFormComponent)],
+      providers: [
+        {
+          provide: SecurityService,
+          useValue: securityStub,
+        },
+        {
+          provide: BroadcastService,
+          useValue: broadcastStub,
+        },
+        {
+          provide: StateRouterService,
+          useValue: stateRouterStub,
+        },
+        {
+          provide: FeaturesService,
+          useValue: featuresStub,
+        },
+      ],
+    });
   });
 
   it('should create', () => {
@@ -103,12 +105,14 @@ describe('SignInComponent', () => {
           id: '1',
           label: 'test',
           authorizationEndpoint: '/provider/test',
-          standardProvider: true
-        }
+          standardProvider: true,
+        },
       ];
 
       featuresStub.useOpenIdConnect = true;
-      securityStub.getOpenIdConnectProviders.mockImplementationOnce(() => of(expectedProviders));
+      securityStub.getOpenIdConnectProviders.mockImplementationOnce(() =>
+        of(expectedProviders)
+      );
       harness.component.ngOnInit();
 
       expect(harness.component.openIdConnectProviders).toEqual(expectedProviders);
@@ -125,7 +129,7 @@ describe('SignInComponent', () => {
     it('should successfully sign in a user', () => {
       const credentials: SignInClickEvent = {
         userName: 'test',
-        password: 'test'
+        password: 'test',
       };
 
       const expectedUser: UserDetails = {
@@ -133,7 +137,7 @@ describe('SignInComponent', () => {
         userName: credentials.userName,
         firstName: 'first',
         lastName: 'last',
-        email: 'test@test.com'
+        email: 'test@test.com',
       };
 
       const broadcastSpy = jest.spyOn(broadcastStub, 'userSignedIn');
@@ -144,18 +148,27 @@ describe('SignInComponent', () => {
       harness.component.signIn(credentials);
 
       expect(broadcastSpy).toHaveBeenCalledWith(expectedUser);
-      expect(stateRouterSpy).toHaveBeenCalledWith('app.container.home', expect.any(Object), expect.any(Object));
+      expect(stateRouterSpy).toHaveBeenCalledWith(
+        'app.container.home',
+        expect.any(Object),
+        expect.any(Object)
+      );
     });
 
     it('should fail to sign in an invalid user', () => {
       const broadcastSpy = jest.spyOn(broadcastStub, 'userSignedIn');
       const stateRouterSpy = jest.spyOn(stateRouterStub, 'transitionTo');
 
-      securityStub.signIn.mockImplementationOnce(() => throwError(() =>
-        new LoginError(
-          new HttpErrorResponse({
-            status: 401
-          }))));
+      securityStub.signIn.mockImplementationOnce(() =>
+        throwError(
+          () =>
+            new LoginError(
+              new HttpErrorResponse({
+                status: 401,
+              })
+            )
+        )
+      );
 
       harness.component.signIn({ userName: 'invalid', password: 'wrong' });
 
@@ -164,12 +177,4 @@ describe('SignInComponent', () => {
       expect(harness.component.signInError).toBe(SignInErrorType.InvalidCredentials);
     });
   });
-
-  describe('Forgot password', () => {
-    it('should transition to forgotten password page', () => {
-      harness.component.forgotPassword();
-      expect(stateRouterStub.transitionTo).toHaveBeenCalledWith('app.container.forgot-password');
-    });
-  });
 });
-

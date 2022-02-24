@@ -16,7 +16,15 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatFormFieldAppearance } from '@angular/material/form-field';
 import { PublicOpenIdConnectProvider } from '@maurodatamapper/mdm-resources';
@@ -30,7 +38,7 @@ export interface SignInClickEvent {
 @Component({
   selector: 'mdm-sign-in-form',
   templateUrl: './sign-in-form.component.html',
-  styleUrls: ['./sign-in-form.component.scss']
+  styleUrls: ['./sign-in-form.component.scss'],
 })
 export class SignInFormComponent implements OnInit, OnChanges {
   @Input() authenticating = false;
@@ -41,13 +49,13 @@ export class SignInFormComponent implements OnInit, OnChanges {
 
   @Input() signInError?: SignInErrorType;
 
+  @Input() forgotPasswordRouteName?: string;
+
   @Input() openIdConnectProviders?: PublicOpenIdConnectProvider[];
 
   @Output() signInClicked = new EventEmitter<SignInClickEvent>();
 
   @Output() openIdConnectClicked = new EventEmitter<PublicOpenIdConnectProvider>();
-
-  @Output() forgotPasswordClicked = new EventEmitter<void>();
 
   signInForm!: FormGroup;
 
@@ -77,12 +85,12 @@ export class SignInFormComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.signInForm = new FormGroup({
       userName: new FormControl('', [
-        Validators.required,  // eslint-disable-line @typescript-eslint/unbound-method
-        Validators.pattern(this.emailPattern ?? defaultEmailPattern)
+        Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
+        Validators.pattern(this.emailPattern ?? defaultEmailPattern),
       ]),
       password: new FormControl('', [
-        Validators.required // eslint-disable-line @typescript-eslint/unbound-method
-      ])
+        Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
+      ]),
     });
   }
 
@@ -90,8 +98,7 @@ export class SignInFormComponent implements OnInit, OnChanges {
     if (changes.authenticating !== undefined && this.signInForm) {
       if (this.authenticating) {
         this.signInForm.disable();
-      }
-      else {
+      } else {
         this.signInForm.enable();
       }
     }
@@ -104,16 +111,11 @@ export class SignInFormComponent implements OnInit, OnChanges {
 
     this.signInClicked.emit({
       userName: this.userName?.value,
-      password: this.password?.value
+      password: this.password?.value,
     });
   }
 
   authenticateWithOpenIdConnect(provider: PublicOpenIdConnectProvider) {
     this.openIdConnectClicked.emit(provider);
   }
-
-  forgotPassword() {
-    this.forgotPasswordClicked.emit();
-  }
 }
-

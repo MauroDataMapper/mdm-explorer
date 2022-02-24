@@ -23,7 +23,10 @@ import { ForgotPasswordFormComponent } from 'src/app/security/forgot-password-fo
 import { SecurityService } from 'src/app/security/security.service';
 import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { createStateRouterStub } from 'src/app/testing/stubs/state-router.stub';
-import { ComponentHarness, setupTestModuleForComponent } from 'src/app/testing/testing.helpers';
+import {
+  ComponentHarness,
+  setupTestModuleForComponent,
+} from 'src/app/testing/testing.helpers';
 import { ForgotPasswordComponent } from './forgot-password.component';
 
 describe('ForgotPasswordComponent', () => {
@@ -33,33 +36,24 @@ describe('ForgotPasswordComponent', () => {
   const stateRouterStub = createStateRouterStub();
 
   beforeEach(async () => {
-    harness = await setupTestModuleForComponent(
-      ForgotPasswordComponent,
-      {
-        declarations: [
-          MockComponent(ForgotPasswordFormComponent)
-        ],
-        providers: [
-          {
-            provide: SecurityService,
-            useValue: securityStub
-          },
-          {
-            provide: StateRouterService,
-            useValue: stateRouterStub
-          }
-        ]
-      });
+    harness = await setupTestModuleForComponent(ForgotPasswordComponent, {
+      declarations: [MockComponent(ForgotPasswordFormComponent)],
+      providers: [
+        {
+          provide: SecurityService,
+          useValue: securityStub,
+        },
+        {
+          provide: StateRouterService,
+          useValue: stateRouterStub,
+        },
+      ],
+    });
   });
 
   it('should create', () => {
     expect(harness.isComponentCreated).toBeTruthy();
     expect(harness.component.state).toBe('none');
-  });
-
-  it('should go back to the sign-in page when cancelled', () => {
-    harness.component.cancel();
-    expect(stateRouterStub.transitionTo).toHaveBeenCalledWith('app.container.signin');
   });
 
   it('should successfully send reset link', () => {
