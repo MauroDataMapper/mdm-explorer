@@ -17,48 +17,96 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Ng2StateDeclaration } from '@uirouter/angular';
-import { AboutComponent } from './about/about.component';
 import { AuthorizedOnlyComponent } from './authorized-only/authorized-only.component';
+import { StaticContentComponent } from './static-content/static-content.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { HomeComponent } from './home/home.component';
 import { SignInComponent } from './sign-in/sign-in.component';
 
+const staticContentStateName = 'app.container.static-content';
+
+/**
+ * Build a new router state designed to render static content to a view.
+ *
+ * @param name The name to give to the router state.
+ * @param url The URL to map to the router state.
+ * @param path The path to the static content to fetch.
+ * @returns An {@link Ng2StateDeclaration} containing the router state information.
+ */
+const buildStaticContentState = (
+  name: string,
+  url: string,
+  path: string
+): Ng2StateDeclaration => {
+  return {
+    name,
+    url,
+    component: StaticContentComponent,
+    params: {
+      path,
+    },
+    data: {
+      allowAnonymous: true,
+    },
+  };
+};
+
 export const states: Ng2StateDeclaration[] = [
+  /*
+    Router state for any generic static page content.
+    Loads HTML from the 'assets' folder. The {path:any} variable can be either a root URL path or sub-folder path e.g.
+
+    /page/about
+    /page/help/faq
+    /page/top/middle/bottom
+
+    etc
+
+    Note: the {path} URL parameter sets `raw` as `true` so that forward slashes do not have to be URL encoded.
+    /
+  */
+  {
+    name: staticContentStateName,
+    url: '/page/:path',
+    component: StaticContentComponent,
+    params: {
+      path: {
+        type: 'string',
+        raw: true,
+      },
+    },
+    data: {
+      allowAnonymous: true,
+    },
+  },
   {
     name: 'app.container.home',
     url: '/home',
     component: HomeComponent,
     data: {
-      allowAnonymous: true
-    }
+      allowAnonymous: true,
+    },
   },
-  {
-    name: 'app.container.about',
-    url: '/about',
-    component: AboutComponent,
-    data: {
-      allowAnonymous: true
-    }
-  },
+  buildStaticContentState('app.container.about', '/about', 'about'),
   {
     name: 'app.container.signin',
     url: '/sign-in',
     component: SignInComponent,
     data: {
-      allowAnonymous: true
-    }
+      allowAnonymous: true,
+    },
   },
   {
     name: 'app.container.forgot-password',
     url: '/forgot-password',
     component: ForgotPasswordComponent,
     data: {
-      allowAnonymous: true
-    }
+      allowAnonymous: true,
+    },
   },
   {
     name: 'app.container.authorized-only',
     url: '/authorized-only',
-    component: AuthorizedOnlyComponent
+    component: AuthorizedOnlyComponent,
   },
 ];

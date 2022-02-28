@@ -19,10 +19,28 @@ SPDX-License-Identifier: Apache-2.0
 import { RawParams, TransitionOptions } from '@uirouter/angular';
 import { KnownRouterState } from 'src/app/core/state-router.service';
 
-export type TransitionFn = (name: string, params?: RawParams, options?: TransitionOptions) => any;
+export interface UIRouterGlobalsStub {
+  params: jest.MockedObject<any>;
+}
+
+export const createRouterGlobalsStub = (): UIRouterGlobalsStub => {
+  return {
+    params: jest.fn(),
+  };
+};
+
+export type TransitionFn = (
+  name: string,
+  params?: RawParams,
+  options?: TransitionOptions
+) => any;
 export type TransitionMockedFn = jest.MockedFunction<TransitionFn>;
 
-export type TransitionToFn = (name: KnownRouterState, params?: RawParams, options?: TransitionOptions) => any;
+export type TransitionToFn = (
+  name: KnownRouterState,
+  params?: RawParams,
+  options?: TransitionOptions
+) => any;
 export type TransitionToMockedFn = jest.MockedFunction<TransitionToFn>;
 
 export interface StateRouterServiceStub {
@@ -33,6 +51,6 @@ export interface StateRouterServiceStub {
 export const createStateRouterStub = (): StateRouterServiceStub => {
   return {
     transition: jest.fn() as TransitionMockedFn,
-    transitionTo: jest.fn() as TransitionToMockedFn
+    transitionTo: jest.fn() as TransitionToMockedFn,
   };
 };

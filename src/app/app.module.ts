@@ -32,6 +32,7 @@ import { SharedModule } from './shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ErrorModule } from './error/error.module';
 import { OPENID_CONNECT_CONFIG } from './security/security.types';
+import { STATIC_CONTENT_CONFIGURATION } from './core/static-content.service';
 
 const getOpenIdAuthorizeUrl = () => {
   // Redirect authorization URL refers to a static page route found in `/src/static-pages`. See the `assets`
@@ -50,11 +51,7 @@ const getOpenIdAuthorizeUrl = () => {
 };
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    AppContainerComponent,
-    UiViewComponent
-  ],
+  declarations: [AppComponent, AppContainerComponent, UiViewComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -62,35 +59,41 @@ const getOpenIdAuthorizeUrl = () => {
     MdmRestClientModule.forRoot({
       apiEndpoint: environment.apiEndpoint,
       defaultHttpRequestOptions: {
-        withCredentials: true
-      }
+        withCredentials: true,
+      },
     }),
     UIRouterModule.forRoot({
       states,
       config: uiRouterConfigFn,
       useHash: true,
-      otherwise: '/not-found'
+      otherwise: '/not-found',
     }),
     ToastrModule.forRoot({
       timeOut: 30000,
       positionClass: 'toast-bottom-right',
-      preventDuplicates: false
+      preventDuplicates: false,
     }),
     UserIdleModule.forRoot({
       idle: 600,
-      timeout: 300
+      timeout: 300,
     }),
     PagesModule,
-    ErrorModule
+    ErrorModule,
   ],
   providers: [
     {
       provide: OPENID_CONNECT_CONFIG,
       useValue: {
-        redirectUrl: getOpenIdAuthorizeUrl()
-      }
-    }
+        redirectUrl: getOpenIdAuthorizeUrl(),
+      },
+    },
+    {
+      provide: STATIC_CONTENT_CONFIGURATION,
+      useValue: {
+        contentLocation: '/assets/content',
+      },
+    },
   ],
-  bootstrap: [UiViewComponent]
+  bootstrap: [UiViewComponent],
 })
-export class AppModule { }
+export class AppModule {}

@@ -17,6 +17,7 @@
     ".nvmrc",
     ".npmrc",
     ".eslintignore",
+    ".prettierrc",
     "NOTICE",
     "Jenkinsfile",
     "**/*.xml",

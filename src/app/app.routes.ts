@@ -16,7 +16,13 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { HookResult, Ng2StateDeclaration, Transition, TransitionService, UIRouter } from '@uirouter/angular';
+import {
+  HookResult,
+  Ng2StateDeclaration,
+  Transition,
+  TransitionService,
+  UIRouter,
+} from '@uirouter/angular';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './pages/home/home.component';
 import { AppContainerComponent } from './views/app-container/app-container.component';
@@ -28,28 +34,28 @@ import { OpenIdConnectAuthorizeComponent } from './security/open-id-connect-auth
 const appStates: Ng2StateDeclaration[] = [
   {
     name: 'app',
-    component: AppComponent
+    component: AppComponent,
   },
   {
     name: 'app.container',
-    component: AppContainerComponent
+    component: AppContainerComponent,
   },
   {
     name: 'app.container.default',
     url: '',
     component: HomeComponent,
     data: {
-      allowAnonymous: true
-    }
+      allowAnonymous: true,
+    },
   },
   {
     name: 'app.container.open-id-connect-authorizing',
     url: '/open-id-connect/authorize',
     component: OpenIdConnectAuthorizeComponent,
     data: {
-      allowAnonymous: true
-    }
-  }
+      allowAnonymous: true,
+    },
+  },
 ];
 
 /**
@@ -75,14 +81,13 @@ const appStates: Ng2StateDeclaration[] = [
 export const states: Ng2StateDeclaration[] = [
   ...appStates,
   ...pageStates,
-  ...errorStates
+  ...errorStates,
 ];
 
 /**
  * Router transition hooks for checking authorization before switching views.
  */
 const authorizationTransitionHooks = (transitions: TransitionService) => {
-
   /**
    * Before starting a transition, check if the user/role has access to this route.
    */

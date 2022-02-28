@@ -19,25 +19,21 @@ SPDX-License-Identifier: Apache-2.0
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HomeComponent } from './home/home.component';
-import { AboutComponent } from './about/about.component';
 import { SignInComponent } from './sign-in/sign-in.component';
 import { SharedModule } from '../shared/shared.module';
 import { SecurityModule } from '../security/security.module';
 import { AuthorizedOnlyComponent } from './authorized-only/authorized-only.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
+import { StaticContentComponent } from './static-content/static-content.component';
 
 @NgModule({
   declarations: [
     HomeComponent,
-    AboutComponent,
     SignInComponent,
     AuthorizedOnlyComponent,
-    ForgotPasswordComponent
+    ForgotPasswordComponent,
+    StaticContentComponent,
   ],
-  imports: [
-    CommonModule,
-    SharedModule,
-    SecurityModule
-  ]
+  imports: [CommonModule, SharedModule, SecurityModule],
 })
-export class PagesModule { }
+export class PagesModule {}
