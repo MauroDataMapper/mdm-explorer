@@ -18,7 +18,6 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HomeComponent } from './home/home.component';
 import { SignInComponent } from './sign-in/sign-in.component';
 import { SharedModule } from '../shared/shared.module';
 import { SecurityModule } from '../security/security.module';
@@ -28,7 +27,6 @@ import { StaticContentComponent } from './static-content/static-content.componen
 
 @NgModule({
   declarations: [
-    HomeComponent,
     SignInComponent,
     AuthorizedOnlyComponent,
     ForgotPasswordComponent,

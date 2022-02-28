@@ -24,9 +24,8 @@ import {
   UIRouter,
 } from '@uirouter/angular';
 import { AppComponent } from './app.component';
-import { HomeComponent } from './pages/home/home.component';
 import { AppContainerComponent } from './views/app-container/app-container.component';
-import { states as pageStates } from './pages/pages.routes';
+import { buildStaticContentState, states as pageStates } from './pages/pages.routes';
 import { states as errorStates } from './error/error.routes';
 import { SecurityService } from './security/security.service';
 import { OpenIdConnectAuthorizeComponent } from './security/open-id-connect-authorize/open-id-connect-authorize.component';
@@ -40,14 +39,7 @@ const appStates: Ng2StateDeclaration[] = [
     name: 'app.container',
     component: AppContainerComponent,
   },
-  {
-    name: 'app.container.default',
-    url: '',
-    component: HomeComponent,
-    data: {
-      allowAnonymous: true,
-    },
-  },
+  buildStaticContentState('app.container.default', '/home', 'home'),
   {
     name: 'app.container.open-id-connect-authorizing',
     url: '/open-id-connect/authorize',

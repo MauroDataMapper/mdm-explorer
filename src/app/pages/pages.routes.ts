@@ -20,7 +20,6 @@ import { Ng2StateDeclaration } from '@uirouter/angular';
 import { AuthorizedOnlyComponent } from './authorized-only/authorized-only.component';
 import { StaticContentComponent } from './static-content/static-content.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
-import { HomeComponent } from './home/home.component';
 import { SignInComponent } from './sign-in/sign-in.component';
 
 const staticContentStateName = 'app.container.static-content';
@@ -33,7 +32,7 @@ const staticContentStateName = 'app.container.static-content';
  * @param path The path to the static content to fetch.
  * @returns An {@link Ng2StateDeclaration} containing the router state information.
  */
-const buildStaticContentState = (
+export const buildStaticContentState = (
   name: string,
   url: string,
   path: string
@@ -79,14 +78,7 @@ export const states: Ng2StateDeclaration[] = [
       allowAnonymous: true,
     },
   },
-  {
-    name: 'app.container.home',
-    url: '/home',
-    component: HomeComponent,
-    data: {
-      allowAnonymous: true,
-    },
-  },
+  buildStaticContentState('app.container.home', '/home', 'home'),
   buildStaticContentState('app.container.about', '/about', 'about'),
   {
     name: 'app.container.signin',
