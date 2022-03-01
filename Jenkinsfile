@@ -88,7 +88,17 @@ pipeline {
       }
       post {
         always {
-          junit allowEmptyResults: true, testResults: 'junit.xml'
+          junit allowEmptyResults: true, testResults: 'test-report/junit.xml'
+          publishCoverage adapters: [istanbulCoberturaAdapter('coverage/cobertura-coverage.xml')], sourceFileResolver: sourceFiles('NEVER_STORE')
+          publishHTML([
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : false,
+            reportDir            : 'test-report',
+            reportFiles          : 'index.html',
+            reportName           : 'Test Report',
+            reportTitles         : 'Test'
+          ])
         }
       }
     }
@@ -123,56 +133,56 @@ pipeline {
       }
     }
 
-    // Deploy develop branch even if tests fail if the code builds, as it'll be an unstable snapshot but we should still deploy
-    stage('Deploy develop to Artifactory') {
-      when {
-        branch 'develop'
-      }
-      steps {
-        rtUpload(
-          serverId: 'cs-artifactory',
-          spec: '''{
-          "files": [
-            {
-              "pattern": "dist/mdm-ui-*.tgz",
-              "target": "artifacts-snapshots/mauroDataMapper/mdm-ui/"
-            }
-         ]
-    }''',
-          )
-        rtPublishBuildInfo(
-          serverId: 'cs-artifactory',
-          )
-      }
-    }
+//    // Deploy develop branch even if tests fail if the code builds, as it'll be an unstable snapshot but we should still deploy
+//    stage('Deploy develop to Artifactory') {
+//      when {
+//        branch 'develop'
+//      }
+//      steps {
+//        rtUpload(
+//          serverId: 'cs-artifactory',
+//          spec: '''{
+//          "files": [
+//            {
+//              "pattern": "dist/mdm-ui-*.tgz",
+//              "target": "artifacts-snapshots/mauroDataMapper/mdm-ui/"
+//            }
+//         ]
+//    }''',
+//          )
+//        rtPublishBuildInfo(
+//          serverId: 'cs-artifactory',
+//          )
+//      }
+//    }
 
-    stage('Deploy main to Artifactory') {
-      when {
-        allOf {
-          branch 'main'
-          expression {
-            currentBuild.currentResult == 'SUCCESS'
-          }
-        }
-
-      }
-      steps {
-        rtUpload(
-          serverId: 'cs-artifactory',
-          spec: '''{
-          "files": [
-            {
-              "pattern": "dist/mdm-ui-*.tgz",
-              "target": "artifacts/mauroDataMapper/mdm-ui/"
-            }
-         ]
-    }''',
-          )
-        rtPublishBuildInfo(
-          serverId: 'cs-artifactory',
-          )
-      }
-    }
+//    stage('Deploy main to Artifactory') {
+//      when {
+//        allOf {
+//          branch 'main'
+//          expression {
+//            currentBuild.currentResult == 'SUCCESS'
+//          }
+//        }
+//
+//      }
+//      steps {
+//        rtUpload(
+//          serverId: 'cs-artifactory',
+//          spec: '''{
+//          "files": [
+//            {
+//              "pattern": "dist/mdm-ui-*.tgz",
+//              "target": "artifacts/mauroDataMapper/mdm-ui/"
+//            }
+//         ]
+//    }''',
+//          )
+//        rtPublishBuildInfo(
+//          serverId: 'cs-artifactory',
+//          )
+//      }
+//    }
 
     stage('Sonarqube') {
       when {
@@ -189,39 +199,30 @@ pipeline {
       }
     }
 
-    stage('Continuous Deployment') {
-      when {
-        allOf {
-          branch 'develop'
-          expression {
-            currentBuild.currentResult == 'SUCCESS'
-          }
-        }
-      }
-      steps {
-        script {
-          try {
-            println("Triggering the [continuous-deployment] job")
-            build quietPeriod: 300, wait: false, job: 'continuous-deployment'
-          } catch (hudson.AbortException ignored) {
-            println("Cannot trigger the [continuous-deployment] job as it doesn't exist")
-          }
-        }
-      }
-    }
+//    stage('Continuous Deployment') {
+//      when {
+//        allOf {
+//          branch 'develop'
+//          expression {
+//            currentBuild.currentResult == 'SUCCESS'
+//          }
+//        }
+//      }
+//      steps {
+//        script {
+//          try {
+//            println("Triggering the [continuous-deployment] job")
+//            build quietPeriod: 300, wait: false, job: 'continuous-deployment'
+//          } catch (hudson.AbortException ignored) {
+//            println("Cannot trigger the [continuous-deployment] job as it doesn't exist")
+//          }
+//        }
+//      }
+//    }
 
   }
   post {
     always {
-      publishHTML([
-        allowMissing         : true,
-        alwaysLinkToLastBuild: true,
-        keepAll              : false,
-        reportDir            : 'test-report',
-        reportFiles          : 'index.html',
-        reportName           : 'Test Report',
-        reportTitles         : 'Test'
-      ])
       outputTestResults()
       zulipNotification(topic: 'mdm-ui')
     }
