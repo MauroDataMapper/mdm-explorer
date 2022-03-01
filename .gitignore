@@ -242,3 +242,6 @@ yarn.lock
 eslint_report.json
 .scannerwork
 releases
+
+# Angular
+.angular/cache/**
