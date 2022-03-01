@@ -1,4 +1,4 @@
-<!--
+/*
 Copyright 2022 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -15,15 +15,24 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
--->
-<div class="highlight-box">
-  <div class="highlight-box__content--narrow">
-    <mdm-forgot-password-form
-      cancelLabel="Back to Sign-in"
-      cancelRouteName="app.container.signin"
-      retryRouteName="app.container.forgot-password"
-      [state]="state"
-      (resetPasswordClicked)="resetPassword($event)"
-    ></mdm-forgot-password-form>
-  </div>
-</div>
+*/
+import { InjectionToken } from '@angular/core';
+import {
+  CatalogueItemDomainType,
+  DataClass,
+  DataModel,
+} from '@maurodatamapper/mdm-resources';
+
+export const isDataModel = (item: DataModel | DataClass): item is DataModel =>
+  item.domainType === CatalogueItemDomainType.DataModel;
+
+export const isDataClass = (item: DataModel | DataClass): item is DataClass =>
+  item.domainType === CatalogueItemDomainType.DataClass;
+
+export interface CatalogueConfiguration {
+  rootDataModelPath: string;
+}
+
+export const CATALOGUE_CONFIGURATION = new InjectionToken<CatalogueConfiguration>(
+  'CatalogueConfiguration'
+);

@@ -17,10 +17,11 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Ng2StateDeclaration } from '@uirouter/angular';
-import { AuthorizedOnlyComponent } from './authorized-only/authorized-only.component';
 import { StaticContentComponent } from './static-content/static-content.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { SignInComponent } from './sign-in/sign-in.component';
+import { BrowseComponent } from './browse/browse.component';
+import { SearchResultsComponent } from './search-results/search-results.component';
 
 const staticContentStateName = 'app.container.static-content';
 
@@ -97,8 +98,13 @@ export const states: Ng2StateDeclaration[] = [
     },
   },
   {
-    name: 'app.container.authorized-only',
-    url: '/authorized-only',
-    component: AuthorizedOnlyComponent,
+    name: 'app.container.browse',
+    url: '/browse',
+    component: BrowseComponent,
+  },
+  {
+    name: 'app.container.search-results',
+    url: '/search/results',
+    component: SearchResultsComponent,
   },
 ];

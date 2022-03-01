@@ -16,40 +16,36 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-export interface MdmApiPropertiesResourceStub {
-  listPublic: jest.Mock;
-}
-
-export type CatalogueUserResetPasswordLinkFn = (email: string) => any;
-export type CatalogueUserResetPasswordLinkMockedFn =
-  jest.MockedFunction<CatalogueUserResetPasswordLinkFn>;
-
-export interface MdmCatalogueUserResourceStub {
-  resetPasswordLink: CatalogueUserResetPasswordLinkMockedFn;
-}
-
-export interface MdmSecurityResourceStub {
-  login: jest.Mock;
-  logout: jest.Mock;
-}
-
-export interface MdmSessionResourceStub {
-  isApplicationAdministration: jest.Mock;
-  isAuthenticated: jest.Mock;
-}
-export interface MdmFolderResourceStub {
-  save: jest.Mock;
-  saveChildOf: jest.Mock;
-}
-export interface MdmCatalogueItemResourceStub {
-  getPath: jest.Mock;
-  getPathFromParent: jest.Mock;
-}
+import {
+  createApiPropertiesStub,
+  MdmApiPropertiesResourceStub,
+} from './mdm-resources/api-properties-resource.stub';
+import {
+  createCatalogueItemStub,
+  MdmCatalogueItemResourceStub,
+} from './mdm-resources/catalogue-item-resource.stub';
+import {
+  createCatalogueUserStub,
+  MdmCatalogueUserResourceStub,
+} from './mdm-resources/catalogue-user-resource.stub';
+import {
+  createDataClassStub,
+  MdmDataClassResourceStub,
+} from './mdm-resources/data-class-resource.stub';
+import {
+  createSecurityStub,
+  MdmSecurityResourceStub,
+} from './mdm-resources/security-resource-stub';
+import {
+  createSessionStub,
+  MdmSessionResourceStub,
+} from './mdm-resources/session-resource.stub';
 
 export interface MdmEndpointsServiceStub {
   apiProperties: MdmApiPropertiesResourceStub;
-  catalogueUser: MdmCatalogueUserResourceStub;
   catalogueItem: MdmCatalogueItemResourceStub;
+  catalogueUser: MdmCatalogueUserResourceStub;
+  dataClass: MdmDataClassResourceStub;
   security: MdmSecurityResourceStub;
   session: MdmSessionResourceStub;
   folder: MdmFolderResourceStub;
@@ -57,27 +53,11 @@ export interface MdmEndpointsServiceStub {
 
 export const createMdmEndpointsStub = (): MdmEndpointsServiceStub => {
   return {
-    apiProperties: {
-      listPublic: jest.fn(),
-    },
-    catalogueUser: {
-      resetPasswordLink: jest.fn() as CatalogueUserResetPasswordLinkMockedFn,
-    },
-    catalogueItem: {
-      getPath: jest.fn(),
-      getPathFromParent: jest.fn(),
-    },
-    security: {
-      login: jest.fn(),
-      logout: jest.fn(),
-    },
-    session: {
-      isApplicationAdministration: jest.fn(),
-      isAuthenticated: jest.fn(),
-    },
-    folder: {
-      save: jest.fn(),
-      saveChildOf: jest.fn(),
-    },
+    apiProperties: createApiPropertiesStub(),
+    catalogueItem: createCatalogueItemStub(),
+    catalogueUser: createCatalogueUserStub(),
+    dataClass: createDataClassStub(),
+    security: createSecurityStub(),
+    session: createSessionStub(),
   };
 };

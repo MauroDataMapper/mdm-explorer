@@ -18,6 +18,10 @@ SPDX-License-Identifier: Apache-2.0
 */
 @import "./base/all";
 
+.page-title {
+  text-align: center;
+}
+
 /*
 highlight-box
 
@@ -26,7 +30,21 @@ Highlights a box area behind other page components, e.g. a form
 .highlight-box {
   border-radius: 4px;
   background-color: $color-highlight-box;
-  padding: 3em 25%;
+  margin-bottom: 2em;
+
+  &__header,
+  &__actions {
+    padding: 1.5em;
+    text-align: right;
+  }
+
+  &__content {
+    padding: 2em 5%;
+
+    &--narrow {
+      padding: 3em 25%;
+    }
+  }
 
   @include respond-to-mobile {
     padding: 3em 10%;
@@ -41,5 +59,11 @@ Highlights a box area behind other page components, e.g. a form
   .mat-form-field-appearance-outline .mat-form-field-outline {
     background-color: $color-white;
     border-radius: 5px;
+  }
+
+  // Force Angular lists to have a background color to offset on highlight box
+  // background
+  .mat-selection-list {
+    background-color: $color-white;
   }
 }

@@ -28,6 +28,7 @@ export const environment = {
   features: {
     useOpenIdConnect: true,
   },
+  rootDataModelPath: 'fo:OUH Data Warehouse|dm:modules',
 };
 
 /*

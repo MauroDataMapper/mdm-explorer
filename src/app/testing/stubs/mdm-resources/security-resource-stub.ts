@@ -1,4 +1,4 @@
-<!--
+/*
 Copyright 2022 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -15,7 +15,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
--->
-<p>authorized-only works!</p>
-<p>If you are seeing this then you have been successfully signed in!</p>
-<p>This can be removed once real content is created.</p>
+*/
+export interface MdmSecurityResourceStub {
+  login: jest.Mock;
+  logout: jest.Mock;
+}
+
+export const createSecurityStub = (): MdmSecurityResourceStub => {
+  return {
+    login: jest.fn(),
+    logout: jest.fn(),
+  };
+};

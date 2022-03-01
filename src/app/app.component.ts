@@ -51,8 +51,8 @@ export class AppComponent implements OnInit, OnDestroy {
       routeName: 'app.container.home',
     },
     {
-      label: 'Secret',
-      routeName: 'app.container.authorized-only',
+      label: 'Browse',
+      routeName: 'app.container.browse',
       onlySignedIn: true,
     },
     {

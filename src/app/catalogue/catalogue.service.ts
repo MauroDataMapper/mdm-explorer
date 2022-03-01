@@ -1,4 +1,4 @@
-<!--
+/*
 Copyright 2022 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -15,15 +15,23 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
--->
-<div class="highlight-box">
-  <div class="highlight-box__content--narrow">
-    <mdm-forgot-password-form
-      cancelLabel="Back to Sign-in"
-      cancelRouteName="app.container.signin"
-      retryRouteName="app.container.forgot-password"
-      [state]="state"
-      (resetPasswordClicked)="resetPassword($event)"
-    ></mdm-forgot-password-form>
-  </div>
-</div>
+*/
+import { Inject, Injectable } from '@angular/core';
+import { DataModelDetail } from '@maurodatamapper/mdm-resources';
+import { Observable } from 'rxjs';
+import { CatalogueConfiguration, CATALOGUE_CONFIGURATION } from './catalogue.types';
+import { DataModelService } from './data-model.service';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class CatalogueService {
+  constructor(
+    private dataModels: DataModelService,
+    @Inject(CATALOGUE_CONFIGURATION) private config: CatalogueConfiguration
+  ) {}
+
+  getRootDataModel(): Observable<DataModelDetail> {
+    return this.dataModels.getDataModel(this.config.rootDataModelPath);
+  }
+}
