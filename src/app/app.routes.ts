@@ -39,7 +39,7 @@ const appStates: Ng2StateDeclaration[] = [
     name: 'app.container',
     component: AppContainerComponent,
   },
-  buildStaticContentState('app.container.default', '/home', 'home'),
+  buildStaticContentState('app.container.default', '', 'home'),
   {
     name: 'app.container.open-id-connect-authorizing',
     url: '/open-id-connect/authorize',
