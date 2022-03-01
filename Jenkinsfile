@@ -117,21 +117,21 @@ pipeline {
       }
     }
 
-    stage('Distribution Build') {
-      when{
-        anyOf{
-          branch 'develop'
-          branch 'main'
-        }
-      }
-      steps {
-        nvm('') {
-          catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
-            sh 'npm run dist'
-          }
-        }
-      }
-    }
+//    stage('Distribution Build') {
+//      when{
+//        anyOf{
+//          branch 'develop'
+//          branch 'main'
+//        }
+//      }
+//      steps {
+//        nvm('') {
+//          catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+//            sh 'npm run dist'
+//          }
+//        }
+//      }
+//    }
 
 //    // Deploy develop branch even if tests fail if the code builds, as it'll be an unstable snapshot but we should still deploy
 //    stage('Deploy develop to Artifactory') {

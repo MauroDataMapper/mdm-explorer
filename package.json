@@ -1,6 +1,6 @@
 {
   "name": "mdm-research-browser",
-  "version": "0.0.0",
+  "version": "1.0.0-SNAPSHOT",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -15,8 +15,8 @@
     "eslint-nofix-quiet": "tsc --noEmit && eslint . --ext ts --quiet",
     "eslint-report": "eslint . --ext ts --format checkstyle -o eslint_report.xml",
     "license-check": "license-check-and-add -f license-check.json",
-    "dist": "ng build --configuration production --output-path=dist/mdm-ui-$npm_package_version && npm run dist-archive",
-    "dist-archive": "tar zcvf dist/mdm-ui-${npm_package_version}.tgz -C dist mdm-ui-$npm_package_version",
+    "dist": "ng build --configuration production --output-path=dist/mdm-research-portal-$npm_package_version && npm run dist-archive",
+    "dist-archive": "tar zcvf dist/mdm-research-portal-${npm_package_version}.tgz -C dist mdm-research-portal-$npm_package_version",
     "sonar": "sonar-scanner -Dsonar.projectVersion=$npm_package_version"
   },
   "private": true,
