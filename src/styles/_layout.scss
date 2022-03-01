@@ -16,25 +16,30 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-$openid-connect-icon-width: 24px;
+@import "./base/all";
 
-.mdm-sign-in-form {
-  &__openid {
-    &-providers {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-evenly;
+/*
+highlight-box
 
-      button {
-        padding: 8px 0;
-        margin: 8px 0;
-      }
-    }
+Highlights a box area behind other page components, e.g. a form
+*/
+.highlight-box {
+  border-radius: 4px;
+  background-color: $color-highlight-box;
+  padding: 3em 25%;
 
-    &-icon {
-      width: $openid-connect-icon-width;
-      height: $openid-connect-icon-width;
-      margin: 4px 8px;
-    }
+  @include respond-to-mobile {
+    padding: 3em 10%;
+  }
+
+  button.mat-stroked-button {
+    background-color: $color-white;
+  }
+
+  // Force Angular form fields (outline) to have a background color to offset on
+  // highlight box background
+  .mat-form-field-appearance-outline .mat-form-field-outline {
+    background-color: $color-white;
+    border-radius: 5px;
   }
 }

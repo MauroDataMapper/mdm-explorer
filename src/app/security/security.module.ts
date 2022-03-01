@@ -28,13 +28,13 @@ import { SignInFormComponent } from './sign-in-form/sign-in-form.component';
 import { SharedModule } from '../shared/shared.module';
 import { OpenIdConnectAuthorizeComponent } from './open-id-connect-authorize/open-id-connect-authorize.component';
 import { ForgotPasswordFormComponent } from './forgot-password-form/forgot-password-form.component';
-
+import { UIRouterModule } from '@uirouter/angular';
 
 @NgModule({
   declarations: [
     SignInFormComponent,
     OpenIdConnectAuthorizeComponent,
-    ForgotPasswordFormComponent
+    ForgotPasswordFormComponent,
   ],
   imports: [
     CommonModule,
@@ -45,12 +45,13 @@ import { ForgotPasswordFormComponent } from './forgot-password-form/forgot-passw
     MatFormFieldModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
-    SharedModule
+    SharedModule,
+    UIRouterModule,
   ],
   exports: [
     SignInFormComponent,
     OpenIdConnectAuthorizeComponent,
-    ForgotPasswordFormComponent
-  ]
+    ForgotPasswordFormComponent,
+  ],
 })
-export class SecurityModule { }
+export class SecurityModule {}
