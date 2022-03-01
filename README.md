@@ -87,7 +87,7 @@ npm run build
 npm link
 
 # Link mdm-resources into mdm-research-browser
-cd mdm-ui
+cd mdm-research-browser
 npm link @maurodatamapper/mdm-resources
 ```
 
