@@ -20,6 +20,7 @@ import { Injectable } from '@angular/core';
 import {
   MdmApiPropertyResources,
   MdmCatalogueUserResource,
+  MdmCatalogueItemResource,
   MdmDataClassResource,
   MdmDataElementResource,
   MdmDataFlowResource,
@@ -32,16 +33,17 @@ import {
   MdmResourcesConfiguration,
   MdmSecurityResource,
   MdmSessionResource,
-  MdmSummaryMetadataResource
+  MdmSummaryMetadataResource,
 } from '@maurodatamapper/mdm-resources';
 import { MdmHttpClientService } from './mdm-http-client.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MdmEndpointsService {
   apiProperties = new MdmApiPropertyResources(this.configuration, this.httpClient);
   catalogueUser = new MdmCatalogueUserResource(this.configuration, this.httpClient);
+  catalogueItem = new MdmCatalogueItemResource(this.configuration, this.httpClient);
   dataClass = new MdmDataClassResource(this.configuration, this.httpClient);
   dataElement = new MdmDataElementResource(this.configuration, this.httpClient);
   dataFlow = new MdmDataFlowResource(this.configuration, this.httpClient);
@@ -49,7 +51,10 @@ export class MdmEndpointsService {
   dataType = new MdmDataTypeResource(this.configuration, this.httpClient);
   folder = new MdmFolderResource(this.configuration, this.httpClient);
   pluginDoi = new MdmPluginDoiResource(this.configuration, this.httpClient);
-  pluginOpenIdConnect = new MdmPluginOpenIdConnectResource(this.configuration, this.httpClient);
+  pluginOpenIdConnect = new MdmPluginOpenIdConnectResource(
+    this.configuration,
+    this.httpClient
+  );
   profile = new MdmProfileResource(this.configuration, this.httpClient);
   security = new MdmSecurityResource(this.configuration, this.httpClient);
   session = new MdmSessionResource(this.configuration, this.httpClient);
@@ -57,5 +62,6 @@ export class MdmEndpointsService {
 
   constructor(
     private configuration: MdmResourcesConfiguration,
-    private httpClient: MdmHttpClientService) { }
+    private httpClient: MdmHttpClientService
+  ) {}
 }
