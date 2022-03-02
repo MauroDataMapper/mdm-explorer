@@ -1,4 +1,7 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { FolderDetail } from '@maurodatamapper/mdm-resources/lib/es2015/mdm-folder.model';
+import { catchError, Observable, switchMap, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { UserDetails } from '../security/user-details.service';
 import { FolderService } from './folder.service';
@@ -10,13 +13,35 @@ export class UserRequestsService {
   constructor(private folderService: FolderService) {}
 
   /**
+   * Retrieve the users data requests folder. Creates a new folder if there isn't one.
+   * @param username - get the data requests folder for the user with the given unique username
+   * @returns an observable containing a FolderDetail object
+   */
+  getUserRequestsFolder(username: string): Observable<FolderDetail> {
+    return this.folderService.getOrCreate(`${environment.rootRequestFolder}`).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return throwError(() => error);
+      }),
+      switchMap((rootFolder: FolderDetail) => {
+        return this.folderService.getOrCreateChildOf(
+          rootFolder.id!,
+          this.sanitiseUsername(username)
+        );
+      })
+    );
+  }
+
+  /**
    * Ensure the data access requests folder exists for the signed in user.
    * @param user - the details of the signed in user
    */
   ensureUserRequestsFolderExists(user: UserDetails): void {
-    // ensure root requests folder exists
-    this.folderService.ensureExists(environment.rootRequestFolder);
-    this.folderService.ensureExists(this.getUserRequestsFolderPath(user.userName));
+    const userRequestFolderName = this.sanitiseUsername(user.userName);
+    this.getUserRequestsFolder(userRequestFolderName).subscribe(
+      (folder: FolderDetail) => {
+        console.log(folder.label);
+      }
+    );
   }
 
   /**
@@ -27,9 +52,5 @@ export class UserRequestsService {
    */
   private sanitiseUsername(username: string): string {
     return username.replace('@', '[at]');
-  }
-
-  private getUserRequestsFolderPath(username: string): string {
-    return `${environment.rootRequestFolder}/${this.sanitiseUsername(username)}`;
   }
 }
