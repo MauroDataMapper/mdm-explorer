@@ -22,12 +22,16 @@ import { AlertComponent } from './alert/alert.component';
 import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
 import { UIRouterModule } from '@uirouter/angular';
+import { SafePipe } from './pipes/safe.pipe';
+import { ArrowPipe } from './pipes/arrow.pipe';
 
 @NgModule({
   declarations: [
     AlertComponent,
     FooterComponent,
-    HeaderComponent
+    HeaderComponent,
+    SafePipe,
+    ArrowPipe,
   ],
   imports: [
     CommonModule,

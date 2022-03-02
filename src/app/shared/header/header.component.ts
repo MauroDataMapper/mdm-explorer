@@ -18,6 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UserDetails } from 'src/app/security/user-details.service';
+import { arrowDirection } from '../pipes/arrow.pipe';
 
 /**
  * Define the details for a link in the layout and navigation components.
@@ -42,6 +43,8 @@ import { UserDetails } from 'src/app/security/user-details.service';
    * States if this link should only be visible if a user is signed in first.
    */
   onlySignedIn?: boolean;
+
+  arrow?: arrowDirection;
 }
 
 
@@ -64,10 +67,31 @@ export class HeaderComponent implements OnInit {
    */
   @Input() logoLink?: HeaderImageLink;
 
+  /*
+  * Provide the asset source to the Mauro logo.
+  */
+ @Input() mauroLogoSrc?: string;
+
   /**
    * Provide the collection of navigation links to include in the header.
    */
   @Input() links: HeaderLink[] = [];
+
+  /**
+   * Provide the collection of navigation links to include in the header.
+   */
+  @Input() rightLinks: HeaderImageLink[] = [];
+
+  /**
+   * Provide the link to redirect to sign-in.
+   */
+  @Input() accountLink: HeaderImageLink = {
+    imageSrc: 'assets/images/Missing.svg',
+    label: 'Missing Label',
+    routeName: 'app.container.home',
+  };
+
+  @Input() numberOfRequests: number = 0;
 
   /**
    * Provide the link to redirect to sign-in.
@@ -80,11 +104,6 @@ export class HeaderComponent implements OnInit {
   @Input() signedInUser?: UserDetails | null;
 
   /**
-   * If a user is signed in, provide the source to the profile image.
-   */
-  @Input() signedInUserProfileImageSrc?: string;
-
-  /**
    * Event handler when the "Sign out" link is clicked.
    */
   @Output() signOutClicked = new EventEmitter<void>();
@@ -94,6 +113,7 @@ export class HeaderComponent implements OnInit {
   }
 
   get isSignedIn() {
+    this.signedInUser = {id: 'id', firstName: 'Jon', lastName: 'Bowen', userName: 'jon_bowen', email: 'jon@a.co.uk'};
     return !!this.signedInUser;
   }
 

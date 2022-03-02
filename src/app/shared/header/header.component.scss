@@ -16,11 +16,13 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+
 $header-gap: 3rem;
-$link-color: #007bff;
+$link-color: #ffffff;
 $screen-size-md: 1000px;
 $screen-size-sm: 620px;
 $profile-img-width: 32px;
+$header-background: #606060;
 
 .mdm-header {
   position: relative;
@@ -28,10 +30,34 @@ $profile-img-width: 32px;
   display: flex;
   padding: 0 $header-gap;
   margin: 0 0 $header-gap;
+  background-color: $header-background;
 
   @media (max-width: $screen-size-md) {
     padding: 20px 20px 0;
     flex-wrap: wrap;
+  }
+  
+  &__containOverlay {
+    position: relative;
+  }
+
+  &__overlayUserInitials {    
+    width: 100%;
+    height: 100%;
+    position:absolute;
+    top: 0px;
+    left: 0px;
+    text-align: center;
+    transform: translate(0, 40%);
+  }
+  
+  &__overlayRequests {
+    width: 100%;
+    height: 100%;
+    position:absolute;
+    top: -3px;
+    left: 20px;
+    text-align: left;
   }
 
   &__logo {
@@ -50,17 +76,30 @@ $profile-img-width: 32px;
       flex: 0 0 100%;
     }
 
+    & > nav {
+      display: inline-block;
+      width: 50%;
+    }
+
     &--main {
       @media (max-width: $screen-size-md) {
         padding-top: 10px;
         margin-inline-start: -10px;
       }
 
+
       & > ul {
         display: flex;
         height: 100%;
         list-style: none;
         list-style-image: none;
+        padding-inline-start: 10px;
+        margin-block-start: 16px;
+        float: left;
+
+        & > li {
+          white-space: nowrap;
+        }
 
         & > li > a {
           display: flex;
@@ -73,7 +112,6 @@ $profile-img-width: 32px;
           font-size: 1.2rem;
           text-decoration: none;
           color: $link-color;
-
           &.active {
             border-bottom: 2px solid $link-color;
           }
@@ -81,14 +119,58 @@ $profile-img-width: 32px;
       }
     }
 
+    &--right {
+      @media (max-width: $screen-size-md) {
+        padding-top: 10px;
+        margin-inline-start: -10px;
+      }
+
+
+      & > ul {
+        display: flex;
+        height: 100%;
+        list-style: none;
+        list-style-image: none;
+        padding-inline-start: 10px;
+        margin-block-start: 0px;
+        margin-block-end: 0px;
+        float: right;
+        vertical-align: bottom;
+
+        & > li {
+          vertical-align: bottom;
+          white-space: nowrap;
+        }
+
+        & > li > a {
+          display: inline-block;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          padding: 0rem 1rem;
+          font-weight: 500;
+          font-size: 0.8rem;
+          text-decoration: none;
+          color: $link-color;
+
+
+          &.active {
+            border-bottom: 2px solid $link-color;
+          }
+        }
+
+      }
+    }
+
     &--account {
-      position: fixed;
+      position: absolute;
       z-index: 15;
-      top: 1.2rem;
+      top: 0.6rem;
       right: $header-gap;
 
       @media (max-width: $screen-size-sm) {
-        top: 1.2rem;
+        top: 0.6rem;
       }
 
       a {
@@ -105,16 +187,52 @@ $profile-img-width: 32px;
   &__user {
     &--profile {
       display: inline-block;
-      margin: 0 1rem;
-      background-color: $link-color;  // TODO: replace when background color is decided
+      margin: 0 0;
+      background-color: $header-background;  // TODO: replace when background color is decided
 
       img {
         max-width: $profile-img-width;
+      }
+      
+
+      & > ul {
+        display: flex;
+        height: 100%;
+        list-style: none;
+        list-style-image: none;
+        padding-inline-start: 10px;
+        margin-block-start: 0px;
+        margin-block-end: 0px;
+        float: right;
+        vertical-align: bottom;
+
+        & > li {
+          vertical-align: bottom;
+        }
+
+        & > li > a {
+          display: inline-block;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          padding: 0rem 1rem;
+          font-weight: 500;
+          font-size: 0.8rem;
+          text-decoration: none;
+          color: $link-color;
+
+          &.active {
+            border-bottom: 2px solid $link-color;
+          }
+        }
+
       }
     }
 
     &--name {
       display: inline-block;
+      z-index: 5;
     }
 
     &--sign-out {
@@ -124,6 +242,7 @@ $profile-img-width: 32px;
         display: block;
         margin: 1rem 0;
         text-align: right;
+        vertical-align: top;
       }
     }
   }

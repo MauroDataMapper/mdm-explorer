@@ -20,7 +20,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { UserIdleService } from 'angular-user-idle';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, filter, finalize, Subject, takeUntil } from 'rxjs';
+import { catchError, EMPTY, filter, finalize, Observable, Observer, Subject, takeUntil } from 'rxjs';
 import { environment } from '../environments/environment';
 import { BroadcastEvent, BroadcastService } from './core/broadcast.service';
 import { StateRouterService } from './core/state-router.service';
@@ -30,6 +30,7 @@ import { SecurityService } from './security/security.service';
 import { UserDetails, UserDetailsService } from './security/user-details.service';
 import { FooterLink } from './shared/footer/footer.component';
 import { HeaderImageLink, HeaderLink } from './shared/header/header.component';
+import { arrowDirection } from './shared/pipes/arrow.pipe';
 
 @Component({
   selector: 'mdm-root',
@@ -49,6 +50,8 @@ export class AppComponent implements OnInit, OnDestroy {
     {
       label: 'Home',
       routeName: 'app.container.home',
+      label: 'About',
+      routeName: 'app.container.about'
     },
     {
       label: 'Browse',
@@ -56,10 +59,36 @@ export class AppComponent implements OnInit, OnDestroy {
       onlySignedIn: true,
     },
     {
-      label: 'About',
-      routeName: 'app.container.about',
+      label: 'Search',
+      routeName: 'app.container.search'
+    },
+    {
+      label: 'Help',
+      routeName: 'app.container.help',
+      arrow: arrowDirection.down,
+    },
+    //Example signed-in only item
+    // {
+    //   label: 'Secret',
+    //   routeName: 'app.container.authorized-only',
+    //   onlySignedIn: true
+    // }
+  ];
+
+  headerRightLinks: HeaderImageLink[] = [
+    {
+      label: 'Bookmarks',
+      routeName: 'app.container.my-bookmarks',
+      imageSrc: 'assets/images/Bookmark.svg',
     },
   ];
+
+  accountLink: HeaderImageLink = {
+    label: 'My requests',
+    routeName: 'app.container.my-requests',
+    imageSrc: 'assets/images/Basket.svg',
+    arrow: arrowDirection.down,
+    };
 
   signInLink: HeaderLink = {
     routeName: 'app.container.signin',
@@ -78,10 +107,25 @@ export class AppComponent implements OnInit, OnDestroy {
     },
   ];
 
+  //This is a dummy observable. I'm assuming that at some point we will have an obervable/service which actually returns the
+  //current number of requests, perhaps running on a timer updating every minute or two. For the moment we just have this
+  //which returns one value, once.
+  private _observeNumberOfRequests = new Observable((observer: Observer<number>) => {
+    let requests:number = 0;
+    let timeoutFunction = () => {
+      observer.next(requests);
+      ++requests;
+      setTimeout(timeoutFunction, 5000);
+      };
+    let timeoutId = setTimeout(timeoutFunction, 0);
+   return {unsubscribe: () => {clearTimeout(timeoutId)}};
+  });
+
+  numberOfRequests: number = 0;
+
   signedInUser?: UserDetails | null;
 
-  signedInUserProfileImageSrc?: string;
-
+ 
   /**
    * Signal to attach to subscriptions to trigger when they should be unsubscribed.
    */
@@ -133,6 +177,8 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subscribeHttpErrorEvent('http-not-found', 'app.container.not-found');
     this.subscribeHttpErrorEvent('http-not-implemented', 'app.container.not-implemented');
     this.subscribeHttpErrorEvent('http-server-error', 'app.container.server-error');
+
+    this._observeNumberOfRequests.subscribe((nextNumber) => this.numberOfRequests = nextNumber);
 
     // Check immediately if the last authenticated session is expired and setup a recurring
     // check for this
