@@ -1,7 +1,6 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FolderDetail } from '@maurodatamapper/mdm-resources/lib/es2015/mdm-folder.model';
-import { catchError, Observable, switchMap, throwError } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { UserDetails } from '../security/user-details.service';
 import { FolderService } from './folder.service';
@@ -19,9 +18,6 @@ export class UserRequestsService {
    */
   getUserRequestsFolder(username: string): Observable<FolderDetail> {
     return this.folderService.getOrCreate(`${environment.rootRequestFolder}`).pipe(
-      catchError((error: HttpErrorResponse) => {
-        return throwError(() => error);
-      }),
       switchMap((rootFolder: FolderDetail) => {
         return this.folderService.getOrCreateChildOf(
           rootFolder.id!,
@@ -37,11 +33,7 @@ export class UserRequestsService {
    */
   ensureUserRequestsFolderExists(user: UserDetails): void {
     const userRequestFolderName = this.sanitiseUsername(user.userName);
-    this.getUserRequestsFolder(userRequestFolderName).subscribe(
-      (folder: FolderDetail) => {
-        console.log(folder.label);
-      }
-    );
+    this.getUserRequestsFolder(userRequestFolderName).subscribe();
   }
 
   /**

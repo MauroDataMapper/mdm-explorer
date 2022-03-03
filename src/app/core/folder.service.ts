@@ -22,7 +22,7 @@ export class FolderService {
       .pipe(
         catchError((error: HttpErrorResponse) => {
           return error.status === 404
-            ? this.createAndGet(label)
+            ? this.endpoints.folder.save({ label: label })
             : throwError(() => error);
         }),
         map((response: FolderDetailResponse) => response.body)
@@ -38,26 +38,20 @@ export class FolderService {
    */
   getOrCreateChildOf(parentId: Uuid, label: string): Observable<FolderDetail> {
     return this.endpoints.catalogueItem
-      .getPathFromParent('folders', parentId, label, {}, { handleGetErrors: false })
+      .getPathFromParent(
+        'folders',
+        parentId,
+        `fo:${label}`,
+        {},
+        { handleGetErrors: false }
+      )
       .pipe(
         catchError((error: HttpErrorResponse) => {
           return error.status === 404
-            ? this.createAndGetChildOf(parentId, label)
+            ? this.endpoints.folder.saveChildrenOf(parentId, { label: label })
             : throwError(() => error);
         }),
         map((response: FolderDetailResponse) => response.body)
       );
-  }
-
-  private createAndGet(label: string): Observable<FolderDetail> {
-    return this.endpoints.folder
-      .save({ label: label })
-      .pipe(map((response: FolderDetailResponse) => response.body));
-  }
-
-  private createAndGetChildOf(parentId: Uuid, label: string): Observable<FolderDetail> {
-    return this.endpoints.folder
-      .saveChildrenOf(parentId, { label: label })
-      .pipe(map((response: FolderDetailResponse) => response.body));
   }
 }
