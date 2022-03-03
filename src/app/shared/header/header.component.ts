@@ -58,7 +58,7 @@ export interface HeaderImageLink extends HeaderLink {
  @Component({
   selector: 'mdm-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss']
+  styleUrls: ['./header.component.scss', ]
 })
 export class HeaderComponent implements OnInit {
   /**
@@ -85,8 +85,7 @@ export class HeaderComponent implements OnInit {
   /**
    * Provide the link to redirect to sign-in.
    */
-  @Input() accountLink: HeaderImageLink = {
-    imageSrc: 'assets/images/Missing.svg',
+  @Input() accountLink: HeaderLink = {
     label: 'Missing Label',
     routeName: 'app.container.home',
   };

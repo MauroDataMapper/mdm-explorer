@@ -65,7 +65,7 @@ export class AppComponent implements OnInit, OnDestroy {
     {
       label: 'Help',
       routeName: 'app.container.help',
-      arrow: arrowDirection.down,
+      arrow: arrowDirection.angle_down,
     },
     //Example signed-in only item
     // {
@@ -79,15 +79,14 @@ export class AppComponent implements OnInit, OnDestroy {
     {
       label: 'Bookmarks',
       routeName: 'app.container.my-bookmarks',
-      imageSrc: 'assets/images/Bookmark.svg',
+      imageSrc: '',
     },
   ];
 
-  accountLink: HeaderImageLink = {
+  accountLink: HeaderLink = {
     label: 'My requests',
     routeName: 'app.container.my-requests',
-    imageSrc: 'assets/images/Basket.svg',
-    arrow: arrowDirection.down,
+    arrow: arrowDirection.angle_down,
     };
 
   signInLink: HeaderLink = {
@@ -97,12 +96,28 @@ export class AppComponent implements OnInit, OnDestroy {
 
   footerLinks: FooterLink[] = [
     {
-      label: 'Mauro',
-      href: 'https://maurodatamapper.github.io/',
+      label: 'Privacy policy',
+      routeName: 'app.container.privacy',
+      target: '_self',
     },
     {
-      label: 'About',
-      routeName: 'app.container.about',
+      label: 'Terms and conditions',
+      routeName: 'app.container.terms',
+      target: '_self',
+    },
+    {
+      label: 'Cookies',
+      routeName: 'app.container.cookies',
+      target: '_self',
+    },
+    {
+      label: 'Safeguarding',
+      routeName: 'app.container.safeguarding',
+      target: '_self',
+    },
+    {
+      label: 'Site map',
+      routeName: 'app.container.sitemap',
       target: '_self',
     },
   ];

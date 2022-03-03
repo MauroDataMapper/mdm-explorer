@@ -16,13 +16,15 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+@import '../../../styles.scss';
+
 
 $header-gap: 3rem;
 $link-color: #ffffff;
 $screen-size-md: 1000px;
 $screen-size-sm: 620px;
 $profile-img-width: 32px;
-$header-background: #606060;
+$header-background: $color-gray-38;
 
 .mdm-header {
   position: relative;
@@ -31,11 +33,7 @@ $header-background: #606060;
   padding: 0 $header-gap;
   margin: 0 0 $header-gap;
   background-color: $header-background;
-
-  @media (max-width: $screen-size-md) {
-    padding: 20px 20px 0;
-    flex-wrap: wrap;
-  }
+  flex-wrap: wrap;
   
   &__containOverlay {
     position: relative;
@@ -52,40 +50,33 @@ $header-background: #606060;
   }
   
   &__overlayRequests {
-    width: 100%;
     height: 100%;
     position:absolute;
-    top: -3px;
+    top: 7px;
     left: 20px;
-    text-align: left;
+    width: 27px; 
+    text-align: center;
   }
 
   &__logo {
     position: relative;
-    flex: 0;
     align-items: center;
-    align-self: stretch;
-    display: flex;
   }
 
   &__links {
     flex: 1;
     width: 100%;
-
-    @media (max-width: $screen-size-md) {
-      flex: 0 0 100%;
-    }
+    flex-wrap: nowrap;
 
     & > nav {
       display: inline-block;
       width: 50%;
+      @media (max-width: $screen-size-md) {
+        width: 100%;
+      }
     }
 
     &--main {
-      @media (max-width: $screen-size-md) {
-        padding-top: 10px;
-        margin-inline-start: -10px;
-      }
 
 
       & > ul {
@@ -96,6 +87,10 @@ $header-background: #606060;
         padding-inline-start: 10px;
         margin-block-start: 16px;
         float: left;
+        @media (max-width: $screen-size-md) {
+          margin-block-end: 0px;
+          padding: 0 50px 0 10px;
+        }
 
         & > li {
           white-space: nowrap;
@@ -120,14 +115,9 @@ $header-background: #606060;
     }
 
     &--right {
-      @media (max-width: $screen-size-md) {
-        padding-top: 10px;
-        margin-inline-start: -10px;
-      }
 
 
       & > ul {
-        display: flex;
         height: 100%;
         list-style: none;
         list-style-image: none;
@@ -135,16 +125,16 @@ $header-background: #606060;
         margin-block-start: 0px;
         margin-block-end: 0px;
         float: right;
-        vertical-align: bottom;
+        display: block;
 
         & > li {
-          vertical-align: bottom;
           white-space: nowrap;
+          height: 100%;
+          display: inline-block;
         }
 
         & > li > a {
           display: inline-block;
-          flex-direction: column;
           align-items: center;
           justify-content: center;
           text-align: center;
@@ -153,6 +143,7 @@ $header-background: #606060;
           font-size: 0.8rem;
           text-decoration: none;
           color: $link-color;
+          height: 100%;
 
 
           &.active {
@@ -166,12 +157,9 @@ $header-background: #606060;
     &--account {
       position: absolute;
       z-index: 15;
-      top: 0.6rem;
+      top: 0;
       right: $header-gap;
-
-      @media (max-width: $screen-size-sm) {
-        top: 0.6rem;
-      }
+      height: 100%;
 
       a {
         margin-left: 0.5rem;
@@ -185,51 +173,7 @@ $header-background: #606060;
   }
 
   &__user {
-    &--profile {
-      display: inline-block;
-      margin: 0 0;
-      background-color: $header-background;  // TODO: replace when background color is decided
-
-      img {
-        max-width: $profile-img-width;
-      }
-      
-
-      & > ul {
-        display: flex;
-        height: 100%;
-        list-style: none;
-        list-style-image: none;
-        padding-inline-start: 10px;
-        margin-block-start: 0px;
-        margin-block-end: 0px;
-        float: right;
-        vertical-align: bottom;
-
-        & > li {
-          vertical-align: bottom;
-        }
-
-        & > li > a {
-          display: inline-block;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          text-align: center;
-          padding: 0rem 1rem;
-          font-weight: 500;
-          font-size: 0.8rem;
-          text-decoration: none;
-          color: $link-color;
-
-          &.active {
-            border-bottom: 2px solid $link-color;
-          }
-        }
-
-      }
-    }
-
+    height: 100%;
     &--name {
       display: inline-block;
       z-index: 5;
@@ -237,13 +181,17 @@ $header-background: #606060;
 
     &--sign-out {
       display: inline-block;
+      padding: 0.6rem;
+      margin-block-start: 16px;
 
-      @media (max-width: $screen-size-sm) {
-        display: block;
-        margin: 1rem 0;
-        text-align: right;
-        vertical-align: top;
-      }
+    }
+
+    &--sign-in {
+      height: 100%;
+      display: inline-block;
+      padding: 1.2rem;
+      margin-block-start: 16px;
+
     }
   }
 }

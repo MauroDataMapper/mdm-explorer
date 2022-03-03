@@ -71,7 +71,7 @@ export class FooterComponent implements OnInit {
   /**
    * Provide the name to use in the copyright message.
    */
-  @Input() copyright?: string = 'Clinical Informatics, NIHR Oxford Biomedical Research Centre';
+  @Input() copyright?: string = ' - Researcher interface. Powered by Mauro Data Mapper.';
 
   year = new Date().getFullYear();
 
