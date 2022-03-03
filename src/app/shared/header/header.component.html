@@ -45,6 +45,7 @@ SPDX-License-Identifier: Apache-2.0
             uiSrefActive="active"
             [uiOptions]="{ reload: true, notify: true }"
             >
+            <!-- fontawesome bookmark -->
             <span class="far fa-bookmark" style="font-size: x-large"></span><span [innerHTML]="' ' + rightLink?.label | arrow: rightLink.arrow"></span>
           </a>
         </li>
@@ -56,6 +57,7 @@ SPDX-License-Identifier: Apache-2.0
             [uiOptions]="{ reload: true, notify: true }"
             >
             <div>
+              <!-- fontawesome shopping cart -->
               <span class="fab fa-opencart" style="font-size: xx-large"></span><span [innerHTML]="' ' + accountLink?.label | arrow: accountLink.arrow"></span>
               <div class="mdm-header__overlayRequests">
                 {{numberOfRequests}}
