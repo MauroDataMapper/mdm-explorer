@@ -13,6 +13,7 @@ export class UserRequestsService {
 
   /**
    * Retrieve the users data requests folder. Creates a new folder if there isn't one.
+   *
    * @param username - get the data requests folder for the user with the given unique username
    * @returns an observable containing a FolderDetail object
    */
@@ -29,6 +30,7 @@ export class UserRequestsService {
 
   /**
    * Ensure the data access requests folder exists for the signed in user.
+   *
    * @param user - the details of the signed in user
    */
   ensureUserRequestsFolderExists(user: UserDetails): void {
@@ -38,6 +40,7 @@ export class UserRequestsService {
 
   /**
    * Encode username to allow for use as a folder name in the mdm-backend.
+   *
    * @param username
    * @returns The input string with all instances of '@' replaced with
    * '[at]'
