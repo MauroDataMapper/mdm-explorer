@@ -41,10 +41,15 @@ export interface MdmFolderResourceStub {
   save: jest.Mock;
   saveChildOf: jest.Mock;
 }
+export interface MdmCatalogueItemResourceStub {
+  getPath: jest.Mock;
+  getPathFromParent: jest.Mock;
+}
 
 export interface MdmEndpointsServiceStub {
   apiProperties: MdmApiPropertiesResourceStub;
   catalogueUser: MdmCatalogueUserResourceStub;
+  catalogueItem: MdmCatalogueItemResourceStub;
   security: MdmSecurityResourceStub;
   session: MdmSessionResourceStub;
   folder: MdmFolderResourceStub;
@@ -57,6 +62,10 @@ export const createMdmEndpointsStub = (): MdmEndpointsServiceStub => {
     },
     catalogueUser: {
       resetPasswordLink: jest.fn() as CatalogueUserResetPasswordLinkMockedFn,
+    },
+    catalogueItem: {
+      getPath: jest.fn(),
+      getPathFromParent: jest.fn(),
     },
     security: {
       login: jest.fn(),
