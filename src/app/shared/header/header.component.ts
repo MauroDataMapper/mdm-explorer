@@ -112,7 +112,8 @@ export class HeaderComponent implements OnInit {
   }
 
   get isSignedIn() {
-    this.signedInUser = {id: 'id', firstName: 'Jon', lastName: 'Bowen', userName: 'jon_bowen', email: 'jon@a.co.uk'};
+    //Uncomment the following line to fake being signed in for dev testing
+    //this.signedInUser = {id: 'id', firstName: 'Jon', lastName: 'Bowen', userName: 'jon_bowen', email: 'jon@a.co.uk'};
     return !!this.signedInUser;
   }
 

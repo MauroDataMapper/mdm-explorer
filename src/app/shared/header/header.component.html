@@ -70,7 +70,7 @@ SPDX-License-Identifier: Apache-2.0
     <div *ngIf="includeSignIn" class="mdm-header__links--account">
       <div class="mdm-header__user">
         <div *ngIf="!isSignedIn" class="mdm-header__user--sign-in">
-          <a [uiSref]="signInLink?.routeName ?? ''">{{ signInLink?.label }}
+          <a id="signIn" [uiSref]="signInLink?.routeName ?? ''">{{ signInLink?.label }}
           </a>
         </div>
         <div *ngIf="isSignedIn"  class="mdm-header__user--sign-out">
