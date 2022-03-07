@@ -28,17 +28,14 @@ describe('FolderService', () => {
   let service: FolderService;
   const endpointsStub = createMdmEndpointsStub();
 
-  let folderLabel: string;
-  let expectedFolder: FolderDetail;
+  const folderLabel = 'folderLabel';
+  const expectedFolder = {
+    label: folderLabel,
+    domainType: CatalogueItemDomainType.Folder,
+    availableActions: ['show'],
+  } as FolderDetail;
 
   beforeEach(() => {
-    folderLabel = 'folderLabel';
-    expectedFolder = {
-      label: folderLabel,
-      domainType: CatalogueItemDomainType.Folder,
-      availableActions: ['show'],
-    };
-
     service = setupTestModuleForService(FolderService, {
       providers: [
         {
@@ -95,7 +92,7 @@ describe('FolderService', () => {
     });
   });
 
-  it('should rethrow the server if save fails', () => {
+  it('should rethrow the server error if folder.save fails', () => {
     // Arrange
     const notFoundError = { status: 404 } as HttpErrorResponse;
     const serverError = { status: 500 } as HttpErrorResponse;
