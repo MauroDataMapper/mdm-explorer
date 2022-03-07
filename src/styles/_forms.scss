@@ -18,12 +18,18 @@ SPDX-License-Identifier: Apache-2.0
 */
 form {
   .form-input,
-  .mat-form-field,
-  button.mat-button-base {
+  .mat-form-field
+  //button.mat-button-base
+  {
     width: 100%;
   }
 
-  button.mat-button-base {
+  // button.mat-button-base {
+  //   padding: 8px 0;
+  // }
+
+  .button-wide {
+    width: 100%;
     padding: 8px 0;
   }
 
@@ -37,5 +43,19 @@ form {
 
   .form-working {
     margin: 16px 0;
+  }
+
+  .form-actions {
+    text-align: right;
+
+    mat-spinner {
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    button,
+    mat-spinner {
+      margin-left: 1em;
+    }
   }
 }

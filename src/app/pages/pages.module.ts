@@ -28,6 +28,11 @@ import { StaticContentComponent } from './static-content/static-content.componen
 import { BrowseComponent } from './browse/browse.component';
 import { MatButtonModule } from '@angular/material/button';
 import { SearchResultsComponent } from './search-results/search-results.component';
+import { MyAccountComponent } from './my-account/my-account.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -37,7 +42,19 @@ import { SearchResultsComponent } from './search-results/search-results.componen
     StaticContentComponent,
     BrowseComponent,
     SearchResultsComponent,
+    MyAccountComponent,
   ],
-  imports: [CommonModule, SharedModule, SecurityModule, MatListModule, MatButtonModule],
+  imports: [
+    CommonModule,
+    SharedModule,
+    SecurityModule,
+    MatButtonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatListModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatProgressSpinnerModule,
+  ],
 })
 export class PagesModule {}

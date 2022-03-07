@@ -18,11 +18,35 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { HttpErrorResponse } from '@angular/common/http';
 import { Inject, Injectable, Optional } from '@angular/core';
-import { AdminSessionResponse, AuthenticatedResponse, LoginPayload, LoginResponse, PublicOpenIdConnectProvider, PublicOpenIdConnectProvidersIndexResponse } from '@maurodatamapper/mdm-resources';
-import { catchError, combineLatest, EMPTY, finalize, map, Observable, of, switchMap, tap, throwError } from 'rxjs';
+import {
+  AdminSessionResponse,
+  AuthenticatedResponse,
+  LoginPayload,
+  LoginResponse,
+  PublicOpenIdConnectProvider,
+  PublicOpenIdConnectProvidersIndexResponse,
+} from '@maurodatamapper/mdm-resources';
+import {
+  catchError,
+  combineLatest,
+  EMPTY,
+  finalize,
+  map,
+  Observable,
+  of,
+  switchMap,
+  tap,
+  throwError,
+} from 'rxjs';
 import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
 import { MdmHttpError } from '../mdm-rest-client/mdm-rest-client.types';
-import { AuthenticatedSessionError, LoginError, OpenIdConnectConfiguration, OpenIdConnectSession, OPENID_CONNECT_CONFIG } from './security.types';
+import {
+  AuthenticatedSessionError,
+  LoginError,
+  OpenIdConnectConfiguration,
+  OpenIdConnectSession,
+  OPENID_CONNECT_CONFIG,
+} from './security.types';
 import { UserDetails, UserDetailsService } from './user-details.service';
 
 /**
@@ -32,14 +56,16 @@ import { UserDetails, UserDetailsService } from './user-details.service';
  * to provide configuration details on knowing where certain redirect URLs are in your application.
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SecurityService {
-
   constructor(
     private endpoints: MdmEndpointsService,
     private userDetails: UserDetailsService,
-    @Optional() @Inject(OPENID_CONNECT_CONFIG) private openIdConnectConfig: OpenIdConnectConfiguration) { }
+    @Optional()
+    @Inject(OPENID_CONNECT_CONFIG)
+    private openIdConnectConfig: OpenIdConnectConfiguration
+  ) {}
 
   /**
    * Log in a user to the Mauro system.
@@ -51,23 +77,19 @@ export class SecurityService {
   signIn(credentials: LoginPayload): Observable<UserDetails> {
     // This parameter is very important as we do not want to handle 401 if user credential is rejected on login modal form
     // as if the user credentials are rejected Back end server will return 401, we should not show the login modal form again
-    return this.endpoints.security
-      .login(
-        credentials,
-        { login: true })
-      .pipe(
-        catchError((error: HttpErrorResponse) =>
-          throwError(() => new LoginError(error))
-        ),
-        switchMap((loginResponse: LoginResponse) => {
-          const loginResponse$ = of(loginResponse);
-          const isAdministrator$: Observable<AdminSessionResponse> = this.endpoints.session.isApplicationAdministration();
-          return combineLatest([
-            loginResponse$,
-            isAdministrator$
-          ]);
-        }),
-        map(([loginResponse, adminSessionResponse]: [LoginResponse, AdminSessionResponse]) => {
+    return this.endpoints.security.login(credentials, { login: true }).pipe(
+      catchError((error: HttpErrorResponse) => throwError(() => new LoginError(error))),
+      switchMap((loginResponse: LoginResponse) => {
+        const loginResponse$ = of(loginResponse);
+        const isAdministrator$: Observable<AdminSessionResponse> =
+          this.endpoints.session.isApplicationAdministration();
+        return combineLatest([loginResponse$, isAdministrator$]);
+      }),
+      map(
+        ([loginResponse, adminSessionResponse]: [
+          LoginResponse,
+          AdminSessionResponse
+        ]) => {
           const login = loginResponse.body;
           const admin = adminSessionResponse.body;
           const user: UserDetails = {
@@ -79,13 +101,14 @@ export class SecurityService {
             userName: login.emailAddress,
             role: login.userRole?.toLowerCase() ?? '',
             isAdmin: admin.applicationAdministrationSession ?? false,
-            needsToResetPassword: login.needsToResetPassword ?? false
+            needsToResetPassword: login.needsToResetPassword ?? false,
           };
 
           this.userDetails.set(user);
           return user;
-        })
-      );
+        }
+      )
+    );
   }
 
   /**
@@ -95,15 +118,13 @@ export class SecurityService {
    * @throws `MdmHttpError` in the observable stream if logout failed.
    */
   signOut(): Observable<void> {
-    return this.endpoints.security
-      .logout({ responseType: 'text' })
-      .pipe(
-        catchError((error: HttpErrorResponse) => {
-          return throwError(() => new MdmHttpError(error));
-        }),
-        map(() => { }),
-        finalize(() => this.userDetails.clear())
-      );
+    return this.endpoints.security.logout({ responseType: 'text' }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return throwError(() => new MdmHttpError(error));
+      }),
+      map(() => {}),
+      finalize(() => this.userDetails.clear())
+    );
   }
 
   /**
@@ -113,12 +134,10 @@ export class SecurityService {
    * @returns An observable of true or false depending on success.
    */
   sendResetPasswordLink(email: string): Observable<boolean> {
-    return this.endpoints.catalogueUser
-      .resetPasswordLink(email)
-      .pipe(
-        switchMap(() => of(true)),
-        catchError(() => of(false)),
-      );
+    return this.endpoints.catalogueUser.resetPasswordLink(email).pipe(
+      switchMap(() => of(true)),
+      catchError(() => of(false))
+    );
   }
 
   /**
@@ -129,12 +148,12 @@ export class SecurityService {
    * @throws `MdmResourcesError` in the observable stream if the request failed.
    */
   isAuthenticated(): Observable<boolean> {
-    return this.endpoints.session
-      .isAuthenticated()
-      .pipe(
-        catchError((error: HttpErrorResponse) => throwError(() => new AuthenticatedSessionError(error))),
-        map((response: AuthenticatedResponse) => response.body.authenticatedSession)
-      );
+    return this.endpoints.session.isAuthenticated().pipe(
+      catchError((error: HttpErrorResponse) =>
+        throwError(() => new AuthenticatedSessionError(error))
+      ),
+      map((response: AuthenticatedResponse) => response.body.authenticatedSession)
+    );
   }
 
   /**
@@ -147,6 +166,15 @@ export class SecurityService {
   }
 
   /**
+   * Gets the details of the current signed in user, or will get null if no user is signed in.
+   *
+   * @returns A {@link UserDetails} object or null if there is none.
+   */
+  getSignedInUser(): UserDetails | null {
+    return this.userDetails.get();
+  }
+
+  /**
    * Check if the current session is expired. If not signed in this returns `false`.
    *
    * @returns An observable that returns `true` if the current session has expired.
@@ -156,22 +184,21 @@ export class SecurityService {
       return of(false);
     }
 
-    return this.isAuthenticated()
-      .pipe(
-        catchError((error: AuthenticatedSessionError) => {
-          if (error.invalidated) {
-            this.userDetails.clear();
-            return of(true);
-          }
+    return this.isAuthenticated().pipe(
+      catchError((error: AuthenticatedSessionError) => {
+        if (error.invalidated) {
+          this.userDetails.clear();
+          return of(true);
+        }
 
-          return of(false);
-        }),
-        tap(authenticated => {
-          if (!authenticated) {
-            this.userDetails.clear();
-          }
-        })
-      );
+        return of(false);
+      }),
+      tap((authenticated) => {
+        if (!authenticated) {
+          this.userDetails.clear();
+        }
+      })
+    );
   }
 
   /**
@@ -181,15 +208,13 @@ export class SecurityService {
   getOpenIdConnectProviders(): Observable<PublicOpenIdConnectProvider[]> {
     // If unable to get OpenID Connect providers, silently fail and ignore
     const requestOptions = {
-      handleGetErrors: false
+      handleGetErrors: false,
     };
 
-    return this.endpoints.pluginOpenIdConnect
-      .listPublic({}, requestOptions)
-      .pipe(
-        catchError(() => EMPTY),
-        map((response: PublicOpenIdConnectProvidersIndexResponse) => response.body)
-      );
+    return this.endpoints.pluginOpenIdConnect.listPublic({}, requestOptions).pipe(
+      catchError(() => EMPTY),
+      map((response: PublicOpenIdConnectProvidersIndexResponse) => response.body)
+    );
   }
 
   /**
@@ -202,7 +227,9 @@ export class SecurityService {
    */
   getOpenIdConnectAuthorizationUrl(provider: PublicOpenIdConnectProvider): URL {
     if (!this.openIdConnectConfig) {
-      throw new Error('OPENID_CONNECT_CONFIG injection token is missing - requires redirectUrl to come back to');
+      throw new Error(
+        'OPENID_CONNECT_CONFIG injection token is missing - requires redirectUrl to come back to'
+      );
     }
 
     const authorizeUrl = new URL(provider.authorizationEndpoint);
@@ -229,7 +256,7 @@ export class SecurityService {
       state: params.state,
       sessionState: params.sessionState,
       code: params.code,
-      redirectUri: this.openIdConnectConfig.redirectUrl.toString()
+      redirectUri: this.openIdConnectConfig.redirectUrl.toString(),
     });
   }
 }

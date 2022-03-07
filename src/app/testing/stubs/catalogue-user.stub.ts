@@ -16,36 +16,30 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { MdmResponse, Uuid } from '@maurodatamapper/mdm-resources';
+import { Uuid } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
 import {
   CatalogueUser,
   CatalogueUserPayload,
 } from 'src/app/catalogue/catalogue-user.service';
 
-export type CatalogueUserGetFn = (id: Uuid) => Observable<MdmResponse<CatalogueUser>>;
+export type CatalogueUserGetFn = (id: Uuid) => Observable<CatalogueUser>;
 export type CatalogueUserGetMockedFn = jest.MockedFunction<CatalogueUserGetFn>;
 
 export type CatalogueUserUpdateFn = (
   id: Uuid,
-  data: CatalogueUserPayload
-) => Observable<MdmResponse<CatalogueUser>>;
+  payload: CatalogueUserPayload
+) => Observable<CatalogueUser>;
 export type CatalogueUserUpdateMockedFn = jest.MockedFunction<CatalogueUserUpdateFn>;
 
-export type CatalogueUserResetPasswordLinkFn = (email: string) => any;
-export type CatalogueUserResetPasswordLinkMockedFn =
-  jest.MockedFunction<CatalogueUserResetPasswordLinkFn>;
-
-export interface MdmCatalogueUserResourceStub {
+export interface CatalogueUserServiceStub {
   get: CatalogueUserGetMockedFn;
   update: CatalogueUserUpdateMockedFn;
-  resetPasswordLink: CatalogueUserResetPasswordLinkMockedFn;
 }
 
-export const createCatalogueUserStub = (): MdmCatalogueUserResourceStub => {
+export const createCatalogueUserServiceStub = (): CatalogueUserServiceStub => {
   return {
     get: jest.fn() as CatalogueUserGetMockedFn,
     update: jest.fn() as CatalogueUserUpdateMockedFn,
-    resetPasswordLink: jest.fn() as CatalogueUserResetPasswordLinkMockedFn,
   };
 };

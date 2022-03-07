@@ -48,7 +48,9 @@ SPDX-License-Identifier: Apache-2.0
           />
         </div>
         <div class="mdm-header__user--name">
-          {{ signedInUser?.firstName }} {{ signedInUser?.lastName }}
+          <a uiSref="app.container.my-account">
+            {{ signedInUser?.firstName }} {{ signedInUser?.lastName }}
+          </a>
         </div>
         <div class="mdm-header__user--sign-out">
           <a href="#" (click)="signOut()">Sign out</a>

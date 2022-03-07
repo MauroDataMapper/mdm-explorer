@@ -22,13 +22,57 @@ SPDX-License-Identifier: Apache-2.0
   text-align: center;
 }
 
+@mixin heading-with-actions($level: h1, $text-align: center) {
+  text-align: $text-align;
+
+  @include respond-to-mobile-xs {
+    margin-bottom: 2em;
+  }
+
+  #{$level} {
+    display: inline-block;
+
+    @include respond-to-mobile-xs {
+      display: block;
+    }
+  }
+
+  button {
+    float: right;
+    margin-left: 1em;
+    margin-right: 0;
+
+    @include respond-to-mobile-xs {
+      float: none;
+
+      @if $text-align == center {
+        margin-right: 1em;
+        margin-left: 1em;
+      }
+
+      @if $text-align == left {
+        margin-right: 1em;
+        margin-left: 0;
+      }
+    }
+  }
+}
+
+.h1-with-actions {
+  @include heading-with-actions(h1, center);
+}
+
+.h2-with-actions {
+  @include heading-with-actions(h2, left);
+}
+
 /*
 highlight-box
 
 Highlights a box area behind other page components, e.g. a form
 */
 .highlight-box {
-  border-radius: 4px;
+  border-radius: $border-radius;
   background-color: $color-highlight-box;
   margin-bottom: 2em;
 

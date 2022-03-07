@@ -22,6 +22,7 @@ import { ForgotPasswordComponent } from './forgot-password/forgot-password.compo
 import { SignInComponent } from './sign-in/sign-in.component';
 import { BrowseComponent } from './browse/browse.component';
 import { SearchResultsComponent } from './search-results/search-results.component';
+import { MyAccountComponent } from './my-account/my-account.component';
 
 const staticContentStateName = 'app.container.static-content';
 
@@ -106,5 +107,10 @@ export const states: Ng2StateDeclaration[] = [
     name: 'app.container.search-results',
     url: '/search/results',
     component: SearchResultsComponent,
+  },
+  {
+    name: 'app.container.my-account',
+    url: '/account',
+    component: MyAccountComponent,
   },
 ];

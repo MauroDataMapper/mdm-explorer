@@ -1,4 +1,5 @@
 import { Observable } from 'rxjs';
+import { UserDetails } from 'src/app/security/user-details.service';
 
 /*
 Copyright 2022 University of Oxford
@@ -21,8 +22,17 @@ SPDX-License-Identifier: Apache-2.0
 export type SendResetPasswordLinkFn = (email: string) => Observable<boolean>;
 export type SendResetPasswordLinkMockedFn = jest.MockedFunction<SendResetPasswordLinkFn>;
 
+export type SecurityIsSignedInFn = () => boolean;
+export type SecurityIsSignedInMockedFn = jest.MockedFunction<SecurityIsSignedInFn>;
+
+export type SecurityGetSignedInUserFn = () => UserDetails | null;
+export type SecurityGetSignedInUserMockedFn =
+  jest.MockedFunction<SecurityGetSignedInUserFn>;
+
 export interface SecurityServiceStub {
   signIn: jest.Mock;
+  isSignedIn: SecurityIsSignedInMockedFn;
+  getSignedInUser: SecurityGetSignedInUserMockedFn;
   sendResetPasswordLink: SendResetPasswordLinkMockedFn;
   getOpenIdConnectProviders: jest.Mock;
 }
@@ -30,7 +40,9 @@ export interface SecurityServiceStub {
 export const createSecurityServiceStub = (): SecurityServiceStub => {
   return {
     signIn: jest.fn(),
+    isSignedIn: jest.fn() as SecurityIsSignedInMockedFn,
+    getSignedInUser: jest.fn() as SecurityGetSignedInUserMockedFn,
     sendResetPasswordLink: jest.fn() as SendResetPasswordLinkMockedFn,
-    getOpenIdConnectProviders: jest.fn()
+    getOpenIdConnectProviders: jest.fn(),
   };
 };
