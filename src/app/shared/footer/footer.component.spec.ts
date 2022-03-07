@@ -28,7 +28,7 @@ describe('FooterComponent', () => {
 
   it('should create', () => {
     expect(harness?.isComponentCreated).toBeTruthy();
-    expect(harness.component.copyright).toBe('Clinical Informatics, NIHR Oxford Biomedical Research Centre');
+    expect(harness.component.copyright).toBe(' - Researcher interface. Powered by Mauro Data Mapper.');
     expect(harness.component.year).toBe(new Date().getFullYear());
   });
 });

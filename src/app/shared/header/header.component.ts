@@ -90,7 +90,7 @@ export class HeaderComponent implements OnInit {
     routeName: 'app.container.home',
   };
 
-  @Input() numberOfRequests: number = 0;
+  @Input() numberOfRequests = 0;
 
   /**
    * Provide the link to redirect to sign-in.
@@ -112,8 +112,6 @@ export class HeaderComponent implements OnInit {
   }
 
   get isSignedIn() {
-    //Uncomment the following line to fake being signed in for dev testing
-    //this.signedInUser = {id: 'id', firstName: 'Jon', lastName: 'Bowen', userName: 'jon_bowen', email: 'jon@a.co.uk'};
     return !!this.signedInUser;
   }
 

@@ -67,7 +67,7 @@ export class AppComponent implements OnInit, OnDestroy {
       routeName: 'app.container.help',
       arrow: arrowDirection.angle_down,
     },
-    //Example signed-in only item
+    // Example signed-in only item
     // {
     //   label: 'Secret',
     //   routeName: 'app.container.authorized-only',
@@ -122,25 +122,24 @@ export class AppComponent implements OnInit, OnDestroy {
     },
   ];
 
-  //This is a dummy observable. I'm assuming that at some point we will have an obervable/service which actually returns the
-  //current number of requests, perhaps running on a timer updating every minute or two. For the moment we just have this
-  //which returns one value, once.
+  // This is a dummy observable. I'm assuming that at some point we will have an obervable/service which actually returns the
+  // current number of requests, perhaps running on a timer updating every minute or two. For the moment we just have this
+  // which returns one value, once.
   private _observeNumberOfRequests = new Observable((observer: Observer<number>) => {
-    let requests:number = 0;
-    let timeoutFunction = () => {
+    let requests = 0;
+    const timeoutFunction = () => {
       observer.next(requests);
       ++requests;
       setTimeout(timeoutFunction, 5000);
       };
-    let timeoutId = setTimeout(timeoutFunction, 0);
-   return {unsubscribe: () => {clearTimeout(timeoutId)}};
+    const timeoutId = setTimeout(timeoutFunction, 0);
+   return {unsubscribe: () => { clearTimeout(timeoutId); }};
   });
 
-  numberOfRequests: number = 0;
+  numberOfRequests = 0;
 
   signedInUser?: UserDetails | null;
 
- 
   /**
    * Signal to attach to subscriptions to trigger when they should be unsubscribed.
    */
