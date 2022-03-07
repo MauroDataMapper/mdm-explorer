@@ -39,7 +39,7 @@ SPDX-License-Identifier: Apache-2.0
     <nav *ngIf="isSignedIn" class="mdm-header__links--right">
       <ul>
         <li *ngFor="let rightLink of rightLinks">
-          <a
+          <a [id]="rightLink.routeName"
             *ngIf="!rightLink.onlySignedIn || (rightLink.onlySignedIn && isSignedIn)"
             [uiSref]="rightLink.routeName"
             uiSrefActive="active"
@@ -53,6 +53,7 @@ SPDX-License-Identifier: Apache-2.0
           <a 
             *ngIf="!accountLink.onlySignedIn || (accountLink.onlySignedIn && isSignedIn)"
             [uiSref]="accountLink.routeName"
+            [id]="accountLink.routeName"
             uiSrefActive="active"
             [uiOptions]="{ reload: true, notify: true }"
             >

@@ -29,6 +29,7 @@ SPDX-License-Identifier: Apache-2.0
               >{{ link.label }}</a
             >
             <a
+              [id]="link.routeName"
               *ngIf="link.routeName"
               [uiSref]="link.routeName"
               [target]="link.target ?? '_blank'"
