@@ -43,7 +43,7 @@ describe('UserRequestsService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should be named with [at]', () => {
+  it('should get the user folder with the expected name', () => {
     // Arrange
     const username = 'test@gmail.com';
     const rootFolder = { label: 'root' } as FolderDetail;

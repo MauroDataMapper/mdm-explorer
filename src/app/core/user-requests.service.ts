@@ -20,7 +20,6 @@ import { Injectable } from '@angular/core';
 import { FolderDetail } from '@maurodatamapper/mdm-resources/lib/es2015/mdm-folder.model';
 import { Observable, switchMap } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { UserDetails } from '../security/user-details.service';
 import { FolderService } from './folder.service';
 
 @Injectable({
@@ -44,16 +43,6 @@ export class UserRequestsService {
         );
       })
     );
-  }
-
-  /**
-   * Ensure the data access requests folder exists for the signed in user.
-   *
-   * @param user - the details of the signed in user
-   */
-  ensureUserRequestsFolderExists(user: UserDetails): void {
-    const userRequestFolderName = this.sanitiseUsername(user.userName);
-    this.getUserRequestsFolder(userRequestFolderName).subscribe();
   }
 
   /**
