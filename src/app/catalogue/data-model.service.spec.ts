@@ -77,11 +77,9 @@ describe('DataModelService', () => {
     it.each([undefined, null])(
       'should return an empty list if %p parent provided',
       (parent) => {
-        const expected$ = cold('a|', { a: [] });
+        const expected$ = cold('(a|)', { a: [] });
         const actual$ = service.getDataClasses(parent!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
-        expect(actual$).toSatisfyOnFlush(() => {
-          expect(actual$).toBeObservable(expected$);
-        });
+        expect(actual$).toBeObservable(expected$);
       }
     );
 
@@ -91,11 +89,9 @@ describe('DataModelService', () => {
         domainType: CatalogueItemDomainType.DataModel,
       };
 
-      const expected$ = cold('a|', { a: [] });
+      const expected$ = cold('(a|)', { a: [] });
       const actual$ = service.getDataClasses(parent);
-      expect(actual$).toSatisfyOnFlush(() => {
-        expect(actual$).toBeObservable(expected$);
-      });
+      expect(actual$).toBeObservable(expected$);
     });
 
     it('should return an empty list if no data model id provided for parent data class', () => {
