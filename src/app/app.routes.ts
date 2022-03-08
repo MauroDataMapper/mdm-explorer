@@ -25,6 +25,7 @@ import {
 } from '@uirouter/angular';
 import { AppComponent } from './app.component';
 import { AppContainerComponent } from './views/app-container/app-container.component';
+import { BookmarkComponent } from './pages/bookmark/bookmark.component';
 import { buildStaticContentState, states as pageStates } from './pages/pages.routes';
 import { states as errorStates } from './error/error.routes';
 import { SecurityService } from './security/security.service';
@@ -47,6 +48,11 @@ const appStates: Ng2StateDeclaration[] = [
     data: {
       allowAnonymous: true,
     },
+  },
+  {
+    name: 'app.container.bookmark',
+    url: '/bookmark',
+    component: BookmarkComponent,
   },
 ];
 
