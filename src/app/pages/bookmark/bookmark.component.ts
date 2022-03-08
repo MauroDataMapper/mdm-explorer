@@ -17,8 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
-import { Bookmark } from 'src/app/model/bookmark';
-import { BookmarkService } from 'src/app/core/bookmark.service';
+import { Bookmark, BookmarkService } from 'src/app/core/bookmark.service';
 
 @Component({
   selector: 'mdm-bookmark',
@@ -36,10 +35,10 @@ export class BookmarkComponent implements OnInit {
   ngOnInit(): void {
     // A bootstrapped bookmark for testing
     // Delete when there is a way to add a bookmark
-    const bookmark1: Bookmark = new Bookmark('Bookmarked item 1');
+    const bookmark1: Bookmark = {path: 'Bookmarked item 1'};
     this.bookmarkService.add(bookmark1);
 
-    const bookmark2: Bookmark = new Bookmark('Bookmarked item 2');
+    const bookmark2: Bookmark = {path: 'Bookmarked item 2'};
     this.bookmarkService.add(bookmark2);
     // End of bootstrapping
 

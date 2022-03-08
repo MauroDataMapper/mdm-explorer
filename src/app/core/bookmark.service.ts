@@ -17,7 +17,6 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { Bookmark } from 'src/app/model/bookmark';
 
 @Injectable({
   providedIn: 'root'
@@ -61,4 +60,10 @@ export class BookmarkService {
   public index(): Bookmark[] {
     return JSON.parse(localStorage.getItem('bookmarks') ?? '[]');
   }
+}
+
+export interface Bookmark {
+
+  path: string;
+
 }

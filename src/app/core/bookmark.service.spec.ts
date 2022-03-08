@@ -17,8 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { setupTestModuleForService } from '../testing/testing.helpers';
-import { Bookmark } from 'src/app/model/bookmark';
-import { BookmarkService } from './bookmark.service';
+import { Bookmark, BookmarkService } from './bookmark.service';
 
 describe('BookmarkService', () => {
   let service: BookmarkService;
@@ -34,7 +33,7 @@ describe('BookmarkService', () => {
   it('should be able to index, and and remove bookmarks', () => {
     expect(service.index()).toHaveLength(0);
 
-    const bookmark1: Bookmark  = new Bookmark('Test path 1');
+    const bookmark1: Bookmark = {path: 'Test path 1'};
     service.add(bookmark1);
     expect(service.index()).toHaveLength(1);
 
@@ -42,7 +41,7 @@ describe('BookmarkService', () => {
     service.add(bookmark1);
     expect(service.index()).toHaveLength(1);
 
-    const bookmark2: Bookmark  = new Bookmark('Test path 2');
+    const bookmark2: Bookmark  = {path: 'Test path 2'};
     service.add(bookmark2);
     expect(service.index()).toHaveLength(2);
 
