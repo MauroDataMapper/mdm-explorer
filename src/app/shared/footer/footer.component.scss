@@ -16,10 +16,10 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-@import '../../../styles.scss';
+@import "../../../styles.scss";
 $footer-gap: 3rem;
 $muted-text-color: #6c757d;
-$footer-background: $color-gray-38;
+$footer-background-colour: $color-gray-38;
 $link-color: white;
 $link-fontweight: 400;
 $link-fontsize: 80%;
@@ -27,7 +27,7 @@ $link-fontsize: 80%;
 .mdm-footer {
   padding: 0 $footer-gap;
   margin: $footer-gap 0 0;
-  background-color: $footer-background;
+  background-color: $footer-background-colour;
 
   &__container {
     border-top: 1px solid $muted-text-color;
@@ -50,7 +50,7 @@ $link-fontsize: 80%;
         padding-inline-start: 0;
 
         & > li {
-          padding: 0.0rem 0;
+          padding: 0rem 0;
           white-space: nowrap;
 
           & > a {

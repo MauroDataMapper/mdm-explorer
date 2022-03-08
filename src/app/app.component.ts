@@ -20,7 +20,16 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { UserIdleService } from 'angular-user-idle';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, filter, finalize, Observable, Observer, Subject, takeUntil } from 'rxjs';
+import {
+  catchError,
+  EMPTY,
+  filter,
+  finalize,
+  Observable,
+  Observer,
+  Subject,
+  takeUntil,
+} from 'rxjs';
 import { environment } from '../environments/environment';
 import { BroadcastEvent, BroadcastService } from './core/broadcast.service';
 import { StateRouterService } from './core/state-router.service';
@@ -40,6 +49,12 @@ import { arrowDirection } from './shared/pipes/arrow.pipe';
 export class AppComponent implements OnInit, OnDestroy {
   title = 'mdm-research-browser';
 
+  numberOfRequests = 0;
+
+  signedInUserProfileImageSrc?: string;
+
+  signedInUser?: UserDetails | null;
+
   logoLink: HeaderImageLink = {
     label: 'MDM UI Testbed',
     routeName: 'app.container.home',
@@ -51,7 +66,7 @@ export class AppComponent implements OnInit, OnDestroy {
       label: 'Home',
       routeName: 'app.container.home',
       label: 'About',
-      routeName: 'app.container.about'
+      routeName: 'app.container.about',
     },
     {
       label: 'Browse',
@@ -60,19 +75,13 @@ export class AppComponent implements OnInit, OnDestroy {
     },
     {
       label: 'Search',
-      routeName: 'app.container.search'
+      routeName: 'app.container.search',
     },
     {
       label: 'Help',
       routeName: 'app.container.help',
       arrow: arrowDirection.angle_down,
     },
-    // Example signed-in only item
-    // {
-    //   label: 'Secret',
-    //   routeName: 'app.container.authorized-only',
-    //   onlySignedIn: true
-    // }
   ];
 
   headerRightLinks: HeaderImageLink[] = [
@@ -87,7 +96,7 @@ export class AppComponent implements OnInit, OnDestroy {
     label: 'My requests',
     routeName: 'app.container.my-requests',
     arrow: arrowDirection.angle_down,
-    };
+  };
 
   signInLink: HeaderLink = {
     routeName: 'app.container.signin',
@@ -124,21 +133,21 @@ export class AppComponent implements OnInit, OnDestroy {
 
   // This is a dummy observable. I'm assuming that at some point we will have an obervable/service which actually returns the
   // current number of requests, perhaps running on a timer updating every minute or two. For the moment we just have this
-  // which returns one value, once.
+  // which returns a value which increments every 5 seconds.
   private _observeNumberOfRequests = new Observable((observer: Observer<number>) => {
     let requests = 0;
     const timeoutFunction = () => {
       observer.next(requests);
       ++requests;
       setTimeout(timeoutFunction, 5000);
-      };
+    };
     const timeoutId = setTimeout(timeoutFunction, 0);
-   return {unsubscribe: () => { clearTimeout(timeoutId); }};
+    return {
+      unsubscribe: () => {
+        clearTimeout(timeoutId);
+      },
+    };
   });
-
-  numberOfRequests = 0;
-
-  signedInUser?: UserDetails | null;
 
   /**
    * Signal to attach to subscriptions to trigger when they should be unsubscribed.
@@ -192,7 +201,9 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subscribeHttpErrorEvent('http-not-implemented', 'app.container.not-implemented');
     this.subscribeHttpErrorEvent('http-server-error', 'app.container.server-error');
 
-    this._observeNumberOfRequests.subscribe((nextNumber) => this.numberOfRequests = nextNumber);
+    this._observeNumberOfRequests.subscribe(
+      (nextNumber) => (this.numberOfRequests = nextNumber)
+    );
 
     // Check immediately if the last authenticated session is expired and setup a recurring
     // check for this
@@ -241,6 +252,9 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private setupSignedInUser(user?: UserDetails | null) {
+    this.signedInUserProfileImageSrc = user
+      ? `${environment.apiEndpoint}/catalogueUsers/${user.id}/image`
+      : undefined;
     this.signedInUser = user;
     this.signedInUserProfileImageSrc = user
       ? `${environment.apiEndpoint}/catalogueUsers/${user.id}/image`

@@ -17,23 +17,38 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Pipe, PipeTransform } from '@angular/core';
-import { DomSanitizer, SafeHtml, SafeStyle, SafeScript, SafeUrl, SafeResourceUrl } from '@angular/platform-browser';
+import {
+  DomSanitizer,
+  SafeHtml,
+  SafeStyle,
+  SafeScript,
+  SafeUrl,
+  SafeResourceUrl,
+} from '@angular/platform-browser';
 
 @Pipe({
-	name: 'safe'
+  name: 'safe',
 })
 export class SafePipe implements PipeTransform {
+  constructor(protected sanitizer: DomSanitizer) {}
 
-	constructor(protected sanitizer: DomSanitizer) {}
-
-	public transform(value: any, type: string): SafeHtml | SafeStyle | SafeScript | SafeUrl | SafeResourceUrl {
-		switch (type) {
-			case 'html': return this.sanitizer.bypassSecurityTrustHtml(value);
-			case 'style': return this.sanitizer.bypassSecurityTrustStyle(value);
-			case 'script': return this.sanitizer.bypassSecurityTrustScript(value);
-			case 'url': return this.sanitizer.bypassSecurityTrustUrl(value);
-			case 'resourceUrl': return this.sanitizer.bypassSecurityTrustResourceUrl(value);
-			default: throw new Error(`Invalid safe type specified: ${type}`);
-		}
-	}
+  public transform(
+    value: any,
+    type: string
+  ): SafeHtml | SafeStyle | SafeScript | SafeUrl | SafeResourceUrl {
+    switch (type) {
+      case 'html':
+        return this.sanitizer.bypassSecurityTrustHtml(value as string);
+      case 'style':
+        return this.sanitizer.bypassSecurityTrustStyle(value as string);
+      case 'script':
+        return this.sanitizer.bypassSecurityTrustScript(value as string);
+      case 'url':
+        return this.sanitizer.bypassSecurityTrustUrl(value as string);
+      case 'resourceUrl':
+        return this.sanitizer.bypassSecurityTrustResourceUrl(value as string);
+      default:
+        throw new Error(`Invalid safe type specified: ${type}`);
+    }
+  }
 }
