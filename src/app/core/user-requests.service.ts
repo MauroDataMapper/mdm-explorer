@@ -38,7 +38,7 @@ export class UserRequestsService {
     return this.folderService.getOrCreate(`${environment.rootRequestFolder}`).pipe(
       switchMap((rootFolder: FolderDetail) => {
         return this.folderService.getOrCreateChildOf(
-          rootFolder.id!,
+          rootFolder.id!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
           this.sanitiseUsername(username)
         );
       })

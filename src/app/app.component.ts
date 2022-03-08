@@ -169,9 +169,10 @@ export class AppComponent implements OnInit, OnDestroy {
     this.broadcast
       .on<HttpErrorResponse>(event)
       .pipe(takeUntil(this.unsubscribe$))
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       .subscribe((response) =>
         this.stateRouter.transition(state, { lastError: response })
-      ); // eslint-disable-line @typescript-eslint/no-misused-promises
+      );
   }
 
   private setupSignedInUser(user?: UserDetails | null) {
