@@ -53,9 +53,6 @@ const appStates: Ng2StateDeclaration[] = [
     name: 'app.container.bookmark',
     url: '/bookmark',
     component: BookmarkComponent,
-    data: {
-      allowAnonymous: false,
-    },
   },
 ];
 
