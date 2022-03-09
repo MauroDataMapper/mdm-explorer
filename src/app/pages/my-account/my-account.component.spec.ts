@@ -27,9 +27,11 @@ import { BroadcastService } from 'src/app/core/broadcast.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { SecurityService } from 'src/app/security/security.service';
 import { UserDetails } from 'src/app/security/user-details.service';
+import { createBroadcastServiceStub } from 'src/app/testing/stubs/broadcast.stub';
 import { createCatalogueUserServiceStub } from 'src/app/testing/stubs/catalogue-user.stub';
 import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { createStateRouterStub } from 'src/app/testing/stubs/state-router.stub';
+import { createToastrServiceStub } from 'src/app/testing/stubs/toastr.stub';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
@@ -42,13 +44,8 @@ describe('MyAccountComponent', () => {
   const securityStub = createSecurityServiceStub();
   const catalogueUserStub = createCatalogueUserServiceStub();
   const stateRouterStub = createStateRouterStub();
-  const toastrStub = {
-    success: jest.fn(),
-    error: jest.fn(),
-  };
-  const broadcastStub = {
-    dispatch: jest.fn(),
-  };
+  const toastrStub = createToastrServiceStub();
+  const broadcastStub = createBroadcastServiceStub();
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(MyAccountComponent, {

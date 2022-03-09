@@ -16,40 +16,18 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-form {
-  .form-input,
-  .mat-form-field {
-    width: 100%;
-  }
-
-  .button-wide {
-    width: 100%;
-    padding: 8px 0;
-  }
-
-  .form-submit {
-    margin: 32px 0;
-  }
-
-  .form-secondary-action {
-    text-align: right;
-  }
-
-  .form-working {
-    margin: 16px 0;
-  }
-
-  .form-actions {
-    text-align: right;
-
-    mat-spinner {
-      display: inline-block;
-      vertical-align: middle;
-    }
-
-    button,
-    mat-spinner {
-      margin-left: 1em;
-    }
-  }
+export interface ToastrServiceStub {
+  success: jest.Mock;
+  error: jest.Mock;
+  info: jest.Mock;
+  warning: jest.Mock;
 }
+
+export const createToastrServiceStub = (): ToastrServiceStub => {
+  return {
+    success: jest.fn(),
+    error: jest.fn(),
+    info: jest.fn(),
+    warning: jest.fn(),
+  };
+};
