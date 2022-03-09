@@ -24,6 +24,7 @@ import { catchError, EMPTY, filter, finalize, Subject, takeUntil } from 'rxjs';
 import { environment } from '../environments/environment';
 import { BroadcastEvent, BroadcastService } from './core/broadcast.service';
 import { StateRouterService } from './core/state-router.service';
+import { UserRequestsService } from './core/user-requests.service';
 import { MdmHttpError } from './mdm-rest-client/mdm-rest-client.types';
 import { SecurityService } from './security/security.service';
 import { UserDetails, UserDetailsService } from './security/user-details.service';
@@ -33,7 +34,7 @@ import { HeaderImageLink, HeaderLink } from './shared/header/header.component';
 @Component({
   selector: 'mdm-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
   title = 'mdm-research-browser';
@@ -41,40 +42,40 @@ export class AppComponent implements OnInit, OnDestroy {
   logoLink: HeaderImageLink = {
     label: 'MDM UI Testbed',
     routeName: 'app.container.home',
-    imageSrc: 'assets/images/app-logo.png'
+    imageSrc: 'assets/images/app-logo.png',
   };
 
   headerLinks: HeaderLink[] = [
     {
       label: 'Home',
-      routeName: 'app.container.home'
+      routeName: 'app.container.home',
     },
     {
       label: 'Secret',
       routeName: 'app.container.authorized-only',
-      onlySignedIn: true
+      onlySignedIn: true,
     },
     {
       label: 'About',
-      routeName: 'app.container.about'
-    }
+      routeName: 'app.container.about',
+    },
   ];
 
   signInLink: HeaderLink = {
     routeName: 'app.container.signin',
-    label: 'Sign in'
+    label: 'Sign in',
   };
 
   footerLinks: FooterLink[] = [
     {
       label: 'Mauro',
-      href: 'https://maurodatamapper.github.io/'
+      href: 'https://maurodatamapper.github.io/',
     },
     {
       label: 'About',
       routeName: 'app.container.about',
-      target: '_self'
-    }
+      target: '_self',
+    },
   ];
 
   signedInUser?: UserDetails | null;
@@ -90,9 +91,11 @@ export class AppComponent implements OnInit, OnDestroy {
     private broadcast: BroadcastService,
     private security: SecurityService,
     private userDetails: UserDetailsService,
+    private userRequests: UserRequestsService,
     private stateRouter: StateRouterService,
     private toastr: ToastrService,
-    private userIdle: UserIdleService) { }
+    private userIdle: UserIdleService
+  ) {}
 
   @HostListener('window:mousemove', ['$event'])
   onMouseMove() {
@@ -103,12 +106,19 @@ export class AppComponent implements OnInit, OnDestroy {
     this.broadcast
       .on<HttpErrorResponse>('http-application-offline')
       .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(() => this.toastr.warning('Unfortunately there was a problem with connectivity. Please try again later.'));
+      .subscribe(() =>
+        this.toastr.warning(
+          'Unfortunately there was a problem with connectivity. Please try again later.'
+        )
+      );
 
     this.broadcast
       .onUserSignedIn()
       .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(user => this.setupSignedInUser(user));
+      .subscribe((user) => {
+        this.setupSignedInUser(user);
+        this.userRequests.getUserRequestsFolder(user.userName).subscribe();
+      });
 
     this.setupSignedInUser(this.userDetails.get());
 
@@ -135,7 +145,9 @@ export class AppComponent implements OnInit, OnDestroy {
       .signOut()
       .pipe(
         catchError((error: MdmHttpError) => {
-          console.log(`There was a problem signing out: ${error.response.status} ${error.response.message}`);
+          console.log(
+            `There was a problem signing out: ${error.response.status} ${error.response.message}`
+          );
           return EMPTY;
         }),
         finalize(() => {
@@ -145,23 +157,29 @@ export class AppComponent implements OnInit, OnDestroy {
             {},
             {
               reload: true,
-              inherit: false
-            });
+              inherit: false,
+            }
+          );
         })
       )
-      .subscribe(() => { });
+      .subscribe(() => {});
   }
 
   private subscribeHttpErrorEvent(event: BroadcastEvent, state: string) {
     this.broadcast
       .on<HttpErrorResponse>(event)
       .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(response => this.stateRouter.transition(state, { lastError: response })); // eslint-disable-line @typescript-eslint/no-misused-promises
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      .subscribe((response) =>
+        this.stateRouter.transition(state, { lastError: response })
+      );
   }
 
   private setupSignedInUser(user?: UserDetails | null) {
     this.signedInUser = user;
-    this.signedInUserProfileImageSrc = user ? `${environment.apiEndpoint}/catalogueUsers/${user.id}/image` : undefined;
+    this.signedInUserProfileImageSrc = user
+      ? `${environment.apiEndpoint}/catalogueUsers/${user.id}/image`
+      : undefined;
   }
 
   private setupIdleTimer() {
@@ -169,7 +187,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.userIdle
       .onTimerStart()
       .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(() => { });
+      .subscribe(() => {});
 
     let lastCheck = new Date();
     this.userIdle
@@ -194,7 +212,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this.security
       .isCurrentSessionExpired()
-      .pipe(filter(authenticated => !authenticated))
+      .pipe(filter((authenticated) => !authenticated))
       .subscribe(() => {
         this.toastr.error('Your session has expired! Please sign in.');
         this.signOutUser();

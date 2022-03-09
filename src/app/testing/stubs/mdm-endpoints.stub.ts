@@ -21,7 +21,8 @@ export interface MdmApiPropertiesResourceStub {
 }
 
 export type CatalogueUserResetPasswordLinkFn = (email: string) => any;
-export type CatalogueUserResetPasswordLinkMockedFn = jest.MockedFunction<CatalogueUserResetPasswordLinkFn>;
+export type CatalogueUserResetPasswordLinkMockedFn =
+  jest.MockedFunction<CatalogueUserResetPasswordLinkFn>;
 
 export interface MdmCatalogueUserResourceStub {
   resetPasswordLink: CatalogueUserResetPasswordLinkMockedFn;
@@ -36,29 +37,47 @@ export interface MdmSessionResourceStub {
   isApplicationAdministration: jest.Mock;
   isAuthenticated: jest.Mock;
 }
+export interface MdmFolderResourceStub {
+  save: jest.Mock;
+  saveChildOf: jest.Mock;
+}
+export interface MdmCatalogueItemResourceStub {
+  getPath: jest.Mock;
+  getPathFromParent: jest.Mock;
+}
 
 export interface MdmEndpointsServiceStub {
   apiProperties: MdmApiPropertiesResourceStub;
   catalogueUser: MdmCatalogueUserResourceStub;
+  catalogueItem: MdmCatalogueItemResourceStub;
   security: MdmSecurityResourceStub;
   session: MdmSessionResourceStub;
+  folder: MdmFolderResourceStub;
 }
 
 export const createMdmEndpointsStub = (): MdmEndpointsServiceStub => {
   return {
     apiProperties: {
-      listPublic: jest.fn()
+      listPublic: jest.fn(),
     },
     catalogueUser: {
-      resetPasswordLink: jest.fn() as CatalogueUserResetPasswordLinkMockedFn
+      resetPasswordLink: jest.fn() as CatalogueUserResetPasswordLinkMockedFn,
+    },
+    catalogueItem: {
+      getPath: jest.fn(),
+      getPathFromParent: jest.fn(),
     },
     security: {
       login: jest.fn(),
-      logout: jest.fn()
+      logout: jest.fn(),
     },
     session: {
       isApplicationAdministration: jest.fn(),
-      isAuthenticated: jest.fn()
-    }
+      isAuthenticated: jest.fn(),
+    },
+    folder: {
+      save: jest.fn(),
+      saveChildOf: jest.fn(),
+    },
   };
 };

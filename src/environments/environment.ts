@@ -23,10 +23,11 @@ SPDX-License-Identifier: Apache-2.0
 export const environment = {
   production: false,
   apiEndpoint: 'http://localhost:8080/api',
+  rootRequestFolder: 'MDM Research Browser Requests',
   checkSessionExpiryTimeout: 300000,
   features: {
-    useOpenIdConnect: true
-  }
+    useOpenIdConnect: true,
+  },
 };
 
 /*
