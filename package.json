@@ -17,7 +17,8 @@
     "license-check": "license-check-and-add -f license-check.json",
     "dist": "ng build --configuration production --output-path=dist/mdm-research-portal-$npm_package_version && npm run dist-archive",
     "dist-archive": "tar zcvf dist/mdm-research-portal-${npm_package_version}.tgz -C dist mdm-research-portal-$npm_package_version",
-    "sonar": "sonar-scanner -Dsonar.projectVersion=$npm_package_version"
+    "sonar": "sonar-scanner -Dsonar.projectVersion=$npm_package_version",
+    "pr-checks": "npm run license-check check && npm run eslint && npm run test"
   },
   "private": true,
   "dependencies": {
