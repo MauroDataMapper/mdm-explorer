@@ -63,8 +63,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
   headerLinks: HeaderLink[] = [
     {
-      label: 'Home',
-      routeName: 'app.container.home',
       label: 'About',
       routeName: 'app.container.about',
     },

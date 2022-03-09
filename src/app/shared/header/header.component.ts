@@ -23,7 +23,7 @@ import { arrowDirection } from '../pipes/arrow.pipe';
 /**
  * Define the details for a link in the layout and navigation components.
  */
- export interface HeaderLink {
+export interface HeaderLink {
   /**
    * The display label to apply to the link.
    */
@@ -47,7 +47,6 @@ import { arrowDirection } from '../pipes/arrow.pipe';
   arrow?: arrowDirection;
 }
 
-
 export interface HeaderImageLink extends HeaderLink {
   imageSrc: string;
 }
@@ -55,10 +54,10 @@ export interface HeaderImageLink extends HeaderLink {
 /**
  * Renders a page header with navigation.
  */
- @Component({
+@Component({
   selector: 'mdm-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss', ]
+  styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent implements OnInit {
   /**
@@ -68,9 +67,9 @@ export class HeaderComponent implements OnInit {
   @Input() logoLink?: HeaderImageLink;
 
   /*
-  * Provide the asset source to the Mauro logo.
-  */
- @Input() mauroLogoSrc?: string;
+   * Provide the asset source to the Mauro logo.
+   */
+  @Input() mauroLogoSrc?: string;
 
   /**
    * Provide the collection of navigation links to include in the header.
@@ -96,6 +95,11 @@ export class HeaderComponent implements OnInit {
    * Provide the link to redirect to sign-in.
    */
   @Input() signInLink?: HeaderLink;
+
+  /**
+   * If a user is signed in, provide the profile image of this user if it exists.
+   */
+  @Input() signedInUserProfileImageSrc?: string;
 
   /**
    * If a user is signed in, provide the details of this user. Otherwise leave this undefined.
