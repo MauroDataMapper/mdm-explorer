@@ -28,7 +28,8 @@
     "**/*.svg",
     "**/*.ttf",
     "**/*.woff",
-    "**/*.woff2"
+    "**/*.woff2",
+    "sonar-project.properties"
   ],
   "license": "NOTICE",
   "licenseFormats": {
