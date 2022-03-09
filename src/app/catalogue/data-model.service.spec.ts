@@ -101,11 +101,9 @@ describe('DataModelService', () => {
         domainType: CatalogueItemDomainType.DataClass,
       };
 
-      const expected$ = cold('a|', { a: [] });
+      const expected$ = cold('(a|)', { a: [] });
       const actual$ = service.getDataClasses(parent);
-      expect(actual$).toSatisfyOnFlush(() => {
-        expect(actual$).toBeObservable(expected$);
-      });
+      expect(actual$).toBeObservable(expected$);
     });
 
     it('should return a list of data classes from a parent data model', () => {
