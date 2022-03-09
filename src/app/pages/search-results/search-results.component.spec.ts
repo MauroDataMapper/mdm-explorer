@@ -16,28 +16,21 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentHarness,
+  setupTestModuleForComponent,
+} from 'src/app/testing/testing.helpers';
 
-import { AuthorizedOnlyComponent } from './authorized-only.component';
+import { SearchResultsComponent } from './search-results.component';
 
-describe('AuthorizedOnlyComponent', () => {
-  let component: AuthorizedOnlyComponent;
-  let fixture: ComponentFixture<AuthorizedOnlyComponent>;
+describe('SearchResultsComponent', () => {
+  let harness: ComponentHarness<SearchResultsComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ AuthorizedOnlyComponent ]
-    })
-    .compileComponents();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(AuthorizedOnlyComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    harness = await setupTestModuleForComponent(SearchResultsComponent);
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(harness.isComponentCreated).toBeTruthy();
   });
 });

@@ -21,6 +21,7 @@ export const environment = {
   apiEndpoint: 'api',
   checkSessionExpiryTimeout: 300000,
   features: {
-    useOpenIdConnect: true
-  }
+    useOpenIdConnect: true,
+  },
+  rootDataModelPath: 'fo:OUH Data Warehouse|dm:modules',
 };

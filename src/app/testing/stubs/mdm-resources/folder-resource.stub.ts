@@ -1,4 +1,4 @@
-<!--
+/*
 Copyright 2022 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -15,15 +15,24 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
--->
-<div class="highlight-box">
-  <div class="highlight-box__content--narrow">
-    <mdm-forgot-password-form
-      cancelLabel="Back to Sign-in"
-      cancelRouteName="app.container.signin"
-      retryRouteName="app.container.forgot-password"
-      [state]="state"
-      (resetPasswordClicked)="resetPassword($event)"
-    ></mdm-forgot-password-form>
-  </div>
-</div>
+*/
+import {
+  ContainerCreatePayload,
+  FolderDetailResponse,
+} from '@maurodatamapper/mdm-resources';
+import { Observable } from 'rxjs';
+
+export type MdmFolderSaveFn = (
+  payload: ContainerCreatePayload
+) => Observable<FolderDetailResponse>;
+export type MdmFolderSaveMockedFn = jest.MockedFunction<MdmFolderSaveFn>;
+
+export interface MdmFolderResourceStub {
+  save: MdmFolderSaveMockedFn;
+}
+
+export const createFolderStub = (): MdmFolderResourceStub => {
+  return {
+    save: jest.fn() as MdmFolderSaveMockedFn,
+  };
+};

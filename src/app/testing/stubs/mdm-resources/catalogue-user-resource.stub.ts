@@ -16,18 +16,16 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, OnInit } from '@angular/core';
+export type CatalogueUserResetPasswordLinkFn = (email: string) => any;
+export type CatalogueUserResetPasswordLinkMockedFn =
+  jest.MockedFunction<CatalogueUserResetPasswordLinkFn>;
 
-@Component({
-  selector: 'mdm-authorized-only',
-  templateUrl: './authorized-only.component.html',
-  styleUrls: ['./authorized-only.component.scss']
-})
-export class AuthorizedOnlyComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+export interface MdmCatalogueUserResourceStub {
+  resetPasswordLink: CatalogueUserResetPasswordLinkMockedFn;
 }
+
+export const createCatalogueUserStub = (): MdmCatalogueUserResourceStub => {
+  return {
+    resetPasswordLink: jest.fn() as CatalogueUserResetPasswordLinkMockedFn,
+  };
+};

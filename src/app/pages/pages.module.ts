@@ -19,21 +19,25 @@ SPDX-License-Identifier: Apache-2.0
 import { NgModule } from '@angular/core';
 import { BookmarkComponent } from './bookmark/bookmark.component';
 import { CommonModule } from '@angular/common';
+import { MatListModule } from '@angular/material/list';
 import { SignInComponent } from './sign-in/sign-in.component';
 import { SharedModule } from '../shared/shared.module';
 import { SecurityModule } from '../security/security.module';
-import { AuthorizedOnlyComponent } from './authorized-only/authorized-only.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { StaticContentComponent } from './static-content/static-content.component';
+import { BrowseComponent } from './browse/browse.component';
+import { MatButtonModule } from '@angular/material/button';
+import { SearchResultsComponent } from './search-results/search-results.component';
 
 @NgModule({
   declarations: [
     BookmarkComponent,
     SignInComponent,
-    AuthorizedOnlyComponent,
     ForgotPasswordComponent,
     StaticContentComponent,
+    BrowseComponent,
+    SearchResultsComponent,
   ],
-  imports: [CommonModule, SharedModule, SecurityModule],
+  imports: [CommonModule, SharedModule, SecurityModule, MatListModule, MatButtonModule],
 })
 export class PagesModule {}

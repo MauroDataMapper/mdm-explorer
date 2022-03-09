@@ -25,20 +25,21 @@ import { RawParams, TransitionOptions, UIRouter } from '@uirouter/angular';
  * Keep this up to date with the state names defined in your UIRouter state declarations.
  */
 export type KnownRouterState =
-  'app.container.default'
+  | 'app.container.default'
   | 'app.container.home'
   | 'app.container.signin'
-  | 'app.container.forgot-password';
+  | 'app.container.forgot-password'
+  | 'app.container.browse'
+  | 'app.container.search-results';
 
 /**
  * Wrapper service around the {@link UIRouter} from `@ui-router/angular` package.
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StateRouterService {
-
-  constructor(private router: UIRouter) { }
+  constructor(private router: UIRouter) {}
 
   /**
    * Transition to a new state in the application i.e. "navigate" to a new view.
