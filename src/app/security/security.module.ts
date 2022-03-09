@@ -29,12 +29,14 @@ import { SharedModule } from '../shared/shared.module';
 import { OpenIdConnectAuthorizeComponent } from './open-id-connect-authorize/open-id-connect-authorize.component';
 import { ForgotPasswordFormComponent } from './forgot-password-form/forgot-password-form.component';
 import { UIRouterModule } from '@uirouter/angular';
+import { CatalogueUserFormComponent } from './catalogue-user-form/catalogue-user-form.component';
 
 @NgModule({
   declarations: [
     SignInFormComponent,
     OpenIdConnectAuthorizeComponent,
     ForgotPasswordFormComponent,
+    CatalogueUserFormComponent,
   ],
   imports: [
     CommonModule,
@@ -52,6 +54,7 @@ import { UIRouterModule } from '@uirouter/angular';
     SignInFormComponent,
     OpenIdConnectAuthorizeComponent,
     ForgotPasswordFormComponent,
+    CatalogueUserFormComponent,
   ],
 })
 export class SecurityModule {}

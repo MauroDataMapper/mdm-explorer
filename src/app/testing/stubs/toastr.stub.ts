@@ -16,6 +16,18 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-@import "./sizes";
-@import "./colours";
-@import "./elements";
+export interface ToastrServiceStub {
+  success: jest.Mock;
+  error: jest.Mock;
+  info: jest.Mock;
+  warning: jest.Mock;
+}
+
+export const createToastrServiceStub = (): ToastrServiceStub => {
+  return {
+    success: jest.fn(),
+    error: jest.fn(),
+    info: jest.fn(),
+    warning: jest.fn(),
+  };
+};

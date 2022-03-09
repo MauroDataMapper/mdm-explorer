@@ -16,6 +16,12 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-@import "./sizes";
-@import "./colours";
-@import "./elements";
+export interface BroadcastServiceStub {
+  dispatch: jest.Mock;
+}
+
+export const createBroadcastServiceStub = (): BroadcastServiceStub => {
+  return {
+    dispatch: jest.fn(),
+  };
+};

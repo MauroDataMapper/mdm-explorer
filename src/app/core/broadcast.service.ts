@@ -21,32 +21,30 @@ import { filter, map, Observable, Subject } from 'rxjs';
 import { UserDetails } from '../security/user-details.service';
 
 export type BroadcastEvent =
-  'http-application-offline'
+  | 'http-application-offline'
   | 'http-not-authorized'
   | 'http-not-found'
   | 'http-not-implemented'
   | 'http-server-timeout'
   | 'http-server-error'
   | 'user-signed-in'
-  | 'user-signed-out';
+  | 'user-signed-out'
+  | 'sign-out-user';
 
 /**
  * Represents a message to broadcast with an optional data payload.
  */
 export class BroadcastMessage<TPayload = any> {
-  constructor(
-    public event: BroadcastEvent,
-    public payload?: TPayload) { }
+  constructor(public event: BroadcastEvent, public payload?: TPayload) {}
 }
 
 /**
  * Service to broadcast events and data payloads to any other part of the application that subscribes to those events.
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class BroadcastService {
-
   private handler = new Subject<BroadcastMessage<any>>();
 
   /**
@@ -61,8 +59,8 @@ export class BroadcastService {
    */
   on<TPayload = any>(event: BroadcastEvent): Observable<TPayload> {
     return this.handler.pipe(
-      filter(message => message.event === event),
-      map(message => message.payload)
+      filter((message) => message.event === event),
+      map((message) => message.payload)
     );
   }
 

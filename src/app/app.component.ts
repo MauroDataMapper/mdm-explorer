@@ -120,6 +120,11 @@ export class AppComponent implements OnInit, OnDestroy {
         this.userRequests.getUserRequestsFolder(user.userName).subscribe();
       });
 
+    this.broadcast
+      .on('sign-out-user')
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(() => this.signOutUser());
+
     this.setupSignedInUser(this.userDetails.get());
 
     this.signedInUser = this.userDetails.get();

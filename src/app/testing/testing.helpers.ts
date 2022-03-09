@@ -16,24 +16,6 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-/*
-Copyright 2020-2021 University of Oxford
-and Health and Social Care Information Centre, also known as NHS Digital
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-SPDX-License-Identifier: Apache-2.0
-*/
 import { Type } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TestingModule } from './testing.module';
@@ -68,7 +50,7 @@ export interface TestComponentConfiguration {
  * @typedef T The type of component under test.
  */
 export class ComponentHarness<T> {
-  constructor(public component: T, public fixture: ComponentFixture<T>) { }
+  constructor(public component: T, public fixture: ComponentFixture<T>) {}
 
   get isComponentCreated() {
     return !!this.component;
@@ -92,13 +74,11 @@ export class ComponentHarness<T> {
  */
 export const setupTestModuleForService = <T>(
   service: Type<T>,
-  configuration?: TestModuleConfiguration): T => {
+  configuration?: TestModuleConfiguration
+): T => {
   TestBed.configureTestingModule({
-    imports: [
-      TestingModule,
-      ...configuration?.imports ?? []
-    ],
-    providers: configuration?.providers ?? []
+    imports: [TestingModule, ...(configuration?.imports ?? [])],
+    providers: configuration?.providers ?? [],
   });
   return TestBed.inject(service);
 };
@@ -115,20 +95,13 @@ export const setupTestModuleForService = <T>(
 export const setupTestModuleForComponent = async <T>(
   componentType: Type<T>,
   moduleConfig?: TestModuleConfiguration,
-  componentConfig?: TestComponentConfiguration) => {
-  await TestBed
-    .configureTestingModule({
-      imports: [
-        TestingModule,
-        ...moduleConfig?.imports ?? []
-      ],
-      declarations: [
-        componentType,
-        ...moduleConfig?.declarations ?? []
-      ],
-      providers: moduleConfig?.providers ?? []
-    })
-    .compileComponents();
+  componentConfig?: TestComponentConfiguration
+) => {
+  await TestBed.configureTestingModule({
+    imports: [TestingModule, ...(moduleConfig?.imports ?? [])],
+    declarations: [componentType, ...(moduleConfig?.declarations ?? [])],
+    providers: moduleConfig?.providers ?? [],
+  }).compileComponents();
 
   const fixture = TestBed.createComponent(componentType);
   const component = fixture.componentInstance;
