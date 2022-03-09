@@ -21,7 +21,6 @@ import {
   MdmApiPropertyResources,
   MdmCatalogueItemResource,
   MdmCatalogueUserResource,
-  MdmCatalogueItemResource,
   MdmDataClassResource,
   MdmDataElementResource,
   MdmDataFlowResource,
@@ -45,7 +44,6 @@ export class MdmEndpointsService {
   apiProperties = new MdmApiPropertyResources(this.configuration, this.httpClient);
   catalogueItem = new MdmCatalogueItemResource(this.configuration, this.httpClient);
   catalogueUser = new MdmCatalogueUserResource(this.configuration, this.httpClient);
-  catalogueItem = new MdmCatalogueItemResource(this.configuration, this.httpClient);
   dataClass = new MdmDataClassResource(this.configuration, this.httpClient);
   dataElement = new MdmDataElementResource(this.configuration, this.httpClient);
   dataFlow = new MdmDataFlowResource(this.configuration, this.httpClient);
