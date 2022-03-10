@@ -1,4 +1,4 @@
-/*
+<!--
 Copyright 2022 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -15,22 +15,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
-*/
-import { Component } from '@angular/core';
-import { CatalogueSearchPayload } from 'src/app/catalogue/catalogue.service';
-import { StateRouterService } from 'src/app/core/state-router.service';
-
-@Component({
-  selector: 'mdm-search',
-  templateUrl: './search.component.html',
-  styleUrls: ['./search.component.scss'],
-})
-export class SearchComponent {
-  constructor(private stateRouter: StateRouterService) {}
-
-  search(payload: CatalogueSearchPayload) {
-    this.stateRouter.transitionTo('app.container.search-listing', {
-      search: payload.searchTerms,
-    });
-  }
-}
+-->
+<div *ngIf="item" class="highlight-box mdm-data-element-search-result">
+  <div class="mdm-data-element-search-result__header">
+    <span>
+      <mat-checkbox color="primary" (change)="itemChecked($event)"></mat-checkbox>
+      <h3>{{ item.label }}</h3>
+    </span>
+    <span>
+      <mdm-bookmark-toggle (toggle)="toggleBookmark($event)"></mdm-bookmark-toggle>
+    </span>
+  </div>
+  <div *ngIf="item.description" class="mdm-data-element-search-result__content">
+    {{ item.description }}
+  </div>
+  <div class="mdm-data-element-search-result__footer">
+    <a href="#">View Details</a>
+  </div>
+</div>

@@ -18,26 +18,22 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AlertComponent } from './alert/alert.component';
-import { FooterComponent } from './footer/footer.component';
-import { HeaderComponent } from './header/header.component';
-import { UIRouterModule } from '@uirouter/angular';
-import { SafePipe } from './pipes/safe.pipe';
-import { ArrowDirective } from './directives/arrow.directive';
-import { BookmarkToggleComponent } from './bookmark-toggle/bookmark-toggle.component';
+import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
+import { DataElementSearchResultComponent } from './data-element-search-result/data-element-search-result.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
-  declarations: [
-    AlertComponent,
-    FooterComponent,
-    HeaderComponent,
-    SafePipe,
-    ArrowDirective,
-    BookmarkToggleComponent,
+  declarations: [BreadcrumbComponent, DataElementSearchResultComponent],
+  imports: [
+    CommonModule,
+    SharedModule,
+    MatCheckboxModule,
+    MatButtonModule,
+    MatIconModule,
   ],
-  imports: [CommonModule, UIRouterModule, MatButtonModule, MatIconModule],
-  exports: [AlertComponent, FooterComponent, HeaderComponent, BookmarkToggleComponent],
+  exports: [BreadcrumbComponent, DataElementSearchResultComponent],
 })
-export class SharedModule {}
+export class SearchModule {}

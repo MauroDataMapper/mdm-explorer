@@ -16,4 +16,11 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<p>search-results works!</p>
+<ng-container *ngIf="item">
+  '
+  <span *ngFor="let crumb of item.breadcrumbs"> {{ crumb.label }} > </span>
+  <span>
+    {{ item.label }}
+  </span>
+  '
+</ng-container>

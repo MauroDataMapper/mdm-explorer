@@ -16,21 +16,24 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component } from '@angular/core';
-import { CatalogueSearchPayload } from 'src/app/catalogue/catalogue.service';
-import { StateRouterService } from 'src/app/core/state-router.service';
+import { Observable } from 'rxjs';
+import {
+  DataElementSearchParameters,
+  DataElementSearchResultSet,
+} from 'src/app/search/search.types';
 
-@Component({
-  selector: 'mdm-search',
-  templateUrl: './search.component.html',
-  styleUrls: ['./search.component.scss'],
-})
-export class SearchComponent {
-  constructor(private stateRouter: StateRouterService) {}
+export type DataElementSearchFn = (
+  params: DataElementSearchParameters
+) => Observable<DataElementSearchResultSet>;
 
-  search(payload: CatalogueSearchPayload) {
-    this.stateRouter.transitionTo('app.container.search-listing', {
-      search: payload.searchTerms,
-    });
-  }
+export interface DataElementSearchServiceStub {
+  listing: jest.MockedFunction<DataElementSearchFn>;
+  search: jest.MockedFunction<DataElementSearchFn>;
 }
+
+export const createDataElementSearchServiceStub = (): DataElementSearchServiceStub => {
+  return {
+    listing: jest.fn() as jest.MockedFunction<DataElementSearchFn>,
+    search: jest.fn() as jest.MockedFunction<DataElementSearchFn>,
+  };
+};

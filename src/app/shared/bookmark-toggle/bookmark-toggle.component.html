@@ -1,4 +1,4 @@
-/*
+<!--
 Copyright 2022 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -15,22 +15,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
-*/
-import { Component } from '@angular/core';
-import { CatalogueSearchPayload } from 'src/app/catalogue/catalogue.service';
-import { StateRouterService } from 'src/app/core/state-router.service';
-
-@Component({
-  selector: 'mdm-search',
-  templateUrl: './search.component.html',
-  styleUrls: ['./search.component.scss'],
-})
-export class SearchComponent {
-  constructor(private stateRouter: StateRouterService) {}
-
-  search(payload: CatalogueSearchPayload) {
-    this.stateRouter.transitionTo('app.container.search-listing', {
-      search: payload.searchTerms,
-    });
-  }
-}
+-->
+<button mat-icon-button color="primary" (click)="toggleState()">
+  <mat-icon
+    *ngIf="!selected"
+    fontSet="fa-regular"
+    fontIcon="fa-bookmark"
+    class="bookmark-icon"
+  ></mat-icon>
+  <mat-icon
+    *ngIf="selected"
+    fontSet="fa-solid"
+    fontIcon="fa-bookmark"
+    class="bookmark-icon"
+  ></mat-icon>
+</button>

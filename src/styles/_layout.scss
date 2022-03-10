@@ -109,9 +109,10 @@ Highlights a box area behind other page components, e.g. a form
     border-radius: 5px;
   }
 
-  // Force Angular lists to have a background color to offset on highlight box
+  // Force other Angular Material components to have a background color to offset on highlight box
   // background
-  .mat-selection-list {
+  .mat-selection-list,
+  .mat-checkbox-inner-container {
     background-color: $color-white;
   }
 }

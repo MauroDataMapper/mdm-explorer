@@ -18,15 +18,24 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
 import {
+  CatalogueItemSearchResponse,
+  CatalogueItemSearchResult,
   DataClass,
+  DataClassDetail,
+  DataClassDetailResponse,
   DataClassIndexResponse,
+  DataElement,
+  DataElementIndexResponse,
   DataModel,
   DataModelDetail,
   DataModelDetailResponse,
+  MdmIndexBody,
+  SearchQueryParameters,
+  Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { map, Observable, of } from 'rxjs';
 import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
-import { isDataClass } from './catalogue.types';
+import { DataClassIdentifier, isDataClass } from './catalogue.types';
 
 /**
  * Service to handle data interactions with Data Models and related items, such as Data Classes.
@@ -70,5 +79,53 @@ export class DataModelService {
       : this.endpoints.dataClass.list(parent.id);
 
     return request$.pipe(map((response) => response.body.items));
+  }
+
+  /**
+   * Gets a specific Data Class using the identifiers provided.
+   *
+   * @param id The identifiers required to locate the Data Class. These comprise the tuple of: Data Model ID, Data Class ID,
+   * and (optionally) parent Data Class ID.
+   * @returns An observable containing the full {@link DataClassDetail}.
+   */
+  getDataClass(id: DataClassIdentifier): Observable<DataClassDetail> {
+    const request$: Observable<DataClassDetailResponse> = id.parentDataClassId
+      ? this.endpoints.dataClass.getChildDataClass(
+          id.dataModelId,
+          id.parentDataClassId,
+          id.dataClassId
+        )
+      : this.endpoints.dataClass.get(id.dataModelId, id.dataClassId);
+
+    return request$.pipe(map((response) => response.body));
+  }
+
+  /**
+   * Gets the Data Elements from a Data Class.
+   *
+   * @param id The identifiers required to locate the Data Class.
+   * @returns An observable of {@link DataElement} objects, including the total number found.
+   */
+  getDataElements(id: DataClassIdentifier): Observable<MdmIndexBody<DataElement>> {
+    return this.endpoints.dataElement
+      .list(id.dataModelId, id.dataClassId)
+      .pipe(map((response: DataElementIndexResponse) => response.body));
+  }
+
+  /**
+   * Search a Data Model for child catalogue items (Data Classes, Data Elements and Data Types etc)
+   * and return the results.
+   *
+   * @param id The ID of the root Data Model to search.
+   * @param params The parameters to control the search.
+   * @returns An observable of {@link CatalogueItemSearchResult} objects, including the total number found.
+   */
+  searchDataModel(
+    id: Uuid,
+    params: SearchQueryParameters
+  ): Observable<MdmIndexBody<CatalogueItemSearchResult>> {
+    return this.endpoints.dataModel
+      .search(id, params)
+      .pipe(map((response: CatalogueItemSearchResponse) => response.body));
   }
 }
