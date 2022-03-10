@@ -116,7 +116,7 @@ export class HeaderComponent implements OnInit {
   }
 
   get isSignedIn() {
-    return !this.signedInUser;
+    return !!this.signedInUser;
   }
 
   ngOnInit(): void {}
