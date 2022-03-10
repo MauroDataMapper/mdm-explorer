@@ -39,8 +39,6 @@ import { SecurityService } from './security/security.service';
 import { UserDetails, UserDetailsService } from './security/user-details.service';
 import { FooterLink } from './shared/footer/footer.component';
 import { HeaderImageLink, HeaderLink } from './shared/header/header.component';
-import { ArrowDirection } from './shared/directives/arrow.directive';
-import { arrowDirection } from './shared/pipes/arrow.pipe';
 
 @Component({
   selector: 'mdm-root',

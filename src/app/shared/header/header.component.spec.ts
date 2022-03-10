@@ -22,18 +22,13 @@ import {
   setupTestModuleForComponent,
 } from '../../testing/testing.helpers';
 import { HeaderComponent } from './header.component';
-import { arrowDirection, ArrowPipe } from '../pipes/arrow.pipe';
 
 describe('HeaderComponent', () => {
   let harness: ComponentHarness<HeaderComponent>;
 
   beforeEach(async () => {
-    TestBed.configureTestingModule({
-      providers: [ArrowPipe],
-      declarations: [ArrowPipe],
-    });
+    TestBed.configureTestingModule({});
     harness = await setupTestModuleForComponent(HeaderComponent);
-    TestBed.inject(ArrowPipe);
   });
 
   it('should create', () => {

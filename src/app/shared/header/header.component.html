@@ -81,8 +81,22 @@ SPDX-License-Identifier: Apache-2.0
         </div>
         <div *ngIf="isSignedIn" class="mdm-header__user--sign-out">
           <a class="mdm-header__containOverlay" href="#" (click)="signOut()">
-            <img src="assets/images/BlackDisk.svg" width="40" height="40" />
-            <div class="mdm-header__user--name mdm-header__overlayUserInitials">
+            <img
+              *ngIf="signedInUserProfileImageSrc"
+              [src]="signedInUserProfileImageSrc"
+              width="40"
+              height="40"
+            />
+            <img
+              *ngIf="!signedInUserProfileImageSrc"
+              src="assets/images/BlackDisk.svg"
+              width="40"
+              height="40"
+            />
+            <div
+              *ngIf="!signedInUserProfileImageSrc"
+              class="mdm-header__user--name mdm-header__overlayUserInitials"
+            >
               {{ signedInUser?.firstName?.charAt(0)
               }}{{ signedInUser?.lastName?.charAt(0) }}
             </div>

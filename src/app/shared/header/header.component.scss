@@ -16,8 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-@import '../../../styles.scss';
-
+@import "../../../styles.scss";
 
 $header-gap: 3rem;
 $link-color: #ffffff;
@@ -34,27 +33,27 @@ $header-background: $color-gray-38;
   margin: 0 0 $header-gap;
   background-color: $header-background;
   flex-wrap: wrap;
-  
+
   &__containOverlay {
     position: relative;
   }
 
-  &__overlayUserInitials {    
+  &__overlayUserInitials {
     width: 100%;
     height: 100%;
-    position:absolute;
+    position: absolute;
     top: 0px;
     left: 0px;
     text-align: center;
     transform: translate(0, 40%);
   }
-  
+
   &__overlayRequests {
     height: 100%;
-    position:absolute;
+    position: absolute;
     top: 7px;
     left: 20px;
-    width: 27px; 
+    width: 27px;
     text-align: center;
   }
 
@@ -77,8 +76,6 @@ $header-background: $color-gray-38;
     }
 
     &--main {
-
-
       & > ul {
         display: flex;
         height: 100%;
@@ -120,8 +117,6 @@ $header-background: $color-gray-38;
     }
 
     &--right {
-
-
       & > ul {
         height: 100%;
         list-style: none;
@@ -156,12 +151,10 @@ $header-background: $color-gray-38;
           color: $link-color;
           height: 100%;
 
-
           &.active {
             border-bottom: 2px solid $link-color;
           }
         }
-
       }
     }
 
@@ -193,8 +186,7 @@ $header-background: $color-gray-38;
     &--sign-out {
       display: inline-block;
       padding: 0.6rem;
-      margin-block-start: 16px;
-
+      margin-block-start: 8px;
     }
 
     &--sign-in {
@@ -212,7 +204,6 @@ $header-background: $color-gray-38;
         padding: 15px;
         text-align: center;
       }
-
     }
   }
 }

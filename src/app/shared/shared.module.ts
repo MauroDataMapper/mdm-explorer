@@ -23,7 +23,6 @@ import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
 import { UIRouterModule } from '@uirouter/angular';
 import { SafePipe } from './pipes/safe.pipe';
-import { ArrowPipe } from './pipes/arrow.pipe';
 import { ArrowDirective } from './directives/arrow.directive';
 
 @NgModule({
@@ -32,17 +31,9 @@ import { ArrowDirective } from './directives/arrow.directive';
     FooterComponent,
     HeaderComponent,
     SafePipe,
-    ArrowPipe,
     ArrowDirective,
   ],
-  imports: [
-    CommonModule,
-    UIRouterModule
-  ],
-  exports: [
-    AlertComponent,
-    FooterComponent,
-    HeaderComponent
-  ]
+  imports: [CommonModule, UIRouterModule],
+  exports: [AlertComponent, FooterComponent, HeaderComponent],
 })
-export class SharedModule { }
+export class SharedModule {}
