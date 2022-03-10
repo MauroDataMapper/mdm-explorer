@@ -104,7 +104,7 @@ describe('HeaderComponent', () => {
     harness.component.accountLink = {
       label: 'My requests',
       routeName: 'app.container.my-requests',
-      arrow: arrowDirection.angle_down,
+      arrow: 'angle-down',
     };
     harness.detectChanges();
     // check that the elements have the correct existence

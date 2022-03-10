@@ -24,6 +24,7 @@ import { HeaderComponent } from './header/header.component';
 import { UIRouterModule } from '@uirouter/angular';
 import { SafePipe } from './pipes/safe.pipe';
 import { ArrowPipe } from './pipes/arrow.pipe';
+import { ArrowDirective } from './directives/arrow.directive';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { ArrowPipe } from './pipes/arrow.pipe';
     HeaderComponent,
     SafePipe,
     ArrowPipe,
+    ArrowDirective,
   ],
   imports: [
     CommonModule,

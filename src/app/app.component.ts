@@ -39,6 +39,7 @@ import { SecurityService } from './security/security.service';
 import { UserDetails, UserDetailsService } from './security/user-details.service';
 import { FooterLink } from './shared/footer/footer.component';
 import { HeaderImageLink, HeaderLink } from './shared/header/header.component';
+import { ArrowDirection } from './shared/directives/arrow.directive';
 import { arrowDirection } from './shared/pipes/arrow.pipe';
 
 @Component({
@@ -78,7 +79,7 @@ export class AppComponent implements OnInit, OnDestroy {
     {
       label: 'Help',
       routeName: 'app.container.help',
-      arrow: arrowDirection.angle_down,
+      arrow: 'angle-down',
     },
   ];
 
@@ -93,7 +94,7 @@ export class AppComponent implements OnInit, OnDestroy {
   accountLink: HeaderLink = {
     label: 'My requests',
     routeName: 'app.container.my-requests',
-    arrow: arrowDirection.angle_down,
+    arrow: 'angle-down',
   };
 
   signInLink: HeaderLink = {

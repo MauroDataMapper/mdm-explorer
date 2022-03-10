@@ -31,7 +31,8 @@ SPDX-License-Identifier: Apache-2.0
             [uiSref]="link.routeName"
             uiSrefActive="active"
             [uiOptions]="{ reload: true, notify: true }"
-            ><span [innerHTML]="' ' + link.label | arrow: link.arrow"></span>
+          >
+            <span [mdmArrow]="link.arrow">{{ link.label }} </span>
           </a>
         </li>
       </ul>
@@ -48,7 +49,7 @@ SPDX-License-Identifier: Apache-2.0
           >
             <!-- fontawesome bookmark -->
             <span class="far fa-bookmark" style="font-size: x-large"></span
-            ><span [innerHTML]="' ' + rightLink?.label | arrow: rightLink.arrow"></span>
+            ><span [mdmArrow]="rightLink.arrow"> {{ rightLink?.label }} </span>
           </a>
         </li>
         <li class="mdm-header__containOverlay">
@@ -61,10 +62,8 @@ SPDX-License-Identifier: Apache-2.0
           >
             <div>
               <!-- fontawesome shopping cart -->
-              <span class="fab fa-opencart" style="font-size: xx-large"></span
-              ><span
-                [innerHTML]="' ' + accountLink?.label | arrow: accountLink.arrow"
-              ></span>
+              <span class="fab fa-opencart" style="font-size: xx-large"></span>
+              <span [mdmArrow]="accountLink.arrow">&NonBreakingSpace;</span>
               <div class="mdm-header__overlayRequests">
                 {{ numberOfRequests }}
               </div>
@@ -82,22 +81,8 @@ SPDX-License-Identifier: Apache-2.0
         </div>
         <div *ngIf="isSignedIn" class="mdm-header__user--sign-out">
           <a class="mdm-header__containOverlay" href="#" (click)="signOut()">
-            <img
-              *ngIf="signedInUserProfileImageSrc"
-              [src]="signedInUserProfileImageSrc"
-              width="40"
-              height="40"
-            />
-            <img
-              *ngIf="!signedInUserProfileImageSrc"
-              src="assets/images/BlackDisk.svg"
-              width="40"
-              height="40"
-            />
-            <div
-              *ngIf="!signedInUserProfileImageSrc"
-              class="mdm-header__user--name mdm-header__overlayUserInitials"
-            >
+            <img src="assets/images/BlackDisk.svg" width="40" height="40" />
+            <div class="mdm-header__user--name mdm-header__overlayUserInitials">
               {{ signedInUser?.firstName?.charAt(0)
               }}{{ signedInUser?.lastName?.charAt(0) }}
             </div>

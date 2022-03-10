@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UserDetails } from 'src/app/security/user-details.service';
-import { arrowDirection } from '../pipes/arrow.pipe';
+import { ArrowDirection } from '../directives/arrow.directive';
 
 /**
  * Define the details for a link in the layout and navigation components.
@@ -44,7 +44,7 @@ export interface HeaderLink {
    */
   onlySignedIn?: boolean;
 
-  arrow?: arrowDirection;
+  arrow?: ArrowDirection;
 }
 
 export interface HeaderImageLink extends HeaderLink {
@@ -116,11 +116,10 @@ export class HeaderComponent implements OnInit {
   }
 
   get isSignedIn() {
-    return !!this.signedInUser;
+    return !this.signedInUser;
   }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   signOut() {
     this.signOutClicked.emit();
