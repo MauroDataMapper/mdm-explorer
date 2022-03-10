@@ -70,7 +70,7 @@ $header-background: $color-gray-38;
     & > nav {
       display: inline-block;
       width: 50%;
-      @media (max-width: $screen-size-md) {
+      @include respond-to-tablet {
         width: 100%;
       }
     }
@@ -84,11 +84,11 @@ $header-background: $color-gray-38;
         padding-inline-start: 10px;
         margin-block-start: 16px;
         float: left;
-        @media (max-width: $screen-size-md) {
+        @include respond-to-tablet {
           margin-block-end: 0px;
           padding: 0 100px 0 10px;
         }
-        @media (max-width: $screen-size-sm) {
+        @include respond-to-mobile-xs {
           margin-block-end: 0px;
           padding: 0 0 0 10px;
           display: block;
@@ -126,7 +126,7 @@ $header-background: $color-gray-38;
         margin-block-end: 0px;
         float: right;
         display: block;
-        @media (max-width: $screen-size-sm) {
+        @include respond-to-mobile {
           float: none;
         }
 
@@ -134,7 +134,7 @@ $header-background: $color-gray-38;
           white-space: nowrap;
           height: 100%;
           display: inline-block;
-          @media (max-width: $screen-size-sm) {
+          @include respond-to-mobile-xs {
             display: block;
           }
         }
