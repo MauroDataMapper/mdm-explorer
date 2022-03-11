@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { UserDetails } from 'src/app/security/user-details.service';
 import { ArrowDirection } from '../directives/arrow.directive';
 
