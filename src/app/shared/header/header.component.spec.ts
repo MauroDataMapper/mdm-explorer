@@ -16,13 +16,18 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { ComponentHarness, setupTestModuleForComponent } from '../../testing/testing.helpers';
+import { TestBed } from '@angular/core/testing';
+import {
+  ComponentHarness,
+  setupTestModuleForComponent,
+} from '../../testing/testing.helpers';
 import { HeaderComponent } from './header.component';
 
 describe('HeaderComponent', () => {
   let harness: ComponentHarness<HeaderComponent>;
 
   beforeEach(async () => {
+    TestBed.configureTestingModule({});
     harness = await setupTestModuleForComponent(HeaderComponent);
   });
 
@@ -36,7 +41,7 @@ describe('HeaderComponent', () => {
   it('should include sign-in when link provided', () => {
     harness.component.signInLink = {
       routeName: 'test',
-      label: 'Sign in'
+      label: 'Sign in',
     };
 
     expect(harness.component.includeSignIn).toBeTruthy();
@@ -48,9 +53,65 @@ describe('HeaderComponent', () => {
       userName: 'test',
       firstName: 'Test',
       lastName: 'Person',
-      email: 'test@test.com'
+      email: 'test@test.com',
     };
 
     expect(harness.component.isSignedIn).toBeTruthy();
+  });
+
+  it('should display Sign In link when not signed in', () => {
+    const dom = harness.fixture.nativeElement;
+    harness.component.signInLink = {
+      routeName: 'test',
+      label: 'Sign in',
+    };
+    harness.detectChanges();
+    const signInElement = dom.querySelector('#signIn');
+    const signOutElement = dom.querySelector('.mdm-header__overlayUserInitials');
+    const bookmarks = dom.querySelector('#app.container.my-bookmarks');
+    const requests = dom.querySelector('#app.container.my-requests');
+    expect(signInElement).toBeTruthy();
+    expect(signOutElement).toBeFalsy();
+    expect(bookmarks).toBeFalsy();
+    expect(requests).toBeFalsy();
+  });
+
+  it('should display Sign Out link, bookmarks and requests when signed in', () => {
+    const dom = harness.fixture.nativeElement;
+    harness.component.signInLink = {
+      routeName: 'test',
+      label: 'Sign in',
+    };
+    harness.component.signedInUser = {
+      id: '1',
+      userName: 'test',
+      firstName: 'Test',
+      lastName: 'Person',
+      email: 'test@test.com',
+    };
+    harness.component.rightLinks = [
+      {
+        label: 'Bookmarks',
+        routeName: 'app.container.my-bookmarks',
+        imageSrc: '',
+      },
+    ];
+    harness.component.accountLink = {
+      label: 'My requests',
+      routeName: 'app.container.my-requests',
+      arrow: 'angle-down',
+    };
+    harness.detectChanges();
+    // check that the elements have the correct existence
+    const signInElement = dom.querySelector('#signIn');
+    const signOutElement = dom.querySelector('.mdm-header__overlayUserInitials');
+    const bookmarks = dom.querySelector('#app\\.container\\.my-bookmarks');
+    const requests = dom.querySelector('#app\\.container\\.my-requests');
+    expect(signInElement).toBeFalsy();
+    expect(signOutElement).toBeTruthy();
+    expect(bookmarks).toBeTruthy();
+    expect(requests).toBeTruthy();
+    // check that the user initials are correct
+    expect(signOutElement.innerHTML).toBe(' TP ');
   });
 });

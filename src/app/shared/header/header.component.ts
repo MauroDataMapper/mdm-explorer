@@ -16,13 +16,14 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { UserDetails } from 'src/app/security/user-details.service';
+import { ArrowDirection } from '../directives/arrow.directive';
 
 /**
  * Define the details for a link in the layout and navigation components.
  */
- export interface HeaderLink {
+export interface HeaderLink {
   /**
    * The display label to apply to the link.
    */
@@ -42,8 +43,9 @@ import { UserDetails } from 'src/app/security/user-details.service';
    * States if this link should only be visible if a user is signed in first.
    */
   onlySignedIn?: boolean;
-}
 
+  arrow?: ArrowDirection;
+}
 
 export interface HeaderImageLink extends HeaderLink {
   imageSrc: string;
@@ -52,17 +54,22 @@ export interface HeaderImageLink extends HeaderLink {
 /**
  * Renders a page header with navigation.
  */
- @Component({
+@Component({
   selector: 'mdm-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss']
+  styleUrls: ['./header.component.scss'],
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent {
   /**
    * Provide the link to use for the header logo. This includes the asset source and the
    * URL to navigate to.
    */
   @Input() logoLink?: HeaderImageLink;
+
+  /*
+   * Provide the asset source to the Mauro logo.
+   */
+  @Input() mauroLogoSrc?: string;
 
   /**
    * Provide the collection of navigation links to include in the header.
@@ -70,24 +77,34 @@ export class HeaderComponent implements OnInit {
   @Input() links: HeaderLink[] = [];
 
   /**
+   * Provide the collection of navigation links to include in the header.
+   */
+  @Input() rightLinks: HeaderImageLink[] = [];
+
+  /**
+   * Provide the link to redirect to sign-in.
+   */
+  @Input() accountLink: HeaderLink = {
+    label: 'Missing Label',
+    routeName: 'app.container.home',
+  };
+
+  @Input() numberOfRequests = 0;
+
+  /**
    * Provide the link to redirect to sign-in.
    */
   @Input() signInLink?: HeaderLink;
 
   /**
-   * If a user is signed in, provide the details of this user. Otherwise leave this undefined.
-   */
-  @Input() signedInUser?: UserDetails | null;
-
-  /**
-   * If a user is signed in, provide the source to the profile image.
+   * If a user is signed in, provide the profile image of this user if it exists.
    */
   @Input() signedInUserProfileImageSrc?: string;
 
   /**
-   * Event handler when the "Sign out" link is clicked.
+   * If a user is signed in, provide the details of this user. Otherwise leave this undefined.
    */
-  @Output() signOutClicked = new EventEmitter<void>();
+  @Input() signedInUser?: UserDetails | null;
 
   get includeSignIn() {
     return !!this.signInLink;
@@ -95,12 +112,5 @@ export class HeaderComponent implements OnInit {
 
   get isSignedIn() {
     return !!this.signedInUser;
-  }
-
-  ngOnInit(): void {
-  }
-
-  signOut() {
-    this.signOutClicked.emit();
   }
 }

@@ -24,15 +24,13 @@ SPDX-License-Identifier: Apache-2.0
       [signInLink]="signInLink"
       [signedInUser]="signedInUser"
       [signedInUserProfileImageSrc]="signedInUserProfileImageSrc"
-      (signOutClicked)="signOutUser()"
+      [rightLinks]="headerRightLinks"
+      [accountLink]="accountLink"
+      [numberOfRequests]="numberOfRequests"
     ></mdm-header>
 
     <main ui-view></main>
 
-    <mdm-footer
-      mauroLogoSrc="assets/images/app-logo.png"
-      version="0.1.0"
-      [links]="footerLinks"
-    ></mdm-footer>
+    <mdm-footer version="0.1.0" [links]="footerLinks"></mdm-footer>
   </div>
 </div>

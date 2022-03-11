@@ -31,32 +31,76 @@ SPDX-License-Identifier: Apache-2.0
             [uiSref]="link.routeName"
             uiSrefActive="active"
             [uiOptions]="{ reload: true, notify: true }"
-            >{{ link.label }}
+          >
+            <span [mdmArrow]="link.arrow">{{ link.label }} </span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <nav *ngIf="isSignedIn" class="mdm-header__links--right">
+      <ul>
+        <li *ngFor="let rightLink of rightLinks">
+          <a
+            [id]="rightLink.routeName"
+            *ngIf="!rightLink.onlySignedIn || (rightLink.onlySignedIn && isSignedIn)"
+            [uiSref]="rightLink.routeName"
+            uiSrefActive="active"
+            [uiOptions]="{ reload: true, notify: true }"
+          >
+            <!-- fontawesome bookmark -->
+            <span class="far fa-bookmark" style="font-size: x-large"></span
+            ><span [mdmArrow]="rightLink.arrow"> {{ rightLink?.label }} </span>
+          </a>
+        </li>
+        <li class="mdm-header__containOverlay">
+          <a
+            *ngIf="!accountLink.onlySignedIn || (accountLink.onlySignedIn && isSignedIn)"
+            [uiSref]="accountLink.routeName"
+            [id]="accountLink.routeName"
+            uiSrefActive="active"
+            [uiOptions]="{ reload: true, notify: true }"
+          >
+            <div>
+              <!-- fontawesome shopping cart -->
+              <span class="fab fa-opencart" style="font-size: xx-large"></span>
+              <span [mdmArrow]="accountLink.arrow">&NonBreakingSpace;</span>
+              <div class="mdm-header__overlayRequests">
+                {{ numberOfRequests }}
+              </div>
+            </div>
           </a>
         </li>
       </ul>
     </nav>
     <div *ngIf="includeSignIn" class="mdm-header__links--account">
-      <a *ngIf="!isSignedIn" [uiSref]="signInLink?.routeName ?? ''">{{
-        signInLink?.label
-      }}</a>
-      <div *ngIf="isSignedIn" class="mdm-header__user">
-        <div *ngIf="signedInUserProfileImageSrc" class="mdm-header__user--profile">
-          <img
-            [src]="signedInUserProfileImageSrc"
-            alt="{{ signedInUser?.firstName }} {{ signedInUser?.lastName }}"
-          />
-        </div>
-        <div class="mdm-header__user--name">
-          <a uiSref="app.container.my-account">
-            {{ signedInUser?.firstName }} {{ signedInUser?.lastName }}
+      <div class="mdm-header__user">
+        <div *ngIf="!isSignedIn" class="mdm-header__user--sign-in">
+          <a id="signIn" [uiSref]="signInLink?.routeName ?? ''"
+            >{{ signInLink?.label }}
           </a>
         </div>
-        <div class="mdm-header__user--sign-out">
-          <a href="#" (click)="signOut()">Sign out</a>
-        </div>
-        <div class="mdm-header__bookmark">
-          <a href="/#/bookmark">Bookmarks</a>
+        <div *ngIf="isSignedIn" class="mdm-header__user--sign-out">
+          <a class="mdm-header__containOverlay" uiSref="app.container.my-account">
+            <img
+              *ngIf="signedInUserProfileImageSrc"
+              [src]="signedInUserProfileImageSrc"
+              width="40"
+              height="40"
+            />
+            <img
+              *ngIf="!signedInUserProfileImageSrc"
+              src="assets/images/BlackDisk.svg"
+              width="40"
+              height="40"
+            />
+            <div
+              *ngIf="!signedInUserProfileImageSrc"
+              class="mdm-header__user--name mdm-header__overlayUserInitials"
+            >
+              {{ signedInUser?.firstName?.charAt(0)
+              }}{{ signedInUser?.lastName?.charAt(0) }}
+            </div>
+          </a>
         </div>
       </div>
     </div>

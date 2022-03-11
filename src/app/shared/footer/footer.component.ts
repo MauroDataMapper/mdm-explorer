@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 /**
  * Define the details for a link in the layout and navigation components.
@@ -50,18 +50,13 @@ export interface FooterLink {
 @Component({
   selector: 'mdm-footer',
   templateUrl: './footer.component.html',
-  styleUrls: ['./footer.component.scss']
+  styleUrls: ['./footer.component.scss'],
 })
-export class FooterComponent implements OnInit {
+export class FooterComponent {
   /**
    * Provide a list of ordered links to other pages/websites to display in the footer.
    */
   @Input() links?: FooterLink[];
-
-  /**
-   * Provide the asset source to the Mauro logo.
-   */
-  @Input() mauroLogoSrc?: string;
 
   /**
    * Provide the version number to display in the footer. If not required, leave this blank.
@@ -71,10 +66,7 @@ export class FooterComponent implements OnInit {
   /**
    * Provide the name to use in the copyright message.
    */
-  @Input() copyright?: string = 'Clinical Informatics, NIHR Oxford Biomedical Research Centre';
+  @Input() copyright?: string = ' - Researcher interface. Powered by Mauro Data Mapper.';
 
   year = new Date().getFullYear();
-
-  ngOnInit(): void {
-  }
 }

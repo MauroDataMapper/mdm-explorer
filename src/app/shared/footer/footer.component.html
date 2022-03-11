@@ -29,6 +29,7 @@ SPDX-License-Identifier: Apache-2.0
               >{{ link.label }}</a
             >
             <a
+              [id]="link.routeName"
               *ngIf="link.routeName"
               [uiSref]="link.routeName"
               [target]="link.target ?? '_blank'"
@@ -43,14 +44,6 @@ SPDX-License-Identifier: Apache-2.0
       <div class="mdm-footer__main--text">
         <small>Copyright &copy; {{ year }} {{ copyright }}</small>
       </div>
-    </div>
-    <div *ngIf="mauroLogoSrc" class="mdm-footer__logo">
-      <p>Powered by:</p>
-      <img
-        class="mdm-footer__logo--mdm"
-        [src]="mauroLogoSrc"
-        alt="Mauro Data Mapper logo"
-      />
     </div>
   </div>
 </footer>

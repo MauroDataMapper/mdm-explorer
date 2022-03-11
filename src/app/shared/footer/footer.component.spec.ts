@@ -28,7 +28,38 @@ describe('FooterComponent', () => {
 
   it('should create', () => {
     expect(harness?.isComponentCreated).toBeTruthy();
-    expect(harness.component.copyright).toBe('Clinical Informatics, NIHR Oxford Biomedical Research Centre');
+    expect(harness.component.copyright).toBe(' - Researcher interface. Powered by Mauro Data Mapper.');
     expect(harness.component.year).toBe(new Date().getFullYear());
+  });
+
+  it('should display footer links', () => {
+    harness.component.links = [
+    {
+      label: 'Privacy policy',
+      routeName: 'app.container.privacy',
+      target: '_self',
+    },
+    {
+      label: 'Terms and conditions',
+      href: 'https://localhost/terms-and-conditions',
+      target: '_self',
+    },
+    {
+      label: 'Cookies',
+      routeName: 'app.container.cookies',
+      target: '_self',
+    },
+  ];
+    harness.detectChanges();
+    const dom = harness.fixture.nativeElement;
+    const privacyPolicy = dom.querySelector('#app\\.container\\.privacy');
+    const termsAndConditions = dom.querySelector('a[href="https://localhost/terms-and-conditions"]');
+    const cookies = dom.querySelector('#app\\.container\\.cookies');
+    expect(privacyPolicy).toBeTruthy();
+    expect(termsAndConditions).toBeTruthy();
+    expect(cookies).toBeTruthy();
+    expect(privacyPolicy.innerHTML).toBe('Privacy policy');
+    expect(termsAndConditions.innerHTML).toBe('Terms and conditions');
+    expect(cookies.innerHTML).toBe('Cookies');
   });
 });
