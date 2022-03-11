@@ -30,6 +30,7 @@ import { OpenIdConnectAuthorizeComponent } from './open-id-connect-authorize/ope
 import { ForgotPasswordFormComponent } from './forgot-password-form/forgot-password-form.component';
 import { UIRouterModule } from '@uirouter/angular';
 import { CatalogueUserFormComponent } from './catalogue-user-form/catalogue-user-form.component';
+import { CatalogueSearchFormComponent } from './catalogue-search-form/catalogue-search-form.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { CatalogueUserFormComponent } from './catalogue-user-form/catalogue-user
     OpenIdConnectAuthorizeComponent,
     ForgotPasswordFormComponent,
     CatalogueUserFormComponent,
+    CatalogueSearchFormComponent,
   ],
   imports: [
     CommonModule,
@@ -55,6 +57,7 @@ import { CatalogueUserFormComponent } from './catalogue-user-form/catalogue-user
     OpenIdConnectAuthorizeComponent,
     ForgotPasswordFormComponent,
     CatalogueUserFormComponent,
+    CatalogueSearchFormComponent,
   ],
 })
 export class SecurityModule {}
