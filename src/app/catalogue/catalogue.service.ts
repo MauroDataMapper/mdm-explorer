@@ -22,6 +22,17 @@ import { Observable } from 'rxjs';
 import { CatalogueConfiguration, CATALOGUE_CONFIGURATION } from './catalogue.types';
 import { DataModelService } from './data-model.service';
 
+export interface CatalogueSearchPayload {
+  searchTerms: string;
+  publication: string;
+  years: string;
+  authors: string;
+  authorAffiliation: string;
+  volumes: string;
+  issues: string;
+  pages: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
