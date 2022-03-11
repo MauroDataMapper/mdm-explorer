@@ -80,7 +80,7 @@ SPDX-License-Identifier: Apache-2.0
           </a>
         </div>
         <div *ngIf="isSignedIn" class="mdm-header__user--sign-out">
-          <a class="mdm-header__containOverlay" href="#" (click)="signOut()">
+          <a class="mdm-header__containOverlay" uiSref="app.container.my-account">
             <img
               *ngIf="signedInUserProfileImageSrc"
               [src]="signedInUserProfileImageSrc"

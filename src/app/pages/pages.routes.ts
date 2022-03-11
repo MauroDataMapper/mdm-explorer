@@ -23,6 +23,7 @@ import { SignInComponent } from './sign-in/sign-in.component';
 import { BrowseComponent } from './browse/browse.component';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { MyAccountComponent } from './my-account/my-account.component';
+import { BookmarkComponent } from './bookmark/bookmark.component';
 
 const staticContentStateName = 'app.container.static-content';
 
@@ -112,5 +113,10 @@ export const states: Ng2StateDeclaration[] = [
     name: 'app.container.my-account',
     url: '/account',
     component: MyAccountComponent,
+  },
+  {
+    name: 'app.container.my-bookmarks',
+    url: '/bookmarks',
+    component: BookmarkComponent,
   },
 ];

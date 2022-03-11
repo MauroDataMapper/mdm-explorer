@@ -59,7 +59,7 @@ export interface HeaderImageLink extends HeaderLink {
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent {
   /**
    * Provide the link to use for the header logo. This includes the asset source and the
    * URL to navigate to.
@@ -106,22 +106,11 @@ export class HeaderComponent implements OnInit {
    */
   @Input() signedInUser?: UserDetails | null;
 
-  /**
-   * Event handler when the "Sign out" link is clicked.
-   */
-  @Output() signOutClicked = new EventEmitter<void>();
-
   get includeSignIn() {
     return !!this.signInLink;
   }
 
   get isSignedIn() {
     return !!this.signedInUser;
-  }
-
-  ngOnInit(): void {}
-
-  signOut() {
-    this.signOutClicked.emit();
   }
 }
