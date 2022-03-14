@@ -23,10 +23,7 @@ import { SignInComponent } from './sign-in/sign-in.component';
 import { BrowseComponent } from './browse/browse.component';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { MyAccountComponent } from './my-account/my-account.component';
-<<<<<<< Updated upstream
 import { BookmarkComponent } from './bookmark/bookmark.component';
-=======
->>>>>>> Stashed changes
 import { CatalogueSearchComponent } from './catalogue-search/catalogue-search.component';
 
 const staticContentStateName = 'app.container.static-content';
@@ -119,14 +116,11 @@ export const states: Ng2StateDeclaration[] = [
     component: MyAccountComponent,
   },
   {
-<<<<<<< Updated upstream
     name: 'app.container.my-bookmarks',
     url: '/bookmarks',
     component: BookmarkComponent,
   },
   {
-=======
->>>>>>> Stashed changes
     name: 'app.container.catalogue-search',
     url: '/search',
     component: CatalogueSearchComponent,
