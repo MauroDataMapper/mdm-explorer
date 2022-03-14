@@ -85,6 +85,10 @@ Highlights a box area behind other page components, e.g. a form
   &__content {
     padding: 2em 5%;
 
+    &--slim {
+      padding: 2em 10%;
+    }
+
     &--narrow {
       padding: 3em 25%;
     }
