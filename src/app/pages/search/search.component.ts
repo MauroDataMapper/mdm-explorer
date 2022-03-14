@@ -21,11 +21,11 @@ import { CatalogueSearchPayload } from 'src/app/catalogue/catalogue.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 
 @Component({
-  selector: 'mdm-catalogue-search',
-  templateUrl: './catalogue-search.component.html',
-  styleUrls: ['./catalogue-search.component.scss'],
+  selector: 'mdm-search',
+  templateUrl: './search.component.html',
+  styleUrls: ['./search.component.scss'],
 })
-export class CatalogueSearchComponent {
+export class SearchComponent {
   constructor(private stateRouter: StateRouterService) {}
 
   search(payload: CatalogueSearchPayload) {

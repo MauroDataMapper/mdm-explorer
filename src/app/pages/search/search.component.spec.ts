@@ -28,16 +28,16 @@ import {
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
 
-import { CatalogueSearchComponent } from './catalogue-search.component';
+import { SearchComponent } from './search.component';
 
-describe('CatalogueSearchComponent', () => {
-  let harness: ComponentHarness<CatalogueSearchComponent>;
+describe('SearchComponent', () => {
+  let harness: ComponentHarness<SearchComponent>;
 
   const stateRouterStub = createStateRouterStub();
   const securityStub = createSecurityStub();
 
   beforeEach(async () => {
-    harness = await setupTestModuleForComponent(CatalogueSearchComponent, {
+    harness = await setupTestModuleForComponent(SearchComponent, {
       providers: [
         {
           provide: StateRouterService,
