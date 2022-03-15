@@ -30,6 +30,7 @@ export type KnownRouterState =
   | 'app.container.signin'
   | 'app.container.forgot-password'
   | 'app.container.browse'
+  | 'app.container.search'
   | 'app.container.search-results';
 
 /**

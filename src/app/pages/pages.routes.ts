@@ -24,6 +24,7 @@ import { BrowseComponent } from './browse/browse.component';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { MyAccountComponent } from './my-account/my-account.component';
 import { BookmarkComponent } from './bookmark/bookmark.component';
+import { SearchComponent } from './search/search.component';
 
 const staticContentStateName = 'app.container.static-content';
 
@@ -105,9 +106,20 @@ export const states: Ng2StateDeclaration[] = [
     component: BrowseComponent,
   },
   {
+    name: 'app.container.search',
+    url: '/search',
+    component: SearchComponent,
+    data: {
+      allowAnonymous: true,
+    },
+  },
+  {
     name: 'app.container.search-results',
-    url: '/search/results',
+    url: '/search/results?searchTerms',
     component: SearchResultsComponent,
+    data: {
+      allowAnonymous: true,
+    },
   },
   {
     name: 'app.container.my-account',
