@@ -130,7 +130,13 @@ SPDX-License-Identifier: Apache-2.0
     </div>
     <div class="form-actions row">
       <div class="search-button">
-        <button type="button" mat-flat-button color="primary" (click)="search()">
+        <button
+          type="button"
+          mat-flat-button
+          color="primary"
+          [disabled]="formGroup.invalid"
+          (click)="search()"
+        >
           Search
         </button>
       </div>
