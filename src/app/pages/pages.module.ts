@@ -33,7 +33,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { CatalogueSearchComponent } from './catalogue-search/catalogue-search.component';
+import { SearchComponent } from './search/search.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +44,7 @@ import { CatalogueSearchComponent } from './catalogue-search/catalogue-search.co
     BrowseComponent,
     SearchResultsComponent,
     MyAccountComponent,
-    CatalogueSearchComponent,
+    SearchComponent,
   ],
   imports: [
     CommonModule,
