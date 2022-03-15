@@ -26,9 +26,13 @@ import { StaticContentComponent } from './static-content/static-content.componen
 import { BrowseComponent } from './browse/browse.component';
 import { SearchListingComponent } from './search-listing/search-listing.component';
 import { SearchComponent } from './search/search.component';
+<<<<<<< HEAD
 import { MyAccountComponent } from './my-account/my-account.component';
 import { CoreModule } from '../core/core.module';
 import { SearchModule } from '../search/search.module';
+=======
+import { DashboardComponent } from './dashboard/dashboard.component';
+>>>>>>> mc-9822 - add initial scaffolding for dashboard page.
 
 @NgModule({
   declarations: [
@@ -40,6 +44,7 @@ import { SearchModule } from '../search/search.module';
     SearchListingComponent,
     MyAccountComponent,
     SearchComponent,
+    DashboardComponent,
   ],
   imports: [CoreModule, SharedModule, SecurityModule, SearchModule],
 })

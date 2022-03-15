@@ -24,8 +24,12 @@ import { SearchListingComponent } from './search-listing/search-listing.componen
 import { MyAccountComponent } from './my-account/my-account.component';
 import { BookmarkComponent } from './bookmark/bookmark.component';
 import { SearchComponent } from './search/search.component';
+<<<<<<< HEAD
 import { Route, UrlMatchResult, UrlSegment } from '@angular/router';
 import { AuthorizedGuard } from '../security/guards/authorized.guard';
+=======
+import { DashboardComponent } from './dashboard/dashboard.component';
+>>>>>>> mc-9822 - add initial scaffolding for dashboard page.
 
 export const buildStaticContentRoute = (path: string, staticAssetPath: string): Route => {
   return {
@@ -98,5 +102,10 @@ export const routes: Route[] = [
     path: 'bookmarks',
     component: BookmarkComponent,
     canActivate: [AuthorizedGuard],
+  },
+  {
+    name: 'app.container.dashboard',
+    url: '/dashboard',
+    component: DashboardComponent,
   },
 ];
