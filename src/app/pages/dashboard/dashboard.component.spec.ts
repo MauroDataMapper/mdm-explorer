@@ -1,25 +1,42 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { StateRouterService } from 'src/app/core/state-router.service';
+import { UserRequestsService } from 'src/app/core/user-requests.service';
+import { SecurityService } from 'src/app/security/security.service';
+import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
+import { createStateRouterStub } from 'src/app/testing/stubs/state-router.stub';
+import { createUserRequestsServiceStub } from 'src/app/testing/stubs/user-requests.stub';
+import {
+  ComponentHarness,
+  setupTestModuleForComponent,
+} from 'src/app/testing/testing.helpers';
 
 import { DashboardComponent } from './dashboard.component';
 
 describe('DashboardComponent', () => {
-  let component: DashboardComponent;
-  let fixture: ComponentFixture<DashboardComponent>;
+  let harness: ComponentHarness<DashboardComponent>;
+  const securityStub = createSecurityServiceStub();
+  const stateRouterStub = createStateRouterStub();
+  const userRequestsStub = createUserRequestsServiceStub();
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ DashboardComponent ]
-    })
-    .compileComponents();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(DashboardComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    harness = await setupTestModuleForComponent(DashboardComponent, {
+      providers: [
+        {
+          provide: SecurityService,
+          useValue: securityStub,
+        },
+        {
+          provide: StateRouterService,
+          useValue: stateRouterStub,
+        },
+        {
+          provide: UserRequestsService,
+          useValue: userRequestsStub,
+        },
+      ],
+    });
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(harness.isComponentCreated).toBeTruthy();
   });
 });

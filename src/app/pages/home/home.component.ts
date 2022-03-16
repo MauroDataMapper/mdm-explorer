@@ -14,7 +14,6 @@ export class HomeComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // if user is signed in, take them to their dashboard.
     if (this.security.isSignedIn()) {
       this.stateRouter.transitionTo('app.container.dashboard');
       return;
