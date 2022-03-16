@@ -29,7 +29,11 @@ import { Route, UrlMatchResult, UrlSegment } from '@angular/router';
 import { AuthorizedGuard } from '../security/guards/authorized.guard';
 =======
 import { DashboardComponent } from './dashboard/dashboard.component';
+<<<<<<< HEAD
 >>>>>>> mc-9822 - add initial scaffolding for dashboard page.
+=======
+import { HomeComponent } from './home/home.component';
+>>>>>>> mc-9822 - add homeComponent w/ redirect to dashboard ifUserSignedIn, reconfigure routes.
 
 export const buildStaticContentRoute = (path: string, staticAssetPath: string): Route => {
   return {
@@ -70,8 +74,23 @@ export const routes: Route[] = [
     matcher: dynamicStaticPageMatcher,
     component: StaticContentComponent,
   },
+<<<<<<< HEAD
   {
     path: 'sign-in',
+=======
+  buildStaticContentState('app.container.about', '/about', 'about'),
+  {
+    name: 'app.container.home',
+    url: '/home',
+    component: HomeComponent,
+    data: {
+      allowAnonymous: true,
+    },
+  },
+  {
+    name: 'app.container.signin',
+    url: '/sign-in',
+>>>>>>> mc-9822 - add homeComponent w/ redirect to dashboard ifUserSignedIn, reconfigure routes.
     component: SignInComponent,
   },
   {
