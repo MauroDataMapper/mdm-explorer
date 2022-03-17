@@ -17,16 +17,23 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
+import { DataModelDetail, DataModelIndexResponse } from '@maurodatamapper/mdm-resources';
 import { FolderDetail } from '@maurodatamapper/mdm-resources/lib/es2015/mdm-folder.model';
-import { Observable, switchMap } from 'rxjs';
+import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
+import { forkJoin, map, Observable, of, switchMap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { FolderService } from './folder.service';
+import { DataModelService } from '../catalogue/data-model.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserRequestsService {
-  constructor(private folderService: FolderService) {}
+  constructor(
+    private folderService: FolderService,
+    private endpoints: MdmEndpointsService,
+    private dataModelService: DataModelService
+  ) {}
 
   /**
    * Retrieve the users data requests folder. Creates a new folder if there isn't one.
@@ -43,6 +50,21 @@ export class UserRequestsService {
         );
       })
     );
+  }
+
+  get(username: string): Observable<DataModelDetail[]> {
+    let dataModelCalls: Observable<DataModelDetail>[];
+    this.getUserRequestsFolder(username)
+      .pipe(
+        switchMap((userRequestsFolder: FolderDetail) => {
+          return this.endpoints.dataModel.listInFolder(
+            userRequestsFolder.id!
+          ) as Observable<DataModelIndexResponse>;
+        }),
+        map((response: DataModelIndexResponse) => response.body)
+      )
+      .subscribe((dataModelIndex) => {});
+    return of([]);
   }
 
   /**
