@@ -22,8 +22,8 @@ import { NotAuthorizedComponent } from './not-authorized/not-authorized.componen
 import { NotFoundComponent } from './not-found/not-found.component';
 import { NotImplementedComponent } from './not-implemented/not-implemented.component';
 import { ServerErrorComponent } from './server-error/server-error.component';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { NgxJsonViewerModule } from 'ngx-json-viewer';
+import { CoreModule } from '../core/core.module';
 
 @NgModule({
   declarations: [
@@ -31,11 +31,8 @@ import { NgxJsonViewerModule } from 'ngx-json-viewer';
     NotImplementedComponent,
     NotAuthorizedComponent,
     NotFoundComponent,
-    ServerErrorComponent
+    ServerErrorComponent,
   ],
-  imports: [
-    MatSlideToggleModule,
-    NgxJsonViewerModule
-  ]
+  imports: [CoreModule, NgxJsonViewerModule],
 })
-export class ErrorModule { }
+export class ErrorModule {}
