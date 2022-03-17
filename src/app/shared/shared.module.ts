@@ -17,7 +17,6 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { AlertComponent } from './alert/alert.component';
 import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
@@ -25,8 +24,7 @@ import { UIRouterModule } from '@uirouter/angular';
 import { SafePipe } from './pipes/safe.pipe';
 import { ArrowDirective } from './directives/arrow.directive';
 import { BookmarkToggleComponent } from './bookmark-toggle/bookmark-toggle.component';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { CoreModule } from '../core/core.module';
 
 @NgModule({
   declarations: [
@@ -37,7 +35,7 @@ import { MatIconModule } from '@angular/material/icon';
     ArrowDirective,
     BookmarkToggleComponent,
   ],
-  imports: [CommonModule, UIRouterModule, MatButtonModule, MatIconModule],
+  imports: [CoreModule, UIRouterModule],
   exports: [AlertComponent, FooterComponent, HeaderComponent, BookmarkToggleComponent],
 })
 export class SharedModule {}
