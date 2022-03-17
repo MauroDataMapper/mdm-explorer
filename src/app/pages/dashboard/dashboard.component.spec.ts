@@ -1,3 +1,5 @@
+import { DataModel, DataModelDetail } from '@maurodatamapper/mdm-resources';
+import { ToastrComponentlessModule } from 'ngx-toastr';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { UserRequestsService } from 'src/app/core/user-requests.service';
 import { SecurityService } from 'src/app/security/security.service';
@@ -38,5 +40,16 @@ describe('DashboardComponent', () => {
 
   it('should create', () => {
     expect(harness.isComponentCreated).toBeTruthy();
+  });
+
+  describe('initialisation', () => {
+    it('should load the users open requests', () => {
+      const openRequests = [
+        { label: 'dataModel-1' },
+        { label: 'dataModel-2' },
+      ] as DataModelDetail[];
+
+      harness.component.ngOnInit();
+    });
   });
 });
