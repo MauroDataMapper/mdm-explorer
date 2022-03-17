@@ -31,7 +31,7 @@ export type KnownRouterState =
   | 'app.container.forgot-password'
   | 'app.container.browse'
   | 'app.container.search'
-  | 'app.container.search-results';
+  | 'app.container.search-listing';
 
 /**
  * Wrapper service around the {@link UIRouter} from `@ui-router/angular` package.

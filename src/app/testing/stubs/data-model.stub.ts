@@ -16,26 +16,48 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { DataClass, DataModel, DataModelDetail } from '@maurodatamapper/mdm-resources';
+import {
+  CatalogueItemSearchResult,
+  DataClass,
+  DataClassDetail,
+  DataElement,
+  DataModel,
+  DataModelDetail,
+  SearchQueryParameters,
+  Uuid,
+} from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
+import { DataClassIdentifier } from 'src/app/catalogue/catalogue.types';
 
 export type DataModelGetDataModelFn = (path: string) => Observable<DataModelDetail>;
-export type DataModelGetDataModelMockedFn = jest.MockedFunction<DataModelGetDataModelFn>;
-
 export type DataModelGetDataClassesFn = (
   parent: DataModel | DataClass
 ) => Observable<DataClass[]>;
-export type DataModelGetDataClassesMockedFn =
-  jest.MockedFunction<DataModelGetDataClassesFn>;
+export type DataModelGetDataClassFn = (
+  id: DataClassIdentifier
+) => Observable<DataClassDetail>;
+export type DataModelGetDataElementsFn = (
+  id: DataClassIdentifier
+) => Observable<DataElement[]>;
+export type DataModelSearchDataModelFn = (
+  id: Uuid,
+  params: SearchQueryParameters
+) => Observable<CatalogueItemSearchResult[]>;
 
 export interface DataModelServiceStub {
-  getDataModel: DataModelGetDataModelMockedFn;
-  getDataClasses: DataModelGetDataClassesMockedFn;
+  getDataModel: jest.MockedFunction<DataModelGetDataModelFn>;
+  getDataClasses: jest.MockedFunction<DataModelGetDataClassesFn>;
+  getDataClass: jest.MockedFunction<DataModelGetDataClassFn>;
+  getDataElements: jest.MockedFunction<DataModelGetDataElementsFn>;
+  searchDataModel: jest.MockedFunction<DataModelSearchDataModelFn>;
 }
 
 export const createDataModelServiceStub = (): DataModelServiceStub => {
   return {
-    getDataModel: jest.fn() as DataModelGetDataModelMockedFn,
-    getDataClasses: jest.fn() as DataModelGetDataClassesMockedFn,
+    getDataModel: jest.fn() as jest.MockedFunction<DataModelGetDataModelFn>,
+    getDataClasses: jest.fn() as jest.MockedFunction<DataModelGetDataClassesFn>,
+    getDataClass: jest.fn() as jest.MockedFunction<DataModelGetDataClassFn>,
+    getDataElements: jest.fn() as jest.MockedFunction<DataModelGetDataElementsFn>,
+    searchDataModel: jest.fn() as jest.MockedFunction<DataModelSearchDataModelFn>,
   };
 };

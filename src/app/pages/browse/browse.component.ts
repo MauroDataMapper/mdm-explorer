@@ -66,8 +66,14 @@ export class BrowseComponent implements OnInit {
       return;
     }
 
-    this.stateRouter.transitionTo('app.container.search-results', {
-      dataClassId: this.selected!.id, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+    if (!this.selected) {
+      return;
+    }
+
+    this.stateRouter.transitionTo('app.container.search-listing', {
+      dm: this.selected.model,
+      dc: this.selected.id,
+      pdc: this.selected.parentDataClass,
     });
   }
 

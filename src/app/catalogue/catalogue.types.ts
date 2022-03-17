@@ -21,7 +21,17 @@ import {
   CatalogueItemDomainType,
   DataClass,
   DataModel,
+  Uuid,
 } from '@maurodatamapper/mdm-resources';
+
+/**
+ * Represents a full identifier for a Data Class, based on parent hierarchy.
+ */
+export interface DataClassIdentifier {
+  dataModelId: Uuid;
+  parentDataClassId?: Uuid;
+  dataClassId: Uuid;
+}
 
 export const isDataModel = (item: DataModel | DataClass): item is DataModel =>
   item.domainType === CatalogueItemDomainType.DataModel;

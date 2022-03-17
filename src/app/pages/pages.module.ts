@@ -27,13 +27,16 @@ import { ForgotPasswordComponent } from './forgot-password/forgot-password.compo
 import { StaticContentComponent } from './static-content/static-content.component';
 import { BrowseComponent } from './browse/browse.component';
 import { MatButtonModule } from '@angular/material/button';
-import { SearchResultsComponent } from './search-results/search-results.component';
-import { MyAccountComponent } from './my-account/my-account.component';
+import { SearchListingComponent } from './search-listing/search-listing.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
 import { SearchComponent } from './search/search.component';
+import { MyAccountComponent } from './my-account/my-account.component';
+import { UIRouterModule } from '@uirouter/angular';
+import { SearchModule } from '../search/search.module';
 
 @NgModule({
   declarations: [
@@ -42,7 +45,7 @@ import { SearchComponent } from './search/search.component';
     ForgotPasswordComponent,
     StaticContentComponent,
     BrowseComponent,
-    SearchResultsComponent,
+    SearchListingComponent,
     MyAccountComponent,
     SearchComponent,
   ],
@@ -50,6 +53,7 @@ import { SearchComponent } from './search/search.component';
     CommonModule,
     SharedModule,
     SecurityModule,
+    SearchModule,
     MatButtonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -57,6 +61,8 @@ import { SearchComponent } from './search/search.component';
     MatInputModule,
     MatFormFieldModule,
     MatProgressSpinnerModule,
+    MatIconModule,
+    UIRouterModule,
   ],
 })
 export class PagesModule {}

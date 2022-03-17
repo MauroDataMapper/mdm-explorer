@@ -17,10 +17,13 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { TestBed } from '@angular/core/testing';
+import { UISref } from '@uirouter/angular';
+import { MockDirective } from 'ng-mocks';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from '../../testing/testing.helpers';
+import { ArrowDirective } from '../directives/arrow.directive';
 import { HeaderComponent } from './header.component';
 
 describe('HeaderComponent', () => {
@@ -28,7 +31,9 @@ describe('HeaderComponent', () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({});
-    harness = await setupTestModuleForComponent(HeaderComponent);
+    harness = await setupTestModuleForComponent(HeaderComponent, {
+      declarations: [MockDirective(ArrowDirective), MockDirective(UISref)],
+    });
   });
 
   it('should create', () => {

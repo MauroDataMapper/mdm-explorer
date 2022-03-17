@@ -18,15 +18,19 @@ SPDX-License-Identifier: Apache-2.0
 */
 import {
   CatalogueItemDomainType,
+  CatalogueItemSearchResult,
   DataClass,
+  DataClassDetail,
+  DataElement,
   DataModel,
   DataModelDetail,
+  SearchQueryParameters,
 } from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
 import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
 import { createMdmEndpointsStub } from '../testing/stubs/mdm-endpoints.stub';
 import { setupTestModuleForService } from '../testing/testing.helpers';
-
+import { DataClassIdentifier } from './catalogue.types';
 import { DataModelService } from './data-model.service';
 
 describe('DataModelService', () => {
@@ -176,6 +180,158 @@ describe('DataModelService', () => {
 
       const expected$ = cold('--a|', { a: expectedClasses });
       const actual$ = service.getDataClasses(parent);
+      expect(actual$).toBeObservable(expected$);
+    });
+  });
+
+  describe('get data class', () => {
+    it('should get a data class with no parent', () => {
+      const id: DataClassIdentifier = {
+        dataModelId: '1',
+        dataClassId: '2',
+      };
+
+      const expectedDataClass: DataClassDetail = {
+        id: id.dataClassId,
+        label: 'test',
+        domainType: CatalogueItemDomainType.DataClass,
+        availableActions: ['show'],
+      };
+
+      endpointsStub.dataClass.get.mockImplementationOnce((dmId, dcId) => {
+        expect(dmId).toBe(id.dataModelId);
+        expect(dcId).toBe(id.dataClassId);
+        return cold('--a|', {
+          a: {
+            body: expectedDataClass,
+          },
+        });
+      });
+
+      const expected$ = cold('--a|', { a: expectedDataClass });
+      const actual$ = service.getDataClass(id);
+      expect(actual$).toBeObservable(expected$);
+    });
+
+    it('should get a data class from its parent', () => {
+      const id: DataClassIdentifier = {
+        dataModelId: '1',
+        dataClassId: '2',
+        parentDataClassId: '3',
+      };
+
+      const expectedDataClass: DataClassDetail = {
+        id: id.dataClassId,
+        label: 'test',
+        domainType: CatalogueItemDomainType.DataClass,
+        availableActions: ['show'],
+      };
+
+      endpointsStub.dataClass.getChildDataClass.mockImplementationOnce(
+        (dmId, dcId, cDcId) => {
+          expect(dmId).toBe(id.dataModelId);
+          expect(dcId).toBe(id.parentDataClassId);
+          expect(cDcId).toBe(id.dataClassId);
+          return cold('--a|', {
+            a: {
+              body: expectedDataClass,
+            },
+          });
+        }
+      );
+
+      const expected$ = cold('--a|', { a: expectedDataClass });
+      const actual$ = service.getDataClass(id);
+      expect(actual$).toBeObservable(expected$);
+    });
+  });
+
+  describe('get data elements', () => {
+    it('should return a list of data elements', () => {
+      const id: DataClassIdentifier = {
+        dataModelId: '1',
+        dataClassId: '2',
+      };
+
+      const expectedElements: DataElement[] = [
+        {
+          id: '1',
+          label: 'element 1',
+          domainType: CatalogueItemDomainType.DataElement,
+        },
+        {
+          id: '2',
+          label: 'element 2',
+          domainType: CatalogueItemDomainType.DataElement,
+        },
+      ];
+
+      endpointsStub.dataElement.list.mockImplementationOnce((dmId, dcId) => {
+        expect(dmId).toBe(id.dataModelId);
+        expect(dcId).toBe(id.dataClassId);
+        return cold('--a|', {
+          a: {
+            body: {
+              count: expectedElements.length,
+              items: expectedElements,
+            },
+          },
+        });
+      });
+
+      const expected$ = cold('--a|', {
+        a: {
+          count: expectedElements.length,
+          items: expectedElements,
+        },
+      });
+      const actual$ = service.getDataElements(id);
+      expect(actual$).toBeObservable(expected$);
+    });
+  });
+
+  describe('search data model', () => {
+    it('should return search results', () => {
+      const dataModelId = '123';
+      const parameters: SearchQueryParameters = {
+        searchTerm: 'test',
+      };
+
+      const expectedResults: CatalogueItemSearchResult[] = [
+        {
+          id: '1',
+          label: 'result 1',
+          domainType: CatalogueItemDomainType.DataElement,
+          breadcrumbs: [],
+        },
+        {
+          id: '2',
+          label: 'result 2',
+          domainType: CatalogueItemDomainType.DataElement,
+          breadcrumbs: [],
+        },
+      ];
+
+      endpointsStub.dataModel.search.mockImplementationOnce((id, params) => {
+        expect(id).toBe(dataModelId);
+        expect(params).toBe(parameters);
+        return cold('--a|', {
+          a: {
+            body: {
+              count: expectedResults.length,
+              items: expectedResults,
+            },
+          },
+        });
+      });
+
+      const expected$ = cold('--a|', {
+        a: {
+          count: expectedResults.length,
+          items: expectedResults,
+        },
+      });
+      const actual$ = service.searchDataModel(dataModelId, parameters);
       expect(actual$).toBeObservable(expected$);
     });
   });

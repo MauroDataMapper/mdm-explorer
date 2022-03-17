@@ -16,21 +16,24 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component } from '@angular/core';
-import { CatalogueSearchPayload } from 'src/app/catalogue/catalogue.service';
-import { StateRouterService } from 'src/app/core/state-router.service';
+import {
+  CatalogueItemSearchResponse,
+  SearchQueryParameters,
+  Uuid,
+} from '@maurodatamapper/mdm-resources';
+import { Observable } from 'rxjs';
 
-@Component({
-  selector: 'mdm-search',
-  templateUrl: './search.component.html',
-  styleUrls: ['./search.component.scss'],
-})
-export class SearchComponent {
-  constructor(private stateRouter: StateRouterService) {}
+export type DataModelSearchFn = (
+  id: Uuid,
+  query?: SearchQueryParameters
+) => Observable<CatalogueItemSearchResponse>;
 
-  search(payload: CatalogueSearchPayload) {
-    this.stateRouter.transitionTo('app.container.search-listing', {
-      search: payload.searchTerms,
-    });
-  }
+export interface MdmDataModelResourcesStub {
+  search: jest.MockedFunction<DataModelSearchFn>;
 }
+
+export const createDataModelStub = (): MdmDataModelResourcesStub => {
+  return {
+    search: jest.fn() as jest.MockedFunction<DataModelSearchFn>,
+  };
+};

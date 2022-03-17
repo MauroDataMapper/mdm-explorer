@@ -16,18 +16,26 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, OnInit } from '@angular/core';
 
-@Component({
-  selector: 'mdm-search-results',
-  templateUrl: './search-results.component.html',
-  styleUrls: ['./search-results.component.scss']
-})
-export class SearchResultsComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
+.mdm-search-listing {
+  &__back-link,
+  &__search,
+  &__sort-row {
+    margin: 1em 0;
   }
 
+  &__search-input {
+    width: 50%;
+  }
+
+  &__loading {
+    mat-spinner {
+      margin: 2em auto;
+    }
+  }
+
+  &__error {
+    padding: 2em 3em;
+    text-align: center;
+  }
 }
