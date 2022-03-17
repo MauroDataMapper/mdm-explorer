@@ -26,14 +26,18 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 const angularModules = [CommonModule, FormsModule, ReactiveFormsModule];
 
 const materialModules = [
   MatButtonModule,
+  MatIconModule,
   MatInputModule,
   MatFormFieldModule,
   MatListModule,
+  MatCheckboxModule,
   MatSlideToggleModule,
   MatProgressSpinnerModule,
   MatProgressBarModule,

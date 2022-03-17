@@ -17,23 +17,14 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { DataElementSearchResultComponent } from './data-element-search-result/data-element-search-result.component';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { SharedModule } from '../shared/shared.module';
+import { CoreModule } from '../core/core.module';
 
 @NgModule({
   declarations: [BreadcrumbComponent, DataElementSearchResultComponent],
-  imports: [
-    CommonModule,
-    SharedModule,
-    MatCheckboxModule,
-    MatButtonModule,
-    MatIconModule,
-  ],
+  imports: [CoreModule, SharedModule],
   exports: [BreadcrumbComponent, DataElementSearchResultComponent],
 })
 export class SearchModule {}

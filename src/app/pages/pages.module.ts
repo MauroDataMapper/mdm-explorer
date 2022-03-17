@@ -28,6 +28,8 @@ import { SearchListingComponent } from './search-listing/search-listing.componen
 import { SearchComponent } from './search/search.component';
 import { MyAccountComponent } from './my-account/my-account.component';
 import { CoreModule } from '../core/core.module';
+import { UIRouterModule } from '@uirouter/angular';
+import { SearchModule } from '../search/search.module';
 
 @NgModule({
   declarations: [
@@ -40,6 +42,6 @@ import { CoreModule } from '../core/core.module';
     MyAccountComponent,
     SearchComponent,
   ],
-  imports: [CoreModule, SharedModule, SecurityModule],
+  imports: [CoreModule, SharedModule, SecurityModule, SearchModule, UIRouterModule],
 })
 export class PagesModule {}
