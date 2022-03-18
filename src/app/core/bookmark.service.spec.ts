@@ -17,46 +17,30 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { setupTestModuleForService } from '../testing/testing.helpers';
-import { Bookmark, BookmarkService } from './bookmark.service';
+import { BookmarkService } from './bookmark.service';
+import { of } from 'rxjs';
+import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
+import { createMdmEndpointsStub } from '../testing/stubs/mdm-endpoints.stub';
 
 describe('BookmarkService', () => {
   let service: BookmarkService;
+  const endpointsStub = createMdmEndpointsStub();
 
   beforeEach(() => {
-    service = setupTestModuleForService(BookmarkService);
+    // Default endpoint call
+    endpointsStub.apiProperties.listPublic.mockImplementationOnce(() => of([]));
+
+    service = setupTestModuleForService(BookmarkService, {
+      providers: [
+        {
+          provide: MdmEndpointsService,
+          useValue: endpointsStub,
+        },
+      ],
+    });
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
-  });
-
-  it('should be able to index, and and remove bookmarks', () => {
-    expect(service.index()).toHaveLength(0);
-
-    const bookmark1: Bookmark = {path: 'Test path 1'};
-    service.add(bookmark1);
-    expect(service.index()).toHaveLength(1);
-
-    // Can't add the same one again
-    service.add(bookmark1);
-    expect(service.index()).toHaveLength(1);
-
-    const bookmark2: Bookmark  = {path: 'Test path 2'};
-    service.add(bookmark2);
-    expect(service.index()).toHaveLength(2);
-
-    // Can't add the same one again
-    service.add(bookmark2);
-    expect(service.index()).toHaveLength(2);
-
-    service.remove(bookmark1);
-    expect(service.index()).toHaveLength(1);
-
-    // Removing the same one again has no affect
-    service.remove(bookmark1);
-    expect(service.index()).toHaveLength(1);
-
-    service.remove(bookmark2);
-    expect(service.index()).toHaveLength(0);
   });
 });

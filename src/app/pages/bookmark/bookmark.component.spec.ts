@@ -17,18 +17,27 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { AlertComponent } from '../../shared/alert/alert.component';
-import { ComponentHarness, setupTestModuleForComponent } from '../../testing/testing.helpers';
+import {
+  ComponentHarness,
+  setupTestModuleForComponent,
+} from '../../testing/testing.helpers';
 import { BookmarkComponent } from './bookmark.component';
+import { MdmEndpointsService } from '../../mdm-rest-client/mdm-endpoints.service';
+import { createMdmEndpointsStub } from 'src/app/testing/stubs/mdm-endpoints.stub';
 
 describe('BookmarkComponent', () => {
   let harness: ComponentHarness<BookmarkComponent>;
+  const endpointsStub = createMdmEndpointsStub();
 
   beforeEach(async () => {
-    harness = await setupTestModuleForComponent(
-      BookmarkComponent,
-      {
-        declarations: [AlertComponent]
-      });
+    harness = await setupTestModuleForComponent(BookmarkComponent, {
+      providers: [
+        {
+          provide: MdmEndpointsService,
+          useValue: endpointsStub,
+        },
+      ],
+    });
   });
 
   it('should create', () => {

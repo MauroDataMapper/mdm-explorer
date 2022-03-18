@@ -22,27 +22,16 @@ import { Bookmark, BookmarkService } from 'src/app/core/bookmark.service';
 @Component({
   selector: 'mdm-bookmark',
   templateUrl: './bookmark.component.html',
-  styleUrls: ['./bookmark.component.scss']
+  styleUrls: ['./bookmark.component.scss'],
 })
 export class BookmarkComponent implements OnInit {
-
   bookmarks: Bookmark[] = [];
 
-  constructor(
-    private bookmarkService: BookmarkService
-  ) {  }
+  constructor(private bookmarkService: BookmarkService) {}
 
   ngOnInit(): void {
-    // A bootstrapped bookmark for testing
-    // Delete when there is a way to add a bookmark
-    const bookmark1: Bookmark = {path: 'Bookmarked item 1'};
-    this.bookmarkService.add(bookmark1);
-
-    const bookmark2: Bookmark = {path: 'Bookmarked item 2'};
-    this.bookmarkService.add(bookmark2);
-    // End of bootstrapping
-
-    this.bookmarks = this.bookmarkService.index();
+    this.bookmarkService.index().subscribe((result) => {
+      this.bookmarks = result;
+    });
   }
-
 }
