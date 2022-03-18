@@ -29,10 +29,8 @@ export interface UserDetails {
   userName: string;
   email: string;
   role?: string;
-  isAdmin?: boolean;
   needsToResetPassword?: boolean;
 }
-
 
 /**
  * Manages local details about the current Mauro user who is logged in.
@@ -40,11 +38,10 @@ export interface UserDetails {
  * @see {@link SecurityService}
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserDetailsService {
-
-  constructor() { }
+  constructor() {}
 
   /**
    * Gets the current user in use, or null if there is no current user.
@@ -63,8 +60,7 @@ export class UserDetailsService {
       email: localStorage.getItem('email') ?? '',
       userName,
       role: localStorage.getItem('role') ?? undefined,
-      isAdmin: Boolean(localStorage.getItem('isAdmin')),
-      needsToResetPassword: Boolean(localStorage.getItem('needsToResetPassword'))
+      needsToResetPassword: Boolean(localStorage.getItem('needsToResetPassword')),
     };
   }
 
@@ -78,13 +74,21 @@ export class UserDetailsService {
 
     localStorage.setItem('userId', user.id);
     localStorage.setItem('token', user.token ?? '');
-    localStorage.setItem('userName', JSON.stringify({ email: user.userName, expiry: expiryDate }));
+    localStorage.setItem(
+      'userName',
+      JSON.stringify({ email: user.userName, expiry: expiryDate })
+    );
     localStorage.setItem('firstName', user.firstName);
     localStorage.setItem('lastName', user.lastName);
-    localStorage.setItem('email', JSON.stringify({ email: user.userName, expiry: expiryDate }));
-    localStorage.setItem('isAdmin', (user.isAdmin ?? false).toString());
+    localStorage.setItem(
+      'email',
+      JSON.stringify({ email: user.userName, expiry: expiryDate })
+    );
     localStorage.setItem('role', user.role ?? '');
-    localStorage.setItem('needsToResetPassword', (user.needsToResetPassword ?? false).toString());
+    localStorage.setItem(
+      'needsToResetPassword',
+      (user.needsToResetPassword ?? false).toString()
+    );
   }
 
   /**
@@ -97,7 +101,6 @@ export class UserDetailsService {
     localStorage.removeItem('firstName');
     localStorage.removeItem('lastName');
     localStorage.removeItem('email');
-    localStorage.removeItem('isAdmin');
     localStorage.removeItem('role');
     localStorage.removeItem('needsToResetPassword');
   }
