@@ -68,7 +68,7 @@ describe('UserRequestsService', () => {
     );
 
     // Act
-    const actual$ = service.getUserRequestsFolder(username);
+    const actual$ = service.getRequestsFolder(username);
 
     // Assert
     expect(actual$).toBeObservable(expected$);

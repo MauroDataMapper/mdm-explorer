@@ -41,7 +41,7 @@ export class UserRequestsService {
    * @param username - get the data requests folder for the user with the given unique username
    * @returns an observable containing a FolderDetail object
    */
-  getUserRequestsFolder(username: string): Observable<FolderDetail> {
+  getRequestsFolder(username: string): Observable<FolderDetail> {
     return this.folderService.getOrCreate(`${environment.rootRequestFolder}`).pipe(
       switchMap((rootFolder: FolderDetail) => {
         return this.folderService.getOrCreateChildOf(
