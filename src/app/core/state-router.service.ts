@@ -17,53 +17,62 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { RawParams, TransitionOptions, UIRouter } from '@uirouter/angular';
+import { Params, Router } from '@angular/router';
 
 /**
- * Definition of known page router state names.
+ * Definition of known page router paths.
  *
- * Keep this up to date with the state names defined in your UIRouter state declarations.
+ * Keep this up to date with the paths defined in your route declarations.
  */
-export type KnownRouterState =
-  | 'app.container.default'
-  | 'app.container.home'
-  | 'app.container.signin'
-  | 'app.container.forgot-password'
-  | 'app.container.browse'
-  | 'app.container.search'
-  | 'app.container.search-listing';
+export type KnownRouterPath =
+  | ''
+  | '/home'
+  | '/sign-in'
+  | '/forgot-password'
+  | '/browse'
+  | '/search'
+  | '/search/listing';
 
 /**
- * Wrapper service around the {@link UIRouter} from `@ui-router/angular` package.
+ * Wrapper service around the {@link Router} from `@angular/router` package.
  */
 @Injectable({
   providedIn: 'root',
 })
 export class StateRouterService {
-  constructor(private router: UIRouter) {}
+  constructor(private router: Router) {}
 
   /**
-   * Transition to a new state in the application i.e. "navigate" to a new view.
+   * Navigate to a route.
    *
-   * @param name The name of the state to transition to.
-   * @param params The parameters to use when transitioning state.
-   * @param options Any options for the state transition.
-   * @returns A {@link TransitionPromise} representing the state of the new transition.
+   * @param fragments The fragments to make up the route.
+   * @param queryParams Optional query parameters to include in the URL.
+   * @returns A Promise that resolves to true when navigation succeeds, to false when navigation fails, or is rejected on error.
    */
-  transition(name: string, params?: RawParams, options?: TransitionOptions) {
-    return this.router.stateService.go(name, params, options);
+  navigateTo(fragments: any[], queryParams?: Params) {
+    return this.router.navigate(fragments, { queryParams });
   }
 
   /**
-   * Transition to a known state in the application i.e. "navigate" to a new view.
+   * Navigate to a known route path.
    *
-   * @param name The name of the state to transition to.
-   * @param params The parameters to use when transitioning state.
-   * @param options Any options for the state transition.
-   * @returns A {@link TransitionPromise} representing the state of the new transition.
-   * @see {@link transition}
+   * @param path The specific path to navigate to.
+   * @param queryParams Optional query parameters to include in the URL.
+   * @returns A Promise that resolves to true when navigation succeeds, to false when navigation fails, or is rejected on error.
    */
-  transitionTo(name: KnownRouterState, params?: RawParams, options?: TransitionOptions) {
-    return this.transition(name, params, options);
+  navigateToKnownPath(path: KnownRouterPath, queryParams?: Params) {
+    const url = this.router.createUrlTree([path], { queryParams });
+    return this.router.navigateByUrl(url);
+  }
+
+  /**
+   * Navigate to the app's "Not Found" route.
+   *
+   * @returns A Promise that resolves to true when navigation succeeds, to false when navigation fails, or is rejected on error.
+   */
+  navigateToNotFound() {
+    // Redirect to page but without updating the URL, so that the user can
+    // see the incorrect URL still in the browser
+    return this.router.navigate(['/not-found'], { skipLocationChange: true });
   }
 }

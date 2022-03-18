@@ -19,6 +19,10 @@ SPDX-License-Identifier: Apache-2.0
 import { Component } from '@angular/core';
 import { CatalogueSearchPayload } from 'src/app/catalogue/catalogue.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
+import {
+  DataElementSearchParameters,
+  mapSearchParametersToParams,
+} from 'src/app/search/search.types';
 
 @Component({
   selector: 'mdm-search',
@@ -29,8 +33,11 @@ export class SearchComponent {
   constructor(private stateRouter: StateRouterService) {}
 
   search(payload: CatalogueSearchPayload) {
-    this.stateRouter.transitionTo('app.container.search-listing', {
+    const searchParameters: DataElementSearchParameters = {
       search: payload.searchTerms,
-    });
+    };
+
+    const params = mapSearchParametersToParams(searchParameters);
+    this.stateRouter.navigateToKnownPath('/search/listing', params);
   }
 }

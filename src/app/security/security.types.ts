@@ -23,14 +23,13 @@ import { MdmHttpError } from '../mdm-rest-client/mdm-rest-client.types';
 export enum SignInErrorType {
   UnknownError,
   InvalidCredentials,
-  AlreadySignedIn
+  AlreadySignedIn,
 }
 
 /**
  * Represents an error that occurred during login.
  */
 export class LoginError extends MdmHttpError {
-
   /**
    * The type of sign-in error that occurered, represented by the `SignInErrorType` enum constants.
    */
@@ -56,13 +55,13 @@ export class LoginError extends MdmHttpError {
  * Represents an error that occurred during a check for an authenticated session.
  */
 export class AuthenticatedSessionError extends MdmHttpError {
-
   readonly invalidated: boolean;
 
   constructor(response: HttpErrorResponse) {
     super(response);
 
-    this.invalidated = response.status === 500 && response.message === 'Session has been invalidated';
+    this.invalidated =
+      response.status === 500 && response.message === 'Session has been invalidated';
   }
 }
 
@@ -70,7 +69,9 @@ export interface OpenIdConnectConfiguration {
   redirectUrl: string;
 }
 
-export const OPENID_CONNECT_CONFIG = new InjectionToken<OpenIdConnectConfiguration>('OpenID Connect Configuration');
+export const OPENID_CONNECT_CONFIG = new InjectionToken<OpenIdConnectConfiguration>(
+  'OpenID Connect Configuration'
+);
 
 export interface OpenIdConnectSession {
   providerId: string;
@@ -80,4 +81,9 @@ export interface OpenIdConnectSession {
 }
 
 // eslint-disable-next-line no-useless-escape
-export const defaultEmailPattern = /^[_A-Za-z0-9-'!#%&=\/~\`\+\$\*\?\^\{\|\}]+(\.[_A-Za-z0-9-'!#%&=\/~\`\+\$\*\?\^\{\|\}]+)*@[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-\+]+)*(\.[A-Za-z]{2,})$/;
+export const defaultEmailPattern =
+  /^[_A-Za-z0-9-'!#%&=\/~\`\+\$\*\?\^\{\|\}]+(\.[_A-Za-z0-9-'!#%&=\/~\`\+\$\*\?\^\{\|\}]+)*@[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-\+]+)*(\.[A-Za-z]{2,})$/;
+
+export const AUTHORIZATION_REDIRECT_URL = new InjectionToken<string>(
+  'Authorization Redirect URL'
+);

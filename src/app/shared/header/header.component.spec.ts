@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { TestBed } from '@angular/core/testing';
-import { UISref } from '@uirouter/angular';
+import { RouterLink } from '@angular/router';
 import { MockDirective } from 'ng-mocks';
 import {
   ComponentHarness,
@@ -32,7 +32,7 @@ describe('HeaderComponent', () => {
   beforeEach(async () => {
     TestBed.configureTestingModule({});
     harness = await setupTestModuleForComponent(HeaderComponent, {
-      declarations: [MockDirective(ArrowDirective), MockDirective(UISref)],
+      declarations: [MockDirective(ArrowDirective), MockDirective(RouterLink)],
     });
   });
 
@@ -45,7 +45,7 @@ describe('HeaderComponent', () => {
 
   it('should include sign-in when link provided', () => {
     harness.component.signInLink = {
-      routeName: 'test',
+      routerLink: 'test',
       label: 'Sign in',
     };
 
@@ -67,7 +67,7 @@ describe('HeaderComponent', () => {
   it('should display Sign In link when not signed in', () => {
     const dom = harness.fixture.nativeElement;
     harness.component.signInLink = {
-      routeName: 'test',
+      routerLink: 'test',
       label: 'Sign in',
     };
     harness.detectChanges();
@@ -84,7 +84,7 @@ describe('HeaderComponent', () => {
   it('should display Sign Out link, bookmarks and requests when signed in', () => {
     const dom = harness.fixture.nativeElement;
     harness.component.signInLink = {
-      routeName: 'test',
+      routerLink: 'test',
       label: 'Sign in',
     };
     harness.component.signedInUser = {
@@ -97,13 +97,13 @@ describe('HeaderComponent', () => {
     harness.component.rightLinks = [
       {
         label: 'Bookmarks',
-        routeName: 'app.container.my-bookmarks',
+        routerLink: 'app.container.my-bookmarks',
         imageSrc: '',
       },
     ];
     harness.component.accountLink = {
       label: 'My requests',
-      routeName: 'app.container.my-requests',
+      routerLink: 'app.container.my-requests',
       arrow: 'angle-down',
     };
     harness.detectChanges();

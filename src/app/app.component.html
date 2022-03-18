@@ -29,7 +29,9 @@ SPDX-License-Identifier: Apache-2.0
       [numberOfRequests]="numberOfRequests"
     ></mdm-header>
 
-    <main ui-view></main>
+    <main class="container">
+      <router-outlet></router-outlet>
+    </main>
 
     <mdm-footer version="0.1.0" [links]="footerLinks"></mdm-footer>
   </div>

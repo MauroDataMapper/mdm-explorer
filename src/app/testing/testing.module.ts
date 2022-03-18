@@ -21,14 +21,16 @@ import { CommonModule } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [],
   imports: [
     CommonModule,
     HttpClientTestingModule,
+    RouterModule,
     NoopAnimationsModule,
-    ToastrModule.forRoot()
-  ]
+    ToastrModule.forRoot(),
+  ],
 })
-export class TestingModule { }
+export class TestingModule {}

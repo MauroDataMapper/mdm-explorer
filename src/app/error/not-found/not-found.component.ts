@@ -17,27 +17,24 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component } from '@angular/core';
-import { UIRouterGlobals } from '@uirouter/angular';
 import { ClipboardService } from 'ngx-clipboard';
 import { ToastrService } from 'ngx-toastr';
 import { ErrorComponent } from '../error.component';
+import { ErrorService } from '../error.service';
 
 @Component({
   selector: 'mdm-not-found',
   templateUrl: '../error.component.html',
-  styleUrls: ['../error.component.scss']
+  styleUrls: ['../error.component.scss'],
 })
 export class NotFoundComponent extends ErrorComponent {
-
-  constructor(
-    uiRouterGlobals: UIRouterGlobals,
-    clipboard: ClipboardService,
-    toastr: ToastrService) {
-    super(uiRouterGlobals, clipboard, toastr);
+  constructor(clipboard: ClipboardService, toastr: ToastrService, error: ErrorService) {
+    super(clipboard, toastr, error);
 
     this.heading = 'Not Found';
     this.message = 'We\'re sorry, but the server returned a \'Not Found\' error';
-    this.resolution = 'You may need to check that the item you have requested actually exists, and that you have permission to view it';
+    this.resolution =
+      'You may need to check that the item you have requested actually exists, and that you have permission to view it';
 
     this.data.push({ name: 'Message', value: this.lastHttpError?.message, code: false });
     this.data.push({ name: 'Status', value: this.lastHttpError?.status, code: false });

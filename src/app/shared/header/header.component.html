@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 -->
 <header class="mdm-header">
   <div class="mdm-header__logo">
-    <a [uiSref]="logoLink?.routeName ?? ''">
+    <a [routerLink]="logoLink?.routerLink ?? ''">
       <img [src]="logoLink?.imageSrc" [alt]="logoLink?.label" />
     </a>
   </div>
@@ -28,9 +28,8 @@ SPDX-License-Identifier: Apache-2.0
         <li *ngFor="let link of links">
           <a
             *ngIf="!link.onlySignedIn || (link.onlySignedIn && isSignedIn)"
-            [uiSref]="link.routeName"
-            uiSrefActive="active"
-            [uiOptions]="{ reload: true, notify: true }"
+            [routerLink]="link.routerLink"
+            routerLinkActive="active"
           >
             <span [mdmArrow]="link.arrow">{{ link.label }} </span>
           </a>
@@ -41,11 +40,10 @@ SPDX-License-Identifier: Apache-2.0
       <ul>
         <li *ngFor="let rightLink of rightLinks">
           <a
-            [id]="rightLink.routeName"
+            [id]="rightLink.routerLink"
             *ngIf="!rightLink.onlySignedIn || (rightLink.onlySignedIn && isSignedIn)"
-            [uiSref]="rightLink.routeName"
-            uiSrefActive="active"
-            [uiOptions]="{ reload: true, notify: true }"
+            [routerLink]="rightLink.routerLink"
+            routerLinkActive="active"
           >
             <!-- fontawesome bookmark -->
             <span class="far fa-bookmark" style="font-size: x-large"></span
@@ -55,10 +53,9 @@ SPDX-License-Identifier: Apache-2.0
         <li class="mdm-header__containOverlay">
           <a
             *ngIf="!accountLink.onlySignedIn || (accountLink.onlySignedIn && isSignedIn)"
-            [uiSref]="accountLink.routeName"
-            [id]="accountLink.routeName"
-            uiSrefActive="active"
-            [uiOptions]="{ reload: true, notify: true }"
+            [routerLink]="accountLink.routerLink"
+            [id]="accountLink.routerLink"
+            routerLinkActive="active"
           >
             <div>
               <!-- fontawesome shopping cart -->
@@ -75,12 +72,12 @@ SPDX-License-Identifier: Apache-2.0
     <div *ngIf="includeSignIn" class="mdm-header__links--account">
       <div class="mdm-header__user">
         <div *ngIf="!isSignedIn" class="mdm-header__user--sign-in">
-          <a id="signIn" [uiSref]="signInLink?.routeName ?? ''"
+          <a id="signIn" [routerLink]="signInLink?.routerLink ?? ''"
             >{{ signInLink?.label }}
           </a>
         </div>
         <div *ngIf="isSignedIn" class="mdm-header__user--sign-out">
-          <a class="mdm-header__containOverlay" uiSref="app.container.my-account">
+          <a class="mdm-header__containOverlay" routerLink="/account">
             <img
               *ngIf="signedInUserProfileImageSrc"
               [src]="signedInUserProfileImageSrc"

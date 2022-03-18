@@ -16,12 +16,17 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { RouterOutlet } from '@angular/router';
+import { MockComponent } from 'ng-mocks';
 import { AppComponent } from './app.component';
 import { StateRouterService } from './core/state-router.service';
 import { MdmEndpointsService } from './mdm-rest-client/mdm-endpoints.service';
 import { FooterComponent } from './shared/footer/footer.component';
 import { HeaderComponent } from './shared/header/header.component';
-import { createMdmEndpointsStub, MdmEndpointsServiceStub } from './testing/stubs/mdm-endpoints.stub';
+import {
+  createMdmEndpointsStub,
+  MdmEndpointsServiceStub,
+} from './testing/stubs/mdm-endpoints.stub';
 import { ComponentHarness, setupTestModuleForComponent } from './testing/testing.helpers';
 
 describe('AppComponent', () => {
@@ -29,25 +34,19 @@ describe('AppComponent', () => {
   const endpointsStub: MdmEndpointsServiceStub = createMdmEndpointsStub();
 
   beforeEach(async () => {
-    harness = await setupTestModuleForComponent(
-      AppComponent,
-      {
-        declarations: [
-          HeaderComponent,
-          FooterComponent
-        ],
-        providers: [
-          {
-            provide: MdmEndpointsService,
-            useValue: endpointsStub
-          },
-          {
-            provide: StateRouterService,
-            useValue: jest.fn()
-          }
-        ]
-      }
-    );
+    harness = await setupTestModuleForComponent(AppComponent, {
+      declarations: [HeaderComponent, FooterComponent, MockComponent(RouterOutlet)],
+      providers: [
+        {
+          provide: MdmEndpointsService,
+          useValue: endpointsStub,
+        },
+        {
+          provide: StateRouterService,
+          useValue: jest.fn(),
+        },
+      ],
+    });
   });
 
   it('should create the app', () => {

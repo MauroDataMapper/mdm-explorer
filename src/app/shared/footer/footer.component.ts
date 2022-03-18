@@ -30,7 +30,7 @@ export interface FooterLink {
   /**
    * If this is a hyperlink, provide the href for the anchor tag.
    *
-   * @see {@link routeName}
+   * @see {@link routerLink}
    */
   href?: string;
 
@@ -39,7 +39,7 @@ export interface FooterLink {
    *
    * @see {@link href}
    */
-  routeName?: string;
+  routerLink?: string;
 
   /**
    * State the target to use on the anchor tag.

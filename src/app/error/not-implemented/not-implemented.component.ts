@@ -17,27 +17,25 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component } from '@angular/core';
-import { UIRouterGlobals } from '@uirouter/angular';
 import { ClipboardService } from 'ngx-clipboard';
 import { ToastrService } from 'ngx-toastr';
 import { ErrorComponent } from '../error.component';
+import { ErrorService } from '../error.service';
 
 @Component({
   selector: 'mdm-not-implemented',
   templateUrl: '../error.component.html',
-  styleUrls: ['../error.component.scss']
+  styleUrls: ['../error.component.scss'],
 })
 export class NotImplementedComponent extends ErrorComponent {
-
-  constructor(
-    uiRouterGlobals: UIRouterGlobals,
-    clipboard: ClipboardService,
-    toastr: ToastrService) {
-    super(uiRouterGlobals, clipboard, toastr);
+  constructor(clipboard: ClipboardService, toastr: ToastrService, error: ErrorService) {
+    super(clipboard, toastr, error);
 
     this.heading = 'Not Implemented';
-    this.message = 'We\'re sorry, but the server responded to say that the feature you have requested has not yet been implemented';
-    this.resolution = 'If you are running a development or test instance of the server, this may be something we\'re currently working on.';
+    this.message =
+      'We\'re sorry, but the server responded to say that the feature you have requested has not yet been implemented';
+    this.resolution =
+      'If you are running a development or test instance of the server, this may be something we\'re currently working on.';
 
     this.data.push({ name: 'Message', value: this.lastHttpError?.message, code: false });
     this.data.push({ name: 'Status', value: this.lastHttpError?.status, code: false });

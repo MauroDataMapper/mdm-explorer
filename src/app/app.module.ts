@@ -18,12 +18,8 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { UIRouterModule } from '@uirouter/angular';
 import { AppComponent } from './app.component';
-import { states, uiRouterConfigFn } from './app.routes';
-import { UiViewComponent } from './views/ui-view/ui-view.component';
 import { PagesModule } from './pages/pages.module';
-import { AppContainerComponent } from './views/app-container/app-container.component';
 import { environment } from '../environments/environment';
 import { ToastrModule } from 'ngx-toastr';
 import { UserIdleModule } from 'angular-user-idle';
@@ -31,10 +27,14 @@ import { MdmRestClientModule } from './mdm-rest-client/mdm-rest-client.module';
 import { SharedModule } from './shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ErrorModule } from './error/error.module';
-import { OPENID_CONNECT_CONFIG } from './security/security.types';
+import {
+  AUTHORIZATION_REDIRECT_URL,
+  OPENID_CONNECT_CONFIG,
+} from './security/security.types';
 import { STATIC_CONTENT_CONFIGURATION } from './core/static-content.service';
 import { CATALOGUE_CONFIGURATION } from './catalogue/catalogue.types';
 import { CoreModule } from './core/core.module';
+import { AppRoutingModule } from './app-routing.module';
 
 const getOpenIdAuthorizeUrl = () => {
   // Redirect authorization URL refers to a static page route found in `/src/static-pages`. See the `assets`
@@ -53,7 +53,7 @@ const getOpenIdAuthorizeUrl = () => {
 };
 
 @NgModule({
-  declarations: [AppComponent, AppContainerComponent, UiViewComponent],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -65,12 +65,7 @@ const getOpenIdAuthorizeUrl = () => {
         withCredentials: true,
       },
     }),
-    UIRouterModule.forRoot({
-      states,
-      config: uiRouterConfigFn,
-      useHash: true,
-      otherwise: '/not-found',
-    }),
+    AppRoutingModule,
     ToastrModule.forRoot({
       timeOut: 30000,
       positionClass: 'toast-bottom-center',
@@ -84,6 +79,10 @@ const getOpenIdAuthorizeUrl = () => {
     ErrorModule,
   ],
   providers: [
+    {
+      provide: AUTHORIZATION_REDIRECT_URL,
+      useValue: '/sign-in',
+    },
     {
       provide: OPENID_CONNECT_CONFIG,
       useValue: {
@@ -103,6 +102,6 @@ const getOpenIdAuthorizeUrl = () => {
       },
     },
   ],
-  bootstrap: [UiViewComponent],
+  bootstrap: [AppComponent],
 })
 export class AppModule {}

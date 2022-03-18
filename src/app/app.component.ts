@@ -34,6 +34,7 @@ import { environment } from '../environments/environment';
 import { BroadcastEvent, BroadcastService } from './core/broadcast.service';
 import { StateRouterService } from './core/state-router.service';
 import { UserRequestsService } from './core/user-requests.service';
+import { ErrorService } from './error/error.service';
 import { MdmHttpError } from './mdm-rest-client/mdm-rest-client.types';
 import { SecurityService } from './security/security.service';
 import { UserDetails, UserDetailsService } from './security/user-details.service';
@@ -56,28 +57,28 @@ export class AppComponent implements OnInit, OnDestroy {
 
   logoLink: HeaderImageLink = {
     label: 'MDM UI Testbed',
-    routeName: 'app.container.home',
+    routerLink: '',
     imageSrc: 'assets/images/app-logo.png',
   };
 
   headerLinks: HeaderLink[] = [
     {
       label: 'About',
-      routeName: 'app.container.about',
+      routerLink: '/about',
     },
     {
       label: 'Browse',
-      routeName: 'app.container.browse',
+      routerLink: '/browse',
       onlySignedIn: true,
     },
     {
       label: 'Search',
-      routeName: 'app.container.search',
+      routerLink: '/search',
       onlySignedIn: true,
     },
     {
       label: 'Help',
-      routeName: 'app.container.help',
+      routerLink: '/help',
       arrow: 'angle-down',
     },
   ];
@@ -85,46 +86,46 @@ export class AppComponent implements OnInit, OnDestroy {
   headerRightLinks: HeaderImageLink[] = [
     {
       label: 'Bookmarks',
-      routeName: 'app.container.my-bookmarks',
+      routerLink: '/bookmarks',
       imageSrc: '',
     },
   ];
 
   accountLink: HeaderLink = {
     label: 'My requests',
-    routeName: 'app.container.my-requests',
+    routerLink: '/requests',
     arrow: 'angle-down',
   };
 
   signInLink: HeaderLink = {
-    routeName: 'app.container.signin',
+    routerLink: '/sign-in',
     label: 'Sign in',
   };
 
   footerLinks: FooterLink[] = [
     {
       label: 'Privacy policy',
-      routeName: 'app.container.privacy',
+      routerLink: '/about',
       target: '_self',
     },
     {
       label: 'Terms and conditions',
-      routeName: 'app.container.terms',
+      routerLink: '/terms-and-conditions',
       target: '_self',
     },
     {
       label: 'Cookies',
-      routeName: 'app.container.cookies',
+      routerLink: '/cookie-policy',
       target: '_self',
     },
     {
       label: 'Safeguarding',
-      routeName: 'app.container.safeguarding',
+      routerLink: '/safeguarding',
       target: '_self',
     },
     {
       label: 'Site map',
-      routeName: 'app.container.sitemap',
+      routerLink: '/sitemap',
       target: '_self',
     },
   ];
@@ -159,7 +160,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private userRequests: UserRequestsService,
     private stateRouter: StateRouterService,
     private toastr: ToastrService,
-    private userIdle: UserIdleService
+    private userIdle: UserIdleService,
+    private error: ErrorService
   ) {}
 
   @HostListener('window:mousemove', ['$event'])
@@ -194,10 +196,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this.signedInUser = this.userDetails.get();
 
-    this.subscribeHttpErrorEvent('http-not-authorized', 'app.container.not-authorized');
-    this.subscribeHttpErrorEvent('http-not-found', 'app.container.not-found');
-    this.subscribeHttpErrorEvent('http-not-implemented', 'app.container.not-implemented');
-    this.subscribeHttpErrorEvent('http-server-error', 'app.container.server-error');
+    this.subscribeHttpErrorEvent('http-not-authorized', '/not-authorized');
+    this.subscribeHttpErrorEvent('http-not-found', '/not-found');
+    this.subscribeHttpErrorEvent('http-not-implemented', '/not-implemented');
+    this.subscribeHttpErrorEvent('http-server-error', '/server-error');
 
     this._observeNumberOfRequests.subscribe(
       (nextNumber) => (this.numberOfRequests = nextNumber)
@@ -226,14 +228,7 @@ export class AppComponent implements OnInit, OnDestroy {
         }),
         finalize(() => {
           this.setupSignedInUser(null);
-          this.stateRouter.transitionTo(
-            'app.container.default',
-            {},
-            {
-              reload: true,
-              inherit: false,
-            }
-          );
+          this.stateRouter.navigateToKnownPath('');
         })
       )
       .subscribe(() => {});
@@ -243,10 +238,10 @@ export class AppComponent implements OnInit, OnDestroy {
     this.broadcast
       .on<HttpErrorResponse>(event)
       .pipe(takeUntil(this.unsubscribe$))
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      .subscribe((response) =>
-        this.stateRouter.transition(state, { lastError: response })
-      );
+      .subscribe((response) => {
+        this.error.lastError = response;
+        this.stateRouter.navigateTo([state]);
+      });
   }
 
   private setupSignedInUser(user?: UserDetails | null) {

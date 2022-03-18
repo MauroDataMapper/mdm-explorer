@@ -24,6 +24,10 @@ import { catchError, EMPTY, switchMap } from 'rxjs';
 import { CatalogueService } from 'src/app/catalogue/catalogue.service';
 import { DataModelService } from 'src/app/catalogue/data-model.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
+import {
+  DataElementSearchParameters,
+  mapSearchParametersToParams,
+} from 'src/app/search/search.types';
 
 @Component({
   selector: 'mdm-browse',
@@ -66,15 +70,20 @@ export class BrowseComponent implements OnInit {
       return;
     }
 
-    if (!this.selected) {
+    if (!this.selected || !this.selected.model || !this.selected.id) {
       return;
     }
 
-    this.stateRouter.transitionTo('app.container.search-listing', {
-      dm: this.selected.model,
-      dc: this.selected.id,
-      pdc: this.selected.parentDataClass,
-    });
+    const searchParameters: DataElementSearchParameters = {
+      dataClass: {
+        dataModelId: this.selected.model,
+        dataClassId: this.selected.id,
+        parentDataClassId: this.selected.parentDataClass,
+      },
+    };
+
+    const params = mapSearchParametersToParams(searchParameters);
+    this.stateRouter.navigateToKnownPath('/search/listing', params);
   }
 
   private loadParentDataClasses() {

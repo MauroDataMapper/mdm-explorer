@@ -18,18 +18,17 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { UIRouterGlobals } from '@uirouter/angular';
 import { ClipboardService } from 'ngx-clipboard';
 import { ToastrService } from 'ngx-toastr';
 import { ErrorData } from './error.model';
+import { ErrorService } from './error.service';
 
 @Component({
   selector: 'mdm-error',
   templateUrl: './error.component.html',
-  styleUrls: ['./error.component.scss']
+  styleUrls: ['./error.component.scss'],
 })
 export class ErrorComponent implements OnInit {
-
   lastHttpError: HttpErrorResponse | undefined;
 
   heading = '';
@@ -41,12 +40,13 @@ export class ErrorComponent implements OnInit {
   data: ErrorData[] = [];
 
   constructor(
-    protected uiRouterGlobals: UIRouterGlobals,
     protected clipboard: ClipboardService,
-    protected toastr: ToastrService) { }
+    protected toastr: ToastrService,
+    private error: ErrorService
+  ) {}
 
   ngOnInit(): void {
-    this.lastHttpError = this.uiRouterGlobals.params.lastError;
+    this.lastHttpError = this.error.lastError;
   }
 
   toggleShowDetails() {
@@ -68,6 +68,7 @@ export class ErrorComponent implements OnInit {
       `${this.message}\n\n`,
       '## Details\n\n',
       jsonMd,
-      '\n');
+      '\n'
+    );
   }
 }

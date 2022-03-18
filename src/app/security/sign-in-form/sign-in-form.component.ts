@@ -49,7 +49,7 @@ export class SignInFormComponent implements OnInit, OnChanges {
 
   @Input() signInError?: SignInErrorType;
 
-  @Input() forgotPasswordRouteName?: string;
+  @Input() forgotPasswordRouterLink?: string;
 
   @Input() openIdConnectProviders?: PublicOpenIdConnectProvider[];
 

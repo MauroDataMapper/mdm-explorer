@@ -1,4 +1,4 @@
-<!--
+/*
 Copyright 2022 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -15,6 +15,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
--->
-<div ui-view id="mdm-ui">
-</div>
+*/
+import { Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class ErrorService {
+  private _lastError: any;
+
+  constructor() {}
+
+  get lastError() {
+    return this._lastError;
+  }
+
+  set lastError(val: any) {
+    this._lastError = val;
+  }
+}

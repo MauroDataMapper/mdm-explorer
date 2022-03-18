@@ -53,9 +53,9 @@ export class ForgotPasswordFormComponent implements OnInit, OnChanges {
 
   @Input() cancelLabel = 'Cancel';
 
-  @Input() cancelRouteName?: string;
+  @Input() cancelRouterLink?: string;
 
-  @Input() retryRouteName?: string;
+  @Input() retryRouterLink?: string;
 
   @Output() resetPasswordClicked = new EventEmitter<ResetPasswordClickEvent>();
 

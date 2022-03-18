@@ -16,10 +16,12 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { UIRouterGlobals } from '@uirouter/angular';
+import { SafeHtml } from '@angular/platform-browser';
+import { ActivatedRoute, convertToParamMap, Data, Params } from '@angular/router';
 import { of, throwError } from 'rxjs';
+import { StateRouterService } from 'src/app/core/state-router.service';
 import { StaticContentService } from 'src/app/core/static-content.service';
-import { createRouterGlobalsStub } from 'src/app/testing/stubs/state-router.stub';
+import { createStateRouterStub } from 'src/app/testing/stubs/state-router.stub';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
@@ -34,18 +36,40 @@ interface StaticContentServiceStub {
 describe('ContentComponent', () => {
   let harness: ComponentHarness<StaticContentComponent>;
 
-  const routerGlobalsStub = createRouterGlobalsStub();
+  const stateRouterStub = createStateRouterStub();
 
   const staticContentStub: StaticContentServiceStub = {
     getContent: jest.fn(),
   };
 
-  beforeEach(async () => {
+  const implementGetContent = (path: string, content: SafeHtml) => {
+    staticContentStub.getContent.mockImplementationOnce((p) => {
+      expect(p).toBe(path);
+      return of(content);
+    });
+  };
+
+  const implementErrorOnContent = () => {
+    staticContentStub.getContent.mockImplementationOnce(() =>
+      throwError(() => new Error())
+    );
+  };
+
+  const setupComponentTest = async (params?: Params, data?: Data) => {
+    const route: ActivatedRoute = {
+      paramMap: of(convertToParamMap(params ?? {})),
+      data: of(data ?? {}),
+    } as ActivatedRoute;
+
     harness = await setupTestModuleForComponent(StaticContentComponent, {
       providers: [
         {
-          provide: UIRouterGlobals,
-          useValue: routerGlobalsStub,
+          provide: ActivatedRoute,
+          useValue: route,
+        },
+        {
+          provide: StateRouterService,
+          useValue: stateRouterStub,
         },
         {
           provide: StaticContentService,
@@ -53,29 +77,66 @@ describe('ContentComponent', () => {
         },
       ],
     });
-  });
+  };
 
-  it('should create', () => {
-    expect(harness.isComponentCreated).toBeTruthy();
-  });
-
-  it('should do nothing when no path is provided', () => {
-    expect(harness.component.content).toBe('');
-  });
-
-  it('should set the content when path is provided', () => {
-    routerGlobalsStub.params.path = 'test/page';
-    const expectedContent = '<p>Test content</p>';
-
-    staticContentStub.getContent.mockImplementationOnce((path) => {
-      if (!path) {
-        return throwError(() => 'Error!');
-      }
-      return of(expectedContent);
+  describe('creation', () => {
+    beforeEach(async () => {
+      await setupComponentTest();
     });
 
-    harness.component.ngOnInit();
+    it('should create', () => {
+      expect(harness.isComponentCreated).toBeTruthy();
+      expect(harness.component.content).toBe('');
+    });
+  });
 
-    expect(harness.component.content).toBe(expectedContent);
+  const testPaths = ['test-page', 'sub/folder/path', 'help/faq'];
+
+  describe.each(testPaths)('static content for dynamic Url segment %p', (path) => {
+    const params: Params = {
+      path,
+    };
+
+    const expectedContent: SafeHtml = 'content';
+
+    beforeEach(async () => {
+      await setupComponentTest(params);
+    });
+
+    it('should display static content', () => {
+      implementGetContent(path, expectedContent);
+      harness.component.ngOnInit();
+      expect(harness.component.content).toBe(expectedContent);
+    });
+
+    it('should redirect to "Not Found" if content cannot load', () => {
+      implementErrorOnContent();
+      harness.component.ngOnInit();
+      expect(stateRouterStub.navigateToNotFound).toHaveBeenCalled();
+    });
+  });
+
+  describe.each(testPaths)('static content for route data path %p', (path) => {
+    const data: Data = {
+      staticAssetPath: path,
+    };
+
+    const expectedContent: SafeHtml = 'content';
+
+    beforeEach(async () => {
+      await setupComponentTest(undefined, data);
+    });
+
+    it('should display static content', () => {
+      implementGetContent(path, expectedContent);
+      harness.component.ngOnInit();
+      expect(harness.component.content).toBe(expectedContent);
+    });
+
+    it('should redirect to "Not Found" if content cannot load', () => {
+      implementErrorOnContent();
+      harness.component.ngOnInit();
+      expect(stateRouterStub.navigateToNotFound).toHaveBeenCalled();
+    });
   });
 });

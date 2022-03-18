@@ -16,14 +16,13 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { inject, InjectionToken } from '@angular/core';
+import { ParamMap, Params } from '@angular/router';
 import {
   Breadcrumb,
   CatalogueItemSearchResult,
   DataElement,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
-import { UIRouterGlobals } from '@uirouter/angular';
 import { DataClassIdentifier } from '../catalogue/catalogue.types';
 
 /**
@@ -42,6 +41,38 @@ export interface DataElementSearchParameters {
 
   // TODO: more parameters will go here - filters, sorting, pagination etc
 }
+
+export const mapSearchParametersToParams = (
+  parameters: DataElementSearchParameters
+): Params => {
+  return {
+    ...(parameters.dataClass && {
+      dm: parameters.dataClass.dataModelId,
+      dc: parameters.dataClass.dataClassId,
+      pdc: parameters.dataClass.parentDataClassId,
+    }),
+    ...(parameters.search && { search: parameters.search }),
+  };
+};
+
+/**
+ * Maps query parameters from a route to a {@link DataElementSearchParameters} object.
+ *
+ * @param query The {@link ParamMap} containing the query parameters.
+ * @returns A {@link DataElementSearchParameters} containing the mapped parameters.
+ */
+export const mapParamMapToSearchParameters = (
+  query: ParamMap
+): DataElementSearchParameters => {
+  return {
+    dataClass: {
+      dataModelId: query.get('dm') ?? '',
+      dataClassId: query.get('dc') ?? '',
+      parentDataClassId: query.get('pdc') ?? undefined,
+    },
+    search: query.get('search') ?? undefined,
+  };
+};
 
 export interface DataElementSearchResult {
   id: Uuid;
@@ -76,36 +107,3 @@ export interface DataElementBookmarkEvent {
   item: DataElementSearchResult;
   selected: boolean;
 }
-
-/**
- * Function type to invoke a function to return a {@link DataElementSearchParameters} object.
- */
-export type DataElementSearchParametersFn = () => DataElementSearchParameters;
-
-/**
- * Injection token to inject a {@link DataElementSearchParametersFn} function into a component.
- *
- * This injected function will return the latest values from the URL query parameter to use as the basis of
- * a {@link DataElementSearchParameters} object.
- *
- * Use the injected function to retrieve the current query parameters to operate the search functionality.
- */
-export const SEARCH_QUERY_PARAMS = new InjectionToken<DataElementSearchParametersFn>(
-  'SearchQueryParameters',
-  {
-    factory: () => {
-      const routerGlobals = inject(UIRouterGlobals);
-
-      return () => {
-        return {
-          dataClass: {
-            dataModelId: routerGlobals.params.dm,
-            dataClassId: routerGlobals.params.dc,
-            parentDataClassId: routerGlobals.params.pdc,
-          },
-          search: routerGlobals.params.search,
-        };
-      };
-    },
-  }
-);

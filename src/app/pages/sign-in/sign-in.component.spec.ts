@@ -123,7 +123,7 @@ describe('SignInComponent', () => {
     beforeEach(() => {
       securityStub.signIn.mockClear();
       broadcastStub.userSignedIn.mockClear();
-      stateRouterStub.transitionTo.mockClear();
+      stateRouterStub.navigateToKnownPath.mockClear();
     });
 
     it('should successfully sign in a user', () => {
@@ -141,23 +141,19 @@ describe('SignInComponent', () => {
       };
 
       const broadcastSpy = jest.spyOn(broadcastStub, 'userSignedIn');
-      const stateRouterSpy = jest.spyOn(stateRouterStub, 'transitionTo');
+      const stateRouterSpy = jest.spyOn(stateRouterStub, 'navigateToKnownPath');
 
       securityStub.signIn.mockImplementationOnce(() => of(expectedUser));
 
       harness.component.signIn(credentials);
 
       expect(broadcastSpy).toHaveBeenCalledWith(expectedUser);
-      expect(stateRouterSpy).toHaveBeenCalledWith(
-        'app.container.home',
-        expect.any(Object),
-        expect.any(Object)
-      );
+      expect(stateRouterSpy).toHaveBeenCalledWith('/home');
     });
 
     it('should fail to sign in an invalid user', () => {
       const broadcastSpy = jest.spyOn(broadcastStub, 'userSignedIn');
-      const stateRouterSpy = jest.spyOn(stateRouterStub, 'transitionTo');
+      const stateRouterSpy = jest.spyOn(stateRouterStub, 'navigateToKnownPath');
 
       securityStub.signIn.mockImplementationOnce(() =>
         throwError(

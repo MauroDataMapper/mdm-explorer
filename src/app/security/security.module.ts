@@ -21,7 +21,6 @@ import { SignInFormComponent } from './sign-in-form/sign-in-form.component';
 import { SharedModule } from '../shared/shared.module';
 import { OpenIdConnectAuthorizeComponent } from './open-id-connect-authorize/open-id-connect-authorize.component';
 import { ForgotPasswordFormComponent } from './forgot-password-form/forgot-password-form.component';
-import { UIRouterModule } from '@uirouter/angular';
 import { CatalogueUserFormComponent } from './catalogue-user-form/catalogue-user-form.component';
 import { CatalogueSearchFormComponent } from './catalogue-search-form/catalogue-search-form.component';
 import { CoreModule } from '../core/core.module';
@@ -34,7 +33,7 @@ import { CoreModule } from '../core/core.module';
     CatalogueUserFormComponent,
     CatalogueSearchFormComponent,
   ],
-  imports: [CoreModule, SharedModule, UIRouterModule],
+  imports: [CoreModule, SharedModule],
   exports: [
     SignInFormComponent,
     OpenIdConnectAuthorizeComponent,
