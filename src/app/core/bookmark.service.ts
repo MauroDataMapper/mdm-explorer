@@ -39,9 +39,10 @@ export class BookmarkService {
    * Add a Bookmark to the list of bookmarks stored in User Preferences.
    * - Retrieve all existing User Preferences
    * - If the response is empty then create a new object. If the response does not
-   *   contain a bookmarks list then add one.
+   * contain a bookmarks list then add one.
    * - If the bookmarks list does not contain the bookmark to be added, then add it.
    * - Save the entire User Preferences
+   *
    * @param bookmark
    */
   public add(bookmark: Bookmark) {
@@ -63,7 +64,7 @@ export class BookmarkService {
 
       if (!found) {
         data.bookmarks.push(bookmark);
-        this.savePreferences(data).subscribe((response) => {});
+        this.savePreferences(data).subscribe(() => {});
       }
     });
   }
@@ -73,6 +74,7 @@ export class BookmarkService {
    * - Retrieve all existing User Preferences
    * - If the User Preference contains the Bookmark, remove iut
    * - Save the entire User Preferences
+   *
    * @param bookmark
    *
    * @returns Observable<Bookmark[]>
@@ -88,7 +90,7 @@ export class BookmarkService {
         }
         return this.savePreferences(data);
       }),
-      switchMap((response) => {
+      switchMap(() => {
         // Get the list after update
         return this.index();
       })

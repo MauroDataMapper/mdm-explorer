@@ -16,7 +16,6 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { AlertComponent } from '../../shared/alert/alert.component';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
