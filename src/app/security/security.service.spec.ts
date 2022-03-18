@@ -17,12 +17,22 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { HttpErrorResponse } from '@angular/common/http';
-import { LoginPayload, PublicOpenIdConnectProvider } from '@maurodatamapper/mdm-resources';
+import {
+  LoginPayload,
+  PublicOpenIdConnectProvider,
+} from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
 import { EMPTY } from 'rxjs';
-import { createMdmEndpointsStub, MdmEndpointsServiceStub } from '../testing/stubs/mdm-endpoints.stub';
+import {
+  createMdmEndpointsStub,
+  MdmEndpointsServiceStub,
+} from '../testing/stubs/mdm-endpoints.stub';
 import { setupTestModuleForService } from '../testing/testing.helpers';
-import { OpenIdConnectConfiguration, OpenIdConnectSession, OPENID_CONNECT_CONFIG } from './security.types';
+import {
+  OpenIdConnectConfiguration,
+  OpenIdConnectSession,
+  OPENID_CONNECT_CONFIG,
+} from './security.types';
 import { SecurityService } from './security.service';
 import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
 import { UserDetails, UserDetailsService } from './user-details.service';
@@ -38,34 +48,32 @@ describe('SecurityService', () => {
 
   const userDetailsStub: UserDetailsServiceStub = {
     set: jest.fn(),
-    clear: jest.fn()
+    clear: jest.fn(),
   };
 
   const openIdConnectConfig: OpenIdConnectConfiguration = {
-    redirectUrl: 'http://localhost/oid/test'
+    redirectUrl: 'http://localhost/oid/test',
   };
 
   beforeEach(() => {
     endpointsStub = createMdmEndpointsStub();
 
-    service = setupTestModuleForService(
-      SecurityService,
-      {
-        providers: [
-          {
-            provide: MdmEndpointsService,
-            useValue: endpointsStub
-          },
-          {
-            provide: UserDetailsService,
-            useValue: userDetailsStub
-          },
-          {
-            provide: OPENID_CONNECT_CONFIG,
-            useValue: openIdConnectConfig
-          }
-        ]
-      });
+    service = setupTestModuleForService(SecurityService, {
+      providers: [
+        {
+          provide: MdmEndpointsService,
+          useValue: endpointsStub,
+        },
+        {
+          provide: UserDetailsService,
+          useValue: userDetailsStub,
+        },
+        {
+          provide: OPENID_CONNECT_CONFIG,
+          useValue: openIdConnectConfig,
+        },
+      ],
+    });
   });
 
   it('should be created', () => {
@@ -73,34 +81,28 @@ describe('SecurityService', () => {
   });
 
   const setupLoginMocks = (expectedUser: UserDetails) => {
-    endpointsStub.security.login.mockImplementationOnce(() => cold('--a|', {
-      a: {
-        body: {
-          id: expectedUser.id,
-          emailAddress: expectedUser.userName,
-          firstName: expectedUser.firstName,
-          lastName: expectedUser.lastName
-        }
-      }
-    }));
-
-    endpointsStub.session.isApplicationAdministration.mockImplementationOnce(() => cold('--a|', {
-      a: {
-        body: {
-          applicationAdministrationSession: expectedUser.isAdmin
-        }
-      }
-    }));
+    endpointsStub.security.login.mockImplementationOnce(() =>
+      cold('--a|', {
+        a: {
+          body: {
+            id: expectedUser.id,
+            emailAddress: expectedUser.userName,
+            firstName: expectedUser.firstName,
+            lastName: expectedUser.lastName,
+          },
+        },
+      })
+    );
   };
 
   describe('sign in', () => {
     it.each([
-      ['123', 'user@test.com', false],
-      ['456', 'admin@test.com', true]
-    ])('should sign in user %p %p', (id, userName, isAdmin) => {
+      ['123', 'user@test.com'],
+      ['456', 'admin@test.com'],
+    ])('should sign in user %p %p', (id, userName) => {
       const payload: LoginPayload = {
         username: userName,
-        password: 'test'
+        password: 'test',
       };
 
       const expectedUser: UserDetails = {
@@ -109,15 +111,14 @@ describe('SecurityService', () => {
         firstName: 'first',
         lastName: 'last',
         email: userName,
-        isAdmin,
         needsToResetPassword: false,
         role: '',
-        token: undefined
+        token: undefined,
       };
 
       setupLoginMocks(expectedUser);
 
-      const expected$ = cold('----a|', { a: expectedUser });
+      const expected$ = cold('--a|', { a: expectedUser });
       const actual$ = service.signIn(payload);
 
       expect(actual$).toBeObservable(expected$);
@@ -127,7 +128,9 @@ describe('SecurityService', () => {
     });
 
     it('should throw error if sign in fails', () => {
-      endpointsStub.security.login.mockImplementationOnce(() => cold('--#', null, new HttpErrorResponse({})));
+      endpointsStub.security.login.mockImplementationOnce(() =>
+        cold('--#', null, new HttpErrorResponse({}))
+      );
 
       const expected$ = cold('--#');
       const actual$ = service.signIn({ username: 'fail', password: 'fail' });
@@ -137,7 +140,9 @@ describe('SecurityService', () => {
 
   describe('sign out', () => {
     it('should sign out user', () => {
-      endpointsStub.security.logout.mockImplementationOnce(() => cold('--a|', { a: EMPTY }));
+      endpointsStub.security.logout.mockImplementationOnce(() =>
+        cold('--a|', { a: EMPTY })
+      );
 
       const expected$ = cold('--a|', { a: undefined });
       const actual$ = service.signOut();
@@ -148,7 +153,9 @@ describe('SecurityService', () => {
     });
 
     it('should throw error if sign out fails', () => {
-      endpointsStub.security.logout.mockImplementationOnce(() => cold('--#', null, new HttpErrorResponse({})));
+      endpointsStub.security.logout.mockImplementationOnce(() =>
+        cold('--#', null, new HttpErrorResponse({}))
+      );
 
       const expected$ = cold('--#');
       const actual$ = service.signOut();
@@ -165,7 +172,9 @@ describe('SecurityService', () => {
     });
 
     it('should return ok when password reset link sent', () => {
-      endpointsStub.catalogueUser.resetPasswordLink.mockImplementationOnce(() => cold('--a|', { a: EMPTY }));
+      endpointsStub.catalogueUser.resetPasswordLink.mockImplementationOnce(() =>
+        cold('--a|', { a: EMPTY })
+      );
 
       const expected$ = cold('--a|', { a: true });
       const actual$ = service.sendResetPasswordLink('test@test.com');
@@ -173,7 +182,9 @@ describe('SecurityService', () => {
     });
 
     it('should return fail when password rest link has error', () => {
-      endpointsStub.catalogueUser.resetPasswordLink.mockImplementationOnce(() => cold('--#', null, new HttpErrorResponse({})));
+      endpointsStub.catalogueUser.resetPasswordLink.mockImplementationOnce(() =>
+        cold('--#', null, new HttpErrorResponse({}))
+      );
 
       const expected$ = cold('--(a|)', { a: false });
       const actual$ = service.sendResetPasswordLink('test@test.com');
@@ -182,22 +193,29 @@ describe('SecurityService', () => {
   });
 
   describe('isAuthenticated', () => {
-    it.each([true, false])('should return %o for an authenticated session', (authenticated) => {
-      endpointsStub.session.isAuthenticated.mockImplementationOnce(() => cold('--a|', {
-        a: {
-          body: {
-            authenticatedSession: authenticated
-          }
-        }
-      }));
+    it.each([true, false])(
+      'should return %o for an authenticated session',
+      (authenticated) => {
+        endpointsStub.session.isAuthenticated.mockImplementationOnce(() =>
+          cold('--a|', {
+            a: {
+              body: {
+                authenticatedSession: authenticated,
+              },
+            },
+          })
+        );
 
-      const expected$ = cold('--a|', { a: authenticated });
-      const actual$ = service.isAuthenticated();
-      expect(actual$).toBeObservable(expected$);
-    });
+        const expected$ = cold('--a|', { a: authenticated });
+        const actual$ = service.isAuthenticated();
+        expect(actual$).toBeObservable(expected$);
+      }
+    );
 
     it('should throw error if authentication fails', () => {
-      endpointsStub.session.isAuthenticated.mockImplementationOnce(() => cold('--#', null, new HttpErrorResponse({})));
+      endpointsStub.session.isAuthenticated.mockImplementationOnce(() =>
+        cold('--#', null, new HttpErrorResponse({}))
+      );
 
       const expected$ = cold('--#');
       const actual$ = service.isAuthenticated();
@@ -211,11 +229,14 @@ describe('SecurityService', () => {
         id: '123',
         label: 'Test',
         authorizationEndpoint: 'http://my.oid.provider/login',
-        standardProvider: true
+        standardProvider: true,
       };
 
       const expectedUrl = new URL(provider.authorizationEndpoint);
-      expectedUrl.searchParams.append('redirect_uri', openIdConnectConfig.redirectUrl.toString());
+      expectedUrl.searchParams.append(
+        'redirect_uri',
+        openIdConnectConfig.redirectUrl.toString()
+      );
 
       const actualUrl = service.getOpenIdConnectAuthorizationUrl(provider);
       expect(actualUrl).toEqual(expectedUrl);
@@ -226,7 +247,7 @@ describe('SecurityService', () => {
         providerId: '123',
         sessionState: 'session-state',
         state: 'state',
-        code: 'code'
+        code: 'code',
       };
 
       const expectedUser: UserDetails = {
@@ -235,15 +256,14 @@ describe('SecurityService', () => {
         firstName: 'first',
         lastName: 'last',
         email: 'test@test.com',
-        isAdmin: false,
         needsToResetPassword: false,
         role: '',
-        token: undefined
+        token: undefined,
       };
 
       setupLoginMocks(expectedUser);
 
-      const expected$ = cold('----a|', { a: expectedUser });
+      const expected$ = cold('--a|', { a: expectedUser });
       const actual$ = service.authorizeOpenIdConnectSession(session);
 
       expect(actual$).toBeObservable(expected$);
