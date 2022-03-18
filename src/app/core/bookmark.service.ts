@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { map, switchMap, Observable } from 'rxjs';
 import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
 import { UserDetailsService } from '../security/user-details.service';
 
@@ -74,17 +74,25 @@ export class BookmarkService {
    * - If the User Preference contains the Bookmark, remove iut
    * - Save the entire User Preferences
    * @param bookmark
+   *
+   * @returns Observable<Bookmark[]>
    */
-  public remove(bookmark: Bookmark) {
-    this.getPreferences().subscribe((data) => {
-      if (data && data.bookmarks) {
-        data.bookmarks.forEach((item: Bookmark, index: BigInteger) => {
-          if (item.path === bookmark.path) data.bookmarks.splice(index, 1);
-        });
-
-        this.savePreferences(data).subscribe((response) => {});
-      }
-    });
+  public remove(bookmark: Bookmark): Observable<Bookmark[]> {
+    return this.getPreferences().pipe(
+      switchMap((data) => {
+        // Make changes here and save
+        if (data && data.bookmarks) {
+          data.bookmarks.forEach((item: Bookmark, index: BigInteger) => {
+            if (item.path === bookmark.path) data.bookmarks.splice(index, 1);
+          });
+        }
+        return this.savePreferences(data);
+      }),
+      switchMap((response) => {
+        // Get the list after update
+        return this.index();
+      })
+    );
   }
 
   /**

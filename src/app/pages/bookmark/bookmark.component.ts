@@ -34,4 +34,11 @@ export class BookmarkComponent implements OnInit {
       this.bookmarks = result;
     });
   }
+
+  remove(bookmark: Bookmark): void {
+    this.bookmarkService.remove(bookmark);
+    this.bookmarkService.remove(bookmark).subscribe((result) => {
+      this.bookmarks = result;
+    });
+  }
 }
