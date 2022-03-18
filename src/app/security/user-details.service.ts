@@ -74,10 +74,7 @@ export class UserDetailsService {
 
     localStorage.setItem('userId', user.id);
     localStorage.setItem('token', user.token ?? '');
-    localStorage.setItem(
-      'userName',
-      JSON.stringify({ email: user.userName, expiry: expiryDate })
-    );
+    localStorage.setItem('userName', user.email);
     localStorage.setItem('firstName', user.firstName);
     localStorage.setItem('lastName', user.lastName);
     localStorage.setItem(
