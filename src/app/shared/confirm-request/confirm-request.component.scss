@@ -1,0 +1,35 @@
+@import "../../../styles.scss";
+
+$emphasis-background: $color-gray-38;
+$emphasis-text: white;
+
+.mdm-modal {
+  background-color: white;
+  height: 100%;
+
+  &__heading {
+    background-color: $emphasis-background;
+    padding-left: 10px;
+    color: $emphasis-text;
+  }
+
+  &__content {
+    padding-left: 10px;
+  }
+
+  &__actions {
+    padding: 10px;
+    & mat-dialog-actions {
+      justify-content: flex-end;
+      align-items: flex-end;
+    }
+    & button {
+      margin: 0 5px 0 5px;
+      width: 100%;
+    }
+  }
+  &__action-button {
+    background-color: $emphasis-background;
+    color: $emphasis-text;
+  }
+}

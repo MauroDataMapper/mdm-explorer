@@ -26,6 +26,8 @@ import { ArrowDirective } from './directives/arrow.directive';
 import { CreateRequestComponent } from './create-request/create-request.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
+import { ConfirmRequestComponent } from './confirm-request/confirm-request.component';
+import { ShowRequestErrorComponent } from './show-request-error/show-request-error.component';
 import { BookmarkToggleComponent } from './bookmark-toggle/bookmark-toggle.component';
 import { CoreModule } from '../core/core.module';
 import { SummaryMetadataComponent } from './summary-metadata/summary-metadata/summary-metadata.component';
@@ -44,6 +46,8 @@ import { CallToActionComponent } from './call-to-action/call-to-action.component
     ArrowDirective,
     CreateRequestComponent,
     BookmarkToggleComponent,
+    ConfirmRequestComponent,
+    ShowRequestErrorComponent,
     SummaryMetadataChartComponent,
     SummaryMetadataComponent,
     SummaryMetadataReportComponent,

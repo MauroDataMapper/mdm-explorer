@@ -279,6 +279,7 @@ export class UserRequestsService {
           author: `${user.firstName}${user.firstName ? '' : ' '}${user.lastName}`,
           organisation: catalogueUser.organisation ?? '',
         };
+        throw 'Error: this is a hard throw';
         return this.endpointsService.dataModel.addToFolder(
           folder.id!,
           dataModelCreatePayload

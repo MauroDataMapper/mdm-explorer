@@ -46,6 +46,8 @@ import {
   CATALOGUE_CONFIGURATION,
 } from 'src/app/catalogue/catalogue.types';
 import { CatalogueUserService } from 'src/app/catalogue/catalogue-user.service';
+import { ConfirmRequestComponent } from 'src/app/shared/confirm-request/confirm-request.component';
+import { ShowRequestErrorComponent } from 'src/app/shared/show-request-error/show-request-error.component';
 
 @Component({
   selector: 'mdm-browse',
@@ -67,8 +69,8 @@ export class BrowseComponent implements OnInit {
     private userRequestsService: UserRequestsService,
     private createRequestDialog: MatDialog,
     private userDetailsService: UserDetailsService,
-    private endpointsService: MdmEndpointsService,
-    private catalogueUserService: CatalogueUserService,
+    private confirmationDialog: MatDialog,
+    private newRequestErrorDialog: MatDialog,
     @Inject(CATALOGUE_CONFIGURATION) private config: CatalogueConfiguration
   ) {
     this.user = userDetailsService.get();
@@ -84,6 +86,7 @@ export class BrowseComponent implements OnInit {
 
   createRequest(event: MouseEvent, index: number) {
     let dialogProps = new MatDialogConfig();
+    let newRequestName = '';
     dialogProps.height = '250px';
     dialogProps.width = '343px';
     let dialogRef = this.createRequestDialog.open(CreateRequestComponent, dialogProps);
@@ -91,8 +94,9 @@ export class BrowseComponent implements OnInit {
     dialogRef
       .afterClosed()
       .pipe(
-        switchMap((result: string) =>
-          iif(
+        switchMap((result: string) => {
+          newRequestName = result;
+          return iif(
             () => result != '' && this.user != null,
             this.userRequestsService.createNewUserRequest(
               result,
@@ -100,12 +104,38 @@ export class BrowseComponent implements OnInit {
               this.selected!
             ),
             EMPTY
-          )
-        )
+          );
+        })
       )
-      .subscribe((result) => {
-        //Restore focus to item that was originally clicked on
-        this.menuTrigger.focus();
+      .subscribe((resultErrors: string[]) => {
+        if (resultErrors.length == 0) {
+          dialogProps.data = {
+            itemName: this.selected!.label,
+            itemType: 'Data Class',
+            requestName: newRequestName,
+          };
+          let confirmationRef = this.confirmationDialog.open(
+            ConfirmRequestComponent,
+            dialogProps
+          );
+          //Restore focus to item that was originally clicked on
+          confirmationRef.afterClosed().subscribe(() => this.menuTrigger.focus());
+        } else {
+          dialogProps.data = {
+            itemName: this.selected!.label,
+            itemType: 'Data Class',
+            requestName: newRequestName,
+            error: resultErrors[0],
+          };
+          dialogProps.height = '300px';
+          dialogProps.width = '400px';
+          let errorRef = this.confirmationDialog.open(
+            ShowRequestErrorComponent,
+            dialogProps
+          );
+          //Restore focus to item that was originally clicked on
+          errorRef.afterClosed().subscribe(() => this.menuTrigger.focus());
+        }
       });
   }
 

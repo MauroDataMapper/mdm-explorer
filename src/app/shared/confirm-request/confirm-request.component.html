@@ -1,24 +1,20 @@
 <div class="mdm-modal">
   <div class="mdm-modal__heading">
-    <h1 mat-dialog-title>Create a new Request</h1>
+    <h1 mat-dialog-title>New request created</h1>
   </div>
   <div class="mdm-modal__content">
     <mat-dialog-content>
-      <p>New request name</p>
-      <input
-        type="text"
-        height="39px"
-        width="219px"
-        placeholder="Enter name of request"
-        [(ngModel)]="requestName"
-      />
+      <p>1 {{ data.itemType }} added to {{ data.requestName }}</p>
+      <ul>
+        <li>{{ data.itemName }}</li>
+      </ul>
     </mat-dialog-content>
   </div>
   <div class="mdm-modal__actions">
     <mat-dialog-actions>
-      <button mat-dialog-close>Cancel</button>
+      <button mat-dialog-close (click)="viewRequests()">View requests</button>
       <button mat-dialog-close class="mdm-modal__action-button" (click)="close()">
-        Create Request
+        Continue browsing
       </button>
     </mat-dialog-actions>
   </div>

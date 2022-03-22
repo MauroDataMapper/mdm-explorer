@@ -8,8 +8,6 @@ import { DataClass } from '@maurodatamapper/mdm-resources';
   styleUrls: ['./create-request.component.scss'],
 })
 export class CreateRequestComponent implements OnInit {
-  @Input()
-  dataClass!: DataClass;
   public requestName = '';
 
   constructor(public dialogRef: MatDialogRef<CreateRequestComponent>) {}
