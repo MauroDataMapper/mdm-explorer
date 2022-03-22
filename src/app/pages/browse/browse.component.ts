@@ -16,11 +16,16 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatSelectionListChange } from '@angular/material/list';
-import { DataClass } from '@maurodatamapper/mdm-resources';
+import {
+  DataClass,
+  DataModelDetailResponse,
+  DataModelSubsetPayload,
+  FolderDetail,
+} from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, switchMap } from 'rxjs';
+import { catchError, EMPTY, iif, switchMap } from 'rxjs';
 import { CatalogueService } from 'src/app/catalogue/catalogue.service';
 import { DataModelService } from 'src/app/catalogue/data-model.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
@@ -28,6 +33,19 @@ import {
   DataElementSearchParameters,
   mapSearchParametersToParams,
 } from 'src/app/search/search.types';
+import { CreateRequestComponent } from 'src/app/shared/create-request/create-request.component';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { MatMenuTrigger } from '@angular/material/menu';
+import { UserRequestsService } from 'src/app/core/user-requests.service';
+import { UserDetails, UserDetailsService } from 'src/app/security/user-details.service';
+import { FolderService } from 'src/app/core/folder.service';
+import { MdmEndpointsService } from 'src/app/mdm-rest-client/mdm-endpoints.service';
+import { DataModelCreatePayload } from '@maurodatamapper/mdm-resources';
+import {
+  CatalogueConfiguration,
+  CATALOGUE_CONFIGURATION,
+} from 'src/app/catalogue/catalogue.types';
+import { CatalogueUserService } from 'src/app/catalogue/catalogue-user.service';
 
 @Component({
   selector: 'mdm-browse',
@@ -38,13 +56,23 @@ export class BrowseComponent implements OnInit {
   parentDataClasses: DataClass[] = [];
   childDataClasses: DataClass[] = [];
   selected?: DataClass;
+  @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
+  private user: UserDetails | null;
 
   constructor(
     private catalogue: CatalogueService,
     private dataModels: DataModelService,
     private toastr: ToastrService,
-    private stateRouter: StateRouterService
-  ) {}
+    private stateRouter: StateRouterService,
+    private userRequestsService: UserRequestsService,
+    private createRequestDialog: MatDialog,
+    private userDetailsService: UserDetailsService,
+    private endpointsService: MdmEndpointsService,
+    private catalogueUserService: CatalogueUserService,
+    @Inject(CATALOGUE_CONFIGURATION) private config: CatalogueConfiguration
+  ) {
+    this.user = userDetailsService.get();
+  }
 
   get isChildDataClassSelected() {
     return this.selected && this.selected.parentDataClass;
@@ -52,6 +80,33 @@ export class BrowseComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadParentDataClasses();
+  }
+
+  createRequest(event: MouseEvent, index: number) {
+    let dialogProps = new MatDialogConfig();
+    dialogProps.height = '250px';
+    dialogProps.width = '343px';
+    let dialogRef = this.createRequestDialog.open(CreateRequestComponent, dialogProps);
+
+    dialogRef
+      .afterClosed()
+      .pipe(
+        switchMap((result: string) =>
+          iif(
+            () => result != '' && this.user != null,
+            this.userRequestsService.createNewUserRequest(
+              result,
+              this.user!,
+              this.selected!
+            ),
+            EMPTY
+          )
+        )
+      )
+      .subscribe((result) => {
+        //Restore focus to item that was originally clicked on
+        this.menuTrigger.focus();
+      });
   }
 
   selectParentDataClass(event: MatSelectionListChange) {

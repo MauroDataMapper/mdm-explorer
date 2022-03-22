@@ -54,7 +54,7 @@ const getOpenIdAuthorizeUrl = () => {
 };
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, AppContainerComponent, UiViewComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,

@@ -30,6 +30,8 @@ import { SearchComponent } from './search/search.component';
 import { MyAccountComponent } from './my-account/my-account.component';
 import { CoreModule } from '../core/core.module';
 import { SearchModule } from '../search/search.module';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDialogModule } from '@angular/material/dialog';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { HomeComponent } from './home/home.component';
 import { ContactSupportComponent } from './contact-support/contact-support.component';
@@ -50,6 +52,22 @@ import { CatalogueModule } from '../catalogue/catalogue.module';
     HomeComponent,
     ContactSupportComponent,
   ],
-  imports: [CoreModule, SharedModule, SecurityModule, SearchModule, CatalogueModule],
+  imports: [
+	CoreModule,
+    CommonModule,
+    SharedModule,
+    SecurityModule,
+	SearchModule,
+    MatButtonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatListModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatProgressSpinnerModule,
+    MatMenuModule,
+    MatDialogModule,
+	CatalogueModule,
+  ],
 })
 export class PagesModule {}

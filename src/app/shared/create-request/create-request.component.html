@@ -1,0 +1,25 @@
+<div class="mdm-modal">
+  <div class="mdm-modal__heading">
+    <h1 mat-dialog-title>Create a new Request</h1>
+  </div>
+  <div class="mdm-modal__content">
+    <mat-dialog-content>
+      <p>List name</p>
+      <input
+        type="text"
+        height="39px"
+        width="219px"
+        placeholder="Enter name of request"
+        [(ngModel)]="requestName"
+      />
+    </mat-dialog-content>
+  </div>
+  <div class="mdm-modal__actions">
+    <mat-dialog-actions>
+      <button mat-dialog-close>Cancel</button>
+      <button mat-dialog-close class="mdm-modal__action-button" (click)="close()">
+        Create Request
+      </button>
+    </mat-dialog-actions>
+  </div>
+</div>
