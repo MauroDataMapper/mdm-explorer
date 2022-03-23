@@ -26,8 +26,7 @@ import { UserDetailsService } from '../security/user-details.service';
 })
 
 /**
- * Service to handle the persistence of bookmarks. Currently uses local storage but can be changed to use
- * UserPreferences for backend persistence.
+ * Service to handle the persistence of bookmarks via User Preferences
  */
 export class BookmarkService {
   constructor(
