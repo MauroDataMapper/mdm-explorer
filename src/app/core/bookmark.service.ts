@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { map, switchMap, Observable } from 'rxjs';
+import { map, switchMap, Observable, throwError } from 'rxjs';
 import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
 import { UserDetailsService } from '../security/user-details.service';
 
@@ -46,27 +46,30 @@ export class BookmarkService {
    * @param bookmark
    */
   public add(bookmark: Bookmark) {
-    this.getPreferences().subscribe((data) => {
-      if (!data) {
-        data = {};
-      }
+    return this.getPreferences().pipe(
+      switchMap((data) => {
+        if (!data) {
+          data = {};
+        }
 
-      if (!data.bookmarks) {
-        data.bookmarks = [];
-      }
+        if (!data.bookmarks) {
+          data.bookmarks = [];
+        }
 
-      let found: Boolean;
-      found = false;
+        let found: Boolean;
+        found = false;
 
-      data.bookmarks.forEach((item: Bookmark) => {
-        if (item.path === bookmark.path) found = true;
-      });
+        data.bookmarks.forEach((item: Bookmark) => {
+          if (item.path === bookmark.path) found = true;
+        });
 
-      if (!found) {
-        data.bookmarks.push(bookmark);
-        this.savePreferences(data).subscribe(() => {});
-      }
-    });
+        if (!found) {
+          data.bookmarks.push(bookmark);
+        }
+
+        return this.savePreferences(data);
+      })
+    );
   }
 
   /**
@@ -113,7 +116,7 @@ export class BookmarkService {
           )
         );
     } else {
-      throw new Error('Must be logged in to use bookmarks');
+      return throwError(() => new Error('Must be logged in to use User Preferences'));
     }
   }
 
@@ -124,7 +127,7 @@ export class BookmarkService {
         .userPreferences(userDetails.id)
         .pipe(map((response: any) => response.body));
     } else {
-      throw new Error('Must be logged in to use User Preferences');
+      return throwError(() => new Error('Must be logged in to use User Preferences'));
     }
   }
 
@@ -135,7 +138,7 @@ export class BookmarkService {
         .updateUserPreferences(userDetails.id, data)
         .pipe(map((response: any) => response.body));
     } else {
-      throw new Error('Must be logged in to use User Preferences');
+      return throwError(() => new Error('Must be logged in to use User Preferences'));
     }
   }
 }
