@@ -1,20 +1,20 @@
-import { DataModelDetail, FolderDetail } from '@maurodatamapper/mdm-resources';
+import { DataModel, FolderDetail } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
 
-export type GetUserRequestsFolder = (username: string) => Observable<FolderDetail>;
-export type GetOpenUserRequests = (username: string) => Observable<DataModelDetail[]>;
+export type GetDataRequestsFolder = (username: string) => Observable<FolderDetail>;
+export type List = (username: string) => Observable<DataModel[]>;
 
-export type GetUserRequestsFolderMockedFn = jest.MockedFunction<GetUserRequestsFolder>;
-export type GetOpenUserRequestsMockedFn = jest.MockedFunction<GetOpenUserRequests>;
+export type GetDataRequestsFolderMockedFn = jest.MockedFunction<GetDataRequestsFolder>;
+export type ListMockedFn = jest.MockedFunction<List>;
 
 export interface UserRequestsServiceStub {
-  getUserRequestsFolder: GetUserRequestsFolderMockedFn;
-  getOpenUserRequests: GetOpenUserRequestsMockedFn;
+  getDataRequestsFolder: GetDataRequestsFolderMockedFn;
+  list: ListMockedFn;
 }
 
 export const createUserRequestsServiceStub = (): UserRequestsServiceStub => {
   return {
-    getUserRequestsFolder: jest.fn() as GetUserRequestsFolderMockedFn,
-    getOpenUserRequests: jest.fn() as GetOpenUserRequestsMockedFn,
+    getDataRequestsFolder: jest.fn() as GetDataRequestsFolderMockedFn,
+    list: jest.fn() as ListMockedFn,
   };
 };
