@@ -17,13 +17,12 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { DataModelDetail, DataModelIndexResponse } from '@maurodatamapper/mdm-resources';
+import { DataModel, DataModelIndexResponse } from '@maurodatamapper/mdm-resources';
 import { FolderDetail } from '@maurodatamapper/mdm-resources/lib/es2015/mdm-folder.model';
 import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
-import { forkJoin, map, Observable, of, switchMap } from 'rxjs';
+import { map, Observable, switchMap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { FolderService } from './folder.service';
-import { DataModelService } from '../catalogue/data-model.service';
 
 @Injectable({
   providedIn: 'root',
@@ -31,8 +30,7 @@ import { DataModelService } from '../catalogue/data-model.service';
 export class UserRequestsService {
   constructor(
     private folderService: FolderService,
-    private endpoints: MdmEndpointsService,
-    private dataModelService: DataModelService
+    private endpoints: MdmEndpointsService
   ) {}
 
   /**
@@ -52,19 +50,18 @@ export class UserRequestsService {
     );
   }
 
-  get(username: string): Observable<DataModelDetail[]> {
-    let dataModelCalls: Observable<DataModelDetail>[];
-    this.getUserRequestsFolder(username)
-      .pipe(
-        switchMap((userRequestsFolder: FolderDetail) => {
-          return this.endpoints.dataModel.listInFolder(
-            userRequestsFolder.id!
-          ) as Observable<DataModelIndexResponse>;
-        }),
-        map((response: DataModelIndexResponse) => response.body)
-      )
-      .subscribe((dataModelIndex) => {});
-    return of([]);
+  /**
+   * Lists all of the users requests as DataModel objects.
+   * @param username the username of the user.
+   * @returns an observable containing an array dataModels (the users requests)
+   */
+  list(username: string): Observable<DataModel[]> {
+    return this.getRequestsFolder(username).pipe(
+      switchMap((requestsFolder: FolderDetail): Observable<DataModelIndexResponse> => {
+        return this.endpoints.dataModel.listInFolder(requestsFolder.id!);
+      }),
+      map((response) => response.body.items)
+    );
   }
 
   /**

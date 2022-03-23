@@ -16,9 +16,11 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { FolderDetail } from '@maurodatamapper/mdm-resources';
+import { DataModel, FolderDetail } from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
+import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
 import { createFolderServiceStub } from '../testing/stubs/folder.stub';
+import { createMdmEndpointsStub } from '../testing/stubs/mdm-endpoints.stub';
 import { setupTestModuleForService } from '../testing/testing.helpers';
 import { FolderService } from './folder.service';
 
@@ -27,6 +29,7 @@ import { UserRequestsService } from './user-requests.service';
 describe('UserRequestsService', () => {
   let service: UserRequestsService;
   const folderServiceStub = createFolderServiceStub();
+  const endpointsStub = createMdmEndpointsStub();
 
   beforeEach(() => {
     service = setupTestModuleForService(UserRequestsService, {
@@ -34,6 +37,10 @@ describe('UserRequestsService', () => {
         {
           provide: FolderService,
           useValue: folderServiceStub,
+        },
+        {
+          provide: MdmEndpointsService,
+          useValue: endpointsStub,
         },
       ],
     });
@@ -69,6 +76,44 @@ describe('UserRequestsService', () => {
 
     // Act
     const actual$ = service.getRequestsFolder(username);
+
+    // Assert
+    expect(actual$).toBeObservable(expected$);
+  });
+
+  it('should return a list of dms under the user folder', () => {
+    // Arrange
+    const username = 'test@gmail.com';
+    const dms = ['label-1', 'label-2', 'label-3'].map((label: string) => {
+      return { label: label } as DataModel;
+    });
+
+    folderServiceStub.getOrCreate.mockImplementationOnce(() => {
+      return cold('-a|', {
+        a: { label: 'root' },
+      });
+    });
+
+    folderServiceStub.getOrCreateChildOf.mockImplementationOnce(
+      (id: string, label: string) => {
+        return cold('-a|', {
+          a: { label },
+        });
+      }
+    );
+
+    endpointsStub.dataModel.listInFolder.mockImplementationOnce(() => {
+      return cold('-a|', {
+        a: { body: { items: dms } },
+      });
+    });
+
+    const expected$ = cold('---a|', {
+      a: dms,
+    });
+
+    // Act
+    const actual$ = service.list(username);
 
     // Assert
     expect(actual$).toBeObservable(expected$);
