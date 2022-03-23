@@ -1,5 +1,5 @@
-<div class="flex-container--vertical highlight-box">
-  <div class="card">
+<div class="flex-container">
+  <div class="flex-container__card">
     <form role="form" name="search" (submit)="search()">
       <mat-form-field appearance="outline" class="mdm-dashboard__search-input">
         <input matInput placeholder="Search" name="search" [(ngModel)]="searchTerms" />
@@ -9,10 +9,22 @@
       </mat-form-field>
     </form>
   </div>
-  <div class="card">
-    <span>Requests you are currently working on</span>
+  <div class="flex-container__card">
+    <p-carousel [value]="currentUserRequests" [numVisible]="3" [numScroll]="3">
+      <ng-template pTemplate="header">
+        <h2>Requests you are currently working on:</h2>
+      </ng-template>
+      <ng-template let-request pTemplate="item">
+        <div class="request-card">
+          <h3>{{ request.label }}</h3>
+          <p>{{ request.description }}</p>
+        </div>
+      </ng-template>
+    </p-carousel>
   </div>
-  <div class="card">
-    <span>Recent Activity</span>
+
+  <div class="flex-container__card">
+    <h2>Recent Activity</h2>
+    <p>TODO: decide what recent activity is/how to store it.</p>
   </div>
 </div>

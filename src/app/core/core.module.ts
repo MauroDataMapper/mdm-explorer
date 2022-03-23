@@ -29,8 +29,12 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { RouterModule } from '@angular/router';
+import { CarouselModule } from 'primeng/carousel';
+import { ButtonModule } from 'primeng/button';
+import { ToastModule } from 'primeng/toast';
 
 const angularModules = [CommonModule, FormsModule, ReactiveFormsModule, RouterModule];
+const primeNgModules = [CarouselModule, ButtonModule, ToastModule];
 
 const materialModules = [
   MatButtonModule,
@@ -46,7 +50,7 @@ const materialModules = [
 
 @NgModule({
   declarations: [],
-  imports: [...angularModules, ...materialModules],
-  exports: [...angularModules, ...materialModules],
+  imports: [...angularModules, ...materialModules, ...primeNgModules],
+  exports: [...angularModules, ...materialModules, ...primeNgModules],
 })
 export class CoreModule {}

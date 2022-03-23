@@ -1,9 +1,47 @@
-.mdm-dashboard {
-  &__search {
-    margin: 1em 0;
-  }
+@import "../../../styles/base/colours";
 
+.mdm-dashboard {
   &__search-input {
-    width: 75%;
+    margin-top: 1.5em;
+  }
+}
+// Force Angular form fields (outline) to have a background color to offset on
+// highlight box background
+.mat-form-field-appearance-outline .mat-form-field-outline {
+  background-color: $color-white;
+  border-radius: 5px;
+}
+
+.request-card {
+  background-color: $color-highlight-box;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  margin-left: 1em;
+  margin-right: 1em;
+
+  h3 {
+    font-weight: 500;
+  }
+}
+
+div.p-carousel-header {
+  margin-top: -5em;
+}
+
+.flex-container {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+
+  &__card {
+    background-color: $color-highlight-box;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    padding: 4em 5%;
+    margin-bottom: 1em;
+
+    h3 {
+      font-weight: 500;
+    }
   }
 }
