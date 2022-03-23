@@ -66,7 +66,9 @@ describe('DataElementSearchService', () => {
       };
 
       const expectedResultSet: DataElementSearchResultSet = {
-        count: 2,
+        totalResults: 2,
+        pageSize: 10,
+        page: 1,
         items: [
           {
             id: '1',
@@ -83,7 +85,12 @@ describe('DataElementSearchService', () => {
 
       dataModelsStub.getDataElements.mockImplementationOnce((id) => {
         expect(id).toBe(params.dataClass);
-        return cold('--a|', { a: expectedResultSet });
+        return cold('--a|', {
+          a: {
+            count: expectedResultSet.items.length,
+            items: expectedResultSet.items,
+          },
+        });
       });
 
       const expected$ = cold('--a|', { a: expectedResultSet });
@@ -118,7 +125,9 @@ describe('DataElementSearchService', () => {
       };
 
       const expectedResultSet: DataElementSearchResultSet = {
-        count: 2,
+        totalResults: 2,
+        pageSize: 10,
+        page: 1,
         items: [
           {
             id: '1',
@@ -142,7 +151,12 @@ describe('DataElementSearchService', () => {
       dataModelsStub.searchDataModel.mockImplementationOnce((id, params) => {
         expect(id).toBe(expectedRootModel.id);
         expect(params.searchTerm).toBe(parameters.search);
-        return cold('--a|', { a: expectedResultSet });
+        return cold('--a|', {
+          a: {
+            count: expectedResultSet.items.length,
+            items: expectedResultSet.items,
+          },
+        });
       });
 
       const expected$ = cold('----a|', { a: expectedResultSet });

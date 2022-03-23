@@ -30,6 +30,7 @@ import {
   DataElementBookmarkEvent,
   DataElementCheckedEvent,
   mapParamMapToSearchParameters,
+  mapSearchParametersToParams,
 } from 'src/app/search/search.types';
 
 export type SearchListingSource = 'unknown' | 'browse' | 'search';
@@ -106,6 +107,16 @@ export class SearchListingComponent implements OnInit {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   bookmarkElement(event: DataElementBookmarkEvent) {
     alert('TODO: add/remove bookmarks from SearchListingComponent');
+  }
+
+  selectPage(page: number) {
+    const next: DataElementSearchParameters = {
+      ...this.parameters,
+      page,
+    };
+
+    const params = mapSearchParametersToParams(next);
+    this.stateRouter.navigateToKnownPath('/search/listing', params);
   }
 
   private loadDataClass() {

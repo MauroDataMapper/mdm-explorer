@@ -25,6 +25,7 @@ import {
   DataClassDetailResponse,
   DataClassIndexResponse,
   DataElement,
+  DataElementIndexParameters,
   DataElementIndexResponse,
   DataModel,
   DataModelDetail,
@@ -104,11 +105,15 @@ export class DataModelService {
    * Gets the Data Elements from a Data Class.
    *
    * @param id The identifiers required to locate the Data Class.
+   * @param params Optional parameters to control the resulting list
    * @returns An observable of {@link DataElement} objects, including the total number found.
    */
-  getDataElements(id: DataClassIdentifier): Observable<MdmIndexBody<DataElement>> {
+  getDataElements(
+    id: DataClassIdentifier,
+    params?: DataElementIndexParameters
+  ): Observable<MdmIndexBody<DataElement>> {
     return this.endpoints.dataElement
-      .list(id.dataModelId, id.dataClassId)
+      .list(id.dataModelId, id.dataClassId, params)
       .pipe(map((response: DataElementIndexResponse) => response.body));
   }
 

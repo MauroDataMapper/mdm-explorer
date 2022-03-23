@@ -44,20 +44,28 @@ SPDX-License-Identifier: Apache-2.0
   <div *ngIf="status === 'ready'">
     <div class="mdm-search-listing__sort-row">
       <ng-container *ngIf="source === 'browse'">
-        {{ resultSet?.count }} results for
+        {{ resultSet?.totalResults }} results for '
         <mdm-breadcrumb [item]="root"></mdm-breadcrumb>
+        '
       </ng-container>
       <ng-container *ngIf="source === 'search'">
-        {{ resultSet?.count }} results found
+        {{ resultSet?.totalResults }} results found
       </ng-container>
     </div>
     <div *ngIf="resultSet" class="row">
       <mdm-data-element-search-result
         *ngFor="let dataElement of resultSet.items"
         [item]="dataElement"
+        [showBreadcrumb]="source === 'search'"
         (checked)="selectElement($event)"
         (bookmark)="bookmarkElement($event)"
       ></mdm-data-element-search-result>
+      <mdm-pagination
+        [currentPage]="resultSet.page"
+        [pageSize]="resultSet.pageSize"
+        [totalResults]="resultSet.totalResults"
+        (selected)="selectPage($event)"
+      ></mdm-pagination>
     </div>
   </div>
 </ng-container>
