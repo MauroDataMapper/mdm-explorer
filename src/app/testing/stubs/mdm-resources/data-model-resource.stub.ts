@@ -18,6 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import {
   CatalogueItemSearchResponse,
+  DataModelIndexResponse,
   SearchQueryParameters,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
@@ -28,12 +29,19 @@ export type DataModelSearchFn = (
   query?: SearchQueryParameters
 ) => Observable<CatalogueItemSearchResponse>;
 
+export type DataModelListInFolderFn = (
+  id: Uuid,
+  query?: SearchQueryParameters
+) => Observable<DataModelIndexResponse>;
+
 export interface MdmDataModelResourcesStub {
   search: jest.MockedFunction<DataModelSearchFn>;
+  listInFolder: jest.MockedFunction<DataModelListInFolderFn>;
 }
 
 export const createDataModelStub = (): MdmDataModelResourcesStub => {
   return {
     search: jest.fn() as jest.MockedFunction<DataModelSearchFn>,
+    listInFolder: jest.fn() as jest.MockedFunction<DataModelListInFolderFn>,
   };
 };
