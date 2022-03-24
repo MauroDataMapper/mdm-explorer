@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { DataModelDetail } from '@maurodatamapper/mdm-resources';
+import { DataModel } from '@maurodatamapper/mdm-resources';
+import { ToastrService } from 'ngx-toastr';
+import { catchError, throwError } from 'rxjs';
 import { CatalogueSearchPayload } from 'src/app/catalogue/catalogue.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { UserRequestsService } from 'src/app/core/user-requests.service';
@@ -12,25 +14,41 @@ import { SecurityService } from 'src/app/security/security.service';
 })
 export class DashboardComponent implements OnInit {
   searchTerms: string = '';
-  currentUserRequests: DataModelDetail[] = [];
+  currentUserRequests: DataModel[] = [];
 
   constructor(
     private security: SecurityService,
     private stateRouter: StateRouterService,
-    private userRequests: UserRequestsService
+    private userRequests: UserRequestsService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
-    if (!this.security.isSignedIn()) {
+    const user = this.security.getSignedInUser();
+    if (user === null) {
       this.stateRouter.transitionTo('app.container.home');
       return;
     }
 
-    // if user is signed in, get their current list of user-requests
+    this.loadRequests(user.userName);
+  }
+
+  loadRequests(username: string) {
+    this.userRequests
+      .list(username)
+      .pipe(
+        catchError((error) => {
+          this.toastr.error('Unable to retrieve your current requests from the server.');
+          return throwError(() => error);
+        })
+      )
+      .subscribe((dataModels: DataModel[]) => {
+        this.currentUserRequests = [...dataModels];
+      });
   }
 
   search(): void {
     const payload = { searchTerms: this.searchTerms } as CatalogueSearchPayload;
-    this.stateRouter.transitionTo('app.container.search-results', payload);
+    this.stateRouter.transitionTo('app.container.search-listing', payload);
   }
 }
