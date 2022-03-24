@@ -59,9 +59,7 @@ describe('HomeComponent', () => {
 
       harness.component.ngOnInit();
 
-      expect(stateRouterStub.transitionTo).toHaveBeenCalledWith(
-        'app.container.dashboard'
-      );
+      expect(stateRouterStub.navigateToKnownPath).toHaveBeenCalledWith('/dashboard');
     });
   });
 });

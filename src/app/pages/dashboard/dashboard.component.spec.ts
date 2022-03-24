@@ -70,7 +70,7 @@ describe('DashboardComponent', () => {
 
   describe('initialisation', () => {
     it('should transition to home page if user not logged in', () => {
-      const spy = jest.spyOn(stateRouterStub, 'transitionTo');
+      const spy = jest.spyOn(stateRouterStub, 'navigateToKnownPath');
 
       securityStub.getSignedInUser.mockImplementationOnce(() => {
         return null;
@@ -78,7 +78,7 @@ describe('DashboardComponent', () => {
 
       harness.component.ngOnInit();
 
-      expect(spy).toHaveBeenCalledWith('app.container.home');
+      expect(spy).toHaveBeenCalledWith('/home');
     });
 
     it('should initialize the currentUserRequests list upon successful retrieval of requests', () => {
@@ -127,8 +127,8 @@ describe('DashboardComponent', () => {
       harness.component.searchTerms = searchTerms;
       harness.component.search();
 
-      expect(stateRouterStub.transitionTo).toHaveBeenCalledWith(
-        'app.container.search-listing',
+      expect(stateRouterStub.navigateToKnownPath).toHaveBeenCalledWith(
+        '/search/listing',
         expectedPayload
       );
     });
