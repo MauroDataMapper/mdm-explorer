@@ -16,41 +16,30 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { RawParams, TransitionOptions } from '@uirouter/angular';
-import { KnownRouterState } from 'src/app/core/state-router.service';
+import { Params } from '@angular/router';
+import { KnownRouterPath } from 'src/app/core/state-router.service';
 
-export interface UIRouterGlobalsStub {
-  params: jest.MockedObject<any>;
-}
-
-export const createRouterGlobalsStub = (): UIRouterGlobalsStub => {
-  return {
-    params: jest.fn(),
-  };
-};
-
-export type TransitionFn = (
-  name: string,
-  params?: RawParams,
-  options?: TransitionOptions
-) => any;
-export type TransitionMockedFn = jest.MockedFunction<TransitionFn>;
-
-export type TransitionToFn = (
-  name: KnownRouterState,
-  params?: RawParams,
-  options?: TransitionOptions
-) => any;
-export type TransitionToMockedFn = jest.MockedFunction<TransitionToFn>;
+export type StateRouterNavigateToFn = (
+  fragments: any[],
+  queryParams?: Params
+) => Promise<boolean>;
+export type StateRouterNavigateToKnownPathFn = (
+  path: KnownRouterPath,
+  queryParams?: Params
+) => Promise<boolean>;
+export type StateRouterNavigateToNotFoundFn = () => Promise<boolean>;
 
 export interface StateRouterServiceStub {
-  transition: TransitionMockedFn;
-  transitionTo: TransitionToMockedFn;
+  navigateTo: jest.MockedFunction<StateRouterNavigateToFn>;
+  navigateToKnownPath: jest.MockedFunction<StateRouterNavigateToKnownPathFn>;
+  navigateToNotFound: jest.MockedFunction<StateRouterNavigateToNotFoundFn>;
 }
 
 export const createStateRouterStub = (): StateRouterServiceStub => {
   return {
-    transition: jest.fn() as TransitionMockedFn,
-    transitionTo: jest.fn() as TransitionToMockedFn,
+    navigateTo: jest.fn() as jest.MockedFunction<StateRouterNavigateToFn>,
+    navigateToKnownPath:
+      jest.fn() as jest.MockedFunction<StateRouterNavigateToKnownPathFn>,
+    navigateToNotFound: jest.fn() as jest.MockedFunction<StateRouterNavigateToNotFoundFn>,
   };
 };

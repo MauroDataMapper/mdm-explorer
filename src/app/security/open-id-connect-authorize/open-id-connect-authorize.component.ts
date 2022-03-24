@@ -34,20 +34,20 @@ import { LoginError, SignInErrorType } from '../security.types';
  *
  * 2. When successfully logged into Mauro, the component will redirect back to itself. The reason why is to remove
  * the extraneous query parameters from the current location URL (a full redirect seems to be the only way to
- * do this, UIRouter does not update browser state).
+ * do this, router does not update browser state).
  *
  * 3. If logged into Mauro - update internal state with logged in broadcast messages and navigate to the start page.
  */
 @Component({
   selector: 'mdm-open-id-connect-authorize',
   templateUrl: './open-id-connect-authorize.component.html',
-  styleUrls: ['./open-id-connect-authorize.component.scss']
+  styleUrls: ['./open-id-connect-authorize.component.scss'],
 })
 export class OpenIdConnectAuthorizeComponent implements OnInit {
   authorizing = true;
   errorMessage = '';
 
-  constructor(private security: SecurityService) { }
+  constructor(private security: SecurityService) {}
 
   ngOnInit(): void {
     if (this.verifyLoggedIn()) {
@@ -80,7 +80,7 @@ export class OpenIdConnectAuthorizeComponent implements OnInit {
         providerId,
         state,
         sessionState,
-        code
+        code,
       })
       .pipe(
         catchError((error: LoginError) => {
@@ -98,7 +98,7 @@ export class OpenIdConnectAuthorizeComponent implements OnInit {
 
           return EMPTY;
         }),
-        finalize(() => this.authorizing = false)
+        finalize(() => (this.authorizing = false))
       )
       .subscribe(() => {
         this.verifyLoggedIn();

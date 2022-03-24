@@ -16,3 +16,12 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { Route } from '@angular/router';
+import { OpenIdConnectAuthorizeComponent } from './open-id-connect-authorize/open-id-connect-authorize.component';
+
+export const routes: Route[] = [
+  {
+    path: 'open-id-connect/authorize',
+    component: OpenIdConnectAuthorizeComponent,
+  },
+];

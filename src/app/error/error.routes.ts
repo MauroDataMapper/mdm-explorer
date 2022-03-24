@@ -16,55 +16,27 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Ng2StateDeclaration } from '@uirouter/angular';
+import { Route } from '@angular/router';
 import { NotAuthorizedComponent } from './not-authorized/not-authorized.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { NotImplementedComponent } from './not-implemented/not-implemented.component';
 import { ServerErrorComponent } from './server-error/server-error.component';
 
-export const states: Ng2StateDeclaration[] = [
+export const routes: Route[] = [
   {
-    name: 'app.container.not-implemented',
-    url: '/not-implemented',
+    path: 'not-implemented',
     component: NotImplementedComponent,
-    data: {
-      allowAnonymous: true
-    },
-    params: {
-      lastError: null
-    }
   },
   {
-    name: 'app.container.not-authorized',
-    url: '/not-authorized',
+    path: 'not-authorized',
     component: NotAuthorizedComponent,
-    data: {
-      allowAnonymous: true
-    },
-    params: {
-      lastError: null
-    }
   },
   {
-    name: 'app.container.server-error',
-    url: '/server-error',
+    path: 'server-error',
     component: ServerErrorComponent,
-    data: {
-      allowAnonymous: true
-    },
-    params: {
-      lastError: null
-    }
   },
   {
-    name: 'app.container.not-found',
-    url: '/not-found',
+    path: 'not-found',
     component: NotFoundComponent,
-    data: {
-      allowAnonymous: true
-    },
-    params: {
-      lastError: null
-    }
   },
 ];

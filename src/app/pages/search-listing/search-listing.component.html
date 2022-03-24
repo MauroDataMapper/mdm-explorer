@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 -->
 <ng-container *ngIf="source !== 'unknown'">
   <div class="mdm-search-listing__back-link">
-    <a [uiSref]="backUiSref">
+    <a [routerLink]="backRouterLink">
       <i class="fa-solid fa-arrow-left"></i>
       {{ backLabel }}
     </a>

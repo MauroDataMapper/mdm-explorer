@@ -28,8 +28,9 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { RouterModule } from '@angular/router';
 
-const angularModules = [CommonModule, FormsModule, ReactiveFormsModule];
+const angularModules = [CommonModule, FormsModule, ReactiveFormsModule, RouterModule];
 
 const materialModules = [
   MatButtonModule,

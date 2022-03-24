@@ -16,7 +16,6 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Ng2StateDeclaration } from '@uirouter/angular';
 import { StaticContentComponent } from './static-content/static-content.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { SignInComponent } from './sign-in/sign-in.component';
@@ -25,113 +24,79 @@ import { SearchListingComponent } from './search-listing/search-listing.componen
 import { MyAccountComponent } from './my-account/my-account.component';
 import { BookmarkComponent } from './bookmark/bookmark.component';
 import { SearchComponent } from './search/search.component';
+import { Route, UrlMatchResult, UrlSegment } from '@angular/router';
+import { AuthorizedGuard } from '../security/guards/authorized.guard';
 
-const staticContentStateName = 'app.container.static-content';
-
-/**
- * Build a new router state designed to render static content to a view.
- *
- * @param name The name to give to the router state.
- * @param url The URL to map to the router state.
- * @param path The path to the static content to fetch.
- * @returns An {@link Ng2StateDeclaration} containing the router state information.
- */
-export const buildStaticContentState = (
-  name: string,
-  url: string,
-  path: string
-): Ng2StateDeclaration => {
+export const buildStaticContentRoute = (path: string, staticAssetPath: string): Route => {
   return {
-    name,
-    url,
+    path,
     component: StaticContentComponent,
-    params: {
-      path,
-    },
     data: {
-      allowAnonymous: true,
+      staticAssetPath,
     },
   };
 };
 
-export const states: Ng2StateDeclaration[] = [
-  /*
-    Router state for any generic static page content.
-    Loads HTML from the 'assets' folder. The {path:any} variable can be either a root URL path or sub-folder path e.g.
+/**
+ * Custom route matcher to match 'page/:path' route, where ':path' could include further URL segments
+ * to produce a non-deterministic URL slug.
+ */
+const dynamicStaticPageMatcher = (segments: UrlSegment[]): UrlMatchResult | null => {
+  if (segments.length === 0) {
+    return null;
+  }
 
-    /page/about
-    /page/help/faq
-    /page/top/middle/bottom
+  if (segments[0].path.localeCompare('page', undefined, { sensitivity: 'base' }) !== 0) {
+    return null;
+  }
 
-    etc
+  return {
+    consumed: segments,
+    posParams: {
+      path: new UrlSegment(segments.slice(1).join('/'), {}),
+    },
+  };
+};
 
-    Note: the {path} URL parameter sets `raw` as `true` so that forward slashes do not have to be URL encoded.
-    /
-  */
+export const routes: Route[] = [
+  buildStaticContentRoute('', 'home'),
+  buildStaticContentRoute('home', 'home'),
+  buildStaticContentRoute('about', 'about'),
   {
-    name: staticContentStateName,
-    url: '/page/:path',
+    matcher: dynamicStaticPageMatcher,
     component: StaticContentComponent,
-    params: {
-      path: {
-        type: 'string',
-        raw: true,
-      },
-    },
-    data: {
-      allowAnonymous: true,
-    },
   },
-  buildStaticContentState('app.container.home', '/home', 'home'),
-  buildStaticContentState('app.container.about', '/about', 'about'),
   {
-    name: 'app.container.signin',
-    url: '/sign-in',
+    path: 'sign-in',
     component: SignInComponent,
-    data: {
-      allowAnonymous: true,
-    },
   },
   {
-    name: 'app.container.forgot-password',
-    url: '/forgot-password',
+    path: 'forgot-password',
     component: ForgotPasswordComponent,
-    data: {
-      allowAnonymous: true,
-    },
   },
   {
-    name: 'app.container.browse',
-    url: '/browse',
+    path: 'browse',
     component: BrowseComponent,
+    canActivate: [AuthorizedGuard],
   },
   {
-    name: 'app.container.search',
-    url: '/search',
+    path: 'search',
     component: SearchComponent,
-    data: {
-      allowAnonymous: true,
-    },
+    canActivate: [AuthorizedGuard],
   },
   {
-    name: 'app.container.search-listing',
-    url: '/search/listing?{dm:string}&{pdc:string}&{dc:string}&{search:string}',
+    path: 'search/listing',
     component: SearchListingComponent,
-    params: {
-      dm: null, // Data Model
-      dc: null, // Data Class (could be child)
-      pdc: null, // Parent Data Class
-      search: null,
-    },
+    canActivate: [AuthorizedGuard],
   },
   {
-    name: 'app.container.my-account',
-    url: '/account',
+    path: 'account',
     component: MyAccountComponent,
+    canActivate: [AuthorizedGuard],
   },
   {
-    name: 'app.container.my-bookmarks',
-    url: '/bookmarks',
+    path: 'bookmarks',
     component: BookmarkComponent,
+    canActivate: [AuthorizedGuard],
   },
 ];

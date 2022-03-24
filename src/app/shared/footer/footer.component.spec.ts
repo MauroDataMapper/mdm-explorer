@@ -16,44 +16,55 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { ComponentHarness, setupTestModuleForComponent } from '../../testing/testing.helpers';
+import { RouterLink } from '@angular/router';
+import { MockDirective } from 'ng-mocks';
+import {
+  ComponentHarness,
+  setupTestModuleForComponent,
+} from '../../testing/testing.helpers';
 import { FooterComponent } from './footer.component';
 
 describe('FooterComponent', () => {
   let harness: ComponentHarness<FooterComponent>;
 
   beforeEach(async () => {
-    harness = await setupTestModuleForComponent(FooterComponent);
+    harness = await setupTestModuleForComponent(FooterComponent, {
+      declarations: [MockDirective(RouterLink)],
+    });
   });
 
   it('should create', () => {
     expect(harness?.isComponentCreated).toBeTruthy();
-    expect(harness.component.copyright).toBe(' - Researcher interface. Powered by Mauro Data Mapper.');
+    expect(harness.component.copyright).toBe(
+      ' - Researcher interface. Powered by Mauro Data Mapper.'
+    );
     expect(harness.component.year).toBe(new Date().getFullYear());
   });
 
   it('should display footer links', () => {
     harness.component.links = [
-    {
-      label: 'Privacy policy',
-      routeName: 'app.container.privacy',
-      target: '_self',
-    },
-    {
-      label: 'Terms and conditions',
-      href: 'https://localhost/terms-and-conditions',
-      target: '_self',
-    },
-    {
-      label: 'Cookies',
-      routeName: 'app.container.cookies',
-      target: '_self',
-    },
-  ];
+      {
+        label: 'Privacy policy',
+        routerLink: 'app.container.privacy',
+        target: '_self',
+      },
+      {
+        label: 'Terms and conditions',
+        href: 'https://localhost/terms-and-conditions',
+        target: '_self',
+      },
+      {
+        label: 'Cookies',
+        routerLink: 'app.container.cookies',
+        target: '_self',
+      },
+    ];
     harness.detectChanges();
     const dom = harness.fixture.nativeElement;
     const privacyPolicy = dom.querySelector('#app\\.container\\.privacy');
-    const termsAndConditions = dom.querySelector('a[href="https://localhost/terms-and-conditions"]');
+    const termsAndConditions = dom.querySelector(
+      'a[href="https://localhost/terms-and-conditions"]'
+    );
     const cookies = dom.querySelector('#app\\.container\\.cookies');
     expect(privacyPolicy).toBeTruthy();
     expect(termsAndConditions).toBeTruthy();

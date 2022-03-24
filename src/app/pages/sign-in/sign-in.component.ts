@@ -68,14 +68,7 @@ export class SignInComponent implements OnInit {
       )
       .subscribe((user) => {
         this.broadcast.userSignedIn(user);
-        this.stateRouter.transitionTo(
-          'app.container.home',
-          {},
-          {
-            reload: true,
-            inherit: false,
-          }
-        );
+        this.stateRouter.navigateToKnownPath('/home');
       });
   }
 

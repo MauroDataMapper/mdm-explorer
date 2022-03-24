@@ -16,20 +16,20 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { DataClassDetail } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY } from 'rxjs';
+import { catchError, EMPTY, forkJoin, of, switchMap } from 'rxjs';
 import { DataModelService } from 'src/app/catalogue/data-model.service';
-import { KnownRouterState, StateRouterService } from 'src/app/core/state-router.service';
+import { KnownRouterPath, StateRouterService } from 'src/app/core/state-router.service';
 import { DataElementSearchService } from 'src/app/search/data-element-search.service';
 import {
   DataElementSearchParameters,
   DataElementSearchResultSet,
-  DataElementSearchParametersFn,
-  SEARCH_QUERY_PARAMS,
   DataElementBookmarkEvent,
   DataElementCheckedEvent,
+  mapParamMapToSearchParameters,
 } from 'src/app/search/search.types';
 
 export type SearchListingSource = 'unknown' | 'browse' | 'search';
@@ -50,15 +50,15 @@ export class SearchListingComponent implements OnInit {
   resultSet?: DataElementSearchResultSet;
 
   constructor(
-    @Inject(SEARCH_QUERY_PARAMS) private getParameters: DataElementSearchParametersFn,
+    private route: ActivatedRoute,
     private dataElementsSearch: DataElementSearchService,
     private dataModels: DataModelService,
     private toastr: ToastrService,
     private stateRouter: StateRouterService
   ) {}
 
-  get backUiSref(): KnownRouterState {
-    return this.source === 'browse' ? 'app.container.browse' : 'app.container.search';
+  get backRouterLink(): KnownRouterPath {
+    return this.source === 'browse' ? '/browse' : '/search';
   }
 
   get backLabel() {
@@ -68,24 +68,32 @@ export class SearchListingComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.parameters = this.getParameters();
-    this.searchTerms = this.parameters.search;
+    this.route.queryParamMap
+      .pipe(
+        switchMap((query) => {
+          this.parameters = mapParamMapToSearchParameters(query);
+          this.searchTerms = this.parameters.search;
 
-    // If there is a Data Class ID provided, then these parameters came from the "Browse" page,
-    // listing Data Elements under a specific Data Class
-    this.source = this.parameters.dataClass?.dataClassId ? 'browse' : 'search';
+          // If there is a Data Class ID provided, then these parameters came from the "Browse" page,
+          // listing Data Elements under a specific Data Class
+          this.source = this.parameters.dataClass?.dataClassId ? 'browse' : 'search';
 
-    this.loadDataClass();
-    this.loadSearchResults();
+          this.status = 'loading';
+
+          return forkJoin([this.loadDataClass(), this.loadSearchResults()]);
+        })
+      )
+      .subscribe(([dataClass, resultSet]) => {
+        this.status = 'ready';
+        this.root = dataClass;
+        this.resultSet = resultSet;
+      });
   }
 
   updateSearch() {
     // Transition to same state but with different parameters
     // Cannot mix search terms with Data Class root, so this only triggers a catalogue wide search
-    this.stateRouter.transitionTo('app.container.search-listing', {
-      dm: null,
-      dc: null,
-      pdc: null,
+    this.stateRouter.navigateToKnownPath('/search/listing', {
       search: this.searchTerms,
     });
   }
@@ -102,27 +110,24 @@ export class SearchListingComponent implements OnInit {
 
   private loadDataClass() {
     if (this.source !== 'browse') {
-      return;
+      return of(undefined);
     }
 
     if (!this.parameters.dataClass) {
-      return;
+      return of(undefined);
     }
 
-    this.dataModels
-      .getDataClass(this.parameters.dataClass)
-      .pipe(
-        catchError(() => {
-          this.toastr.error('Unable to retrieve the chosen Data Class.');
-          return EMPTY;
-        })
-      )
-      .subscribe((dataClass) => (this.root = dataClass));
+    return this.dataModels.getDataClass(this.parameters.dataClass).pipe(
+      catchError(() => {
+        this.toastr.error('Unable to retrieve the chosen Data Class.');
+        return EMPTY;
+      })
+    );
   }
 
   private loadSearchResults() {
     if (this.source === 'unknown') {
-      return;
+      return of(undefined);
     }
 
     const request$ =
@@ -130,18 +135,11 @@ export class SearchListingComponent implements OnInit {
         ? this.dataElementsSearch.listing(this.parameters)
         : this.dataElementsSearch.search(this.parameters);
 
-    this.status = 'loading';
-
-    request$
-      .pipe(
-        catchError(() => {
-          this.status = 'error';
-          return EMPTY;
-        })
-      )
-      .subscribe((resultSet) => {
-        this.status = 'ready';
-        this.resultSet = resultSet;
-      });
+    return request$.pipe(
+      catchError(() => {
+        this.status = 'error';
+        return EMPTY;
+      })
+    );
   }
 }

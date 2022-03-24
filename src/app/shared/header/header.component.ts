@@ -30,9 +30,9 @@ export interface HeaderLink {
   label: string;
 
   /**
-   * Provide the route name to transition to.
+   * Provide the route link to transition to.
    */
-  routeName: string;
+  routerLink: string;
 
   /**
    * State the target to use on the anchor tag.
@@ -86,7 +86,7 @@ export class HeaderComponent {
    */
   @Input() accountLink: HeaderLink = {
     label: 'Missing Label',
-    routeName: 'app.container.home',
+    routerLink: 'app.container.home',
   };
 
   @Input() numberOfRequests = 0;

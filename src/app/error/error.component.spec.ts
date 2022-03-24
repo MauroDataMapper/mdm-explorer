@@ -16,24 +16,19 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { UIRouterGlobals } from '@uirouter/angular';
-import { ComponentHarness, setupTestModuleForComponent } from '../testing/testing.helpers';
+import {
+  ComponentHarness,
+  setupTestModuleForComponent,
+} from '../testing/testing.helpers';
 import { ErrorComponent } from './error.component';
 
 describe('ErrorComponent', () => {
   let harness: ComponentHarness<ErrorComponent>;
 
   beforeEach(async () => {
-    harness = await setupTestModuleForComponent(
-      ErrorComponent,
-      {
-        providers: [
-          {
-            provide: UIRouterGlobals,
-            useValue: jest.fn()
-          }
-        ]
-      });
+    harness = await setupTestModuleForComponent(ErrorComponent, {
+      providers: [],
+    });
   });
 
   it('should create', () => {

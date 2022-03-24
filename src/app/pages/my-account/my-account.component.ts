@@ -48,7 +48,7 @@ export class MyAccountComponent implements OnInit {
   ngOnInit(): void {
     const userDetails = this.security.getSignedInUser();
     if (!userDetails) {
-      this.stateRouter.transitionTo('app.container.home');
+      this.stateRouter.navigateToKnownPath('/home');
       return;
     }
 

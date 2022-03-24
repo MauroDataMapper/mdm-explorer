@@ -16,18 +16,23 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, OnInit } from '@angular/core';
+import { setupTestModuleForService } from '../testing/testing.helpers';
+import { ErrorService } from './error.service';
 
-@Component({
-  selector: 'mdm-app-container',
-  templateUrl: './app-container.component.html',
-  styleUrls: ['./app-container.component.scss']
-})
-export class AppContainerComponent implements OnInit {
+describe('ErrorService', () => {
+  let service: ErrorService;
 
-  constructor() { }
+  beforeEach(() => {
+    service = setupTestModuleForService(ErrorService);
+  });
 
-  ngOnInit(): void {
-  }
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
 
-}
+  it('should set the last error', () => {
+    const error = new Error('test');
+    service.lastError = error;
+    expect(service.lastError).toBe(error);
+  });
+});

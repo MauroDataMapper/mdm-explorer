@@ -16,64 +16,68 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { TransitionOptions, UIRouter } from '@uirouter/angular';
+import { Router, UrlTree } from '@angular/router';
 import { setupTestModuleForService } from '../testing/testing.helpers';
-import { KnownRouterState, StateRouterService } from './state-router.service';
+import { KnownRouterPath, StateRouterService } from './state-router.service';
 
-interface StateServiceStub {
-  go: jest.Mock;
-}
-
-interface UIRouterStub {
-  stateService: StateServiceStub;
+interface RouterStub {
+  navigate: jest.Mock;
+  navigateByUrl: jest.Mock;
+  createUrlTree: jest.Mock;
 }
 
 describe('StateRouterService', () => {
   let service: StateRouterService;
 
-  const uiRouterStub: UIRouterStub = {
-    stateService: {
-      go: jest.fn()
-    }
+  const routerStub: RouterStub = {
+    navigate: jest.fn(),
+    navigateByUrl: jest.fn(),
+    createUrlTree: jest.fn(),
   };
 
   beforeEach(() => {
-    service = setupTestModuleForService(
-      StateRouterService,
-      {
-        providers: [
-          {
-            provide: UIRouter,
-            useValue: uiRouterStub
-          }
-        ]
-      });
-  });
-
-  afterEach(() => {
-    uiRouterStub.stateService.go.mockClear();
+    service = setupTestModuleForService(StateRouterService, {
+      providers: [
+        {
+          provide: Router,
+          useValue: routerStub,
+        },
+      ],
+    });
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should transition to a new state', () => {
-    const expectedState = 'next';
-    const expectedParams = { id: 42 };
-    const expectedOptions: TransitionOptions = { reload: true };
-
-    service.transition(expectedState, expectedParams, expectedOptions);
-
-    expect(uiRouterStub.stateService.go).toHaveBeenCalledWith(expectedState, expectedParams, expectedOptions);
+  it.each([
+    [['/home'], undefined],
+    [['/user', 123], undefined],
+    [['/search'], { search: 'test', page: 2 }],
+  ])('should navigate to a new URL', (fragments, queryParams) => {
+    service.navigateTo(fragments, queryParams);
+    expect(routerStub.navigate).toHaveBeenCalledWith(fragments, { queryParams });
   });
 
-  it.each<KnownRouterState>([
-    'app.container.default',
-    'app.container.home',
-    'app.container.signin'
-  ])('should transition to known router state %p', (expected) => {
-    service.transitionTo(expected);
-    expect(uiRouterStub.stateService.go).toHaveBeenCalledWith(expected, undefined, undefined);
+  it.each<KnownRouterPath>(['/home', '/sign-in', '/search'])(
+    'should navigate to known path %p',
+    (path) => {
+      const expectedUrlTree: UrlTree = {
+        fragment: path,
+        queryParams: {},
+      } as UrlTree;
+
+      routerStub.createUrlTree.mockImplementationOnce(() => expectedUrlTree);
+
+      service.navigateToKnownPath(path);
+      expect(routerStub.navigateByUrl).toHaveBeenCalledWith(expectedUrlTree);
+    }
+  );
+
+  it('should navigate to "not found" route', () => {
+    service.navigateToNotFound();
+    expect(routerStub.navigate).toHaveBeenCalledWith(['/not-found'], {
+      skipLocationChange: true,
+    });
   });
 });

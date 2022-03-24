@@ -62,11 +62,11 @@ describe('SearchComponent', () => {
     } as CatalogueSearchPayload;
 
     it('should transition to search-results page with correct query string', () => {
-      const spy = jest.spyOn(stateRouterStub, 'transitionTo');
+      const spy = jest.spyOn(stateRouterStub, 'navigateToKnownPath');
 
       harness.component.search(searchPayload);
 
-      expect(spy).toHaveBeenCalledWith('app.container.search-listing', {
+      expect(spy).toHaveBeenCalledWith('/search/listing', {
         search: searchPayload.searchTerms,
       });
     });

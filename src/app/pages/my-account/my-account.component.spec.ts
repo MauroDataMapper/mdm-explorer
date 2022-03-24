@@ -90,12 +90,12 @@ describe('MyAccountComponent', () => {
     };
 
     it('should return to the home page if no user id was found', () => {
-      const spy = jest.spyOn(stateRouterStub, 'transitionTo');
+      const spy = jest.spyOn(stateRouterStub, 'navigateToKnownPath');
       securityStub.getSignedInUser.mockReturnValueOnce(null);
 
       harness.component.ngOnInit();
 
-      expect(spy).toHaveBeenCalledWith('app.container.home');
+      expect(spy).toHaveBeenCalledWith('/home');
     });
 
     it('should fetch the full details of the signed in user', () => {

@@ -32,6 +32,7 @@ import { StateRouterService } from 'src/app/core/state-router.service';
 import { createCatalogueServiceStub } from 'src/app/testing/stubs/catalogue.stub';
 import { createDataModelServiceStub } from 'src/app/testing/stubs/data-model.stub';
 import { createStateRouterStub } from 'src/app/testing/stubs/state-router.stub';
+import { createToastrServiceStub } from 'src/app/testing/stubs/toastr.stub';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
@@ -43,10 +44,7 @@ describe('BrowseComponent', () => {
   const dataModelStub = createDataModelServiceStub();
   const catalogueStub = createCatalogueServiceStub();
   const stateRouterStub = createStateRouterStub();
-
-  const toastrStub = {
-    error: jest.fn(),
-  };
+  const toastrStub = createToastrServiceStub();
 
   const rootDataModel: DataModelDetail = {
     id: '123',
@@ -233,7 +231,7 @@ describe('BrowseComponent', () => {
   describe('view details', () => {
     it('should do nothing if there is no child data class selected', () => {
       harness.component.viewDetails();
-      expect(stateRouterStub.transitionTo).not.toHaveBeenCalled();
+      expect(stateRouterStub.navigateToKnownPath).not.toHaveBeenCalled();
     });
 
     it('should do nothing if the selected child data class has no parent', () => {
@@ -244,7 +242,7 @@ describe('BrowseComponent', () => {
       };
 
       harness.component.viewDetails();
-      expect(stateRouterStub.transitionTo).not.toHaveBeenCalled();
+      expect(stateRouterStub.navigateToKnownPath).not.toHaveBeenCalled();
     });
 
     it('should transition to the search results page when a selection is made', () => {
@@ -257,8 +255,8 @@ describe('BrowseComponent', () => {
       };
 
       harness.component.viewDetails();
-      expect(stateRouterStub.transitionTo).toHaveBeenCalledWith(
-        'app.container.search-listing',
+      expect(stateRouterStub.navigateToKnownPath).toHaveBeenCalledWith(
+        '/search/listing',
         {
           dm: harness.component.selected.model,
           dc: harness.component.selected.id,

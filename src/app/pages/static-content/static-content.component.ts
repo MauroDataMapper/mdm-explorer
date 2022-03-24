@@ -18,9 +18,9 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
 import { SafeHtml } from '@angular/platform-browser';
-import { UIRouterGlobals } from '@uirouter/angular';
-import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+import { catchError, combineLatest, EMPTY, map, switchMap } from 'rxjs';
+import { StateRouterService } from 'src/app/core/state-router.service';
 import { StaticContentService } from 'src/app/core/static-content.service';
 
 /**
@@ -37,25 +37,31 @@ export class StaticContentComponent implements OnInit {
   content: SafeHtml = '';
 
   constructor(
-    private routerGlobals: UIRouterGlobals,
+    private route: ActivatedRoute,
     private staticContent: StaticContentService,
-    private toastr: ToastrService
+    private stateRouter: StateRouterService
   ) {}
 
   ngOnInit(): void {
-    const path: string = this.routerGlobals.params.path;
-    if (!path) {
-      return;
-    }
-
-    this.staticContent
-      .getContent(path)
+    combineLatest([this.route.paramMap, this.route.data])
       .pipe(
+        map(([params, data]) => {
+          const path = params.get('path');
+          if (path) {
+            return path;
+          }
+
+          const staticAssetPath: string = data.staticAssetPath;
+          return staticAssetPath;
+        }),
+        switchMap((path: string) => this.staticContent.getContent(path)),
         catchError(() => {
-          this.toastr.error(`Unable to load content from '${path}'.`);
+          this.stateRouter.navigateToNotFound();
           return EMPTY;
         })
       )
-      .subscribe((content) => (this.content = content));
+      .subscribe((content) => {
+        this.content = content;
+      });
   }
 }

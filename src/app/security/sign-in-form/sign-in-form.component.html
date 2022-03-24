@@ -50,8 +50,8 @@ SPDX-License-Identifier: Apache-2.0
           <mat-error *ngIf="password?.errors?.required"> Password is required </mat-error>
         </mat-form-field>
       </div>
-      <div *ngIf="forgotPasswordRouteName" class="form-secondary-action">
-        <a [uiSref]="forgotPasswordRouteName">Forgot password?</a>
+      <div *ngIf="forgotPasswordRouterLink" class="form-secondary-action">
+        <a [routerLink]="forgotPasswordRouterLink">Forgot password?</a>
       </div>
       <div class="form-submit">
         <button
