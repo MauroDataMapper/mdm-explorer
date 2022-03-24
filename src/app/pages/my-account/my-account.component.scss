@@ -19,6 +19,10 @@ SPDX-License-Identifier: Apache-2.0
 @import "../../../styles/base/all";
 
 .mdm-my-account {
+  .h1-with-actions {
+    padding: 5em 0 1em;
+  }
+
   section {
     border: 1px solid $color-stroked-border;
     border-radius: $border-radius;

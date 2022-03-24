@@ -16,43 +16,43 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<div class="jumbotron mdm-error__message">
-  <h2><i class="fas fa-bug"></i>{{ heading }}</h2>
-  <p>{{ message }}</p>
-</div>
-<div>
-  <p>{{ resolution }}</p>
-</div>
-<div *ngIf="lastHttpError">
-  <div class="mdm-error__details__controls">
-    <button
-      mat-stroked-button
-      color="primary"
-      type="button"
-      (click)="copyToClipboard()"
-    >
-      <i class="fas fa-clipboard"></i>
-      Copy details
-    </button>
+<div class="container hero-top-spacer">
+  <div class="jumbotron mdm-error__message">
+    <h2><i class="fas fa-bug"></i>{{ heading }}</h2>
+    <p>{{ message }}</p>
   </div>
-  <mat-slide-toggle (change)="toggleShowDetails()"
-    >Show details</mat-slide-toggle
-  >
-  <div class="mdm-error__details" [hidden]="!showDetails">
-    <table class="table mdm--table-fixed">
-      <tbody>
-        <tr *ngFor="let item of data">
-          <td>{{ item.name }}</td>
-          <td>
-            <span *ngIf="!item.code">{{ item.value }}</span>
-            <ngx-json-viewer
-              *ngIf="item.code"
-              [json]="item.value"
-              [expanded]="true"
-            ></ngx-json-viewer>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div>
+    <p>{{ resolution }}</p>
+  </div>
+  <div *ngIf="lastHttpError">
+    <div class="mdm-error__details__controls">
+      <button
+        mat-stroked-button
+        color="primary"
+        type="button"
+        (click)="copyToClipboard()"
+      >
+        <i class="fas fa-clipboard"></i>
+        Copy details
+      </button>
+    </div>
+    <mat-slide-toggle (change)="toggleShowDetails()">Show details</mat-slide-toggle>
+    <div class="mdm-error__details" [hidden]="!showDetails">
+      <table class="table mdm--table-fixed">
+        <tbody>
+          <tr *ngFor="let item of data">
+            <td>{{ item.name }}</td>
+            <td>
+              <span *ngIf="!item.code">{{ item.value }}</span>
+              <ngx-json-viewer
+                *ngIf="item.code"
+                [json]="item.value"
+                [expanded]="true"
+              ></ngx-json-viewer>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>

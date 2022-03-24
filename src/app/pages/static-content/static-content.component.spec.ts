@@ -87,6 +87,7 @@ describe('ContentComponent', () => {
     it('should create', () => {
       expect(harness.isComponentCreated).toBeTruthy();
       expect(harness.component.content).toBe('');
+      expect(harness.component.state).toBe('loading');
     });
   });
 
@@ -107,6 +108,7 @@ describe('ContentComponent', () => {
       implementGetContent(path, expectedContent);
       harness.component.ngOnInit();
       expect(harness.component.content).toBe(expectedContent);
+      expect(harness.component.state).toBe('ready');
     });
 
     it('should redirect to "Not Found" if content cannot load', () => {
@@ -131,6 +133,7 @@ describe('ContentComponent', () => {
       implementGetContent(path, expectedContent);
       harness.component.ngOnInit();
       expect(harness.component.content).toBe(expectedContent);
+      expect(harness.component.state).toBe('ready');
     });
 
     it('should redirect to "Not Found" if content cannot load', () => {
