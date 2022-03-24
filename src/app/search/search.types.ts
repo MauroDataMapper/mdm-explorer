@@ -16,6 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { InjectionToken } from '@angular/core';
 import { ParamMap, Params } from '@angular/router';
 import {
   Breadcrumb,
@@ -39,19 +40,38 @@ export interface DataElementSearchParameters {
    */
   search?: string;
 
+  /**
+   * If provided, state which page of results to fetch. If not provided, the first page
+   * is assumed.
+   */
+  page?: number;
+
+  /**
+   * If provided, state how many results to return per page. If not provided, the default
+   * value is assumed.
+   */
+  pageSize?: number;
+
   // TODO: more parameters will go here - filters, sorting, pagination etc
 }
 
+/**
+ * Map {@link DataElementSearchParameters} to a {@link Params} map to be used for query parameters in
+ * a route navigation.
+ */
 export const mapSearchParametersToParams = (
   parameters: DataElementSearchParameters
 ): Params => {
   return {
     ...(parameters.dataClass && {
-      dm: parameters.dataClass.dataModelId,
-      dc: parameters.dataClass.dataClassId,
-      pdc: parameters.dataClass.parentDataClassId,
+      ...(parameters.dataClass.dataModelId && { dm: parameters.dataClass.dataModelId }),
+      ...(parameters.dataClass.dataClassId && { dc: parameters.dataClass.dataClassId }),
+      ...(parameters.dataClass.parentDataClassId && {
+        pdc: parameters.dataClass.parentDataClassId,
+      }),
     }),
     ...(parameters.search && { search: parameters.search }),
+    ...(parameters.page && { page: parameters.page }),
   };
 };
 
@@ -71,8 +91,28 @@ export const mapParamMapToSearchParameters = (
       parentDataClassId: query.get('pdc') ?? undefined,
     },
     search: query.get('search') ?? undefined,
+    page: query.has('page') ? Number(query.get('page')) : undefined,
   };
 };
+
+/**
+ * Represents the configuration for the {@link PaginationService}.
+ */
+export interface PaginationConfiguration {
+  /**
+   * State the default page size for all search results.
+   */
+  defaultPageSize: number;
+
+  /**
+   * State how many pages to show in a pagination control.
+   */
+  maxPagesToShow: number;
+}
+
+export const PAGINATION_CONFIG = new InjectionToken<PaginationConfiguration>(
+  'PaginationConfiguration'
+);
 
 export interface DataElementSearchResult {
   id: Uuid;
@@ -82,9 +122,10 @@ export interface DataElementSearchResult {
 }
 
 export interface DataElementSearchResultSet {
-  count: number;
+  totalResults: number;
+  pageSize: number;
+  page: number;
   items: DataElementSearchResult[];
-  // TODO: pagination fields...
 }
 
 export const mapSearchResult = (

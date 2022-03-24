@@ -152,7 +152,9 @@ describe('SearchListingComponent', () => {
     };
 
     const searchResults: DataElementSearchResultSet = {
-      count: 3,
+      totalResults: 3,
+      pageSize: 10,
+      page: 1,
       items: [
         {
           id: '1',
@@ -260,7 +262,9 @@ describe('SearchListingComponent', () => {
     });
 
     const searchResults: DataElementSearchResultSet = {
-      count: 3,
+      totalResults: 3,
+      pageSize: 10,
+      page: 1,
       items: [
         {
           id: '1',

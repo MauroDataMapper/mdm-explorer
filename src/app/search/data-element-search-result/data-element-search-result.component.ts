@@ -32,6 +32,8 @@ import {
 export class DataElementSearchResultComponent {
   @Input() item?: DataElementSearchResult;
 
+  @Input() showBreadcrumb = false;
+
   @Output() checked = new EventEmitter<DataElementCheckedEvent>();
 
   @Output() bookmark = new EventEmitter<DataElementBookmarkEvent>();
