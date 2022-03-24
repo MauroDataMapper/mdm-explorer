@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
-import { MatSelectionListChange } from '@angular/material/list';
+import { MatSelectionList, MatSelectionListChange } from '@angular/material/list';
 import {
   DataClass,
   DataModelDetailResponse,
@@ -25,7 +25,17 @@ import {
   FolderDetail,
 } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, iif, switchMap } from 'rxjs';
+import {
+  catchError,
+  EMPTY,
+  iif,
+  map,
+  Observable,
+  Observer,
+  OperatorFunction,
+  Subscriber,
+  switchMap,
+} from 'rxjs';
 import { CatalogueService } from 'src/app/catalogue/catalogue.service';
 import { DataModelService } from 'src/app/catalogue/data-model.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
@@ -60,8 +70,11 @@ export class BrowseComponent implements OnInit {
   childDataClasses: DataClass[] = [];
   selected?: DataClass;
   @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
+  @ViewChild('parentList') parentDataClassList!: MatSelectionList;
   showLoadingWheel: boolean = false;
   private user: UserDetails | null;
+  private newRequestName: string = '';
+  private newRequestDescription: string = '';
 
   constructor(
     private catalogue: CatalogueService,
@@ -88,60 +101,19 @@ export class BrowseComponent implements OnInit {
 
   createRequest(event: MouseEvent) {
     let dialogProps = new MatDialogConfig();
-    let newRequestName = '';
-    let newRequestDescription = '';
     dialogProps.height = 'fit-content';
     dialogProps.width = '343px';
     let dialogRef = this.createRequestDialog.open(CreateRequestComponent, dialogProps);
 
     dialogRef
       .afterClosed()
-      .pipe(
-        switchMap((result: NewRequestDialogResult) => {
-          this.showLoadingWheel = true;
-          newRequestName = result.Name;
-          newRequestDescription = result.Description;
-          return iif(
-            () => newRequestName !== '' && this.user != null,
-            this.userRequestsService.createNewUserRequest(
-              newRequestName,
-              newRequestDescription,
-              this.user!,
-              this.selected!
-            ),
-            EMPTY
-          );
-        })
-      )
+      .pipe(this.createNewRequestOrBail())
       .subscribe({
         next: (resultErrors: string[]) => {
           if (resultErrors.length == 0) {
-            dialogProps.data = {
-              itemName: this.selected!.label,
-              itemType: 'Data Class',
-              requestName: newRequestName,
-            };
-            let confirmationRef = this.confirmationDialog.open(
-              ConfirmRequestComponent,
-              dialogProps
-            );
-            //Restore focus to item that was originally clicked on
-            confirmationRef.afterClosed().subscribe(() => this.menuTrigger.focus());
+            this.showConfirmation(dialogProps);
           } else {
-            dialogProps.data = {
-              itemName: this.selected!.label,
-              itemType: 'Data Class',
-              requestName: newRequestName,
-              error: resultErrors[0],
-            };
-            dialogProps.height = 'fit-content';
-            dialogProps.width = '400px';
-            let errorRef = this.confirmationDialog.open(
-              ShowRequestErrorComponent,
-              dialogProps
-            );
-            //Restore focus to item that was originally clicked on
-            errorRef.afterClosed().subscribe(() => this.menuTrigger.focus());
+            this.showErrorDialog(dialogProps, resultErrors);
           }
         },
         complete: () => (this.showLoadingWheel = false),
@@ -157,6 +129,10 @@ export class BrowseComponent implements OnInit {
   selectChildDataClass(event: MatSelectionListChange) {
     const selected = event.options[0].value as DataClass;
     this.selected = selected;
+  }
+
+  reselectParentDataClass(event: MouseEvent) {
+    this.selected = this.parentDataClassList.selectedOptions.selected[0].value;
   }
 
   viewDetails() {
@@ -178,6 +154,65 @@ export class BrowseComponent implements OnInit {
 
     const params = mapSearchParametersToParams(searchParameters);
     this.stateRouter.navigateToKnownPath('/search/listing', params);
+  }
+
+  private showErrorDialog(dialogProps: MatDialogConfig, resultErrors: string[]) {
+    dialogProps.data = {
+      itemName: this.selected!.label,
+      itemType: 'Data Class',
+      requestName: this.newRequestName,
+      error: resultErrors[0],
+    };
+    dialogProps.height = 'fit-content';
+    dialogProps.width = '400px';
+    let errorRef = this.confirmationDialog.open(ShowRequestErrorComponent, dialogProps);
+    //Restore focus to item that was originally clicked on
+    errorRef.afterClosed().subscribe(() => this.menuTrigger.focus());
+  }
+
+  private showConfirmation(dialogProps: MatDialogConfig) {
+    dialogProps.data = {
+      itemName: this.selected!.label,
+      itemType: 'Data Class',
+      requestName: this.newRequestName,
+    };
+    let confirmationRef = this.confirmationDialog.open(
+      ConfirmRequestComponent,
+      dialogProps
+    );
+    //Restore focus to item that was originally clicked on
+    confirmationRef.afterClosed().subscribe(() => this.menuTrigger.focus());
+  }
+
+  private createNewRequestOrBail(): OperatorFunction<any, string[]> {
+    return (source: Observable<any>): Observable<string[]> => {
+      let x = new Observable<string[]>((subscriber) => {
+        source.subscribe((result: NewRequestDialogResult) => {
+          this.showLoadingWheel = true;
+          this.newRequestName = result.Name;
+          this.newRequestDescription = result.Description;
+          if (this.newRequestName !== '' && this.user != null) {
+            this.userRequestsService
+              .createNewUserRequest(
+                this.newRequestName,
+                this.newRequestDescription,
+                this.user!,
+                this.selected!
+              )
+              .subscribe({
+                next: (errors: string[]) => {
+                  subscriber.next(errors);
+                },
+                complete: () => subscriber.complete(),
+                error: (err) => subscriber.error(err),
+              });
+          } else {
+            subscriber.next([]);
+          }
+        });
+      });
+      return x;
+    };
   }
 
   private loadParentDataClasses() {

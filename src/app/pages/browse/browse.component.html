@@ -30,13 +30,19 @@ SPDX-License-Identifier: Apache-2.0
       <div class="mdm-browse__list-container">
         <div class="mdm-browse__list">
           <mat-selection-list
+			#parentList
             [multiple]="false"
             (selectionChange)="selectParentDataClass($event)"
           >
             <mat-list-option *ngFor="let item of parentDataClasses" [value]="item">
             <span
               >{{ item.label }}
-              <span [matMenuTriggerFor]="menu" [mdmArrow]="'angle-down'"> </span
+              <span
+                [matMenuTriggerFor]="menu"
+                [mdmArrow]="'angle-down'"
+                (click)="reselectParentDataClass($event)"
+              >
+              </span
             ></span>
             </mat-list-option>
           </mat-selection-list>
