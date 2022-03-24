@@ -28,6 +28,9 @@ import { DataElementComponent } from './data-element/data-element.component';
 import { SearchListingComponent } from './search-listing/search-listing.component';
 import { SearchComponent } from './search/search.component';
 import { MyAccountComponent } from './my-account/my-account.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { CoreModule } from '../core/core.module';
 import { SearchModule } from '../search/search.module';
 import { MatMenuModule } from '@angular/material/menu';
@@ -64,7 +67,6 @@ import { CatalogueModule } from '../catalogue/catalogue.module';
     MatListModule,
     MatInputModule,
     MatFormFieldModule,
-    MatProgressSpinnerModule,
     MatMenuModule,
     MatDialogModule,
 	CatalogueModule,

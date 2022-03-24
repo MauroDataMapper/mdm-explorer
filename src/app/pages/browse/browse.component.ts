@@ -30,24 +30,25 @@ import { CatalogueService } from 'src/app/catalogue/catalogue.service';
 import { DataModelService } from 'src/app/catalogue/data-model.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import {
+  CreateRequestComponent,
+  NewRequestDialogResult,
+} from 'src/app/shared/create-request/create-request.component';
+import {
   DataElementSearchParameters,
   mapSearchParametersToParams,
 } from 'src/app/search/search.types';
-import { CreateRequestComponent } from 'src/app/shared/create-request/create-request.component';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { UserRequestsService } from 'src/app/core/user-requests.service';
 import { UserDetails, UserDetailsService } from 'src/app/security/user-details.service';
-import { FolderService } from 'src/app/core/folder.service';
-import { MdmEndpointsService } from 'src/app/mdm-rest-client/mdm-endpoints.service';
-import { DataModelCreatePayload } from '@maurodatamapper/mdm-resources';
 import {
   CatalogueConfiguration,
   CATALOGUE_CONFIGURATION,
 } from 'src/app/catalogue/catalogue.types';
-import { CatalogueUserService } from 'src/app/catalogue/catalogue-user.service';
 import { ConfirmRequestComponent } from 'src/app/shared/confirm-request/confirm-request.component';
 import { ShowRequestErrorComponent } from 'src/app/shared/show-request-error/show-request-error.component';
+import { LoadingSpinnerComponent } from 'src/app/shared/loading-spinner/loading-spinner.component';
+import { ArrowDirection, ArrowDirective } from '../../shared/directives/arrow.directive';
 
 @Component({
   selector: 'mdm-browse',
@@ -59,6 +60,7 @@ export class BrowseComponent implements OnInit {
   childDataClasses: DataClass[] = [];
   selected?: DataClass;
   @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
+  showLoadingWheel: boolean = false;
   private user: UserDetails | null;
 
   constructor(
@@ -84,22 +86,26 @@ export class BrowseComponent implements OnInit {
     this.loadParentDataClasses();
   }
 
-  createRequest(event: MouseEvent, index: number) {
+  createRequest(event: MouseEvent) {
     let dialogProps = new MatDialogConfig();
     let newRequestName = '';
-    dialogProps.height = '250px';
+    let newRequestDescription = '';
+    dialogProps.height = 'fit-content';
     dialogProps.width = '343px';
     let dialogRef = this.createRequestDialog.open(CreateRequestComponent, dialogProps);
 
     dialogRef
       .afterClosed()
       .pipe(
-        switchMap((result: string) => {
-          newRequestName = result;
+        switchMap((result: NewRequestDialogResult) => {
+          this.showLoadingWheel = true;
+          newRequestName = result.Name;
+          newRequestDescription = result.Description;
           return iif(
-            () => result != '' && this.user != null,
+            () => newRequestName !== '' && this.user != null,
             this.userRequestsService.createNewUserRequest(
-              result,
+              newRequestName,
+              newRequestDescription,
               this.user!,
               this.selected!
             ),
@@ -107,35 +113,38 @@ export class BrowseComponent implements OnInit {
           );
         })
       )
-      .subscribe((resultErrors: string[]) => {
-        if (resultErrors.length == 0) {
-          dialogProps.data = {
-            itemName: this.selected!.label,
-            itemType: 'Data Class',
-            requestName: newRequestName,
-          };
-          let confirmationRef = this.confirmationDialog.open(
-            ConfirmRequestComponent,
-            dialogProps
-          );
-          //Restore focus to item that was originally clicked on
-          confirmationRef.afterClosed().subscribe(() => this.menuTrigger.focus());
-        } else {
-          dialogProps.data = {
-            itemName: this.selected!.label,
-            itemType: 'Data Class',
-            requestName: newRequestName,
-            error: resultErrors[0],
-          };
-          dialogProps.height = '300px';
-          dialogProps.width = '400px';
-          let errorRef = this.confirmationDialog.open(
-            ShowRequestErrorComponent,
-            dialogProps
-          );
-          //Restore focus to item that was originally clicked on
-          errorRef.afterClosed().subscribe(() => this.menuTrigger.focus());
-        }
+      .subscribe({
+        next: (resultErrors: string[]) => {
+          if (resultErrors.length == 0) {
+            dialogProps.data = {
+              itemName: this.selected!.label,
+              itemType: 'Data Class',
+              requestName: newRequestName,
+            };
+            let confirmationRef = this.confirmationDialog.open(
+              ConfirmRequestComponent,
+              dialogProps
+            );
+            //Restore focus to item that was originally clicked on
+            confirmationRef.afterClosed().subscribe(() => this.menuTrigger.focus());
+          } else {
+            dialogProps.data = {
+              itemName: this.selected!.label,
+              itemType: 'Data Class',
+              requestName: newRequestName,
+              error: resultErrors[0],
+            };
+            dialogProps.height = 'fit-content';
+            dialogProps.width = '400px';
+            let errorRef = this.confirmationDialog.open(
+              ShowRequestErrorComponent,
+              dialogProps
+            );
+            //Restore focus to item that was originally clicked on
+            errorRef.afterClosed().subscribe(() => this.menuTrigger.focus());
+          }
+        },
+        complete: () => (this.showLoadingWheel = false),
       });
   }
 

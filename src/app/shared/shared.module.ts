@@ -22,12 +22,14 @@ import { ClassifiersComponent } from './classifiers/classifiers.component';
 import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
 import { SafePipe } from './pipes/safe.pipe';
-import { ArrowDirective } from './directives/arrow.directive';
+import { ArrowDirective, ArrowDirection } from './directives/arrow.directive';
 import { CreateRequestComponent } from './create-request/create-request.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule } from '@angular/forms';
 import { ConfirmRequestComponent } from './confirm-request/confirm-request.component';
 import { ShowRequestErrorComponent } from './show-request-error/show-request-error.component';
+import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
 import { BookmarkToggleComponent } from './bookmark-toggle/bookmark-toggle.component';
 import { CoreModule } from '../core/core.module';
 import { SummaryMetadataComponent } from './summary-metadata/summary-metadata/summary-metadata.component';
@@ -51,6 +53,7 @@ import { CallToActionComponent } from './call-to-action/call-to-action.component
     SummaryMetadataChartComponent,
     SummaryMetadataComponent,
     SummaryMetadataReportComponent,
+    LoadingSpinnerComponent,
     CallToActionComponent,
   ],
   imports: [CoreModule, NgChartsModule],

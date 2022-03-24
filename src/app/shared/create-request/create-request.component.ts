@@ -9,12 +9,27 @@ import { DataClass } from '@maurodatamapper/mdm-resources';
 })
 export class CreateRequestComponent implements OnInit {
   public requestName = '';
+  public requestDescription = '';
 
   constructor(public dialogRef: MatDialogRef<CreateRequestComponent>) {}
 
   ngOnInit(): void {}
 
-  close() {
-    this.dialogRef.close(this.requestName);
+  cancel() {
+    let result = new NewRequestDialogResult();
+    this.dialogRef.close(result);
   }
+
+  close() {
+    let result = {
+      Name: this.requestName,
+      Description: this.requestDescription,
+    };
+    this.dialogRef.close(result);
+  }
+}
+
+export class NewRequestDialogResult {
+  Name: string = '';
+  Description: string = '';
 }

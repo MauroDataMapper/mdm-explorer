@@ -15,10 +15,13 @@ $emphasis-text: white;
 
   &__content {
     padding-left: 10px;
+    padding-right: 10px;
+    word-break: break-word;
   }
 
   &__actions {
     padding: 10px;
+    padding-bottom: 30px;
     & mat-dialog-actions {
       min-height: 80px;
       justify-content: flex-end;

@@ -4,7 +4,7 @@
   </div>
   <div class="mdm-modal__content">
     <mat-dialog-content>
-      <p>New request name</p>
+      <label>New request name</label>
       <input
         type="text"
         height="39px"
@@ -12,11 +12,20 @@
         placeholder="Enter name of request"
         [(ngModel)]="requestName"
       />
+      <label>New request description</label>
+      <textarea
+        type="textarea"
+        height="60px"
+        cols="30"
+        placeholder="Enter name of request"
+        [(ngModel)]="requestDescription"
+      >
+      </textarea>
     </mat-dialog-content>
   </div>
   <div class="mdm-modal__actions">
     <mat-dialog-actions>
-      <button mat-dialog-close>Cancel</button>
+      <button mat-dialog-close (click)="cancel()">Cancel</button>
       <button mat-dialog-close class="mdm-modal__action-button" (click)="close()">
         Create Request
       </button>

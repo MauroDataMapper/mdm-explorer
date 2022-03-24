@@ -111,13 +111,14 @@ export class UserRequestsService {
    */
   createNewUserRequest(
     requestName: string,
+    requestDescription: string,
     user: UserDetails,
     dataClass: DataClass
   ): Observable<string[]> {
     let newDataModel: DataModelDetail;
     let newDataModelIdSource = defer(() => of(newDataModel!.id!));
     let errors: string[] = new Array();
-    return this.addUserRequest(requestName, user, errors).pipe(
+    return this.addUserRequest(requestName, requestDescription, user, errors).pipe(
       mergeMap((response: DataModelDetail) => {
         newDataModel = response;
         return of({});
@@ -257,6 +258,7 @@ export class UserRequestsService {
 
   private addUserRequest(
     requestName: string,
+    requestDescription: string,
     user: UserDetails,
     errors: any[]
   ): Observable<DataModelDetail> {
@@ -273,13 +275,12 @@ export class UserRequestsService {
       switchMap((catalogueUser: CatalogueUser) => {
         let dataModelCreatePayload: DataModelCreatePayload = {
           label: requestName,
-          description: 'Personal request',
+          description: requestDescription || 'Personal request',
           type: 'Data Asset',
           folder: folder.id!,
           author: `${user.firstName}${user.firstName ? '' : ' '}${user.lastName}`,
           organisation: catalogueUser.organisation ?? '',
         };
-        throw 'Error: this is a hard throw';
         return this.endpointsService.dataModel.addToFolder(
           folder.id!,
           dataModelCreatePayload

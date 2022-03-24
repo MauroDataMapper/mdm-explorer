@@ -11,7 +11,7 @@
       </p>
       <ul>
         <li>
-          {{ data.error.length > 50 ? (data.error | slice: 0:48) + ".." : data.error }}
+          {{ data.error.length > 250 ? (data.error | slice: 0:248) + ".." : data.error }}
         </li>
       </ul>
     </mat-dialog-content>
