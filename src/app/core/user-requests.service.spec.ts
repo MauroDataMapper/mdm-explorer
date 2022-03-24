@@ -85,7 +85,7 @@ describe('UserRequestsService', () => {
     // Arrange
     const username = 'test@gmail.com';
     const dms = ['label-1', 'label-2', 'label-3'].map((label: string) => {
-      return { label: label } as DataModel;
+      return { label } as DataModel;
     });
 
     folderServiceStub.getOrCreate.mockImplementationOnce(() => {

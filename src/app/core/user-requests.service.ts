@@ -52,13 +52,14 @@ export class UserRequestsService {
 
   /**
    * Lists all of the users requests as DataModel objects.
+   *
    * @param username the username of the user.
    * @returns an observable containing an array dataModels (the users requests)
    */
   list(username: string): Observable<DataModel[]> {
     return this.getRequestsFolder(username).pipe(
       switchMap((requestsFolder: FolderDetail): Observable<DataModelIndexResponse> => {
-        return this.endpoints.dataModel.listInFolder(requestsFolder.id!);
+        return this.endpoints.dataModel.listInFolder(requestsFolder.id!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
       }),
       map((response) => response.body.items)
     );
