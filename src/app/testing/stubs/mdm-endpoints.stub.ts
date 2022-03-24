@@ -33,6 +33,14 @@ import {
   MdmDataClassResourceStub,
 } from './mdm-resources/data-class-resource.stub';
 import {
+  createDataElementStub,
+  MdmDataElementResourceStub,
+} from './mdm-resources/data-element-resource.stub';
+import {
+  createDataModelStub,
+  MdmDataModelResourcesStub,
+} from './mdm-resources/data-model-resource.stub';
+import {
   createFolderStub,
   MdmFolderResourceStub,
 } from './mdm-resources/folder-resource.stub';
@@ -50,6 +58,8 @@ export interface MdmEndpointsServiceStub {
   catalogueItem: MdmCatalogueItemResourceStub;
   catalogueUser: MdmCatalogueUserResourceStub;
   dataClass: MdmDataClassResourceStub;
+  dataElement: MdmDataElementResourceStub;
+  dataModel: MdmDataModelResourcesStub;
   folder: MdmFolderResourceStub;
   security: MdmSecurityResourceStub;
   session: MdmSessionResourceStub;
@@ -61,6 +71,8 @@ export const createMdmEndpointsStub = (): MdmEndpointsServiceStub => {
     catalogueItem: createCatalogueItemStub(),
     catalogueUser: createCatalogueUserStub(),
     dataClass: createDataClassStub(),
+    dataElement: createDataElementStub(),
+    dataModel: createDataModelStub(),
     folder: createFolderStub(),
     security: createSecurityStub(),
     session: createSessionStub(),

@@ -19,7 +19,6 @@ SPDX-License-Identifier: Apache-2.0
 import { HttpErrorResponse } from '@angular/common/http';
 import { Inject, Injectable, Optional } from '@angular/core';
 import {
-  AdminSessionResponse,
   AuthenticatedResponse,
   LoginPayload,
   LoginResponse,
@@ -28,7 +27,6 @@ import {
 } from '@maurodatamapper/mdm-resources';
 import {
   catchError,
-  combineLatest,
   EMPTY,
   finalize,
   map,
@@ -79,35 +77,22 @@ export class SecurityService {
     // as if the user credentials are rejected Back end server will return 401, we should not show the login modal form again
     return this.endpoints.security.login(credentials, { login: true }).pipe(
       catchError((error: HttpErrorResponse) => throwError(() => new LoginError(error))),
-      switchMap((loginResponse: LoginResponse) => {
-        const loginResponse$ = of(loginResponse);
-        const isAdministrator$: Observable<AdminSessionResponse> =
-          this.endpoints.session.isApplicationAdministration();
-        return combineLatest([loginResponse$, isAdministrator$]);
-      }),
-      map(
-        ([loginResponse, adminSessionResponse]: [
-          LoginResponse,
-          AdminSessionResponse
-        ]) => {
-          const login = loginResponse.body;
-          const admin = adminSessionResponse.body;
-          const user: UserDetails = {
-            id: login.id,
-            token: login.token,
-            firstName: login.firstName,
-            lastName: login.lastName,
-            email: login.emailAddress,
-            userName: login.emailAddress,
-            role: login.userRole?.toLowerCase() ?? '',
-            isAdmin: admin.applicationAdministrationSession ?? false,
-            needsToResetPassword: login.needsToResetPassword ?? false,
-          };
+      map((loginResponse: LoginResponse) => {
+        const login = loginResponse.body;
+        const user: UserDetails = {
+          id: login.id,
+          token: login.token,
+          firstName: login.firstName,
+          lastName: login.lastName,
+          email: login.emailAddress,
+          userName: login.emailAddress,
+          role: login.userRole?.toLowerCase() ?? '',
+          needsToResetPassword: login.needsToResetPassword ?? false,
+        };
 
-          this.userDetails.set(user);
-          return user;
-        }
-      )
+        this.userDetails.set(user);
+        return user;
+      })
     );
   }
 

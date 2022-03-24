@@ -57,6 +57,12 @@ export class ArrowDirective implements OnInit {
       default:
         fontAwesomeClass = '';
     }
+
+    if (fontAwesomeClass === '' || arrowClass === '') {
+      // Renderer won't allow setting a class to the DOM with no token, so ignore
+      return;
+    }
+
     const newElement: ElementRef = this.renderer.createElement('span');
     this.renderer.addClass(newElement, fontAwesomeClass);
     this.renderer.addClass(newElement, arrowClass);

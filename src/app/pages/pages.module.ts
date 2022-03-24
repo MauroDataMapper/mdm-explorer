@@ -18,22 +18,18 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { NgModule } from '@angular/core';
 import { BookmarkComponent } from './bookmark/bookmark.component';
-import { CommonModule } from '@angular/common';
-import { MatListModule } from '@angular/material/list';
 import { SignInComponent } from './sign-in/sign-in.component';
 import { SharedModule } from '../shared/shared.module';
 import { SecurityModule } from '../security/security.module';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { StaticContentComponent } from './static-content/static-content.component';
 import { BrowseComponent } from './browse/browse.component';
-import { MatButtonModule } from '@angular/material/button';
-import { SearchResultsComponent } from './search-results/search-results.component';
-import { MyAccountComponent } from './my-account/my-account.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { SearchListingComponent } from './search-listing/search-listing.component';
 import { SearchComponent } from './search/search.component';
+import { MyAccountComponent } from './my-account/my-account.component';
+import { CoreModule } from '../core/core.module';
+import { UIRouterModule } from '@uirouter/angular';
+import { SearchModule } from '../search/search.module';
 
 @NgModule({
   declarations: [
@@ -42,21 +38,10 @@ import { SearchComponent } from './search/search.component';
     ForgotPasswordComponent,
     StaticContentComponent,
     BrowseComponent,
-    SearchResultsComponent,
+    SearchListingComponent,
     MyAccountComponent,
     SearchComponent,
   ],
-  imports: [
-    CommonModule,
-    SharedModule,
-    SecurityModule,
-    MatButtonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatListModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatProgressSpinnerModule,
-  ],
+  imports: [CoreModule, SharedModule, SecurityModule, SearchModule, UIRouterModule],
 })
 export class PagesModule {}

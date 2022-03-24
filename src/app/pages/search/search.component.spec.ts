@@ -66,8 +66,8 @@ describe('SearchComponent', () => {
 
       harness.component.search(searchPayload);
 
-      expect(spy).toHaveBeenCalledWith('app.container.search-results', {
-        searchTerms: searchPayload.searchTerms,
+      expect(spy).toHaveBeenCalledWith('app.container.search-listing', {
+        search: searchPayload.searchTerms,
       });
     });
   });

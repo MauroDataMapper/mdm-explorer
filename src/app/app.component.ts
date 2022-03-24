@@ -73,6 +73,7 @@ export class AppComponent implements OnInit, OnDestroy {
     {
       label: 'Search',
       routeName: 'app.container.search',
+      onlySignedIn: true,
     },
     {
       label: 'Help',

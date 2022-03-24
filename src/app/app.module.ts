@@ -34,6 +34,7 @@ import { ErrorModule } from './error/error.module';
 import { OPENID_CONNECT_CONFIG } from './security/security.types';
 import { STATIC_CONTENT_CONFIGURATION } from './core/static-content.service';
 import { CATALOGUE_CONFIGURATION } from './catalogue/catalogue.types';
+import { CoreModule } from './core/core.module';
 
 const getOpenIdAuthorizeUrl = () => {
   // Redirect authorization URL refers to a static page route found in `/src/static-pages`. See the `assets`
@@ -52,10 +53,11 @@ const getOpenIdAuthorizeUrl = () => {
 };
 
 @NgModule({
-  declarations: [AppComponent, AppContainerComponent, UiViewComponent, ],
+  declarations: [AppComponent, AppContainerComponent, UiViewComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    CoreModule,
     SharedModule,
     MdmRestClientModule.forRoot({
       apiEndpoint: environment.apiEndpoint,

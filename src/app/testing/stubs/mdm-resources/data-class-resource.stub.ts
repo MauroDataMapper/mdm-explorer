@@ -16,7 +16,11 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { DataClassIndexResponse, Uuid } from '@maurodatamapper/mdm-resources';
+import {
+  DataClassDetailResponse,
+  DataClassIndexResponse,
+  Uuid,
+} from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
 
 export type DataClassListFn = (dataModelId: Uuid) => Observable<DataClassIndexResponse>;
@@ -28,14 +32,31 @@ export type DataClassListChildrenFn = (
 ) => Observable<DataClassIndexResponse>;
 export type DataClassListChildrenMockedFn = jest.MockedFunction<DataClassListChildrenFn>;
 
+export type DataClassGetFn = (
+  dataModelId: Uuid,
+  dataClassId: Uuid
+) => Observable<DataClassDetailResponse>;
+export type DataClassGetMockedFn = jest.MockedFunction<DataClassGetFn>;
+
+export type DataClassGetChildFn = (
+  dataModelId: Uuid,
+  dataClassId: Uuid,
+  childDataClassId: Uuid
+) => Observable<DataClassDetailResponse>;
+export type DataClassGetChildMockedFn = jest.MockedFunction<DataClassGetChildFn>;
+
 export interface MdmDataClassResourceStub {
   list: DataClassListMockedFn;
   listChildDataClasses: DataClassListChildrenMockedFn;
+  get: DataClassGetMockedFn;
+  getChildDataClass: DataClassGetChildMockedFn;
 }
 
 export const createDataClassStub = (): MdmDataClassResourceStub => {
   return {
     list: jest.fn() as DataClassListMockedFn,
     listChildDataClasses: jest.fn() as DataClassListChildrenMockedFn,
+    get: jest.fn() as DataClassGetMockedFn,
+    getChildDataClass: jest.fn() as DataClassGetChildMockedFn,
   };
 };

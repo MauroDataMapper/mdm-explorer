@@ -16,21 +16,25 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { Component, Input } from '@angular/core';
 import {
-  ComponentHarness,
-  setupTestModuleForComponent,
-} from 'src/app/testing/testing.helpers';
+  Breadcrumb,
+  CatalogueItemDomainType,
+  Uuid,
+} from '@maurodatamapper/mdm-resources';
 
-import { SearchResultsComponent } from './search-results.component';
+export interface TrailableItem {
+  id?: Uuid;
+  label: string;
+  domainType: CatalogueItemDomainType;
+  breadcrumbs?: Breadcrumb[];
+}
 
-describe('SearchResultsComponent', () => {
-  let harness: ComponentHarness<SearchResultsComponent>;
-
-  beforeEach(async () => {
-    harness = await setupTestModuleForComponent(SearchResultsComponent);
-  });
-
-  it('should create', () => {
-    expect(harness.isComponentCreated).toBeTruthy();
-  });
-});
+@Component({
+  selector: 'mdm-breadcrumb',
+  templateUrl: './breadcrumb.component.html',
+  styleUrls: ['./breadcrumb.component.scss'],
+})
+export class BreadcrumbComponent {
+  @Input() item?: TrailableItem;
+}

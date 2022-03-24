@@ -17,25 +17,14 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { NgModule } from '@angular/core';
-import { AlertComponent } from './alert/alert.component';
-import { FooterComponent } from './footer/footer.component';
-import { HeaderComponent } from './header/header.component';
-import { UIRouterModule } from '@uirouter/angular';
-import { SafePipe } from './pipes/safe.pipe';
-import { ArrowDirective } from './directives/arrow.directive';
-import { BookmarkToggleComponent } from './bookmark-toggle/bookmark-toggle.component';
+import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
+import { DataElementSearchResultComponent } from './data-element-search-result/data-element-search-result.component';
+import { SharedModule } from '../shared/shared.module';
 import { CoreModule } from '../core/core.module';
 
 @NgModule({
-  declarations: [
-    AlertComponent,
-    FooterComponent,
-    HeaderComponent,
-    SafePipe,
-    ArrowDirective,
-    BookmarkToggleComponent,
-  ],
-  imports: [CoreModule, UIRouterModule],
-  exports: [AlertComponent, FooterComponent, HeaderComponent, BookmarkToggleComponent],
+  declarations: [BreadcrumbComponent, DataElementSearchResultComponent],
+  imports: [CoreModule, SharedModule],
+  exports: [BreadcrumbComponent, DataElementSearchResultComponent],
 })
-export class SharedModule {}
+export class SearchModule {}

@@ -21,7 +21,7 @@ import { StaticContentComponent } from './static-content/static-content.componen
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { SignInComponent } from './sign-in/sign-in.component';
 import { BrowseComponent } from './browse/browse.component';
-import { SearchResultsComponent } from './search-results/search-results.component';
+import { SearchListingComponent } from './search-listing/search-listing.component';
 import { MyAccountComponent } from './my-account/my-account.component';
 import { BookmarkComponent } from './bookmark/bookmark.component';
 import { SearchComponent } from './search/search.component';
@@ -114,11 +114,14 @@ export const states: Ng2StateDeclaration[] = [
     },
   },
   {
-    name: 'app.container.search-results',
-    url: '/search/results?searchTerms',
-    component: SearchResultsComponent,
-    data: {
-      allowAnonymous: true,
+    name: 'app.container.search-listing',
+    url: '/search/listing?{dm:string}&{pdc:string}&{dc:string}&{search:string}',
+    component: SearchListingComponent,
+    params: {
+      dm: null, // Data Model
+      dc: null, // Data Class (could be child)
+      pdc: null, // Parent Data Class
+      search: null,
     },
   },
   {

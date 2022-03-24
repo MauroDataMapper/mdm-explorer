@@ -253,13 +253,16 @@ describe('BrowseComponent', () => {
         label: 'test',
         domainType: CatalogueItemDomainType.DataClass,
         parentDataClass: '2',
+        model: '3',
       };
 
       harness.component.viewDetails();
       expect(stateRouterStub.transitionTo).toHaveBeenCalledWith(
-        'app.container.search-results',
+        'app.container.search-listing',
         {
-          dataClassId: harness.component.selected.id,
+          dm: harness.component.selected.model,
+          dc: harness.component.selected.id,
+          pdc: harness.component.selected.parentDataClass,
         }
       );
     });

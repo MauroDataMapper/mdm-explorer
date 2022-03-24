@@ -16,21 +16,20 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component } from '@angular/core';
-import { CatalogueSearchPayload } from 'src/app/catalogue/catalogue.service';
-import { StateRouterService } from 'src/app/core/state-router.service';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'mdm-search',
-  templateUrl: './search.component.html',
-  styleUrls: ['./search.component.scss'],
+  selector: 'mdm-bookmark-toggle',
+  templateUrl: './bookmark-toggle.component.html',
+  styleUrls: ['./bookmark-toggle.component.scss'],
 })
-export class SearchComponent {
-  constructor(private stateRouter: StateRouterService) {}
+export class BookmarkToggleComponent {
+  @Input() selected = false;
 
-  search(payload: CatalogueSearchPayload) {
-    this.stateRouter.transitionTo('app.container.search-listing', {
-      search: payload.searchTerms,
-    });
+  @Output() toggle = new EventEmitter<boolean>();
+
+  toggleState() {
+    this.selected = !this.selected;
+    this.toggle.emit(this.selected);
   }
 }
