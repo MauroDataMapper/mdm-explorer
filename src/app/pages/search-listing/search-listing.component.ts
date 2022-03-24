@@ -21,6 +21,7 @@ import { ActivatedRoute } from '@angular/router';
 import { DataClassDetail } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY, forkJoin, of, switchMap } from 'rxjs';
+import { Bookmark, BookmarkService } from 'src/app/core/bookmark.service';
 import { DataModelService } from 'src/app/catalogue/data-model.service';
 import { KnownRouterPath, StateRouterService } from 'src/app/core/state-router.service';
 import { DataElementSearchService } from 'src/app/search/data-element-search.service';
@@ -55,7 +56,8 @@ export class SearchListingComponent implements OnInit {
     private dataElementsSearch: DataElementSearchService,
     private dataModels: DataModelService,
     private toastr: ToastrService,
-    private stateRouter: StateRouterService
+    private stateRouter: StateRouterService,
+    private bookmarkService: BookmarkService
   ) {}
 
   get backRouterLink(): KnownRouterPath {
@@ -106,7 +108,20 @@ export class SearchListingComponent implements OnInit {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   bookmarkElement(event: DataElementBookmarkEvent) {
-    alert('TODO: add/remove bookmarks from SearchListingComponent');
+    const bookmark: Bookmark = {
+      id: event.item.id,
+      label: event.item.label,
+    };
+
+    if (event.selected) {
+      this.bookmarkService.add(bookmark).subscribe(() => {
+        this.toastr.success(`${event.item.label} added to bookmarks`);
+      });
+    } else {
+      this.bookmarkService.remove(bookmark).subscribe(() => {
+        this.toastr.success(`${event.item.label} removed from bookmarks`);
+      });
+    }
   }
 
   selectPage(page: number) {

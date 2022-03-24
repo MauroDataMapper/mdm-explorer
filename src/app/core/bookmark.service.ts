@@ -59,7 +59,7 @@ export class BookmarkService {
         found = false;
 
         data.bookmarks.forEach((item: Bookmark) => {
-          if (item.path === bookmark.path) found = true;
+          if (item.id === bookmark.id) found = true;
         });
 
         if (!found) {
@@ -87,7 +87,7 @@ export class BookmarkService {
         // Make changes here and save
         if (data && data.bookmarks) {
           data.bookmarks.forEach((item: Bookmark, index: BigInteger) => {
-            if (item.path === bookmark.path) data.bookmarks.splice(index, 1);
+            if (item.id === bookmark.id) data.bookmarks.splice(index, 1);
           });
         }
         return this.savePreferences(data);
@@ -143,5 +143,6 @@ export class BookmarkService {
 }
 
 export interface Bookmark {
-  path: string;
+  id: string;
+  label: string;
 }

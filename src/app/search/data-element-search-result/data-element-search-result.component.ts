@@ -18,6 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { Bookmark, BookmarkService } from 'src/app/core/bookmark.service';
 import {
   DataElementBookmarkEvent,
   DataElementCheckedEvent,
@@ -38,6 +39,16 @@ export class DataElementSearchResultComponent {
 
   @Output() bookmark = new EventEmitter<DataElementBookmarkEvent>();
 
+  bookmarks: Bookmark[] = [];
+
+  constructor(private bookmarkService: BookmarkService) {}
+
+  ngOnInit(): void {
+    this.bookmarkService.index().subscribe((result) => {
+      this.bookmarks = result;
+    });
+  }
+
   itemChecked(event: MatCheckboxChange) {
     if (!this.item) {
       return;
@@ -52,5 +63,20 @@ export class DataElementSearchResultComponent {
     }
 
     this.bookmark.emit({ item: this.item, selected });
+  }
+
+  /**
+   * Is this.item bookmarked?
+   * @returns boolean true if this.item is stored in this.bookmarks
+   */
+  isBookmarked(): boolean {
+    let found: boolean;
+    found = false;
+
+    this.bookmarks.forEach((bookmark: Bookmark) => {
+      if (this.item && this.item.id === bookmark.id) found = true;
+    });
+
+    return found;
   }
 }
