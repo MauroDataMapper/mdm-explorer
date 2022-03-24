@@ -35,6 +35,9 @@ import { CoreModule } from '../core/core.module';
 import { SearchModule } from '../search/search.module';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatListModule } from '@angular/material/list';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { HomeComponent } from './home/home.component';
 import { ContactSupportComponent } from './contact-support/contact-support.component';
@@ -56,11 +59,11 @@ import { CatalogueModule } from '../catalogue/catalogue.module';
     ContactSupportComponent,
   ],
   imports: [
-	CoreModule,
+    CoreModule,
     CommonModule,
     SharedModule,
     SecurityModule,
-	SearchModule,
+    SearchModule,
     MatButtonModule,
     FormsModule,
     ReactiveFormsModule,

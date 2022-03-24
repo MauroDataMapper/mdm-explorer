@@ -32,6 +32,7 @@ import { ShowRequestErrorComponent } from './show-request-error/show-request-err
 import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
 import { BookmarkToggleComponent } from './bookmark-toggle/bookmark-toggle.component';
 import { CoreModule } from '../core/core.module';
+import { CommonModule } from '@angular/common';
 import { SummaryMetadataComponent } from './summary-metadata/summary-metadata/summary-metadata.component';
 import { SummaryMetadataReportComponent } from './summary-metadata/summary-metadata-report/summary-metadata-report.component';
 import { SummaryMetadataChartComponent } from './summary-metadata/summary-metadata-chart/summary-metadata-chart.component';
@@ -64,7 +65,7 @@ import { CallToActionComponent } from './call-to-action/call-to-action.component
     HeaderComponent,
     LoadingSpinnerComponent,
     ArrowDirective,
-	BookmarkToggleComponent,
+    BookmarkToggleComponent,
     BookmarkToggleComponent,
     SummaryMetadataChartComponent,
     SummaryMetadataComponent,
