@@ -20,6 +20,13 @@ form {
   .form-input,
   .mat-form-field {
     width: 100%;
+
+    // Force Angular form fields (outline) to have a background color to offset on
+    // highlight box background
+    .mat-form-field-outline {
+      background-color: $color-white;
+      border-radius: 5px;
+    }
   }
 
   .button-wide {
