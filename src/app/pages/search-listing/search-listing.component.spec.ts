@@ -38,6 +38,11 @@ import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
+import {
+  createMdmEndpointsStub,
+  MdmEndpointsServiceStub,
+} from 'src/app/testing/stubs/mdm-endpoints.stub';
+import { MdmEndpointsService } from 'src/app/mdm-rest-client/mdm-endpoints.service';
 
 import { SearchListingComponent, SearchListingSource } from './search-listing.component';
 
@@ -48,6 +53,7 @@ describe('SearchListingComponent', () => {
   const dataElementSearchStub = createDataElementSearchServiceStub();
   const toastrStub = createToastrServiceStub();
   const stateRouterStub = createStateRouterStub();
+  const endpointsStub: MdmEndpointsServiceStub = createMdmEndpointsStub();
 
   const setupComponentTest = async (parameters: DataElementSearchParameters) => {
     const params = mapSearchParametersToParams(parameters);
@@ -78,6 +84,10 @@ describe('SearchListingComponent', () => {
         {
           provide: StateRouterService,
           useValue: stateRouterStub,
+        },
+        {
+          provide: MdmEndpointsService,
+          useValue: endpointsStub,
         },
       ],
     });
