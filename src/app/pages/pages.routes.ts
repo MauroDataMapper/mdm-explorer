@@ -24,16 +24,10 @@ import { SearchListingComponent } from './search-listing/search-listing.componen
 import { MyAccountComponent } from './my-account/my-account.component';
 import { BookmarkComponent } from './bookmark/bookmark.component';
 import { SearchComponent } from './search/search.component';
-<<<<<<< HEAD
 import { Route, UrlMatchResult, UrlSegment } from '@angular/router';
 import { AuthorizedGuard } from '../security/guards/authorized.guard';
-=======
 import { DashboardComponent } from './dashboard/dashboard.component';
-<<<<<<< HEAD
->>>>>>> mc-9822 - add initial scaffolding for dashboard page.
-=======
 import { HomeComponent } from './home/home.component';
->>>>>>> mc-9822 - add homeComponent w/ redirect to dashboard ifUserSignedIn, reconfigure routes.
 
 export const buildStaticContentRoute = (path: string, staticAssetPath: string): Route => {
   return {
@@ -67,35 +61,31 @@ const dynamicStaticPageMatcher = (segments: UrlSegment[]): UrlMatchResult | null
 };
 
 export const routes: Route[] = [
-  buildStaticContentRoute('', 'home'),
-  buildStaticContentRoute('home', 'home'),
   buildStaticContentRoute('about', 'about'),
   {
     matcher: dynamicStaticPageMatcher,
     component: StaticContentComponent,
   },
-<<<<<<< HEAD
   {
-    path: 'sign-in',
-=======
-  buildStaticContentState('app.container.about', '/about', 'about'),
-  {
-    name: 'app.container.home',
-    url: '/home',
+    path: '',
     component: HomeComponent,
-    data: {
-      allowAnonymous: true,
-    },
   },
   {
-    name: 'app.container.signin',
-    url: '/sign-in',
->>>>>>> mc-9822 - add homeComponent w/ redirect to dashboard ifUserSignedIn, reconfigure routes.
+    path: 'home',
+    component: HomeComponent,
+  },
+  {
+    path: 'sign-in',
     component: SignInComponent,
   },
   {
     path: 'forgot-password',
     component: ForgotPasswordComponent,
+  },
+  {
+    path: 'dashboard',
+    component: DashboardComponent,
+    canActivate: [AuthorizedGuard],
   },
   {
     path: 'browse',
@@ -121,10 +111,5 @@ export const routes: Route[] = [
     path: 'bookmarks',
     component: BookmarkComponent,
     canActivate: [AuthorizedGuard],
-  },
-  {
-    name: 'app.container.dashboard',
-    url: '/dashboard',
-    component: DashboardComponent,
   },
 ];

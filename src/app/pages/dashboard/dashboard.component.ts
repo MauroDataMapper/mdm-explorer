@@ -44,7 +44,7 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     const user = this.security.getSignedInUser();
     if (user === null) {
-      this.stateRouter.transitionTo('app.container.home');
+      this.stateRouter.navigateToKnownPath('/home');
       return;
     }
 
@@ -67,6 +67,6 @@ export class DashboardComponent implements OnInit {
 
   search(): void {
     const payload = { searchTerms: this.searchTerms } as CatalogueSearchPayload;
-    this.stateRouter.transitionTo('app.container.search-listing', payload);
+    this.stateRouter.navigateToKnownPath('/search/listing', payload);
   }
 }

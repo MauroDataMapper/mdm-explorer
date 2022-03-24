@@ -33,7 +33,7 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.security.isSignedIn()) {
-      this.stateRouter.transitionTo('app.container.dashboard');
+      this.stateRouter.navigateToKnownPath('/dashboard');
       return;
     }
   }

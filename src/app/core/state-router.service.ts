@@ -24,7 +24,6 @@ import { Params, Router } from '@angular/router';
  *
  * Keep this up to date with the paths defined in your route declarations.
  */
-<<<<<<< HEAD
 export type KnownRouterPath =
   | ''
   | '/home'
@@ -32,18 +31,8 @@ export type KnownRouterPath =
   | '/forgot-password'
   | '/browse'
   | '/search'
-  | '/search/listing';
-=======
-export type KnownRouterState =
-  | 'app.container.default'
-  | 'app.container.home'
-  | 'app.container.dashboard'
-  | 'app.container.signin'
-  | 'app.container.forgot-password'
-  | 'app.container.browse'
-  | 'app.container.search'
-  | 'app.container.search-listing';
->>>>>>> mc-9822 - add initial scaffolding for dashboard page.
+  | '/search/listing'
+  | '/dashboard';
 
 /**
  * Wrapper service around the {@link Router} from `@angular/router` package.
