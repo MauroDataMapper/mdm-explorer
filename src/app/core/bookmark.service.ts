@@ -17,53 +17,131 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
+import { map, switchMap, Observable, throwError } from 'rxjs';
+import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
+import { UserDetailsService } from '../security/user-details.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 
 /**
- * Service to handle the persistence of bookmarks. Currently uses local storage but can be changed to use
- * UserPreferences for backend persistence.
+ * Service to handle the persistence of bookmarks via User Preferences
  */
 export class BookmarkService {
+  constructor(
+    private endpoints: MdmEndpointsService,
+    private userDetailsService: UserDetailsService
+  ) {}
 
-  constructor() {
+  /**
+   * Add a Bookmark to the list of bookmarks stored in User Preferences.
+   * - Retrieve all existing User Preferences
+   * - If the response is empty then create a new object. If the response does not
+   * contain a bookmarks list then add one.
+   * - If the bookmarks list does not contain the bookmark to be added, then add it.
+   * - Save the entire User Preferences
+   *
+   * @param bookmark
+   */
+  public add(bookmark: Bookmark) {
+    return this.getPreferences().pipe(
+      switchMap((data) => {
+        if (!data) {
+          data = {};
+        }
 
+        if (!data.bookmarks) {
+          data.bookmarks = [];
+        }
+
+        let found: Boolean;
+        found = false;
+
+        data.bookmarks.forEach((item: Bookmark) => {
+          if (item.path === bookmark.path) found = true;
+        });
+
+        if (!found) {
+          data.bookmarks.push(bookmark);
+        }
+
+        return this.savePreferences(data);
+      })
+    );
   }
 
-  public add(bookmark: Bookmark) {
-    const bookmarks = JSON.parse(localStorage.getItem('bookmarks') ?? '[]');
+  /**
+   * Remove a Bookmark from the list of bookmarks stored in User Preferences.
+   * - Retrieve all existing User Preferences
+   * - If the User Preference contains the Bookmark, remove iut
+   * - Save the entire User Preferences
+   *
+   * @param bookmark
+   *
+   * @returns Observable<Bookmark[]>
+   */
+  public remove(bookmark: Bookmark): Observable<Bookmark[]> {
+    return this.getPreferences().pipe(
+      switchMap((data) => {
+        // Make changes here and save
+        if (data && data.bookmarks) {
+          data.bookmarks.forEach((item: Bookmark, index: BigInteger) => {
+            if (item.path === bookmark.path) data.bookmarks.splice(index, 1);
+          });
+        }
+        return this.savePreferences(data);
+      }),
+      switchMap(() => {
+        // Get the list after update
+        return this.index();
+      })
+    );
+  }
 
-    let found: Boolean;
-    found = false;
-
-    bookmarks.forEach((item: Bookmark) => {
-      if (item.path === bookmark.path) found = true;
-    });
-
-    if (!found) {
-      bookmarks.push(bookmark);
-      localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+  /**
+   * Get the index of bookmarks from User Preferences
+   *
+   * @returns - an observable containing a list of bookmarks
+   */
+  public index(): Observable<Bookmark[]> {
+    const userDetails = this.userDetailsService.get();
+    if (userDetails) {
+      return this.endpoints.catalogueUser
+        .userPreferences(userDetails.id)
+        .pipe(
+          map((response: any) =>
+            response.body && response.body.bookmarks ? response.body.bookmarks : []
+          )
+        );
+    } else {
+      return throwError(() => new Error('Must be logged in to use User Preferences'));
     }
   }
 
-  public remove(bookmark: Bookmark) {
-    const bookmarks = JSON.parse(localStorage.getItem('bookmarks') ?? '[]');
-    bookmarks.forEach((item: Bookmark, index: BigInteger) => {
-      if (item.path === bookmark.path) bookmarks.splice(index, 1);
-    });
-
-    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+  private getPreferences(): Observable<any> {
+    const userDetails = this.userDetailsService.get();
+    if (userDetails) {
+      return this.endpoints.catalogueUser
+        .userPreferences(userDetails.id)
+        .pipe(map((response: any) => response.body));
+    } else {
+      return throwError(() => new Error('Must be logged in to use User Preferences'));
+    }
   }
 
-  public index(): Bookmark[] {
-    return JSON.parse(localStorage.getItem('bookmarks') ?? '[]');
+  private savePreferences(data: any): Observable<any> {
+    const userDetails = this.userDetailsService.get();
+    if (userDetails) {
+      return this.endpoints.catalogueUser
+        .updateUserPreferences(userDetails.id, data)
+        .pipe(map((response: any) => response.body));
+    } else {
+      return throwError(() => new Error('Must be logged in to use User Preferences'));
+    }
   }
 }
 
 export interface Bookmark {
-
   path: string;
-
 }
