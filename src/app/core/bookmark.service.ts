@@ -44,7 +44,7 @@ export class BookmarkService {
    *
    * @param bookmark
    */
-  public add(bookmark: Bookmark) {
+  public add(bookmark: Bookmark): Observable<any> {
     return this.getPreferences().pipe(
       switchMap((data) => {
         if (!data) {
