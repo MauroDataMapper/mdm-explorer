@@ -23,6 +23,10 @@ import { catchError, throwError } from 'rxjs';
 import { CatalogueSearchPayload } from 'src/app/catalogue/catalogue.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { UserRequestsService } from 'src/app/core/user-requests.service';
+import {
+  DataElementSearchParameters,
+  mapSearchParametersToParams,
+} from 'src/app/search/search.types';
 import { SecurityService } from 'src/app/security/security.service';
 
 @Component({
@@ -66,7 +70,11 @@ export class DashboardComponent implements OnInit {
   }
 
   search(): void {
-    const payload = { searchTerms: this.searchTerms } as CatalogueSearchPayload;
-    this.stateRouter.navigateToKnownPath('/search/listing', payload);
+    const searchParameters: DataElementSearchParameters = {
+      search: this.searchTerms,
+    };
+
+    const params = mapSearchParametersToParams(searchParameters);
+    this.stateRouter.navigateToKnownPath('/search/listing', params);
   }
 }
