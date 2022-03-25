@@ -21,13 +21,17 @@ import { Observable } from 'rxjs';
 
 export type BookmarkAddFn = (bookmark: Bookmark) => Observable<any>;
 export type BookmarkAddMockedFn = jest.MockedFunction<BookmarkAddFn>;
+export type BookmarkRemoveFn = (bookmark: Bookmark) => Observable<any>;
+export type BookmarkRemoveMockedFn = jest.MockedFunction<BookmarkRemoveFn>;
 
 export interface BookmarkServiceStub {
   add: BookmarkAddMockedFn;
+  remove: BookmarkRemoveMockedFn;
 }
 
 export const createBookmarkServiceStub = (): BookmarkServiceStub => {
   return {
     add: jest.fn() as BookmarkAddMockedFn,
+    remove: jest.fn() as BookmarkRemoveMockedFn,
   };
 };

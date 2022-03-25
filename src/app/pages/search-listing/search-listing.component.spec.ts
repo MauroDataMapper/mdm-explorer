@@ -368,9 +368,14 @@ describe('SearchListingComponent', () => {
       breadcrumbs: [],
     };
 
-    const dataElementBookmarkEvent: DataElementBookmarkEvent = {
+    const dataElementBookmarkAddEvent: DataElementBookmarkEvent = {
       item: dataElementSearchResult,
       selected: true,
+    };
+
+    const dataElementBookmarkRemoveEvent: DataElementBookmarkEvent = {
+      item: dataElementSearchResult,
+      selected: false,
     };
 
     beforeEach(async () => {
@@ -384,7 +389,17 @@ describe('SearchListingComponent', () => {
       const spy = jest.spyOn(toastrStub, 'success');
 
       harness.component.ngOnInit();
-      harness.component.bookmarkElement(dataElementBookmarkEvent);
+      bookmarkStub.add.mockImplementationOnce(() => of({}));
+      harness.component.bookmarkElement(dataElementBookmarkAddEvent);
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should raise a success toast when a bookmark is removed', () => {
+      const spy = jest.spyOn(toastrStub, 'success');
+
+      harness.component.ngOnInit();
+      bookmarkStub.remove.mockImplementationOnce(() => of({}));
+      harness.component.bookmarkElement(dataElementBookmarkRemoveEvent);
       expect(spy).toHaveBeenCalled();
     });
   });
