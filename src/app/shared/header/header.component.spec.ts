@@ -55,7 +55,6 @@ describe('HeaderComponent', () => {
   it('should be signed in when user provided', () => {
     harness.component.signedInUser = {
       id: '1',
-      userName: 'test',
       firstName: 'Test',
       lastName: 'Person',
       email: 'test@test.com',
@@ -89,7 +88,6 @@ describe('HeaderComponent', () => {
     };
     harness.component.signedInUser = {
       id: '1',
-      userName: 'test',
       firstName: 'Test',
       lastName: 'Person',
       email: 'test@test.com',

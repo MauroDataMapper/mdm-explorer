@@ -26,6 +26,8 @@ import { BookmarkComponent } from './bookmark/bookmark.component';
 import { SearchComponent } from './search/search.component';
 import { Route, UrlMatchResult, UrlSegment } from '@angular/router';
 import { AuthorizedGuard } from '../security/guards/authorized.guard';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { HomeComponent } from './home/home.component';
 
 export const buildStaticContentRoute = (path: string, staticAssetPath: string): Route => {
   return {
@@ -59,12 +61,18 @@ const dynamicStaticPageMatcher = (segments: UrlSegment[]): UrlMatchResult | null
 };
 
 export const routes: Route[] = [
-  buildStaticContentRoute('', 'home'),
-  buildStaticContentRoute('home', 'home'),
   buildStaticContentRoute('about', 'about'),
   {
     matcher: dynamicStaticPageMatcher,
     component: StaticContentComponent,
+  },
+  {
+    path: '',
+    component: HomeComponent,
+  },
+  {
+    path: 'home',
+    component: HomeComponent,
   },
   {
     path: 'sign-in',
@@ -73,6 +81,11 @@ export const routes: Route[] = [
   {
     path: 'forgot-password',
     component: ForgotPasswordComponent,
+  },
+  {
+    path: 'dashboard',
+    component: DashboardComponent,
+    canActivate: [AuthorizedGuard],
   },
   {
     path: 'browse',

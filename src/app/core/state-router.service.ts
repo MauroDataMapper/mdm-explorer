@@ -31,7 +31,8 @@ export type KnownRouterPath =
   | '/forgot-password'
   | '/browse'
   | '/search'
-  | '/search/listing';
+  | '/search/listing'
+  | '/dashboard';
 
 /**
  * Wrapper service around the {@link Router} from `@angular/router` package.

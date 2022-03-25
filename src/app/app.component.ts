@@ -184,7 +184,7 @@ export class AppComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((user) => {
         this.setupSignedInUser(user);
-        this.userRequests.getUserRequestsFolder(user.userName).subscribe();
+        this.userRequests.getRequestsFolder(user.email).subscribe();
       });
 
     this.broadcast

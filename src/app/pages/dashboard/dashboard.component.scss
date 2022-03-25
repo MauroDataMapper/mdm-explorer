@@ -16,47 +16,28 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-form {
-  .form-input,
-  .mat-form-field {
-    width: 100%;
+@import "../../../styles/base/colours";
 
-    // Force Angular form fields (outline) to have a background color to offset on
-    // highlight box background
-    .mat-form-field-outline {
-      background-color: $color-white;
-      border-radius: 5px;
+.mdm-dashboard {
+  &__search-input {
+    margin-top: 1.5em;
+  }
+}
+
+.mdm-dashboard {
+  &__request-card {
+    background-color: $color-highlight-box;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    margin-left: 1em;
+    margin-right: 1em;
+
+    h3 {
+      font-weight: 500;
     }
   }
 
-  .button-wide {
-    width: 100%;
-    padding: 8px 0;
-  }
-
-  .form-submit {
-    margin: 32px 0;
-  }
-
-  .form-secondary-action {
-    text-align: right;
-  }
-
-  .form-working {
-    margin: 16px 0;
-  }
-
-  .form-actions {
-    text-align: right;
-
-    mat-spinner {
-      display: inline-block;
-      vertical-align: middle;
-    }
-
-    button,
-    mat-spinner {
-      margin-left: 1em;
-    }
+  div.p-carousel-header {
+    margin-top: -5em;
   }
 }

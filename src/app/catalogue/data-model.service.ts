@@ -30,6 +30,7 @@ import {
   DataModel,
   DataModelDetail,
   DataModelDetailResponse,
+  DataModelIndexResponse,
   MdmIndexBody,
   SearchQueryParameters,
   Uuid,
@@ -132,5 +133,17 @@ export class DataModelService {
     return this.endpoints.dataModel
       .search(id, params)
       .pipe(map((response: CatalogueItemSearchResponse) => response.body));
+  }
+
+  /**
+   * Get the data models contained in the given parent folder.
+   *
+   * @param folderId the parent folder of the dataModels you want to retrieve.
+   * @returns An observable containing an array of {@link DataModel} objects contained in the parent folder.
+   */
+  listInFolder(folderId: string): Observable<DataModel[]> {
+    return this.endpoints.dataModel
+      .listInFolder(folderId)
+      .pipe(map((response: DataModelIndexResponse) => response.body.items));
   }
 }

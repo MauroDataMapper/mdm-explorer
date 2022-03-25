@@ -29,6 +29,8 @@ import { SearchComponent } from './search/search.component';
 import { MyAccountComponent } from './my-account/my-account.component';
 import { CoreModule } from '../core/core.module';
 import { SearchModule } from '../search/search.module';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { HomeComponent } from './home/home.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +42,8 @@ import { SearchModule } from '../search/search.module';
     SearchListingComponent,
     MyAccountComponent,
     SearchComponent,
+    DashboardComponent,
+    HomeComponent,
   ],
   imports: [CoreModule, SharedModule, SecurityModule, SearchModule],
 })

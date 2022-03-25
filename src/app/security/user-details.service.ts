@@ -26,7 +26,6 @@ export interface UserDetails {
   token?: string;
   firstName: string;
   lastName: string;
-  userName: string;
   email: string;
   role?: string;
   needsToResetPassword?: boolean;
@@ -47,8 +46,8 @@ export class UserDetailsService {
    * Gets the current user in use, or null if there is no current user.
    */
   get(): UserDetails | null {
-    const userName = localStorage.getItem('userName');
-    if (!userName || userName.length === 0) {
+    const userEmail = localStorage.getItem('email');
+    if (!userEmail || userEmail.length === 0) {
       return null;
     }
 
@@ -58,32 +57,20 @@ export class UserDetailsService {
       firstName: localStorage.getItem('firstName') ?? '',
       lastName: localStorage.getItem('lastName') ?? '',
       email: localStorage.getItem('email') ?? '',
-      userName,
       role: localStorage.getItem('role') ?? undefined,
       needsToResetPassword: Boolean(localStorage.getItem('needsToResetPassword')),
     };
   }
 
   /**
-   * Sets the current user in use.
+   * Sets the current user in use and adds an additional property, dataRequestsFolderName.
    */
   set(user: UserDetails) {
-    // Keep username for 100 days
-    const expiryDate = new Date();
-    expiryDate.setDate(expiryDate.getDate() + 1);
-
     localStorage.setItem('userId', user.id);
     localStorage.setItem('token', user.token ?? '');
-    localStorage.setItem(
-      'userName',
-      JSON.stringify({ email: user.userName, expiry: expiryDate })
-    );
     localStorage.setItem('firstName', user.firstName);
     localStorage.setItem('lastName', user.lastName);
-    localStorage.setItem(
-      'email',
-      JSON.stringify({ email: user.userName, expiry: expiryDate })
-    );
+    localStorage.setItem('email', user.email);
     localStorage.setItem('role', user.role ?? '');
     localStorage.setItem(
       'needsToResetPassword',
@@ -97,7 +84,6 @@ export class UserDetailsService {
   clear() {
     localStorage.removeItem('userId');
     localStorage.removeItem('token');
-    localStorage.removeItem('userName');
     localStorage.removeItem('firstName');
     localStorage.removeItem('lastName');
     localStorage.removeItem('email');
