@@ -23,7 +23,7 @@ SPDX-License-Identifier: Apache-2.0
     <thead>
       <tr>
         <th>Checkbox</th>
-        <th>Path</th>
+        <th>Label</th>
         <th>Add to Request</th>
         <th>View Details</th>
         <th>Delete</th>
@@ -32,13 +32,14 @@ SPDX-License-Identifier: Apache-2.0
     <tbody>
       <tr *ngFor="let bookmark of bookmarks">
         <td>Checkbox Placeholder</td>
-        <td>{{ bookmark.path }}</td>
+        <td>{{ bookmark.label }}</td>
         <td>Add to Request Placeholder</td>
         <td>View details</td>
         <td>
-          <button id="bookmark.path" (click)="remove(bookmark)">
-            <span class="far fa-solid fa-trash-can"></span>
-          </button>
+          <mdm-bookmark-toggle
+            (toggle)="remove(bookmark)"
+            [selected]="true"
+          ></mdm-bookmark-toggle>
         </td>
       </tr>
     </tbody>

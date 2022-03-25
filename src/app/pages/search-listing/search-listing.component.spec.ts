@@ -21,15 +21,19 @@ import { ActivatedRoute, convertToParamMap, ParamMap } from '@angular/router';
 import { CatalogueItemDomainType, DataClassDetail } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { of, throwError } from 'rxjs';
+import { BookmarkService } from 'src/app/core/bookmark.service';
 import { DataClassIdentifier } from 'src/app/catalogue/catalogue.types';
 import { DataModelService } from 'src/app/catalogue/data-model.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { DataElementSearchService } from 'src/app/search/data-element-search.service';
 import {
+  DataElementBookmarkEvent,
   DataElementSearchParameters,
+  DataElementSearchResult,
   DataElementSearchResultSet,
   mapSearchParametersToParams,
 } from 'src/app/search/search.types';
+import { createBookmarkServiceStub } from 'src/app/testing/stubs/bookmark.stub';
 import { createDataElementSearchServiceStub } from 'src/app/testing/stubs/data-element-search.stub';
 import { createDataModelServiceStub } from 'src/app/testing/stubs/data-model.stub';
 import { createStateRouterStub } from 'src/app/testing/stubs/state-router.stub';
@@ -38,16 +42,23 @@ import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
+import {
+  createMdmEndpointsStub,
+  MdmEndpointsServiceStub,
+} from 'src/app/testing/stubs/mdm-endpoints.stub';
+import { MdmEndpointsService } from 'src/app/mdm-rest-client/mdm-endpoints.service';
 
 import { SearchListingComponent, SearchListingSource } from './search-listing.component';
 
 describe('SearchListingComponent', () => {
   let harness: ComponentHarness<SearchListingComponent>;
 
+  const bookmarkStub = createBookmarkServiceStub();
   const dataModelsStub = createDataModelServiceStub();
   const dataElementSearchStub = createDataElementSearchServiceStub();
   const toastrStub = createToastrServiceStub();
   const stateRouterStub = createStateRouterStub();
+  const endpointsStub: MdmEndpointsServiceStub = createMdmEndpointsStub();
 
   const setupComponentTest = async (parameters: DataElementSearchParameters) => {
     const params = mapSearchParametersToParams(parameters);
@@ -78,6 +89,14 @@ describe('SearchListingComponent', () => {
         {
           provide: StateRouterService,
           useValue: stateRouterStub,
+        },
+        {
+          provide: MdmEndpointsService,
+          useValue: endpointsStub,
+        },
+        {
+          provide: BookmarkService,
+          useValue: bookmarkStub,
         },
       ],
     });
@@ -338,6 +357,50 @@ describe('SearchListingComponent', () => {
           search: searchTerm,
         }
       );
+    });
+  });
+
+  describe('add and remove bookmark', () => {
+    const dataElementSearchResult: DataElementSearchResult = {
+      id: '414afd2d-9b05-4a18-a08e-37b5c39fc957',
+      label: 'Test Data Element',
+      description: 'Test Data Element Description',
+      breadcrumbs: [],
+    };
+
+    const dataElementBookmarkAddEvent: DataElementBookmarkEvent = {
+      item: dataElementSearchResult,
+      selected: true,
+    };
+
+    const dataElementBookmarkRemoveEvent: DataElementBookmarkEvent = {
+      item: dataElementSearchResult,
+      selected: false,
+    };
+
+    beforeEach(async () => {
+      toastrStub.error.mockClear();
+      toastrStub.success.mockClear();
+
+      harness = await setupComponentTest({});
+    });
+
+    it('should raise a success toast when a bookmark is added', () => {
+      const spy = jest.spyOn(toastrStub, 'success');
+
+      harness.component.ngOnInit();
+      bookmarkStub.add.mockImplementationOnce(() => of({}));
+      harness.component.bookmarkElement(dataElementBookmarkAddEvent);
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should raise a success toast when a bookmark is removed', () => {
+      const spy = jest.spyOn(toastrStub, 'success');
+
+      harness.component.ngOnInit();
+      bookmarkStub.remove.mockImplementationOnce(() => of({}));
+      harness.component.bookmarkElement(dataElementBookmarkRemoveEvent);
+      expect(spy).toHaveBeenCalled();
     });
   });
 });

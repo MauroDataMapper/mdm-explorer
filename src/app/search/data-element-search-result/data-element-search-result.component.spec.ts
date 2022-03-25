@@ -21,14 +21,27 @@ import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
+import {
+  createMdmEndpointsStub,
+  MdmEndpointsServiceStub,
+} from 'src/app/testing/stubs/mdm-endpoints.stub';
 import { DataElementSearchResult } from '../search.types';
 import { DataElementSearchResultComponent } from './data-element-search-result.component';
+import { MdmEndpointsService } from 'src/app/mdm-rest-client/mdm-endpoints.service';
 
 describe('DataElementSearchResultComponent', () => {
   let harness: ComponentHarness<DataElementSearchResultComponent>;
+  const endpointsStub: MdmEndpointsServiceStub = createMdmEndpointsStub();
 
   beforeEach(async () => {
-    harness = await setupTestModuleForComponent(DataElementSearchResultComponent);
+    harness = await setupTestModuleForComponent(DataElementSearchResultComponent, {
+      providers: [
+        {
+          provide: MdmEndpointsService,
+          useValue: endpointsStub,
+        },
+      ],
+    });
   });
 
   it('should create', () => {

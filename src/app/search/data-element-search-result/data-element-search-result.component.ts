@@ -16,8 +16,9 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { Bookmark, BookmarkService } from 'src/app/core/bookmark.service';
 import {
   DataElementBookmarkEvent,
   DataElementCheckedEvent,
@@ -29,7 +30,7 @@ import {
   templateUrl: './data-element-search-result.component.html',
   styleUrls: ['./data-element-search-result.component.scss'],
 })
-export class DataElementSearchResultComponent {
+export class DataElementSearchResultComponent implements OnInit {
   @Input() item?: DataElementSearchResult;
 
   @Input() showBreadcrumb = false;
@@ -37,6 +38,16 @@ export class DataElementSearchResultComponent {
   @Output() checked = new EventEmitter<DataElementCheckedEvent>();
 
   @Output() bookmark = new EventEmitter<DataElementBookmarkEvent>();
+
+  bookmarks: Bookmark[] = [];
+
+  constructor(private bookmarkService: BookmarkService) {}
+
+  ngOnInit(): void {
+    this.bookmarkService.index().subscribe((result) => {
+      this.bookmarks = result;
+    });
+  }
 
   itemChecked(event: MatCheckboxChange) {
     if (!this.item) {
@@ -52,5 +63,21 @@ export class DataElementSearchResultComponent {
     }
 
     this.bookmark.emit({ item: this.item, selected });
+  }
+
+  /**
+   * Is this.item bookmarked?
+   *
+   * @returns boolean true if this.item is stored in this.bookmarks
+   */
+  isBookmarked(): boolean {
+    let found: boolean;
+    found = false;
+
+    this.bookmarks.forEach((bookmark: Bookmark) => {
+      if (this.item && this.item.id === bookmark.id) found = true;
+    });
+
+    return found;
   }
 }
