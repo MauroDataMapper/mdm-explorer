@@ -16,7 +16,13 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<form [formGroup]="formGroup" role="form" autocomplete="on" name="catalogueSearchForm">
+<form
+  [formGroup]="formGroup"
+  role="form"
+  autocomplete="on"
+  name="catalogueSearchForm"
+  (submit)="search()"
+>
   <div class="container-fluid">
     <div class="form-input row">
       <mat-form-field appearance="outline">
@@ -131,11 +137,10 @@ SPDX-License-Identifier: Apache-2.0
     <div class="form-actions row">
       <div class="search-button">
         <button
-          type="button"
+          type="submit"
           mat-flat-button
           color="primary"
           [disabled]="formGroup.invalid"
-          (click)="search()"
         >
           Search
         </button>

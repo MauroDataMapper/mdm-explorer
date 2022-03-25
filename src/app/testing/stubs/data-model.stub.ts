@@ -23,6 +23,7 @@ import {
   DataElement,
   DataModel,
   DataModelDetail,
+  MdmIndexBody,
   SearchQueryParameters,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
@@ -38,11 +39,11 @@ export type DataModelGetDataClassFn = (
 ) => Observable<DataClassDetail>;
 export type DataModelGetDataElementsFn = (
   id: DataClassIdentifier
-) => Observable<DataElement[]>;
+) => Observable<MdmIndexBody<DataElement>>;
 export type DataModelSearchDataModelFn = (
   id: Uuid,
   params: SearchQueryParameters
-) => Observable<CatalogueItemSearchResult[]>;
+) => Observable<MdmIndexBody<CatalogueItemSearchResult>>;
 
 export interface DataModelServiceStub {
   getDataModel: jest.MockedFunction<DataModelGetDataModelFn>;

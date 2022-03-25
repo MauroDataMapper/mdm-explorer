@@ -21,10 +21,25 @@ import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { DataElementSearchResultComponent } from './data-element-search-result/data-element-search-result.component';
 import { SharedModule } from '../shared/shared.module';
 import { CoreModule } from '../core/core.module';
+import { PAGINATION_CONFIG } from './search.types';
+import { PaginationComponent } from './pagination/pagination.component';
 
 @NgModule({
-  declarations: [BreadcrumbComponent, DataElementSearchResultComponent],
+  declarations: [
+    BreadcrumbComponent,
+    DataElementSearchResultComponent,
+    PaginationComponent,
+  ],
   imports: [CoreModule, SharedModule],
-  exports: [BreadcrumbComponent, DataElementSearchResultComponent],
+  exports: [BreadcrumbComponent, DataElementSearchResultComponent, PaginationComponent],
+  providers: [
+    {
+      provide: PAGINATION_CONFIG,
+      useValue: {
+        defaultPageSize: 10,
+        maxPagesToShow: 10,
+      },
+    },
+  ],
 })
 export class SearchModule {}

@@ -21,6 +21,7 @@ SPDX-License-Identifier: Apache-2.0
     <span>
       <mat-checkbox color="primary" (change)="itemChecked($event)"></mat-checkbox>
       <h3>{{ item.label }}</h3>
+      <mdm-breadcrumb *ngIf="showBreadcrumb" [item]="item"></mdm-breadcrumb>
     </span>
     <span>
       <mdm-bookmark-toggle (toggle)="toggleBookmark($event)"></mdm-bookmark-toggle>
