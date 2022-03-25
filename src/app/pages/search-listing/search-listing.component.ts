@@ -33,10 +33,9 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
-import { Bookmark, BookmarkService } from 'src/app/core/bookmark.service';
-import { DataModelService } from 'src/app/catalogue/data-model.service';
+import { DataModelService } from 'src/app/mauro/data-model.service';
 import { KnownRouterPath, StateRouterService } from 'src/app/core/state-router.service';
-import { DataElementSearchService } from 'src/app/search/data-element-search.service';
+import { DataElementSearchService } from 'src/app/data-explorer/data-element-search.service';
 import {
   DataElementSearchParameters,
   DataElementSearchResultSet,
@@ -46,20 +45,21 @@ import {
   mapSearchParametersToParams,
   SortOrder,
   DataElementSearchResult,
-} from 'src/app/search/search.types';
-import { SortByOption } from 'src/app/search/sort-by/sort-by.component';
+} from 'src/app/data-explorer/data-explorer.types';
 import {
   CreateRequestComponent,
   NewRequestDialogResult,
 } from 'src/app/shared/create-request/create-request.component';
-import { ConfirmData } from 'src/app/shared/confirm/confirm.component';
-import { ShowErrorData } from 'src/app/shared/mdm-show-error/mdm-show-error.component';
-import { MdmShowErrorService } from 'src/app/core/mdm-show-error.service';
-import { ConfirmService } from 'src/app/core/confirm-service';
+import { ConfirmData } from 'src/app/data-explorer/confirm/confirm.component';
+import { ShowErrorData } from 'src/app/shared/show-error/show-error.component';
+import { ShowErrorService } from 'src/app/shared/show-error.service';
+import { ConfirmService } from 'src/app/data-explorer/confirm.service';
 import { UserDetails, UserDetailsService } from 'src/app/security/user-details.service';
-import { CreateRequestEvent } from 'src/app/search/data-element-search-result/data-element-search-result.component';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { UserRequestsService } from 'src/app/core/user-requests.service';
+import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
+import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { CreateRequestEvent } from 'src/app/data-explorer/data-element-search-result/data-element-search-result.component';
+import { SortByOption } from 'src/app/data-explorer/sort-by/sort-by.component';
 
 export type SearchListingSource = 'unknown' | 'browse' | 'search';
 export type SearchListingStatus = 'init' | 'loading' | 'ready' | 'error';
@@ -104,10 +104,10 @@ export class SearchListingComponent implements OnInit {
     private toastr: ToastrService,
     private stateRouter: StateRouterService,
     private bookmarkService: BookmarkService,
-    private showErrorService: MdmShowErrorService,
+    private showErrorService: ShowErrorService,
     private confirmationService: ConfirmService,
     private theMatDialog: MatDialog,
-    private userRequestsService: UserRequestsService,
+    private dataRequests: DataRequestsService,
     userDetailsService: UserDetailsService
   ) {
     this.user = userDetailsService.get();
@@ -347,7 +347,7 @@ export class SearchListingComponent implements OnInit {
             page: 0,
             items: new Array(item!), // eslint-disable-line @typescript-eslint/no-non-null-assertion
           };
-          return this.userRequestsService.createNewUserRequestFromSearchResults(
+          return this.dataRequests.createNewUserRequestFromSearchResults(
             result.Name,
             result.Description,
             this.user!, // eslint-disable-line @typescript-eslint/no-non-null-assertion

@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { CatalogueSearchPayload } from 'src/app/catalogue/catalogue.service';
+import { CatalogueSearchPayload } from 'src/app/data-explorer/data-explorer.types';
 
 @Component({
   selector: 'mdm-catalogue-search-form',

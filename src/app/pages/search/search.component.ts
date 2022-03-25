@@ -17,12 +17,12 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component } from '@angular/core';
-import { CatalogueSearchPayload } from 'src/app/catalogue/catalogue.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import {
+  CatalogueSearchPayload,
   DataElementSearchParameters,
   mapSearchParametersToParams,
-} from 'src/app/search/search.types';
+} from 'src/app/data-explorer/data-explorer.types';
 
 @Component({
   selector: 'mdm-search',

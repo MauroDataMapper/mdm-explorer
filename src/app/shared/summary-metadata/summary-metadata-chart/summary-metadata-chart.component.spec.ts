@@ -25,7 +25,7 @@ import {
   createMdmEndpointsStub,
   MdmEndpointsServiceStub,
 } from 'src/app/testing/stubs/mdm-endpoints.stub';
-import { MdmEndpointsService } from 'src/app/mdm-rest-client/mdm-endpoints.service';
+import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
 
 describe('SummaryMetadataChartComponent', () => {
   let harness: ComponentHarness<SummaryMetadataChartComponent>;

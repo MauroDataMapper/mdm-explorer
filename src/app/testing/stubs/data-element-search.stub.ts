@@ -20,7 +20,7 @@ import { Observable } from 'rxjs';
 import {
   DataElementSearchParameters,
   DataElementSearchResultSet,
-} from 'src/app/search/search.types';
+} from 'src/app/data-explorer/data-explorer.types';
 
 export type DataElementSearchFn = (
   params: DataElementSearchParameters

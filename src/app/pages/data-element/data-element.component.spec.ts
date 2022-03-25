@@ -24,15 +24,21 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { ClassifiersComponent } from 'src/app/shared/classifiers/classifiers.component';
 import { DataElementComponent } from './data-element.component';
-import { BreadcrumbComponent } from 'src/app/search/breadcrumb/breadcrumb.component';
-import { MdmEndpointsService } from '../../mdm-rest-client/mdm-endpoints.service';
-import { createMdmEndpointsStub } from 'src/app/testing/stubs/mdm-endpoints.stub';
 import { MatTabGroup, MatTab } from '@angular/material/tabs';
 import { SummaryMetadataComponent } from 'src/app/shared/summary-metadata/summary-metadata/summary-metadata.component';
+import { BreadcrumbComponent } from 'src/app/shared/breadcrumb/breadcrumb.component';
+import { createDataModelServiceStub } from 'src/app/testing/stubs/data-model.stub';
+import { DataModelService } from 'src/app/mauro/data-model.service';
+import { createToastrServiceStub } from 'src/app/testing/stubs/toastr.stub';
+import { ToastrService } from 'ngx-toastr';
+import { createBookmarkServiceStub } from 'src/app/testing/stubs/bookmark.stub';
+import { BookmarkService } from 'src/app/data-explorer/bookmark.service';
 
 describe('DataElementComponent', () => {
   let harness: ComponentHarness<DataElementComponent>;
-  const endpointsStub = createMdmEndpointsStub();
+  const dataModelStub = createDataModelServiceStub();
+  const bookmarkStub = createBookmarkServiceStub();
+  const toastrStub = createToastrServiceStub();
 
   const setupComponentTest = async () => {
     const activatedRoute: ActivatedRoute = {} as ActivatedRoute;
@@ -51,8 +57,16 @@ describe('DataElementComponent', () => {
           useValue: activatedRoute,
         },
         {
-          provide: MdmEndpointsService,
-          useValue: endpointsStub,
+          provide: DataModelService,
+          useValue: dataModelStub,
+        },
+        {
+          provide: BookmarkService,
+          useValue: bookmarkStub,
+        },
+        {
+          provide: ToastrService,
+          useValue: toastrStub,
         },
       ],
     });

@@ -20,13 +20,13 @@ import { DataModel } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { of, throwError } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
-import { UserRequestsService } from 'src/app/core/user-requests.service';
+import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import { SecurityService } from 'src/app/security/security.service';
 import { UserDetails } from 'src/app/security/user-details.service';
+import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
 import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { createStateRouterStub } from 'src/app/testing/stubs/state-router.stub';
 import { createToastrServiceStub } from 'src/app/testing/stubs/toastr.stub';
-import { createUserRequestsServiceStub } from 'src/app/testing/stubs/user-requests.stub';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
@@ -38,7 +38,7 @@ describe('DashboardComponent', () => {
   let harness: ComponentHarness<DashboardComponent>;
   const securityStub = createSecurityServiceStub();
   const stateRouterStub = createStateRouterStub();
-  const userRequestsStub = createUserRequestsServiceStub();
+  const dataRequestsStub = createDataRequestsServiceStub();
   const toastrStub = createToastrServiceStub();
 
   beforeEach(async () => {
@@ -53,8 +53,8 @@ describe('DashboardComponent', () => {
           useValue: stateRouterStub,
         },
         {
-          provide: UserRequestsService,
-          useValue: userRequestsStub,
+          provide: DataRequestsService,
+          useValue: dataRequestsStub,
         },
         {
           provide: ToastrService,
@@ -91,7 +91,7 @@ describe('DashboardComponent', () => {
         { label: 'dataModel-2' },
       ] as DataModel[];
 
-      userRequestsStub.list.mockImplementationOnce(() => {
+      dataRequestsStub.list.mockImplementationOnce(() => {
         return of(openRequests);
       });
 
@@ -106,7 +106,7 @@ describe('DashboardComponent', () => {
       const spy = jest.spyOn(toastrStub, 'error');
       const username = 'username';
 
-      userRequestsStub.list.mockImplementationOnce(() => {
+      dataRequestsStub.list.mockImplementationOnce(() => {
         return throwError(() => {});
       });
 

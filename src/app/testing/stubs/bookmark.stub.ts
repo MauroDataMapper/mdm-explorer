@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Bookmark } from 'src/app/core/bookmark.service';
+import { Bookmark } from 'src/app/data-explorer/bookmark.service';
 import { Observable } from 'rxjs';
 
 export type BookmarkIndexFn = () => Observable<any>;

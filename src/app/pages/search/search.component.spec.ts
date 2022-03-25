@@ -17,8 +17,8 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { MockComponent } from 'ng-mocks';
-import { CatalogueSearchPayload } from 'src/app/catalogue/catalogue.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
+import { CatalogueSearchPayload } from 'src/app/data-explorer/data-explorer.types';
 import { CatalogueSearchFormComponent } from 'src/app/security/catalogue-search-form/catalogue-search-form.component';
 import { SecurityService } from 'src/app/security/security.service';
 import { createSecurityStub } from 'src/app/testing/stubs/mdm-resources/security-resource-stub';

@@ -21,13 +21,13 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MockComponent } from 'ng-mocks';
 import { of, throwError } from 'rxjs';
-import { ContactFormComponent } from 'src/app/catalogue/contact-form/contact-form.component';
+import { ContactFormComponent } from 'src/app/data-explorer/contact-form/contact-form.component';
 import {
   FeedbackDialogComponent,
   FeedbackDialogResponse,
-} from 'src/app/catalogue/feedback-dialog/feedback-dialog.component';
-import { PluginResearchContactPayload } from 'src/app/mdm-rest-client/plugins/plugin-research.resource';
-import { ResearchPluginService } from 'src/app/mdm-rest-client/research-plugin.service';
+} from 'src/app/data-explorer/feedback-dialog/feedback-dialog.component';
+import { PluginResearchContactPayload } from 'src/app/mauro/plugins/plugin-research.resource';
+import { ResearchPluginService } from 'src/app/mauro/research-plugin.service';
 import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
 import { createResearchPluginServiceStub } from 'src/app/testing/stubs/research-plugin.stub';
 import {

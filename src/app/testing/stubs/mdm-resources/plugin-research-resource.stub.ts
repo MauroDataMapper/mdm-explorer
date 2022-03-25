@@ -20,7 +20,7 @@ import { Observable } from 'rxjs';
 import {
   PluginResearchContactPayload,
   PluginResearchContactResponse,
-} from 'src/app/mdm-rest-client/plugins/plugin-research.resource';
+} from 'src/app/mauro/plugins/plugin-research.resource';
 
 export type PluginResearchContactFn = (
   data: PluginResearchContactPayload

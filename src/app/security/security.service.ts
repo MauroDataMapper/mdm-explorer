@@ -36,8 +36,8 @@ import {
   tap,
   throwError,
 } from 'rxjs';
-import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
-import { MdmHttpError } from '../mdm-rest-client/mdm-rest-client.types';
+import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
+import { MdmHttpError } from '../mauro/mauro.types';
 import {
   AuthenticatedSessionError,
   LoginError,

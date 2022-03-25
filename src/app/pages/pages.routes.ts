@@ -22,7 +22,7 @@ import { SignInComponent } from './sign-in/sign-in.component';
 import { BrowseComponent } from './browse/browse.component';
 import { SearchListingComponent } from './search-listing/search-listing.component';
 import { MyAccountComponent } from './my-account/my-account.component';
-import { BookmarkComponent } from './bookmark/bookmark.component';
+import { MyBookmarksComponent } from './my-bookmarks/my-bookmarks.component';
 import { SearchComponent } from './search/search.component';
 import { DataElementComponent } from './data-element/data-element.component';
 import { Route, UrlMatchResult, UrlSegment } from '@angular/router';
@@ -30,6 +30,10 @@ import { AuthorizedGuard } from '../security/guards/authorized.guard';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { HomeComponent } from './home/home.component';
 import { ContactSupportComponent } from './contact-support/contact-support.component';
+import { NotImplementedComponent } from './error/not-implemented/not-implemented.component';
+import { NotAuthorizedComponent } from './error/not-authorized/not-authorized.component';
+import { ServerErrorComponent } from './error/server-error/server-error.component';
+import { NotFoundComponent } from './error/not-found/not-found.component';
 
 export const buildStaticContentRoute = (path: string, staticAssetPath: string): Route => {
   return {
@@ -81,6 +85,22 @@ export const routes: Route[] = [
     component: ContactSupportComponent,
   },
   {
+    path: 'not-implemented',
+    component: NotImplementedComponent,
+  },
+  {
+    path: 'not-authorized',
+    component: NotAuthorizedComponent,
+  },
+  {
+    path: 'server-error',
+    component: ServerErrorComponent,
+  },
+  {
+    path: 'not-found',
+    component: NotFoundComponent,
+  },
+  {
     path: 'sign-in',
     component: SignInComponent,
   },
@@ -115,7 +135,7 @@ export const routes: Route[] = [
   },
   {
     path: 'bookmarks',
-    component: BookmarkComponent,
+    component: MyBookmarksComponent,
     canActivate: [AuthorizedGuard],
   },
   {

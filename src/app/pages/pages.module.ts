@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { NgModule } from '@angular/core';
-import { BookmarkComponent } from './bookmark/bookmark.component';
+import { MyBookmarksComponent } from './my-bookmarks/my-bookmarks.component';
 import { SignInComponent } from './sign-in/sign-in.component';
 import { SharedModule } from '../shared/shared.module';
 import { SecurityModule } from '../security/security.module';
@@ -29,16 +29,25 @@ import { SearchListingComponent } from './search-listing/search-listing.componen
 import { SearchComponent } from './search/search.component';
 import { MyAccountComponent } from './my-account/my-account.component';
 import { CoreModule } from '../core/core.module';
-import { SearchModule } from '../search/search.module';
-import { CommonModule } from '@angular/common';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { HomeComponent } from './home/home.component';
 import { ContactSupportComponent } from './contact-support/contact-support.component';
-import { CatalogueModule } from '../catalogue/catalogue.module';
+import { ErrorComponent } from './error/error.component';
+import { NotImplementedComponent } from './error/not-implemented/not-implemented.component';
+import { NotAuthorizedComponent } from './error/not-authorized/not-authorized.component';
+import { NotFoundComponent } from './error/not-found/not-found.component';
+import { ServerErrorComponent } from './error/server-error/server-error.component';
+import { NgxJsonViewerModule } from 'ngx-json-viewer';
+import { DataExplorerModule } from '../data-explorer/data-explorer.module';
 
 @NgModule({
   declarations: [
-    BookmarkComponent,
+    ErrorComponent,
+    NotImplementedComponent,
+    NotAuthorizedComponent,
+    NotFoundComponent,
+    ServerErrorComponent,
+    MyBookmarksComponent,
     SignInComponent,
     ForgotPasswordComponent,
     StaticContentComponent,
@@ -53,11 +62,10 @@ import { CatalogueModule } from '../catalogue/catalogue.module';
   ],
   imports: [
     CoreModule,
-    CommonModule,
     SharedModule,
     SecurityModule,
-    SearchModule,
-    CatalogueModule,
+    DataExplorerModule,
+    NgxJsonViewerModule,
   ],
 })
 export class PagesModule {}

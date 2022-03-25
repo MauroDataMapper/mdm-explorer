@@ -18,9 +18,8 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { NgModule } from '@angular/core';
 import { Route, RouterModule, Routes } from '@angular/router';
-import { NotFoundComponent } from './error/not-found/not-found.component';
+import { NotFoundComponent } from './pages/error/not-found/not-found.component';
 import { routes as pageRoutes } from './pages/pages.routes';
-import { routes as errorRoutes } from './error/error.routes';
 import { routes as securityRoutes } from './security/security.routes';
 
 const appRoutes: Route[] = [
@@ -30,7 +29,7 @@ const appRoutes: Route[] = [
   },
 ];
 
-const routes: Routes = [...errorRoutes, ...securityRoutes, ...pageRoutes, ...appRoutes];
+const routes: Routes = [...securityRoutes, ...pageRoutes, ...appRoutes];
 
 @NgModule({
   declarations: [],

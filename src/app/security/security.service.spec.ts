@@ -34,7 +34,7 @@ import {
   OPENID_CONNECT_CONFIG,
 } from './security.types';
 import { SecurityService } from './security.service';
-import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
+import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { UserDetails, UserDetailsService } from './user-details.service';
 
 interface UserDetailsServiceStub {
