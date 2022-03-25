@@ -18,9 +18,9 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { DataModel, FolderDetail } from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
-import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
+import { DataModelService } from '../catalogue/data-model.service';
+import { createDataModelServiceStub } from '../testing/stubs/data-model.stub';
 import { createFolderServiceStub } from '../testing/stubs/folder.stub';
-import { createMdmEndpointsStub } from '../testing/stubs/mdm-endpoints.stub';
 import { setupTestModuleForService } from '../testing/testing.helpers';
 import { FolderService } from './folder.service';
 
@@ -29,7 +29,7 @@ import { UserRequestsService } from './user-requests.service';
 describe('UserRequestsService', () => {
   let service: UserRequestsService;
   const folderServiceStub = createFolderServiceStub();
-  const endpointsStub = createMdmEndpointsStub();
+  const dataModelStub = createDataModelServiceStub();
 
   beforeEach(() => {
     service = setupTestModuleForService(UserRequestsService, {
@@ -39,8 +39,8 @@ describe('UserRequestsService', () => {
           useValue: folderServiceStub,
         },
         {
-          provide: MdmEndpointsService,
-          useValue: endpointsStub,
+          provide: DataModelService,
+          useValue: dataModelStub,
         },
       ],
     });
@@ -83,7 +83,7 @@ describe('UserRequestsService', () => {
 
   it('should return a list of dms under the user folder', () => {
     // Arrange
-    const username = 'test@gmail.com';
+    const userEmail = 'test@gmail.com';
     const dms = ['label-1', 'label-2', 'label-3'].map((label: string) => {
       return { label } as DataModel;
     });
@@ -102,9 +102,9 @@ describe('UserRequestsService', () => {
       }
     );
 
-    endpointsStub.dataModel.listInFolder.mockImplementationOnce(() => {
+    dataModelStub.listInFolder.mockImplementationOnce(() => {
       return cold('-a|', {
-        a: { body: { items: dms } },
+        a: dms,
       });
     });
 
@@ -113,7 +113,7 @@ describe('UserRequestsService', () => {
     });
 
     // Act
-    const actual$ = service.list(username);
+    const actual$ = service.list(userEmail);
 
     // Assert
     expect(actual$).toBeObservable(expected$);

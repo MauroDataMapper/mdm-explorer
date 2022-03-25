@@ -335,4 +335,26 @@ describe('DataModelService', () => {
       expect(actual$).toBeObservable(expected$);
     });
   });
+
+  describe('list dataModels in folder', () => {
+    it('should return an observable containing a list of dataModel objects', () => {
+      const dms = ['label-1', 'label-2', 'label-3'].map((label: string) => {
+        return { label } as DataModel;
+      });
+
+      const expected$ = cold('-a|', {
+        a: dms,
+      });
+
+      endpointsStub.dataModel.listInFolder.mockImplementationOnce(() => {
+        return cold('-a|', {
+          a: { body: { items: dms } },
+        });
+      });
+
+      const actual$ = service.listInFolder('folderId');
+
+      expect(actual$).toBeObservable(expected$);
+    });
+  });
 });

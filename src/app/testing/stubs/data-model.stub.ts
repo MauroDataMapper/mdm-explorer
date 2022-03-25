@@ -44,6 +44,7 @@ export type DataModelSearchDataModelFn = (
   id: Uuid,
   params: SearchQueryParameters
 ) => Observable<MdmIndexBody<CatalogueItemSearchResult>>;
+export type DataModelListInFolderFn = (folderId: Uuid) => Observable<DataModel[]>;
 
 export interface DataModelServiceStub {
   getDataModel: jest.MockedFunction<DataModelGetDataModelFn>;
@@ -51,6 +52,7 @@ export interface DataModelServiceStub {
   getDataClass: jest.MockedFunction<DataModelGetDataClassFn>;
   getDataElements: jest.MockedFunction<DataModelGetDataElementsFn>;
   searchDataModel: jest.MockedFunction<DataModelSearchDataModelFn>;
+  listInFolder: jest.MockedFunction<DataModelListInFolderFn>;
 }
 
 export const createDataModelServiceStub = (): DataModelServiceStub => {
@@ -60,5 +62,6 @@ export const createDataModelServiceStub = (): DataModelServiceStub => {
     getDataClass: jest.fn() as jest.MockedFunction<DataModelGetDataClassFn>,
     getDataElements: jest.fn() as jest.MockedFunction<DataModelGetDataElementsFn>,
     searchDataModel: jest.fn() as jest.MockedFunction<DataModelSearchDataModelFn>,
+    listInFolder: jest.fn() as jest.MockedFunction<DataModelListInFolderFn>,
   };
 };

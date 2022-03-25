@@ -17,12 +17,12 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { DataModel, DataModelIndexResponse } from '@maurodatamapper/mdm-resources';
+import { DataModel } from '@maurodatamapper/mdm-resources';
 import { FolderDetail } from '@maurodatamapper/mdm-resources/lib/es2015/mdm-folder.model';
-import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
-import { map, Observable, switchMap } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { FolderService } from './folder.service';
+import { DataModelService } from '../catalogue/data-model.service';
 
 @Injectable({
   providedIn: 'root',
@@ -30,7 +30,7 @@ import { FolderService } from './folder.service';
 export class UserRequestsService {
   constructor(
     private folderService: FolderService,
-    private endpoints: MdmEndpointsService
+    private dataModel: DataModelService
   ) {}
 
   /**
@@ -54,14 +54,13 @@ export class UserRequestsService {
    * Lists all of the users requests as DataModel objects.
    *
    * @param userEmail the username of the user.
-   * @returns an observable containing an array dataModels (the users requests)
+   * @returns an observable containing an array of dataModels (the users requests)
    */
   list(userEmail: string): Observable<DataModel[]> {
     return this.getRequestsFolder(userEmail).pipe(
-      switchMap((requestsFolder: FolderDetail): Observable<DataModelIndexResponse> => {
-        return this.endpoints.dataModel.listInFolder(requestsFolder.id!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
-      }),
-      map((response) => response.body.items)
+      switchMap((requestsFolder: FolderDetail): Observable<DataModel[]> => {
+        return this.dataModel.listInFolder(requestsFolder.id!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
+      })
     );
   }
 
