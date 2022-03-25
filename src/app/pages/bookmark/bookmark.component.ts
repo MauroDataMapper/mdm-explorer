@@ -37,7 +37,6 @@ export class BookmarkComponent implements OnInit {
   }
 
   remove(bookmark: Bookmark): void {
-    this.bookmarkService.remove(bookmark);
     this.bookmarkService.remove(bookmark).subscribe((result) => {
       this.bookmarks = result;
       this.toastr.success(`${bookmark.label} removed from bookmarks`);

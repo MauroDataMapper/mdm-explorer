@@ -106,7 +106,6 @@ export class SearchListingComponent implements OnInit {
     alert('TODO: selecting elements from SearchListingComponent');
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   bookmarkElement(event: DataElementBookmarkEvent) {
     const bookmark: Bookmark = {
       id: event.item.id,
