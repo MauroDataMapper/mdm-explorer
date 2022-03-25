@@ -21,15 +21,19 @@ import { ActivatedRoute, convertToParamMap, ParamMap } from '@angular/router';
 import { CatalogueItemDomainType, DataClassDetail } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { of, throwError } from 'rxjs';
+import { BookmarkService } from 'src/app/core/bookmark.service';
 import { DataClassIdentifier } from 'src/app/catalogue/catalogue.types';
 import { DataModelService } from 'src/app/catalogue/data-model.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { DataElementSearchService } from 'src/app/search/data-element-search.service';
 import {
+  DataElementBookmarkEvent,
   DataElementSearchParameters,
+  DataElementSearchResult,
   DataElementSearchResultSet,
   mapSearchParametersToParams,
 } from 'src/app/search/search.types';
+import { createBookmarkServiceStub } from 'src/app/testing/stubs/bookmark.stub';
 import { createDataElementSearchServiceStub } from 'src/app/testing/stubs/data-element-search.stub';
 import { createDataModelServiceStub } from 'src/app/testing/stubs/data-model.stub';
 import { createStateRouterStub } from 'src/app/testing/stubs/state-router.stub';
@@ -49,6 +53,7 @@ import { SearchListingComponent, SearchListingSource } from './search-listing.co
 describe('SearchListingComponent', () => {
   let harness: ComponentHarness<SearchListingComponent>;
 
+  const bookmarkStub = createBookmarkServiceStub();
   const dataModelsStub = createDataModelServiceStub();
   const dataElementSearchStub = createDataElementSearchServiceStub();
   const toastrStub = createToastrServiceStub();
@@ -88,6 +93,10 @@ describe('SearchListingComponent', () => {
         {
           provide: MdmEndpointsService,
           useValue: endpointsStub,
+        },
+        {
+          provide: BookmarkService,
+          useValue: bookmarkStub,
         },
       ],
     });
@@ -348,6 +357,35 @@ describe('SearchListingComponent', () => {
           search: searchTerm,
         }
       );
+    });
+  });
+
+  describe('add and remove bookmark', () => {
+    const dataElementSearchResult: DataElementSearchResult = {
+      id: '414afd2d-9b05-4a18-a08e-37b5c39fc957',
+      label: 'Test Data Element',
+      description: 'Test Data Element Description',
+      breadcrumbs: [],
+    };
+
+    const dataElementBookmarkEvent: DataElementBookmarkEvent = {
+      item: dataElementSearchResult,
+      selected: true,
+    };
+
+    beforeEach(async () => {
+      toastrStub.error.mockClear();
+      toastrStub.success.mockClear();
+
+      harness = await setupComponentTest({});
+    });
+
+    it('should raise a success toast when a bookmark is added', () => {
+      const spy = jest.spyOn(toastrStub, 'success');
+
+      harness.component.ngOnInit();
+      harness.component.bookmarkElement(dataElementBookmarkEvent);
+      expect(spy).toHaveBeenCalled();
     });
   });
 });
