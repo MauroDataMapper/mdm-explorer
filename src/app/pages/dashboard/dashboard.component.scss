@@ -24,36 +24,20 @@ SPDX-License-Identifier: Apache-2.0
   }
 }
 
-.request-card {
-  background-color: $color-highlight-box;
-  border: 1px solid #e5e5e5;
-  border-radius: 10px;
-  margin-left: 1em;
-  margin-right: 1em;
-
-  h3 {
-    font-weight: 500;
-  }
-}
-
-div.p-carousel-header {
-  margin-top: -5em;
-}
-
-.flex-container {
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: flex-start;
-
-  &__card {
+.mdm-dashboard {
+  &__request-card {
     background-color: $color-highlight-box;
     border: 1px solid #e5e5e5;
     border-radius: 10px;
-    padding: 4em 5%;
-    margin-bottom: 1em;
+    margin-left: 1em;
+    margin-right: 1em;
 
     h3 {
       font-weight: 500;
     }
+  }
+
+  div.p-carousel-header {
+    margin-top: -5em;
   }
 }
