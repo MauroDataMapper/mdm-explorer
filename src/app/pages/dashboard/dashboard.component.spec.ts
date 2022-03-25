@@ -83,7 +83,7 @@ describe('DashboardComponent', () => {
 
     it('should initialize the currentUserRequests list upon successful retrieval of requests', () => {
       securityStub.getSignedInUser.mockImplementationOnce(() => {
-        return { userName: 'username' } as UserDetails;
+        return { email: 'email' } as UserDetails;
       });
 
       const openRequests = [
@@ -122,7 +122,7 @@ describe('DashboardComponent', () => {
   describe('search', () => {
     it('should transition to the search-listing page with the appropriate search payload', () => {
       const searchTerms = 'test search terms';
-      const expectedPayload = { searchTerms };
+      const expectedPayload = { search: searchTerms };
 
       harness.component.searchTerms = searchTerms;
       harness.component.search();

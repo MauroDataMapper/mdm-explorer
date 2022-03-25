@@ -134,7 +134,6 @@ describe('SignInComponent', () => {
 
       const expectedUser: UserDetails = {
         id: '1',
-        userName: credentials.userName,
         firstName: 'first',
         lastName: 'last',
         email: 'test@test.com',

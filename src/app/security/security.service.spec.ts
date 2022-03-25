@@ -86,7 +86,7 @@ describe('SecurityService', () => {
         a: {
           body: {
             id: expectedUser.id,
-            emailAddress: expectedUser.userName,
+            emailAddress: expectedUser.email,
             firstName: expectedUser.firstName,
             lastName: expectedUser.lastName,
           },
@@ -99,18 +99,17 @@ describe('SecurityService', () => {
     it.each([
       ['123', 'user@test.com'],
       ['456', 'admin@test.com'],
-    ])('should sign in user %p %p', (id, userName) => {
+    ])('should sign in user %p %p', (id, userEmail) => {
       const payload: LoginPayload = {
-        username: userName,
+        username: userEmail,
         password: 'test',
       };
 
       const expectedUser: UserDetails = {
         id,
-        userName,
         firstName: 'first',
         lastName: 'last',
-        email: userName,
+        email: 'email',
         needsToResetPassword: false,
         role: '',
         token: undefined,
@@ -252,7 +251,6 @@ describe('SecurityService', () => {
 
       const expectedUser: UserDetails = {
         id: '456',
-        userName: 'test@test.com',
         firstName: 'first',
         lastName: 'last',
         email: 'test@test.com',

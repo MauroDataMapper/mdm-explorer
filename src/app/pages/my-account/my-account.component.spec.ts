@@ -85,7 +85,6 @@ describe('MyAccountComponent', () => {
       id: '123',
       firstName: 'test',
       lastName: 'user',
-      userName: 'testuser',
       email: 'test@test.com',
     };
 

@@ -85,7 +85,6 @@ export class SecurityService {
           firstName: login.firstName,
           lastName: login.lastName,
           email: login.emailAddress,
-          userName: login.emailAddress,
           role: login.userRole?.toLowerCase() ?? '',
           needsToResetPassword: login.needsToResetPassword ?? false,
         };

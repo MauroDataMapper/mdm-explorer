@@ -20,7 +20,6 @@ import { Component, OnInit } from '@angular/core';
 import { DataModel } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, throwError } from 'rxjs';
-import { CatalogueSearchPayload } from 'src/app/catalogue/catalogue.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { UserRequestsService } from 'src/app/core/user-requests.service';
 import {
@@ -52,7 +51,7 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
-    this.loadRequests(user.userName);
+    this.loadRequests(user.email);
   }
 
   loadRequests(username: string) {
