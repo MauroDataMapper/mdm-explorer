@@ -17,7 +17,9 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
+import { SafeHtml } from '@angular/platform-browser';
 import { StateRouterService } from 'src/app/core/state-router.service';
+import { StaticContentService } from 'src/app/core/static-content.service';
 import { SecurityService } from 'src/app/security/security.service';
 
 @Component({
@@ -26,9 +28,12 @@ import { SecurityService } from 'src/app/security/security.service';
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
+  content: SafeHtml = '';
+
   constructor(
     private security: SecurityService,
-    private stateRouter: StateRouterService
+    private stateRouter: StateRouterService,
+    private staticContent: StaticContentService
   ) {}
 
   ngOnInit(): void {
@@ -36,5 +41,9 @@ export class HomeComponent implements OnInit {
       this.stateRouter.navigateToKnownPath('/dashboard');
       return;
     }
+
+    this.staticContent.getContent('home').subscribe((content: SafeHtml) => {
+      this.content = content;
+    });
   }
 }

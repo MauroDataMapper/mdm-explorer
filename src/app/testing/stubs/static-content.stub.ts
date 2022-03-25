@@ -1,4 +1,4 @@
-<!--
+/*
 Copyright 2022 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -15,5 +15,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
--->
-<div [innerHtml]="content"></div>
+*/
+
+import { SafeHtml } from '@angular/platform-browser';
+import { Observable } from 'rxjs';
+
+export type StaticContentGetContentFn = (path: string) => Observable<SafeHtml>;
+
+export interface StaticContentStub {
+  getContent: jest.MockedFunction<StaticContentGetContentFn>;
+}
+
+export const createStaticContentStub = (): StaticContentStub => {
+  return {
+    getContent: jest.fn() as jest.MockedFunction<StaticContentGetContentFn>,
+  };
+};
