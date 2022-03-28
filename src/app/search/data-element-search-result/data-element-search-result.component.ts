@@ -56,7 +56,16 @@ export class DataElementSearchResultComponent {
   @Output() bookmark = new EventEmitter<DataElementBookmarkEvent>();
   @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
 
+  public showLoadingWheel: boolean = false;
+  private user: UserDetails | null;
 
+  constructor(
+    private userRequestsService: UserRequestsService,
+    private createRequestDialog: MatDialog,
+    private userDetailsService: UserDetailsService,
+  ) {
+    this.user = userDetailsService.get();
+  }
 
   itemChecked(event: MatCheckboxChange) {
     if (!this.item) {

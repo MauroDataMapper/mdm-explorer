@@ -55,4 +55,17 @@ SPDX-License-Identifier: Apache-2.0
       color="primary"
     ></mdm-loading-spinner>
   </div>
+  <!-- Dropdown Menu -->
+  <mat-menu #menu="matMenu" xPosition="after" yPosition="below">
+    <button mat-menu-item (click)="createRequest($event)" clickable>
+      <span>Create new request</span>
+    </button>
+  </mat-menu>
+  <!-- Loading wheel -->
+  <div *ngIf="showLoadingWheel">
+    <mdm-loading-spinner
+      caption="Creating new request ..."
+      color="primary"
+    ></mdm-loading-spinner>
+  </div>
 </div>
