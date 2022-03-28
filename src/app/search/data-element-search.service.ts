@@ -19,9 +19,11 @@ SPDX-License-Identifier: Apache-2.0
 import { Injectable } from '@angular/core';
 import {
   CatalogueItemDomainType,
+  DataElement,
   DataElementIndexParameters,
   PageParameters,
   SearchQueryParameters,
+  Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { map, Observable, switchMap, throwError } from 'rxjs';
 import { CatalogueService } from '../catalogue/catalogue.service';
@@ -29,6 +31,7 @@ import { DataModelService } from '../catalogue/data-model.service';
 import { PaginationService } from './pagination.service';
 import {
   DataElementSearchParameters,
+  DataElementSearchResult,
   DataElementSearchResultSet,
   mapSearchResult,
 } from './search.types';
@@ -113,6 +116,35 @@ export class DataElementSearchService {
         };
       })
     );
+  }
+
+  getDataModelFromSearchResults(results: DataElementSearchResultSet): Uuid {
+    //The result set *should* all be in the same model, and *should* all
+    //have the model accessible. Try and get model from model property,
+    //otherwise attempt to retrieve from breadcrumbs.
+    let model: Uuid | null = null;
+    let currentModel: Uuid | null = null;
+    for (let i = 0; i < results.count; i++) {
+      let item: DataElement | DataElementSearchResult = results.items[i];
+      currentModel = (item as DataElement).model as Uuid;
+      if (!currentModel) {
+        for (let b = 0; b < item.breadcrumbs.length; b++) {
+          if (item.breadcrumbs[b].domainType === 'DataModel') {
+            currentModel = item.breadcrumbs[b].id;
+            break;
+          }
+        }
+      }
+      if (!currentModel) {
+        throw `Data Element '${item.label}' has no model id`;
+      } else if (model != null && model != currentModel) {
+        throw `Data Elements are drawn from different models: ${model} and ${currentModel}`;
+      }
+      if (model == null) {
+        model = currentModel;
+      }
+    }
+    return currentModel!;
   }
 
   private getPageParameters(

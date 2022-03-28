@@ -56,7 +56,7 @@ import {
   CATALOGUE_CONFIGURATION,
 } from 'src/app/catalogue/catalogue.types';
 import { ConfirmRequestComponent } from 'src/app/shared/confirm-request/confirm-request.component';
-import { ShowRequestErrorComponent } from 'src/app/shared/show-request-error/show-request-error.component';
+import { MdmShowErrorComponent } from 'src/app/shared/mdm-show-error/mdm-show-error.component';
 import { LoadingSpinnerComponent } from 'src/app/shared/loading-spinner/loading-spinner.component';
 import { ArrowDirection, ArrowDirective } from '../../shared/directives/arrow.directive';
 
@@ -158,14 +158,16 @@ export class BrowseComponent implements OnInit {
 
   private showErrorDialog(dialogProps: MatDialogConfig, resultErrors: string[]) {
     dialogProps.data = {
-      itemName: this.selected!.label,
-      itemType: 'Data Class',
-      requestName: this.newRequestName,
-      error: resultErrors[0],
+      heading: 'Request creation error',
+      subHeading: `The following error occurred while trying to add Data Class '${
+        this.selected!.label
+      }' to new request '${this.newRequestName}'.`,
+      message: resultErrors[0],
+      buttonLabel: 'Continue browsing',
     };
     dialogProps.height = 'fit-content';
     dialogProps.width = '400px';
-    let errorRef = this.confirmationDialog.open(ShowRequestErrorComponent, dialogProps);
+    let errorRef = this.confirmationDialog.open(MdmShowErrorComponent, dialogProps);
     //Restore focus to item that was originally clicked on
     errorRef.afterClosed().subscribe(() => this.menuTrigger.focus());
   }
@@ -193,7 +195,7 @@ export class BrowseComponent implements OnInit {
           this.newRequestDescription = result.Description;
           if (this.newRequestName !== '' && this.user != null) {
             this.userRequestsService
-              .createNewUserRequest(
+              .createNewUserRequestFromDataClass(
                 this.newRequestName,
                 this.newRequestDescription,
                 this.user!,

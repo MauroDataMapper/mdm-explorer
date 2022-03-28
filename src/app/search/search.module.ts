@@ -21,6 +21,7 @@ import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { DataElementSearchResultComponent } from './data-element-search-result/data-element-search-result.component';
 import { SharedModule } from '../shared/shared.module';
 import { CoreModule } from '../core/core.module';
+import { MatMenuModule } from '@angular/material/menu';
 import { PAGINATION_CONFIG } from './search.types';
 import { PaginationComponent } from './pagination/pagination.component';
 import { SortByComponent } from './sort-by/sort-by.component';
@@ -32,6 +33,7 @@ import { SortByComponent } from './sort-by/sort-by.component';
     PaginationComponent,
     SortByComponent,
   ],
+<<<<<<< HEAD
   imports: [CoreModule, SharedModule],
   exports: [
     BreadcrumbComponent,
@@ -39,6 +41,10 @@ import { SortByComponent } from './sort-by/sort-by.component';
     PaginationComponent,
     SortByComponent,
   ],
+=======
+  imports: [CoreModule, SharedModule, MatMenuModule],
+  exports: [BreadcrumbComponent, DataElementSearchResultComponent, PaginationComponent],
+>>>>>>> 204669d (﻿mc-9775: Added create request functionality to search page.)
   providers: [
     {
       provide: PAGINATION_CONFIG,

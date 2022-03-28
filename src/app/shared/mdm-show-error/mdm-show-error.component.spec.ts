@@ -1,20 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ShowRequestErrorComponent } from './show-request-error.component';
+import { MdmShowErrorComponent } from './mdm-show-error.component';
 
 describe('ShowRequestErrorComponent', () => {
-  let component: ShowRequestErrorComponent;
-  let fixture: ComponentFixture<ShowRequestErrorComponent>;
+  let component: MdmShowErrorComponent;
+  let fixture: ComponentFixture<MdmShowErrorComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ShowRequestErrorComponent ]
-    })
-    .compileComponents();
+      declarations: [MdmShowErrorComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ShowRequestErrorComponent);
+    fixture = TestBed.createComponent(MdmShowErrorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,17 +1,19 @@
 <div class="mdm-modal">
   <div class="mdm-modal__heading">
-    <h1 mat-dialog-title>Request creation error</h1>
+    <h1 mat-dialog-title>{{ data.heading }}</h1>
   </div>
   <div class="mdm-modal__content">
     <mat-dialog-content>
       <p>
-        The following error occurred while trying to add {{ data.itemType }} '{{
-          data.itemName
-        }}' to new request '{{ data.requestName }}'
+        {{ data.subHeading }}
       </p>
       <ul>
         <li>
-          {{ data.error.length > 250 ? (data.error | slice: 0:248) + ".." : data.error }}
+          {{
+            data.message.length > 250
+              ? (data.message | slice: 0:248) + ".."
+              : data.message
+          }}
         </li>
       </ul>
     </mat-dialog-content>
@@ -19,7 +21,7 @@
   <div class="mdm-modal__actions">
     <mat-dialog-actions>
       <button mat-dialog-close class="mdm-modal__action-button" (click)="close()">
-        Continue browsing
+        {{ data.buttonLabel }}
       </button>
     </mat-dialog-actions>
   </div>

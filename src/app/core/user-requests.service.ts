@@ -44,6 +44,7 @@ import {
   endWith,
   from,
   ignoreElements,
+  map,
   merge,
   mergeMap,
   Observable,
@@ -58,6 +59,8 @@ import { UserDetails } from '../security/user-details.service';
 import { FolderService } from './folder.service';
 import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
 import { ExceptionService } from './exception.service';
+import { DataElementSearchResultSet } from '../search/search.types';
+import { DataElementSearchService } from '../search/data-element-search.service';
 import { DataModelService } from '../catalogue/data-model.service';
 
 @Injectable({
@@ -69,6 +72,7 @@ export class UserRequestsService {
     private catalogueUserService: CatalogueUserService,
     private endpointsService: MdmEndpointsService,
     private exceptionService: ExceptionService,
+    private searchService: DataElementSearchService
     private dataModel: DataModelService
   ) {}
 
@@ -109,7 +113,7 @@ export class UserRequestsService {
    * @param requestName - get the data requests folder for the user with the given unique username
    * @returns Observable<DataModelDetailResponse>
    */
-  createNewUserRequest(
+  createNewUserRequestFromDataClass(
     requestName: string,
     requestDescription: string,
     user: UserDetails,
@@ -184,8 +188,17 @@ export class UserRequestsService {
     ) as Observable<string[]>;
   }
 
-  addDataElements(
-    oldDataModelId: string,
+  /**
+   * returns pipe operator: source is DataElement[], result is DataModelDetail.
+   * Adds the source DataElements, which exist in the oldDataModel, to the newDataModel
+   *
+   * @param oldDataModelId: Uuid of the source data model
+   * @param newDataModelId: Observable of DataModel Uuids to which the elements need to be added
+   * This was created to add to just 1 data model, but would work just as well with multiple data models
+   * @param errors: string[] to which exception messages can be added.
+   * @returns Observable<DataModelDetail> of the new data model
+   */  addDataElements(
+    oldDataModelId: Uuid,
     newDataModelId: Observable<Uuid>,
     errors: string[]
   ): OperatorFunction<DataElement[], any> {

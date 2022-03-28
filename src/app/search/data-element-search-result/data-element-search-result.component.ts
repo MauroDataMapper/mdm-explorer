@@ -16,14 +16,28 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, OnInit } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { Bookmark } from 'src/app/core/bookmark.service';
 import {
   DataElementBookmarkEvent,
   DataElementCheckedEvent,
   DataElementSearchResult,
+  DataElementSearchResultSet,
 } from '../search.types';
+import { ArrowDirection } from 'src/app/shared/directives/arrow.directive';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import {
+  CreateRequestComponent,
+  NewRequestDialogResult,
+} from 'src/app/shared/create-request/create-request.component';
+import { UserRequestsService } from 'src/app/core/user-requests.service';
+import { UserDetails, UserDetailsService } from 'src/app/security/user-details.service';
+import { MdmShowErrorComponent } from 'src/app/shared/mdm-show-error/mdm-show-error.component';
+import { MatMenuTrigger } from '@angular/material/menu';
+import { ConfirmRequestComponent } from 'src/app/shared/confirm-request/confirm-request.component';
+import { Observable, OperatorFunction } from 'rxjs';
+import { DataElement } from '@maurodatamapper/mdm-resources';
 
 @Component({
   selector: 'mdm-data-element-search-result',
@@ -40,6 +54,7 @@ export class DataElementSearchResultComponent {
   @Output() checked = new EventEmitter<DataElementCheckedEvent>();
 
   @Output() bookmark = new EventEmitter<DataElementBookmarkEvent>();
+  @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
 
   constructor() {}
 
@@ -57,6 +72,92 @@ export class DataElementSearchResultComponent {
     }
 
     this.bookmark.emit({ item: this.item, selected });
+  }
+
+  createRequest(event: MouseEvent) {
+    let dialogProps = new MatDialogConfig();
+    dialogProps.height = 'fit-content';
+    dialogProps.width = '343px';
+    let dialogRef = this.createRequestDialog.open(CreateRequestComponent, dialogProps);
+
+    dialogRef
+      .afterClosed()
+      .pipe(this.createNewRequestOrBail())
+      .subscribe({
+        next: (resultErrors: string[]) => {
+          if (resultErrors.length == 0) {
+            this.showConfirmation(dialogProps);
+          } else {
+            this.showErrorDialog(dialogProps, resultErrors);
+          }
+        },
+        complete: () => (this.showLoadingWheel = false),
+      });
+  }
+
+  private showErrorDialog(dialogProps: MatDialogConfig, resultErrors: string[]) {
+    dialogProps.data = {
+      heading: 'Request creation error',
+      subHeading: `The following error occurred while trying to add Data Element '${
+        this.item!.label
+      }' to new request '${this.newRequestName}'.`,
+      message: resultErrors[0],
+      buttonLabel: 'Continue browsing',
+    };
+    dialogProps.height = 'fit-content';
+    dialogProps.width = '400px';
+    let errorRef = this.confirmationDialog.open(MdmShowErrorComponent, dialogProps);
+    //Restore focus to item that was originally clicked on
+    errorRef.afterClosed().subscribe(() => this.menuTrigger.focus());
+  }
+
+  private showConfirmation(dialogProps: MatDialogConfig) {
+    dialogProps.data = {
+      itemName: this.item!.label,
+      itemType: 'Data Class',
+      requestName: this.newRequestName,
+    };
+    let confirmationRef = this.confirmationDialog.open(
+      ConfirmRequestComponent,
+      dialogProps
+    );
+    //Restore focus to item that was originally clicked on
+    confirmationRef.afterClosed().subscribe(() => this.menuTrigger.focus());
+  }
+
+  private createNewRequestOrBail(): OperatorFunction<any, string[]> {
+    return (source: Observable<any>): Observable<string[]> => {
+      let resultObservable = new Observable<string[]>((subscriber) => {
+        source.subscribe((result: NewRequestDialogResult) => {
+          this.showLoadingWheel = true;
+          this.newRequestName = result.Name;
+          this.newRequestDescription = result.Description;
+          if (this.newRequestName !== '' && this.user != null) {
+            let fakeSearchResult: DataElementSearchResultSet = {
+              count: 1,
+              items: new Array(this.item!),
+            };
+            this.userRequestsService
+              .createNewUserRequestFromSearchResults(
+                this.newRequestName,
+                this.newRequestDescription,
+                this.user!,
+                fakeSearchResult
+              )
+              .subscribe({
+                next: (errors: string[]) => {
+                  subscriber.next(errors);
+                },
+                complete: () => subscriber.complete(),
+                error: (err) => subscriber.error(err),
+              });
+          } else {
+            subscriber.next([]);
+          }
+        });
+      });
+      return resultObservable;
+    };
   }
 
   /**

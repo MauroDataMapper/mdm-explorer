@@ -19,8 +19,16 @@ SPDX-License-Identifier: Apache-2.0
 <div *ngIf="item" class="highlight-box mdm-data-element-search-result">
   <div class="mdm-data-element-search-result__header">
     <span>
+<<<<<<< HEAD
       <mat-checkbox (change)="itemChecked($event)"></mat-checkbox>
       <h3>{{ item.label }}</h3>
+=======
+      <mat-checkbox color="primary" (change)="itemChecked($event)"></mat-checkbox>
+      <h3>
+        {{ item.label }}
+        <span [matMenuTriggerFor]="menu" [mdmArrow]="'angle-down'"> </span>
+      </h3>
+>>>>>>> 204669d (﻿mc-9775: Added create request functionality to search page.)
       <mdm-breadcrumb *ngIf="showBreadcrumb" [item]="item"></mdm-breadcrumb>
     </span>
     <span>
@@ -37,5 +45,18 @@ SPDX-License-Identifier: Apache-2.0
     <a [routerLink]="['/dataElement', item.dataModelId, item.dataClassId, item.id]"
       >View Details</a
     >
+  </div>
+  <!-- Dropdown Menu -->
+  <mat-menu #menu="matMenu" xPosition="after" yPosition="below">
+    <button mat-menu-item (click)="createRequest($event)" clickable>
+      <span>Create new request</span>
+    </button>
+  </mat-menu>
+  <!-- Loading wheel -->
+  <div *ngIf="showLoadingWheel">
+    <mdm-loading-spinner
+      caption="Creating new request ..."
+      color="primary"
+    ></mdm-loading-spinner>
   </div>
 </div>

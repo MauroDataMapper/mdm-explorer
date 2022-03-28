@@ -28,7 +28,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule } from '@angular/forms';
 import { ConfirmRequestComponent } from './confirm-request/confirm-request.component';
-import { ShowRequestErrorComponent } from './show-request-error/show-request-error.component';
+import { MdmShowErrorComponent } from './mdm-show-error/mdm-show-error.component';
 import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
 import { BookmarkToggleComponent } from './bookmark-toggle/bookmark-toggle.component';
 import { CoreModule } from '../core/core.module';
@@ -50,10 +50,14 @@ import { CallToActionComponent } from './call-to-action/call-to-action.component
     CreateRequestComponent,
     BookmarkToggleComponent,
     ConfirmRequestComponent,
+<<<<<<< HEAD
     ShowRequestErrorComponent,
     SummaryMetadataChartComponent,
     SummaryMetadataComponent,
     SummaryMetadataReportComponent,
+=======
+    MdmShowErrorComponent,
+>>>>>>> 204669d (﻿mc-9775: Added create request functionality to search page.)
     LoadingSpinnerComponent,
     CallToActionComponent,
   ],
