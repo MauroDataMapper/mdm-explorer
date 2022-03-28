@@ -33,7 +33,7 @@ import { SortByComponent } from './sort-by/sort-by.component';
     PaginationComponent,
     SortByComponent,
   ],
-<<<<<<< HEAD
+
   imports: [CoreModule, SharedModule],
   exports: [
     BreadcrumbComponent,
@@ -41,10 +41,7 @@ import { SortByComponent } from './sort-by/sort-by.component';
     PaginationComponent,
     SortByComponent,
   ],
-=======
-  imports: [CoreModule, SharedModule, MatMenuModule],
-  exports: [BreadcrumbComponent, DataElementSearchResultComponent, PaginationComponent],
->>>>>>> 204669d (﻿mc-9775: Added create request functionality to search page.)
+
   providers: [
     {
       provide: PAGINATION_CONFIG,

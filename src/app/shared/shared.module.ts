@@ -50,14 +50,12 @@ import { CallToActionComponent } from './call-to-action/call-to-action.component
     CreateRequestComponent,
     BookmarkToggleComponent,
     ConfirmRequestComponent,
-<<<<<<< HEAD
+
     ShowRequestErrorComponent,
     SummaryMetadataChartComponent,
     SummaryMetadataComponent,
     SummaryMetadataReportComponent,
-=======
-    MdmShowErrorComponent,
->>>>>>> 204669d (﻿mc-9775: Added create request functionality to search page.)
+
     LoadingSpinnerComponent,
     CallToActionComponent,
   ],

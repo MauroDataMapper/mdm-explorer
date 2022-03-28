@@ -56,7 +56,7 @@ export class DataElementSearchResultComponent {
   @Output() bookmark = new EventEmitter<DataElementBookmarkEvent>();
   @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
 
-  constructor() {}
+
 
   itemChecked(event: MatCheckboxChange) {
     if (!this.item) {
