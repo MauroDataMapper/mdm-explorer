@@ -35,6 +35,7 @@ import { StaticContentService } from 'src/app/core/static-content.service';
 })
 export class StaticContentComponent implements OnInit {
   content: SafeHtml = '';
+  state: 'loading' | 'ready' = 'loading';
 
   constructor(
     private route: ActivatedRoute,
@@ -62,6 +63,7 @@ export class StaticContentComponent implements OnInit {
       )
       .subscribe((content) => {
         this.content = content;
+        this.state = 'ready';
       });
   }
 }

@@ -16,52 +16,54 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<div *ngIf="user" class="mdm-my-account">
-  <div class="h1-with-actions">
-    <h1>My Account</h1>
-    <button mat-flat-button color="primary" (click)="signOut()">Sign out</button>
+<div class="container">
+  <div *ngIf="user" class="mdm-my-account">
+    <div class="heading-with-actions main-row hero">
+      <h1>My Account</h1>
+      <button mat-flat-button color="primary" (click)="signOut()">Sign out</button>
+    </div>
+    <section>
+      <div class="sub-heading-with-actions">
+        <h2>Basic Information</h2>
+        <button
+          *ngIf="basicInfoMode === 'view'"
+          mat-flat-button
+          color="primary"
+          (click)="editBasicInfo()"
+        >
+          Edit
+        </button>
+      </div>
+      <dl *ngIf="basicInfoMode === 'view'">
+        <div class="mdm-my-account__desc-info">
+          <dt>Name</dt>
+          <dd>{{ user.firstName }} {{ user.lastName }}</dd>
+        </div>
+        <div class="mdm-my-account__desc-info">
+          <dt>Organisation</dt>
+          <dd>{{ user.organisation }}</dd>
+        </div>
+        <div class="mdm-my-account__desc-info">
+          <dt>Role</dt>
+          <dd>{{ user.jobTitle }}</dd>
+        </div>
+      </dl>
+      <mdm-catalogue-user-form
+        *ngIf="basicInfoMode === 'edit' || basicInfoMode === 'updating'"
+        [user]="user"
+        [isBusy]="basicInfoMode === 'updating'"
+        (cancelClicked)="cancelEditBasicInfo()"
+        (updateClicked)="updateBasicInfo($event)"
+      ></mdm-catalogue-user-form>
+    </section>
+    <section>
+      <h2>Contact Information</h2>
+      <div class="mdm-my-account__desc-info">
+        <dt>Email</dt>
+        <dd>
+          <a href="mailto: {{ user.emailAddress }}">{{ user.emailAddress }}</a>
+        </dd>
+      </div>
+    </section>
   </div>
-  <section>
-    <div class="h2-with-actions">
-      <h2>Basic Information</h2>
-      <button
-        *ngIf="basicInfoMode === 'view'"
-        mat-flat-button
-        color="primary"
-        (click)="editBasicInfo()"
-      >
-        Edit
-      </button>
-    </div>
-    <dl *ngIf="basicInfoMode === 'view'">
-      <div class="mdm-my-account__desc-info">
-        <dt>Name</dt>
-        <dd>{{ user.firstName }} {{ user.lastName }}</dd>
-      </div>
-      <div class="mdm-my-account__desc-info">
-        <dt>Organisation</dt>
-        <dd>{{ user.organisation }}</dd>
-      </div>
-      <div class="mdm-my-account__desc-info">
-        <dt>Role</dt>
-        <dd>{{ user.jobTitle }}</dd>
-      </div>
-    </dl>
-    <mdm-catalogue-user-form
-      *ngIf="basicInfoMode === 'edit' || basicInfoMode === 'updating'"
-      [user]="user"
-      [isBusy]="basicInfoMode === 'updating'"
-      (cancelClicked)="cancelEditBasicInfo()"
-      (updateClicked)="updateBasicInfo($event)"
-    ></mdm-catalogue-user-form>
-  </section>
-  <section>
-    <h2>Contact Information</h2>
-    <div class="mdm-my-account__desc-info">
-      <dt>Email</dt>
-      <dd>
-        <a href="mailto: {{ user.emailAddress }}">{{ user.emailAddress }}</a>
-      </dd>
-    </div>
-  </section>
 </div>

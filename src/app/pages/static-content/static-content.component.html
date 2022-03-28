@@ -16,4 +16,8 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<div [innerHtml]="content"></div>
+<div *ngIf="state === 'loading'" class="main-row mdm-static-content__loading">
+  <mat-spinner color="primary"></mat-spinner>
+  <p>Loading...</p>
+</div>
+<div *ngIf="state === 'ready'" [innerHtml]="content"></div>

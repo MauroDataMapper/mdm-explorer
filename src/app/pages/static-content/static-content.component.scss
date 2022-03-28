@@ -16,3 +16,10 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+.mdm-static-content {
+  &__loading {
+    mat-spinner {
+      margin: 2em auto;
+    }
+  }
+}
