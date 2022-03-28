@@ -16,26 +16,11 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatSelectionList, MatSelectionListChange } from '@angular/material/list';
-import {
-  DataClass,
-  DataModelDetailResponse,
-  DataModelSubsetPayload,
-  FolderDetail,
-} from '@maurodatamapper/mdm-resources';
+import { DataClass } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import {
-  catchError,
-  EMPTY,
-  iif,
-  map,
-  Observable,
-  Observer,
-  OperatorFunction,
-  Subscriber,
-  switchMap,
-} from 'rxjs';
+import { catchError, EMPTY, Observable, OperatorFunction, switchMap } from 'rxjs';
 import { CatalogueService } from 'src/app/catalogue/catalogue.service';
 import { DataModelService } from 'src/app/catalogue/data-model.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
@@ -57,8 +42,6 @@ import {
 } from 'src/app/catalogue/catalogue.types';
 import { ConfirmRequestComponent } from 'src/app/shared/confirm-request/confirm-request.component';
 import { MdmShowErrorComponent } from 'src/app/shared/mdm-show-error/mdm-show-error.component';
-import { LoadingSpinnerComponent } from 'src/app/shared/loading-spinner/loading-spinner.component';
-import { ArrowDirection, ArrowDirective } from '../../shared/directives/arrow.directive';
 
 @Component({
   selector: 'mdm-browse',
@@ -66,15 +49,15 @@ import { ArrowDirection, ArrowDirective } from '../../shared/directives/arrow.di
   styleUrls: ['./browse.component.scss'],
 })
 export class BrowseComponent implements OnInit {
+  @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
+  @ViewChild('parentList') parentDataClassList!: MatSelectionList;
   parentDataClasses: DataClass[] = [];
   childDataClasses: DataClass[] = [];
   selected?: DataClass;
-  @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
-  @ViewChild('parentList') parentDataClassList!: MatSelectionList;
-  showLoadingWheel: boolean = false;
+  showLoadingWheel = false;
   private user: UserDetails | null;
-  private newRequestName: string = '';
-  private newRequestDescription: string = '';
+  private newRequestName = '';
+  private newRequestDescription = '';
 
   constructor(
     private catalogue: CatalogueService,
@@ -99,18 +82,18 @@ export class BrowseComponent implements OnInit {
     this.loadParentDataClasses();
   }
 
-  createRequest(event: MouseEvent) {
-    let dialogProps = new MatDialogConfig();
+  createRequest() {
+    const dialogProps = new MatDialogConfig();
     dialogProps.height = 'fit-content';
     dialogProps.width = '343px';
-    let dialogRef = this.createRequestDialog.open(CreateRequestComponent, dialogProps);
+    const dialogRef = this.createRequestDialog.open(CreateRequestComponent, dialogProps);
 
     dialogRef
       .afterClosed()
       .pipe(this.createNewRequestOrBail())
       .subscribe({
         next: (resultErrors: string[]) => {
-          if (resultErrors.length == 0) {
+          if (resultErrors.length === 0) {
             this.showConfirmation(dialogProps);
           } else {
             this.showErrorDialog(dialogProps, resultErrors);
@@ -131,7 +114,7 @@ export class BrowseComponent implements OnInit {
     this.selected = selected;
   }
 
-  reselectParentDataClass(event: MouseEvent) {
+  reselectParentDataClass() {
     this.selected = this.parentDataClassList.selectedOptions.selected[0].value;
   }
 
@@ -160,35 +143,35 @@ export class BrowseComponent implements OnInit {
     dialogProps.data = {
       heading: 'Request creation error',
       subHeading: `The following error occurred while trying to add Data Class '${
-        this.selected!.label
+        this.selected!.label // eslint-disable-line @typescript-eslint/no-non-null-assertion
       }' to new request '${this.newRequestName}'.`,
       message: resultErrors[0],
       buttonLabel: 'Continue browsing',
     };
     dialogProps.height = 'fit-content';
     dialogProps.width = '400px';
-    let errorRef = this.confirmationDialog.open(MdmShowErrorComponent, dialogProps);
-    //Restore focus to item that was originally clicked on
+    const errorRef = this.confirmationDialog.open(MdmShowErrorComponent, dialogProps);
+    // Restore focus to item that was originally clicked on
     errorRef.afterClosed().subscribe(() => this.menuTrigger.focus());
   }
 
   private showConfirmation(dialogProps: MatDialogConfig) {
     dialogProps.data = {
-      itemName: this.selected!.label,
+      itemName: this.selected!.label, // eslint-disable-line @typescript-eslint/no-non-null-assertion
       itemType: 'Data Class',
       requestName: this.newRequestName,
     };
-    let confirmationRef = this.confirmationDialog.open(
+    const confirmationRef = this.confirmationDialog.open(
       ConfirmRequestComponent,
       dialogProps
     );
-    //Restore focus to item that was originally clicked on
+    // Restore focus to item that was originally clicked on
     confirmationRef.afterClosed().subscribe(() => this.menuTrigger.focus());
   }
 
   private createNewRequestOrBail(): OperatorFunction<any, string[]> {
     return (source: Observable<any>): Observable<string[]> => {
-      let x = new Observable<string[]>((subscriber) => {
+      const x = new Observable<string[]>((subscriber) => {
         source.subscribe((result: NewRequestDialogResult) => {
           this.showLoadingWheel = true;
           this.newRequestName = result.Name;
@@ -198,8 +181,8 @@ export class BrowseComponent implements OnInit {
               .createNewUserRequestFromDataClass(
                 this.newRequestName,
                 this.newRequestDescription,
-                this.user!,
-                this.selected!
+                this.user!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+                this.selected! // eslint-disable-line @typescript-eslint/no-non-null-assertion
               )
               .subscribe({
                 next: (errors: string[]) => {

@@ -119,13 +119,13 @@ export class DataElementSearchService {
   }
 
   getDataModelFromSearchResults(results: DataElementSearchResultSet): Uuid {
-    //The result set *should* all be in the same model, and *should* all
-    //have the model accessible. Try and get model from model property,
-    //otherwise attempt to retrieve from breadcrumbs.
+    // The result set *should* all be in the same model, and *should* all
+    // have the model accessible. Try and get model from model property,
+    // otherwise attempt to retrieve from breadcrumbs.
     let model: Uuid | null = null;
     let currentModel: Uuid | null = null;
-    for (let i = 0; i < results.count; i++) {
-      let item: DataElement | DataElementSearchResult = results.items[i];
+    for (let i = 0; i < results.items.length; i++) {
+      const item: DataElement | DataElementSearchResult = results.items[i];
       currentModel = (item as DataElement).model as Uuid;
       if (!currentModel) {
         for (let b = 0; b < item.breadcrumbs.length; b++) {
@@ -136,15 +136,17 @@ export class DataElementSearchService {
         }
       }
       if (!currentModel) {
-        throw `Data Element '${item.label}' has no model id`;
-      } else if (model != null && model != currentModel) {
-        throw `Data Elements are drawn from different models: ${model} and ${currentModel}`;
+        throw new Error(`Data Element '${item.label}' has no model id`);
+      } else if (model !== null && model !== currentModel) {
+        throw new Error(
+          `Data Elements are drawn from different models: ${model} and ${currentModel}`
+        );
       }
       if (model == null) {
         model = currentModel;
       }
     }
-    return currentModel!;
+    return currentModel!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
   }
 
   private getPageParameters(

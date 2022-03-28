@@ -1,6 +1,28 @@
-import { Component, Input, OnInit } from '@angular/core';
+/*
+Copyright 2022 University of Oxford
+and Health and Social Care Information Centre, also known as NHS Digital
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+SPDX-License-Identifier: Apache-2.0
+*/
+import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { DataClass } from '@maurodatamapper/mdm-resources';
+
+export class NewRequestDialogResult {
+  Name = '';
+  Description = '';
+}
 
 @Component({
   selector: 'mdm-create-request',
@@ -16,20 +38,15 @@ export class CreateRequestComponent implements OnInit {
   ngOnInit(): void {}
 
   cancel() {
-    let result = new NewRequestDialogResult();
+    const result = new NewRequestDialogResult();
     this.dialogRef.close(result);
   }
 
   close() {
-    let result = {
+    const result = {
       Name: this.requestName,
       Description: this.requestDescription,
     };
     this.dialogRef.close(result);
   }
-}
-
-export class NewRequestDialogResult {
-  Name: string = '';
-  Description: string = '';
 }

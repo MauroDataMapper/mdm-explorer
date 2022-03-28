@@ -50,14 +50,12 @@ export class UserDetailsService {
     if (!userEmail || userEmail.length === 0) {
       return null;
     }
-    userName = JSON.parse(userName).email;
     return {
       id: localStorage.getItem('userId') ?? '',
       token: localStorage.getItem('token') ?? undefined,
       firstName: localStorage.getItem('firstName') ?? '',
       lastName: localStorage.getItem('lastName') ?? '',
       email: localStorage.getItem('email') ?? '',
-      userName: userName!,
       role: localStorage.getItem('role') ?? undefined,
       needsToResetPassword: Boolean(localStorage.getItem('needsToResetPassword')),
     };

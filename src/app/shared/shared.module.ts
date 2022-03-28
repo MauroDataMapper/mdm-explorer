@@ -22,7 +22,7 @@ import { ClassifiersComponent } from './classifiers/classifiers.component';
 import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
 import { SafePipe } from './pipes/safe.pipe';
-import { ArrowDirective, ArrowDirection } from './directives/arrow.directive';
+import { ArrowDirective } from './directives/arrow.directive';
 import { CreateRequestComponent } from './create-request/create-request.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
