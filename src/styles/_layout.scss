@@ -99,11 +99,11 @@ Variation on .hero to include a coloured background.
   }
 }
 
-.h1-with-actions {
+.heading-with-actions {
   @include heading-with-actions(h1, center);
 }
 
-.h2-with-actions {
+.sub-heading-with-actions {
   @include heading-with-actions(h2, left);
 }
 

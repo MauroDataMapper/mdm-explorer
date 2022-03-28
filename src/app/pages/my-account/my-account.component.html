@@ -18,12 +18,12 @@ SPDX-License-Identifier: Apache-2.0
 -->
 <div class="container">
   <div *ngIf="user" class="mdm-my-account">
-    <div class="h1-with-actions main-row hero">
+    <div class="heading-with-actions main-row hero">
       <h1>My Account</h1>
       <button mat-flat-button color="primary" (click)="signOut()">Sign out</button>
     </div>
     <section>
-      <div class="h2-with-actions">
+      <div class="sub-heading-with-actions">
         <h2>Basic Information</h2>
         <button
           *ngIf="basicInfoMode === 'view'"
