@@ -16,21 +16,10 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-@import "~ngx-toastr/toastr.css";
-@import "~@angular/material/theming";
+@import "./base/all";
 
-// Include the common styles for Angular Material. Only required to include this once!
-@include mat-core();
-
-/*
-Themes
-Import more theme SASS files here to make them available to the app
-*/
-@import "styles/themes/default";
-
-@import "styles/base/all";
-@import "styles/resets";
-@import "styles/layout";
-@import "styles/icons";
-@import "styles/forms";
-@import "styles/home";
+.fa-circle-info {
+  color: $color-mauro-dark-green;
+  font-size: 16px;
+  margin-right: 4px;
+}

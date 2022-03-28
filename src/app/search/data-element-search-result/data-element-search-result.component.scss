@@ -18,10 +18,11 @@ SPDX-License-Identifier: Apache-2.0
 */
 @import "../../../styles/base/all";
 
-$search-result-heading-color: $color-gray-90;
+$search-result-heading-background-color: $color-mauro-dark-green;
+$search-result-heading-color: $color-white;
 $search-result-header-padding: 0.2em 1.2em;
 
-$search-result-content-color: $color-gray-85;
+$search-result-content-color: $color-mauro-light-gold;
 $search-result-content-padding: 1.2em 1.2em;
 
 .mdm-data-element-search-result {
@@ -34,7 +35,8 @@ $search-result-content-padding: 1.2em 1.2em;
     justify-content: space-between;
     align-items: center;
     padding: $search-result-header-padding;
-    background-color: $search-result-heading-color;
+    background-color: $search-result-heading-background-color;
+    color: $search-result-heading-color;
 
     h3 {
       display: inline-block;

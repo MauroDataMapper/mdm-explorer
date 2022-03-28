@@ -17,11 +17,23 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 
+@import "../../../styles/base/all";
+
+$back-link-color: $color-mauro-dark-green;
+
 .mdm-search-listing {
   &__back-link,
   &__search,
   &__sort-row {
     margin: 1em 0;
+  }
+
+  &__back-link {
+    a {
+      text-decoration: none;
+      font-weight: 500;
+      color: $back-link-color;
+    }
   }
 
   &__search-input {
