@@ -32,6 +32,8 @@ import { CoreModule } from '../core/core.module';
 import { SearchModule } from '../search/search.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { HomeComponent } from './home/home.component';
+import { ContactSupportComponent } from './contact-support/contact-support.component';
+import { CatalogueModule } from '../catalogue/catalogue.module';
 
 @NgModule({
   declarations: [
@@ -46,7 +48,8 @@ import { HomeComponent } from './home/home.component';
     SearchComponent,
     DashboardComponent,
     HomeComponent,
+    ContactSupportComponent,
   ],
-  imports: [CoreModule, SharedModule, SecurityModule, SearchModule],
+  imports: [CoreModule, SharedModule, SecurityModule, SearchModule, CatalogueModule],
 })
 export class PagesModule {}

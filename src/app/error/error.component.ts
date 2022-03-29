@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ClipboardService } from 'ngx-clipboard';
 import { ToastrService } from 'ngx-toastr';
 import { ErrorData } from './error.model';
@@ -28,7 +28,7 @@ import { ErrorService } from './error.service';
   templateUrl: './error.component.html',
   styleUrls: ['./error.component.scss'],
 })
-export class ErrorComponent implements OnInit {
+export class ErrorComponent {
   lastHttpError: HttpErrorResponse | undefined;
 
   heading = '';
@@ -43,9 +43,7 @@ export class ErrorComponent implements OnInit {
     protected clipboard: ClipboardService,
     protected toastr: ToastrService,
     private error: ErrorService
-  ) {}
-
-  ngOnInit(): void {
+  ) {
     this.lastHttpError = this.error.lastError;
   }
 

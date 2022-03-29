@@ -50,6 +50,8 @@ import { OverlayContainer } from '@angular/cdk/overlay';
 export class AppComponent implements OnInit, OnDestroy {
   title = 'mdm-research-browser';
 
+  themeCssSelector = 'default-theme';
+
   numberOfRequests = 0;
 
   signedInUserProfileImageSrc?: string;
@@ -296,11 +298,9 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private setTheme() {
-    const themeCssSelector = 'default-theme';
-
     // Material theme is wrapped inside a CSS class but the overlay container is not part of Angular
     // Material. Have to manually set the correct theme class to this container too
-    this.overlayContainer.getContainerElement().classList.add(themeCssSelector);
+    this.overlayContainer.getContainerElement().classList.add(this.themeCssSelector);
     this.overlayContainer.getContainerElement().classList.add('overlay-container');
   }
 }

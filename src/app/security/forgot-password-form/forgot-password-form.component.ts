@@ -27,7 +27,7 @@ import {
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatFormFieldAppearance } from '@angular/material/form-field';
-import { defaultEmailPattern } from '../security.types';
+import { defaultEmailPattern } from 'src/app/core/core.types';
 
 export type ForgotPasswordFormState =
   | 'none'
@@ -54,8 +54,6 @@ export class ForgotPasswordFormComponent implements OnInit, OnChanges {
   @Input() cancelLabel = 'Cancel';
 
   @Input() cancelRouterLink?: string;
-
-  @Input() retryRouterLink?: string;
 
   @Output() resetPasswordClicked = new EventEmitter<ResetPasswordClickEvent>();
 
