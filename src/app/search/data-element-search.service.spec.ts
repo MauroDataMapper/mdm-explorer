@@ -74,11 +74,15 @@ describe('DataElementSearchService', () => {
             id: '1',
             label: 'result 1',
             breadcrumbs: [],
+            dataClassId: '',
+            dataModelId: '',
           },
           {
             id: '2',
             label: 'result 2',
             breadcrumbs: [],
+            dataClassId: '',
+            dataModelId: '',
           },
         ],
       };
@@ -133,11 +137,15 @@ describe('DataElementSearchService', () => {
             id: '1',
             label: 'result 1',
             breadcrumbs: [],
+            dataClassId: '',
+            dataModelId: '',
           },
           {
             id: '2',
             label: 'result 2',
             breadcrumbs: [],
+            dataClassId: '',
+            dataModelId: '',
           },
         ],
       };

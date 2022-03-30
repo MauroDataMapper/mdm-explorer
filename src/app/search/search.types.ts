@@ -116,6 +116,8 @@ export const PAGINATION_CONFIG = new InjectionToken<PaginationConfiguration>(
 
 export interface DataElementSearchResult {
   id: Uuid;
+  dataModelId: Uuid;
+  dataClassId: Uuid;
   label: string;
   description?: string;
   breadcrumbs: Breadcrumb[];
@@ -128,11 +130,19 @@ export interface DataElementSearchResultSet {
   items: DataElementSearchResult[];
 }
 
+// Note: Assumption that the the last breadcrumb is the data class containing the data element
 export const mapSearchResult = (
   item: DataElement | CatalogueItemSearchResult
 ): DataElementSearchResult => {
+  let dataClassId = '';
+
+  if (item.breadcrumbs && item.breadcrumbs.length > 0) {
+    dataClassId = item.breadcrumbs[item.breadcrumbs.length - 1].id;
+  }
   return {
     id: item.id ?? '',
+    dataModelId: item.model ?? '',
+    dataClassId,
     label: item.label,
     description: item.description,
     breadcrumbs: item.breadcrumbs ?? [],

@@ -179,16 +179,22 @@ describe('SearchListingComponent', () => {
           id: '1',
           label: 'result 1',
           breadcrumbs: [],
+          dataClassId: '2',
+          dataModelId: '3',
         },
         {
           id: '2',
           label: 'result 2',
           breadcrumbs: [],
+          dataClassId: '2',
+          dataModelId: '3',
         },
         {
           id: '3',
           label: 'result 3',
           breadcrumbs: [],
+          dataClassId: '2',
+          dataModelId: '3',
         },
       ],
     };
@@ -289,16 +295,22 @@ describe('SearchListingComponent', () => {
           id: '1',
           label: 'result 1',
           breadcrumbs: [],
+          dataClassId: '2',
+          dataModelId: '3',
         },
         {
           id: '2',
           label: 'result 2',
           breadcrumbs: [],
+          dataClassId: '2',
+          dataModelId: '3',
         },
         {
           id: '3',
           label: 'result 3',
           breadcrumbs: [],
+          dataClassId: '2',
+          dataModelId: '3',
         },
       ],
     };
@@ -366,6 +378,8 @@ describe('SearchListingComponent', () => {
       label: 'Test Data Element',
       description: 'Test Data Element Description',
       breadcrumbs: [],
+      dataClassId: '2',
+      dataModelId: '3',
     };
 
     const dataElementBookmarkAddEvent: DataElementBookmarkEvent = {

@@ -63,6 +63,8 @@ describe('DataElementSearchResultComponent', () => {
       id: '1',
       label: 'test',
       breadcrumbs: [],
+      dataClassId: '2',
+      dataModelId: '3',
     };
 
     harness.component.item = item;
@@ -85,6 +87,8 @@ describe('DataElementSearchResultComponent', () => {
         id: '1',
         label: 'test',
         breadcrumbs: [],
+        dataClassId: '2',
+        dataModelId: '3',
       };
 
       harness.component.item = item;
