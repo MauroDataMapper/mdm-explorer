@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError } from 'rxjs';
+import { catchError, OperatorFunction } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -35,6 +35,6 @@ export class ExceptionService {
       }
       errors[errors.length] = message || (err as string);
       return [];
-    });
+    }) as OperatorFunction<any, any>;
   }
 }

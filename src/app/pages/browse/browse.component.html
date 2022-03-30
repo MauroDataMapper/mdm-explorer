@@ -16,71 +16,71 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<!-- <div style="height: 100%"> -->
-<h1 class="page-title">Browse the catalogue</h1>
-<div class="highlight-box mdm-browse">
-  <div class="highlight-box__header">
-    <a href="#"><i class="fa-solid fa-circle-info"></i> Browsing tips</a>
-  </div>
-  <div class="highlight-box mdm-browse">
-    <div class="highlight-box__header">
-      <a href="#"><i class="fa-solid fa-circle-info"></i>Browsing tips</a>
-    </div>
-    <div class="highlight-box__content">
-      <div class="mdm-browse__list-container">
-        <div class="mdm-browse__list">
-          <mat-selection-list
-            #parentList
-            [multiple]="false"
-            (selectionChange)="selectParentDataClass($event)"
-          >
-            <mat-list-option *ngFor="let item of parentDataClasses" [value]="item">
-              <span
-                [matMenuTriggerFor]="menu"
-                [mdmArrow]="'angle-down'"
-                (click)="reselectParentDataClass()"
+<div class="container">
+  <div class="main-row hero">
+    <h1 class="page-title">Browse the catalogue</h1>
+    <div class="highlight-box mdm-browse">
+      <div class="highlight-box__header">
+        <a href="#"><i class="fa-solid fa-circle-info"></i> Browsing tips</a>
+      </div>
+      <div class="highlight-box__content">
+        <div class="mdm-browse__list-container">
+          <div class="mdm-browse__list">
+            <mat-selection-list
+              #parentList
+              [multiple]="false"
+              (selectionChange)="selectParentDataClass($event)"
+            >
+              <mat-list-option
+                *ngFor="let item of parentDataClasses"
+                [value]="item"
+                (click)="reselectDataClass(item)"
               >
-              </span
-            ></span>
-          </mat-list-option>
-        </mat-selection-list>
+                <span
+                  >{{ item.label }}
+                  <span [matMenuTriggerFor]="menu" [mdmArrow]="'angle-down'"> </span
+                ></span>
+              </mat-list-option>
+            </mat-selection-list>
+          </div>
+          <div class="mdm-browse__list">
+            <mat-selection-list
+              [multiple]="false"
+              (selectionChange)="selectChildDataClass($event)"
+            >
+              <mat-list-option
+                *ngFor="let item of childDataClasses"
+                [value]="item"
+                (click)="reselectDataClass(item)"
+              >
+                <span
+                  >{{ item.label }}
+                  <span [matMenuTriggerFor]="menu" [mdmArrow]="'angle-down'"></span>
+                </span>
+              </mat-list-option>
+            </mat-selection-list>
+          </div>
+        </div>
       </div>
-      <div class="mdm-browse__list">
-        <mat-selection-list
-          [multiple]="false"
-          (selectionChange)="selectChildDataClass($event)"
+      <div class="highlight-box__actions">
+        <button
+          mat-flat-button
+          color="primary"
+          [disabled]="!isChildDataClassSelected"
+          (click)="viewDetails()"
         >
-          <mat-list-option *ngFor="let item of childDataClasses" [value]="item">
-            <span
-              >{{ item.label }}
-              <span
-                [matMenuTriggerFor]="menu"
-                [mdmArrow]="'angle-down'"
-                (click)="reselectParentDataClass()"
-              ></span>
-            </span>
-          </mat-list-option>
-        </mat-selection-list>
+          View Details
+        </button>
       </div>
     </div>
   </div>
-  <div class="highlight-box__actions">
-    <button
-      mat-flat-button
-      color="primary"
-      [disabled]="!isChildDataClassSelected"
-      (click)="viewDetails()"
-    >
-      View Details
-    </button>
-  </div>
-  <!-- Dropdown Menu -->
-  <mat-menu #menu="matMenu" xPosition="after" yPosition="below">
-    <button mat-menu-item (click)="createRequest()" clickable>
-      <span>Create new request</span>
-    </button>
-  </mat-menu>
 </div>
+<!-- Dropdown Menu -->
+<mat-menu #menu="matMenu" xPosition="after" yPosition="below">
+  <button mat-menu-item (click)="createRequest()" clickable>
+    <span>Create new request</span>
+  </button>
+</mat-menu>
 <div *ngIf="selected && selected.label && selected.description" class="highlight-box">
   <div class="highlight-box__content">
     <h2>{{ selected.label }}</h2>

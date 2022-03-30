@@ -18,6 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
 import {
+  CatalogueItemDomainType,
   ContainerCreatePayload,
   DataClass,
   DataClassDetailResponse,
@@ -30,12 +31,12 @@ import {
   DataModelCreatePayload,
   DataModelDetail,
   DataModelDetailResponse,
-  DataModelSubsetPayload,
   MdmDataClassResource,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { FolderDetail } from '@maurodatamapper/mdm-resources/lib/es2015/mdm-folder.model';
 import {
+  forkJoin,
   buffer,
   catchError,
   concatMap,
@@ -43,7 +44,6 @@ import {
   delay,
   endWith,
   from,
-  ignoreElements,
   map,
   merge,
   mergeMap,
@@ -54,7 +54,7 @@ import {
   toArray,
 } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { CatalogueUser, CatalogueUserService } from '../catalogue/catalogue-user.service';
+import { CatalogueUserService } from '../catalogue/catalogue-user.service';
 import { UserDetails } from '../security/user-details.service';
 import { FolderService } from './folder.service';
 import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
@@ -62,6 +62,7 @@ import { ExceptionService } from './exception.service';
 import { DataElementSearchResultSet } from '../search/search.types';
 import { DataElementSearchService } from '../search/data-element-search.service';
 import { DataModelService } from '../catalogue/data-model.service';
+import { HttpResponse } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -73,7 +74,7 @@ export class UserRequestsService {
     private endpointsService: MdmEndpointsService,
     private exceptionService: ExceptionService,
     private searchService: DataElementSearchService,
-    private dataModel: DataModelService
+    private dataModelService: DataModelService
   ) {}
 
   /**
@@ -102,15 +103,18 @@ export class UserRequestsService {
   list(userEmail: string): Observable<DataModel[]> {
     return this.getRequestsFolder(userEmail).pipe(
       switchMap((requestsFolder: FolderDetail): Observable<DataModel[]> => {
-        return this.dataModel.listInFolder(requestsFolder.id!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
+        return this.dataModelService.listInFolder(requestsFolder.id!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
       })
     );
   }
 
   /**
-   * Creates a new user request given a request name, a user and a data class
+   * Creates a new user request given a request name, description, a user and a data class
    *
-   * @param requestName - get the data requests folder for the user with the given unique username
+   * @param requestName - Name for the new user request
+   * @param requestDescription - Description for the new user request
+   * @param user: user's requests folder for the new request to be added to
+   * @param data class to be added to new request
    * @returns Observable<DataModelDetailResponse>
    */
   createNewUserRequestFromDataClass(
@@ -118,61 +122,25 @@ export class UserRequestsService {
     requestDescription: string,
     user: UserDetails,
     dataClass: DataClass
-  ): Observable<string[]> {
-    let newDataModel: DataModelDetail;
-    let newDataModelIdSource = defer(() => of(newDataModel!.id!));
-    let errors: string[] = new Array();
-    return this.addUserRequest(requestName, requestDescription, user, errors).pipe(
-      mergeMap((response: DataModelDetail) => {
-        newDataModel = response;
-        return of({});
-      }),
-      // Fetch any child data classes of the requested data class
-      mergeMap(() => {
-        return this.getAllChildDataClasses(dataClass, errors);
-      }),
-      this.exceptionService.catchAndReportPipeError(errors) as OperatorFunction<
-        DataClass,
-        DataClass
-      >,
-      // Fetches all the elements from each data class and
-      // flattens/batches them into a single array.
-      this.getElementsFromDataClasses(errors),
-      //Break the stream of elements into chunks to sidestep the backend bug
-      //which is causing the server to return a 500 for more than 8 or 9 items
-      // mergeMap((elementsArray: any) => {
-      //   let chunkSize = 5000;
-      //   let chunks: string[][] = new Array();
-      //   let numChunks = Math.floor(elementsArray.length / chunkSize);
-      //   let leftoverElementsNum = elementsArray.length % chunkSize;
-
-      //   for (let chunk = 0; chunk < numChunks; chunk++) {
-      //     chunks[chunk] = new Array();
-      //     for (let i = 0; i < chunkSize; i++) {
-      //       chunks[chunk][i] = elementsArray[chunk * chunkSize + i].id!;
-      //     }
-      //   }
-      //   if (leftoverElementsNum > 0) {
-      //     chunks[numChunks] = new Array();
-      //   }
-      //   for (let i = 0; i < leftoverElementsNum; i++) {
-      //     chunks[numChunks][i] = elementsArray[numChunks * chunkSize + i].id!;
-      //   }
-      //   return from(chunks);
-      // }),
-      this.exceptionService.catchAndReportPipeError(errors) as OperatorFunction<
-        DataElement[],
-        DataElement[]
-      >,
+  ): Observable<[DataModel, string[]]> {
+    const errors: string[] = [];
+    // Create the new data model under the user's folder
+    return forkJoin([
+      this.addUserRequest(user, errors, requestName, requestDescription),
+      this.getAllChildDataClasses(dataClass, errors).pipe(
+        this.exceptionService.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
+        this.getElementsFromDataClasses(errors)
+      ),
+    ]).pipe(
+      this.exceptionService.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
       // Add all the data elements (which are in a single array) to the new
       // user request (data model)
-      this.addDataElements(dataClass.model!, newDataModelIdSource, errors), // eslint-disable-line @typescript-eslint/no-non-null-assertion
-      this.exceptionService.catchAndReportPipeError(errors),
-      // We don't need the result
-      ignoreElements(),
-      // finish the pipe with any errors
-      endWith(errors)
-    ) as Observable<string[]>;
+      this.dataModelService.addDataElements(dataClass.model!, errors), // eslint-disable-line @typescript-eslint/no-non-null-assertion
+      this.exceptionService.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
+      map((newDataModel: HttpResponse<DataModel>) => {
+        return [newDataModel.body as DataModel, errors];
+      })
+    );
   }
 
   createNewUserRequestFromSearchResults(
@@ -180,104 +148,50 @@ export class UserRequestsService {
     requestDescription: string,
     user: UserDetails,
     searchResults: DataElementSearchResultSet
-  ): Observable<string[]> {
-    let newDataModel: DataModelDetail;
+  ): Observable<[DataModel, string[]]> {
     // Have to use a deferred observable or a promise here as we don't know the data model
     // before we have to create the pipe operator that needs the data model.
-    const newDataModelIdSource = defer(() => of(newDataModel!.id!)); // eslint-disable-line @typescript-eslint/no-non-null-assertion
     const errors: string[] = [];
     let existingDataModel: Uuid;
     try {
       existingDataModel = this.searchService.getDataModelFromSearchResults(searchResults);
     } catch (err) {
       errors[0] = err as string;
-      return of(errors);
+      return of([{ label: '', domainType: CatalogueItemDomainType.DataModel }, errors]);
     }
-
     // Create the new data model under the user's folder
-    return this.addUserRequest(requestName, requestDescription, user, errors).pipe(
-      // save the new data model details for later
-      mergeMap((response: DataModelDetail) => {
-        newDataModel = response;
-        return of(searchResults);
-      }),
-      map((pipedSearchResults: DataElementSearchResultSet) => {
-        const ids: Uuid[] = [];
-        for (let i = 0; i < pipedSearchResults.items.length; i++) {
-          ids[i] = pipedSearchResults.items[i].id;
+    return this.addUserRequest(user, errors, requestName, requestDescription).pipe(
+      mergeMap(
+        (response: DataModelDetail): Observable<[Uuid, DataElementSearchResultSet]> => {
+          return of([
+            response.id!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+            searchResults,
+          ]) as Observable<[Uuid, DataElementSearchResultSet]>;
         }
-        return ids;
+      ),
+      map(([newDataModelId, pipedSearchResults]: [Uuid, DataElementSearchResultSet]) => {
+        const ids = pipedSearchResults.items.map((item) => item.id);
+        return [newDataModelId, ids] as [Uuid, Uuid[]];
       }),
       // Add the data elements (array) to the new
       // user request (data model)
-      this.addDataElementsById(existingDataModel, newDataModelIdSource, errors),
-      this.exceptionService.catchAndReportPipeError(errors),
-      // We don't need the result
-      ignoreElements(),
-      // finish the pipe with any errors
-      endWith(errors)
-    ) as Observable<string[]>;
+      this.dataModelService.addDataElementsById(existingDataModel, errors),
+      this.exceptionService.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
+      map((newDataModel: HttpResponse<DataModel>) => {
+        return [newDataModel.body as DataModel, errors];
+      })
+    );
   }
 
   /**
-   * returns pipe operator: source is DataElement[], result is DataModelDetail.
-   * Adds the source DataElements, which exist in the oldDataModel, to the newDataModel
+   * returns Observable<DataClass>.
+   * Creates an observable from the provided DataClass object which contains all
+   * child DataClasses recursively. The output stream includes the provided data class.
    *
-   * @param oldDataModelId: Uuid of the source data model
-   * @param newDataModelId: Observable of DataModel Uuids to which the elements need to be added
-   * This was created to add to just 1 data model, but would work just as well with multiple data models
+   * @param foundDataClass: DataClass (usually selected by the user)
    * @param errors: string[] to which exception messages can be added.
-   * @returns Observable<DataModelDetail> of the new data model
-   */  addDataElements(
-    oldDataModelId: Uuid,
-    newDataModelId: Observable<Uuid>,
-    errors: string[]
-  ): OperatorFunction<DataElement[], any> {
-    return (source) => {
-      return source.pipe(
-        mergeMap((elements: DataElement[]) => {
-          const idArray: string[] = [];
-          for (let i = 0; i < elements.length; i++) {
-            idArray[i] = elements[i].id!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
-          }
-          return of(idArray);
-        }),
-        this.addDataElementsById(oldDataModelId, newDataModelId, errors)
-      );
-    };
-  }
-
-  addDataElementsById(
-    oldDataModelId: Uuid,
-    newDataModelId: Observable<Uuid>,
-    errors: string[]
-  ): OperatorFunction<string[], any> {
-    return (source: Observable<string[]>) => {
-      return source.pipe(
-        mergeMap((elements: string[]) => {
-          const datamodelSubsetPayload: DataModelSubsetPayload = {
-            additions: [],
-            deletions: [],
-          };
-          for (let i = 0; i < elements.length; i++) {
-            datamodelSubsetPayload.additions.push(elements[i]);
-          }
-          return newDataModelId.pipe(
-            mergeMap((sourceNewDataModelId: Uuid) => {
-              return this.endpointsService.dataModel.copySubset(
-                oldDataModelId,
-                sourceNewDataModelId,
-                datamodelSubsetPayload
-              );
-            }),
-            this.exceptionService.catchAndReportPipeError(errors)
-          );
-        }),
-        this.exceptionService.catchAndReportPipeError(errors)
-      );
-    };
-  }
-
+   * @returns Observable<DataClass>
+   */
   getAllChildDataClasses(
     foundDataClass: DataClass,
     errors: string[]
@@ -294,10 +208,7 @@ export class UserRequestsService {
         mergeMap((dataClass: DataClass) => {
           return this.getAllChildDataClasses(dataClass, errors);
         }),
-        this.exceptionService.catchAndReportPipeError(errors) as OperatorFunction<
-          DataClass,
-          DataClass
-        >
+        this.exceptionService.catchAndReportPipeError(errors)
       );
     return merge(
       childDataClasses as Observable<DataClass>,
@@ -346,43 +257,35 @@ export class UserRequestsService {
    * @returns Observable<DataModelDetail> of the new data model
    */
   private addUserRequest(
-    requestName: string,
-    requestDescription: string,
     user: UserDetails,
-    errors: any[]
+    errors: any[],
+    requestName: string,
+    requestDescription?: string
   ): Observable<DataModelDetail> {
-    let folder: FolderDetail;
-    return this.getRequestsFolder(user.email).pipe(
-      switchMap((foundFolder: FolderDetail) => {
-        folder = foundFolder;
-        return this.catalogueUserService.get(user.id!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
-      }),
-      this.exceptionService.catchAndReportPipeError(errors) as OperatorFunction<
-        CatalogueUser,
-        CatalogueUser
-      >,
-      switchMap((catalogueUser: CatalogueUser) => {
+    return forkJoin([
+      this.getRequestsFolder(user.email),
+      this.catalogueUserService.get(user.id!), // eslint-disable-line @typescript-eslint/no-non-null-assertion
+    ]).pipe(
+      this.exceptionService.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
+      switchMap(([folder, catalogueUser]) => {
         const dataModelCreatePayload: DataModelCreatePayload = {
           label: requestName,
-          description: requestDescription || 'Personal request',
+          description: requestDescription,
           type: 'Data Asset',
           folder: folder.id!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
           author: `${user.firstName}${user.firstName ? '' : ' '}${user.lastName}`,
           organisation: catalogueUser.organisation ?? '',
         };
-        return this.endpointsService.dataModel.addToFolder(
-          folder.id!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+        return this.dataModelService.addToFolder(
+          folder.id!, // eslint-disable-line @typescript-eslint/no-non-null-assertion,  @typescript-eslint/no-unsafe-argument
           dataModelCreatePayload
         );
       }),
-      this.exceptionService.catchAndReportPipeError(errors),
+      this.exceptionService.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
       mergeMap((response: any): Observable<DataModelDetail> => {
         return of((response as DataModelDetailResponse).body);
       }),
-      this.exceptionService.catchAndReportPipeError(errors) as OperatorFunction<
-        DataModelDetail,
-        DataModelDetail
-      >
+      this.exceptionService.catchAndReportPipeError(errors) // eslint-disable-line @typescript-eslint/no-unsafe-argument
     );
   }
 

@@ -36,6 +36,7 @@ import { MdmShowErrorComponent } from 'src/app/shared/mdm-show-error/mdm-show-er
 import { MatMenuTrigger } from '@angular/material/menu';
 import { ConfirmRequestComponent } from 'src/app/shared/confirm-request/confirm-request.component';
 import { Observable, OperatorFunction } from 'rxjs';
+import { DataModel } from '@maurodatamapper/mdm-resources';
 
 @Component({
   selector: 'mdm-data-element-search-result',
@@ -91,11 +92,11 @@ export class DataElementSearchResultComponent {
       .afterClosed()
       .pipe(this.createNewRequestOrBail())
       .subscribe({
-        next: (resultErrors: string[]) => {
+        next: ([requestName, resultErrors]: [string, string[]]) => {
           if (resultErrors.length === 0) {
-            this.showConfirmation(dialogProps);
+            this.showConfirmation(requestName, dialogProps);
           } else {
-            this.showErrorDialog(dialogProps, resultErrors);
+            this.showErrorDialog(dialogProps, requestName, resultErrors);
           }
         },
         complete: () => (this.showLoadingWheel = false),
@@ -118,12 +119,16 @@ export class DataElementSearchResultComponent {
     return found;
   }
 
-  private showErrorDialog(dialogProps: MatDialogConfig, resultErrors: string[]) {
+  private showErrorDialog(
+    dialogProps: MatDialogConfig,
+    requestName: string,
+    resultErrors: string[]
+  ) {
     dialogProps.data = {
       heading: 'Request creation error',
       subHeading: `The following error occurred while trying to add Data Element '${
         this.item!.label // eslint-disable-line @typescript-eslint/no-non-null-assertion
-      }' to new request '${this.newRequestName}'.`,
+      }' to new request '${requestName}'.`,
       message: resultErrors[0],
       buttonLabel: 'Continue searching',
     };
@@ -134,11 +139,11 @@ export class DataElementSearchResultComponent {
     errorRef.afterClosed().subscribe(() => this.menuTrigger.focus());
   }
 
-  private showConfirmation(dialogProps: MatDialogConfig) {
+  private showConfirmation(requestName: string, dialogProps: MatDialogConfig) {
     dialogProps.data = {
       itemName: this.item!.label, // eslint-disable-line @typescript-eslint/no-non-null-assertion
       itemType: 'Data Class',
-      requestName: this.newRequestName,
+      requestName,
     };
     const confirmationRef = this.confirmationDialog.open(
       ConfirmRequestComponent,
@@ -148,14 +153,12 @@ export class DataElementSearchResultComponent {
     confirmationRef.afterClosed().subscribe(() => this.menuTrigger.focus());
   }
 
-  private createNewRequestOrBail(): OperatorFunction<any, string[]> {
-    return (source: Observable<any>): Observable<string[]> => {
-      const resultObservable = new Observable<string[]>((subscriber) => {
+  private createNewRequestOrBail(): OperatorFunction<any, [string, string[]]> {
+    return (source: Observable<any>): Observable<[string, string[]]> => {
+      const resultObservable = new Observable<[string, string[]]>((subscriber) => {
         source.subscribe((result: NewRequestDialogResult) => {
           this.showLoadingWheel = true;
-          this.newRequestName = result.Name;
-          this.newRequestDescription = result.Description;
-          if (this.newRequestName !== '' && this.user != null) {
+          if (result.Name !== '' && this.user != null) {
             const fakeSearchResult: DataElementSearchResultSet = {
               totalResults: 1,
               pageSize: 0,
@@ -164,14 +167,17 @@ export class DataElementSearchResultComponent {
             };
             this.userRequestsService
               .createNewUserRequestFromSearchResults(
-                this.newRequestName,
-                this.newRequestDescription,
+                result.Name,
+                result.Description,
                 this.user!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
                 fakeSearchResult
               )
               .subscribe({
-                next: (errors: string[]) => {
-                  subscriber.next(errors);
+                next: ([
+                  newDataModel, // eslint-disable-line @typescript-eslint/no-unused-vars
+                  errors,
+                ]: [DataModel, string[]]) => {
+                  subscriber.next([newDataModel.label, errors]);
                 },
                 complete: () => subscriber.complete(),
                 error: (err) => subscriber.error(err),

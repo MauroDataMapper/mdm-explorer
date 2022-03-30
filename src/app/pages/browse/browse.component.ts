@@ -17,8 +17,8 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatSelectionList, MatSelectionListChange } from '@angular/material/list';
-import { DataClass } from '@maurodatamapper/mdm-resources';
+import { MatSelectionListChange } from '@angular/material/list';
+import { DataClass, DataModel } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY, Observable, OperatorFunction, switchMap } from 'rxjs';
 import { CatalogueService } from 'src/app/catalogue/catalogue.service';
@@ -46,14 +46,11 @@ import { MdmShowErrorComponent } from 'src/app/shared/mdm-show-error/mdm-show-er
 })
 export class BrowseComponent implements OnInit {
   @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
-  @ViewChild('parentList') parentDataClassList!: MatSelectionList;
   parentDataClasses: DataClass[] = [];
   childDataClasses: DataClass[] = [];
   selected?: DataClass;
   showLoadingWheel = false;
   private user: UserDetails | null;
-  private newRequestName = '';
-  private newRequestDescription = '';
 
   constructor(
     private catalogue: CatalogueService,
@@ -86,11 +83,11 @@ export class BrowseComponent implements OnInit {
       .afterClosed()
       .pipe(this.createNewRequestOrBail())
       .subscribe({
-        next: (resultErrors: string[]) => {
+        next: ([requestName, resultErrors]: [string, string[]]) => {
           if (resultErrors.length === 0) {
-            this.showConfirmation(dialogProps);
+            this.showConfirmation(requestName, dialogProps);
           } else {
-            this.showErrorDialog(dialogProps, resultErrors);
+            this.showErrorDialog(dialogProps, requestName, resultErrors);
           }
         },
         complete: () => (this.showLoadingWheel = false),
@@ -108,8 +105,8 @@ export class BrowseComponent implements OnInit {
     this.selected = selected;
   }
 
-  reselectParentDataClass() {
-    this.selected = this.parentDataClassList.selectedOptions.selected[0].value;
+  reselectDataClass(option: DataClass) {
+    this.selected = option;
   }
 
   viewDetails() {
@@ -133,12 +130,16 @@ export class BrowseComponent implements OnInit {
     this.stateRouter.navigateToKnownPath('/search/listing', params);
   }
 
-  private showErrorDialog(dialogProps: MatDialogConfig, resultErrors: string[]) {
+  private showErrorDialog(
+    dialogProps: MatDialogConfig,
+    requestName: string,
+    resultErrors: string[]
+  ) {
     dialogProps.data = {
       heading: 'Request creation error',
       subHeading: `The following error occurred while trying to add Data Class '${
         this.selected!.label // eslint-disable-line @typescript-eslint/no-non-null-assertion
-      }' to new request '${this.newRequestName}'.`,
+      }' to new request '${requestName}'.`,
       message: resultErrors[0],
       buttonLabel: 'Continue browsing',
     };
@@ -149,11 +150,11 @@ export class BrowseComponent implements OnInit {
     errorRef.afterClosed().subscribe(() => this.menuTrigger.focus());
   }
 
-  private showConfirmation(dialogProps: MatDialogConfig) {
+  private showConfirmation(requestName: string, dialogProps: MatDialogConfig) {
     dialogProps.data = {
       itemName: this.selected!.label, // eslint-disable-line @typescript-eslint/no-non-null-assertion
       itemType: 'Data Class',
-      requestName: this.newRequestName,
+      requestName,
     };
     const confirmationRef = this.confirmationDialog.open(
       ConfirmRequestComponent,
@@ -163,24 +164,25 @@ export class BrowseComponent implements OnInit {
     confirmationRef.afterClosed().subscribe(() => this.menuTrigger.focus());
   }
 
-  private createNewRequestOrBail(): OperatorFunction<any, string[]> {
-    return (source: Observable<any>): Observable<string[]> => {
-      const resultObservable = new Observable<string[]>((subscriber) => {
+  private createNewRequestOrBail(): OperatorFunction<any, [string, string[]]> {
+    return (source: Observable<any>): Observable<[string, string[]]> => {
+      const resultObservable = new Observable<[string, string[]]>((subscriber) => {
         source.subscribe((result: NewRequestDialogResult) => {
           this.showLoadingWheel = true;
-          this.newRequestName = result.Name;
-          this.newRequestDescription = result.Description;
-          if (this.newRequestName !== '' && this.user != null) {
+          if (result.Name !== '' && this.user != null) {
             this.userRequestsService
               .createNewUserRequestFromDataClass(
-                this.newRequestName,
-                this.newRequestDescription,
+                result.Name,
+                result.Description,
                 this.user!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
                 this.selected! // eslint-disable-line @typescript-eslint/no-non-null-assertion
               )
               .subscribe({
-                next: (errors: string[]) => {
-                  subscriber.next(errors);
+                next: ([
+                  newDataModel, // eslint-disable-line @typescript-eslint/no-unused-vars
+                  errors,
+                ]: [DataModel, string[]]) => {
+                  subscriber.next([newDataModel.label, errors]);
                 },
                 complete: () => subscriber.complete(),
                 error: (err) => subscriber.error(err),
