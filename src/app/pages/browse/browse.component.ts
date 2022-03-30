@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatSelectionList, MatSelectionListChange } from '@angular/material/list';
 import { DataClass } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
@@ -36,10 +36,6 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { UserRequestsService } from 'src/app/core/user-requests.service';
 import { UserDetails, UserDetailsService } from 'src/app/security/user-details.service';
-import {
-  CatalogueConfiguration,
-  CATALOGUE_CONFIGURATION,
-} from 'src/app/catalogue/catalogue.types';
 import { ConfirmRequestComponent } from 'src/app/shared/confirm-request/confirm-request.component';
 import { MdmShowErrorComponent } from 'src/app/shared/mdm-show-error/mdm-show-error.component';
 
@@ -67,9 +63,7 @@ export class BrowseComponent implements OnInit {
     private userRequestsService: UserRequestsService,
     private createRequestDialog: MatDialog,
     private userDetailsService: UserDetailsService,
-    private confirmationDialog: MatDialog,
-    private newRequestErrorDialog: MatDialog,
-    @Inject(CATALOGUE_CONFIGURATION) private config: CatalogueConfiguration
+    private confirmationDialog: MatDialog
   ) {
     this.user = userDetailsService.get();
   }
@@ -171,7 +165,7 @@ export class BrowseComponent implements OnInit {
 
   private createNewRequestOrBail(): OperatorFunction<any, string[]> {
     return (source: Observable<any>): Observable<string[]> => {
-      const x = new Observable<string[]>((subscriber) => {
+      const resultObservable = new Observable<string[]>((subscriber) => {
         source.subscribe((result: NewRequestDialogResult) => {
           this.showLoadingWheel = true;
           this.newRequestName = result.Name;
@@ -192,11 +186,11 @@ export class BrowseComponent implements OnInit {
                 error: (err) => subscriber.error(err),
               });
           } else {
-            subscriber.next([]);
+            subscriber.complete();
           }
         });
       });
-      return x;
+      return resultObservable;
     };
   }
 

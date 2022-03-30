@@ -22,6 +22,7 @@ import {
   CatalogueItemDomainType,
   DataClass,
   DataModelDetail,
+  MdmResourcesConfiguration,
 } from '@maurodatamapper/mdm-resources';
 import { MockComponent } from 'ng-mocks';
 import { ToastrService } from 'ngx-toastr';
@@ -33,11 +34,14 @@ import { createCatalogueServiceStub } from 'src/app/testing/stubs/catalogue.stub
 import { createDataModelServiceStub } from 'src/app/testing/stubs/data-model.stub';
 import { createStateRouterStub } from 'src/app/testing/stubs/state-router.stub';
 import { createToastrServiceStub } from 'src/app/testing/stubs/toastr.stub';
+import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
 import { BrowseComponent } from './browse.component';
+import { MatDialog } from '@angular/material/dialog';
+import { MatMenu } from '@angular/material/menu';
 
 describe('BrowseComponent', () => {
   let harness: ComponentHarness<BrowseComponent>;
@@ -45,6 +49,7 @@ describe('BrowseComponent', () => {
   const catalogueStub = createCatalogueServiceStub();
   const stateRouterStub = createStateRouterStub();
   const toastrStub = createToastrServiceStub();
+  const matDialogStub = createMatDialogStub();
 
   const rootDataModel: DataModelDetail = {
     id: '123',
@@ -56,7 +61,7 @@ describe('BrowseComponent', () => {
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(BrowseComponent, {
-      declarations: [MockComponent(MatSelectionList)],
+      declarations: [MockComponent(MatSelectionList), MockComponent(MatMenu)],
       providers: [
         {
           provide: DataModelService,
@@ -73,6 +78,13 @@ describe('BrowseComponent', () => {
         {
           provide: ToastrService,
           useValue: toastrStub,
+        },
+        {
+          provide: MatDialog,
+          useValue: matDialogStub,
+        },
+        {
+          provide: MdmResourcesConfiguration,
         },
       ],
     });

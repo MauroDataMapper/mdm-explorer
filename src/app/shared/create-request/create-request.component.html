@@ -23,19 +23,21 @@ SPDX-License-Identifier: Apache-2.0
   <div class="mdm-modal__content">
     <mat-dialog-content>
       <label>New request name</label>
-      <input
-        type="text"
-        height="39px"
-        width="219px"
-        placeholder="Enter name of request"
-        [(ngModel)]="requestName"
-      />
+      <div>
+        <input
+          type="text"
+          height="39px"
+          width="219px"
+          placeholder="Enter name of request"
+          [(ngModel)]="requestName"
+        />
+      </div>
       <label>New request description</label>
       <textarea
         type="textarea"
         height="60px"
         cols="30"
-        placeholder="Enter name of request"
+        placeholder="Enter description of request"
         [(ngModel)]="requestDescription"
       >
       </textarea>

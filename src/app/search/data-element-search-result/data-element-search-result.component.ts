@@ -177,7 +177,7 @@ export class DataElementSearchResultComponent {
                 error: (err) => subscriber.error(err),
               });
           } else {
-            subscriber.next([]);
+            subscriber.complete();
           }
         });
       });
