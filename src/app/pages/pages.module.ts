@@ -24,6 +24,7 @@ import { SecurityModule } from '../security/security.module';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { StaticContentComponent } from './static-content/static-content.component';
 import { BrowseComponent } from './browse/browse.component';
+import { DataElementComponent } from './data-element/data-element.component';
 import { SearchListingComponent } from './search-listing/search-listing.component';
 import { SearchComponent } from './search/search.component';
 import { MyAccountComponent } from './my-account/my-account.component';
@@ -39,6 +40,7 @@ import { HomeComponent } from './home/home.component';
     ForgotPasswordComponent,
     StaticContentComponent,
     BrowseComponent,
+    DataElementComponent,
     SearchListingComponent,
     MyAccountComponent,
     SearchComponent,

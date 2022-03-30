@@ -18,6 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { NgModule } from '@angular/core';
 import { AlertComponent } from './alert/alert.component';
+import { ClassifiersComponent } from './classifiers/classifiers.component';
 import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
 import { SafePipe } from './pipes/safe.pipe';
@@ -28,6 +29,7 @@ import { CoreModule } from '../core/core.module';
 @NgModule({
   declarations: [
     AlertComponent,
+    ClassifiersComponent,
     FooterComponent,
     HeaderComponent,
     SafePipe,
@@ -35,6 +37,12 @@ import { CoreModule } from '../core/core.module';
     BookmarkToggleComponent,
   ],
   imports: [CoreModule],
-  exports: [AlertComponent, FooterComponent, HeaderComponent, BookmarkToggleComponent],
+  exports: [
+    AlertComponent,
+    ClassifiersComponent,
+    FooterComponent,
+    HeaderComponent,
+    BookmarkToggleComponent,
+  ],
 })
 export class SharedModule {}

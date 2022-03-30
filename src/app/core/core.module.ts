@@ -25,6 +25,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -44,6 +45,7 @@ const materialModules = [
   MatSlideToggleModule,
   MatProgressSpinnerModule,
   MatProgressBarModule,
+  MatTabsModule,
 ];
 
 @NgModule({

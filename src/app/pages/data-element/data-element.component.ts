@@ -1,0 +1,59 @@
+/*
+Copyright 2022 University of Oxford
+and Health and Social Care Information Centre, also known as NHS Digital
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+SPDX-License-Identifier: Apache-2.0
+*/
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { DataElementDetail, Uuid } from '@maurodatamapper/mdm-resources';
+import { MdmEndpointsService } from 'src/app/mdm-rest-client/mdm-endpoints.service';
+import { DataModelService } from 'src/app/catalogue/data-model.service';
+
+@Component({
+  selector: 'mdm-data-element',
+  templateUrl: './data-element.component.html',
+  styleUrls: ['./data-element.component.scss'],
+})
+export class DataElementComponent implements OnInit {
+  dataModelId?: Uuid;
+  dataClassId?: Uuid;
+  dataElementId?: Uuid;
+  dataElement?: DataElementDetail;
+
+  constructor(
+    private route: ActivatedRoute,
+    private endpointsService: MdmEndpointsService,
+    private dataModels: DataModelService
+  ) {}
+
+  ngOnInit(): void {
+    this.route.params.subscribe((parameter) => {
+      this.dataModelId = parameter.dataModelId;
+      this.dataClassId = parameter.dataClassId;
+      this.dataElementId = parameter.dataElementId;
+
+      this.dataModels
+        .getDataElement(
+          parameter.dataModelId,
+          parameter.dataClassId,
+          parameter.dataElementId
+        )
+        .subscribe((dataElementDetail) => {
+          this.dataElement = dataElementDetail;
+        });
+    });
+  }
+}
