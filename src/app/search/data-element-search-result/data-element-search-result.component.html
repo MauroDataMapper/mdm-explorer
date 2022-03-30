@@ -34,6 +34,11 @@ SPDX-License-Identifier: Apache-2.0
     {{ item.description }}
   </div>
   <div class="mdm-data-element-search-result__footer">
-    <a href="#">View Details</a>
+    <a
+      href="#/dataModels/{{ item.dataModelId }}/dataClasses/{{
+        item.dataClassId
+      }}/dataElements/{{ item.id }}"
+      >View Details</a
+    >
   </div>
 </div>
