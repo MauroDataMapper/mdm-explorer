@@ -18,8 +18,15 @@ SPDX-License-Identifier: Apache-2.0
 */
 @import "../../../styles/base/all";
 
-$pager-color: $color-gray-38;
+$pager-color: $color-mauro-dark-green;
+$pager-background-color: $color-mauro-light-gold;
+
+$pager-active-color: $color-white;
+$pager-active-background-color: $color-mauro-dark-green;
+
 $pager-disabled-color: #6c757d;
+
+$pager-font-weight: 600;
 
 .mdm-pagination {
   li.page-item {
@@ -29,22 +36,26 @@ $pager-disabled-color: #6c757d;
   li.page-counter {
     padding: 0.375rem 0.75rem;
     color: $pager-color;
+    font-weight: $pager-font-weight;
   }
 
   button.page-link {
+    font-weight: $pager-font-weight;
     border-radius: 0.25em;
     color: $pager-color;
+    background-color: $pager-background-color;
   }
 
   .page-item {
     &.active .page-link {
       color: $color-white;
-      background-color: $pager-color;
-      border-color: $pager-color;
+      background-color: $pager-active-background-color;
+      border-color: $pager-active-color;
     }
 
     &.disabled .page-link {
       color: $pager-disabled-color;
+      background-color: $color-white;
     }
   }
 }

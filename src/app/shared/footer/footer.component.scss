@@ -16,10 +16,11 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-@import "../../../styles.scss";
+@import "../../../styles/base/all";
+
 $footer-gap: 3rem;
 $muted-text-color: #6c757d;
-$footer-background-colour: $color-gray-38;
+$footer-background-colour: $color-mauro-dark-green;
 $link-color: white;
 $link-fontweight: 400;
 $link-fontsize: 80%;

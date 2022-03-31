@@ -16,14 +16,14 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-@import "../../../styles.scss";
+@import "../../../styles/base/all";
 
 $header-gap: 3rem;
 $link-color: #ffffff;
 $screen-size-md: 1000px;
 $screen-size-sm: 620px;
 $profile-img-width: 32px;
-$header-background: $color-gray-38;
+$header-background: $color-mauro-dark-green;
 
 .mdm-header {
   position: relative;

@@ -16,24 +16,25 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+@use "sass:map";
 @import "~@angular/material/theming";
 
 /* Primary values */
 $default-palette-primary: (
-  50: #e0e5e9,
-  100: #b3bdc8,
-  200: #8091a3,
-  300: #4d657e,
-  400: #264463,
-  500: #002147,
-  600: #001f40,
-  700: #001a37,
-  800: #00152f,
-  900: #000c20,
-  A100: #5d7fff,
-  A200: #2a57ff,
-  A400: #0034f6,
-  A700: #002edc,
+  50: #e3e7e4,
+  100: #bac3bc,
+  200: #8c9c8f,
+  300: #5e7462,
+  400: #3c5641,
+  500: #19381f,
+  600: #16321b,
+  700: #122b17,
+  800: #0e2412,
+  900: #08170a,
+  A100: #58ff69,
+  A200: #25ff3b,
+  A400: #00f118,
+  A700: #00d816,
   contrast: (
     50: #000000,
     100: #000000,
@@ -46,44 +47,44 @@ $default-palette-primary: (
     800: #ffffff,
     900: #ffffff,
     A100: #000000,
-    A200: #ffffff,
-    A400: #ffffff,
-    A700: #ffffff
-  )
+    A200: #000000,
+    A400: #000000,
+    A700: #000000,
+  ),
 );
 
 /* Accent values */
 $default-palette-accent: (
-    50 : #e7f1e8,
-    100 : #c3ddc5,
-    200 : #9cc79e,
-    300 : #74b077,
-    400 : #569f59,
-    500 : #388e3c,
-    600 : #328636,
-    700 : #2b7b2e,
-    800 : #247127,
-    900 : #175f1a,
-    A100 : #9aff9d,
-    A200 : #67ff6b,
-    A400 : #34ff3a,
-    A700 : #1aff21,
-    contrast: (
-        50 : #000000,
-        100 : #000000,
-        200 : #000000,
-        300 : #000000,
-        400 : #000000,
-        500 : #ffffff,
-        600 : #ffffff,
-        700 : #ffffff,
-        800 : #ffffff,
-        900 : #ffffff,
-        A100 : #000000,
-        A200 : #000000,
-        A400 : #000000,
-        A700 : #000000,
-    )
+  50: #f9f7f0,
+  100: #f0ead9,
+  200: #e6dcc0,
+  300: #dccea6,
+  400: #d5c493,
+  500: #cdb980,
+  600: #c8b278,
+  700: #c1aa6d,
+  800: #baa263,
+  900: #ae9350,
+  A100: #ffffff,
+  A200: #fff4db,
+  A400: #ffe5a8,
+  A700: #ffdd8f,
+  contrast: (
+    50: #000000,
+    100: #000000,
+    200: #000000,
+    300: #000000,
+    400: #000000,
+    500: #000000,
+    600: #000000,
+    700: #000000,
+    800: #000000,
+    900: #000000,
+    A100: #000000,
+    A200: #000000,
+    A400: #000000,
+    A700: #000000,
+  ),
 );
 
 /* Warn values */
@@ -116,8 +117,8 @@ $default-palette-warn: (
     A100: #000000,
     A200: #000000,
     A400: #ffffff,
-    A700: #ffffff
-  )
+    A700: #ffffff,
+  ),
 );
 
 $default-theme-primary: mat-palette($default-palette-primary);
@@ -139,9 +140,17 @@ $default-typography: mat-typography-config(
   $subheading-2: mat-typography-level(26px, 32px, 600),
   $subheading-1: mat-typography-level(22px, 28px, 600),
   $button: mat-typography-level(20px, 26px, 600),
-  $input: mat-typography-level(18px, 1.125, 500)
+  $input: mat-typography-level(18px, 1.125, 500),
 );
 
 .default-theme {
   @include angular-material-theme($default-theme);
+
+  $selection-color: map.get($default-palette-primary, 500);
+  $selection-color-text: map.get($default-palette-primary, "contrast", 500);
+
+  mat-list-option[aria-selected="true"] {
+    background: $selection-color !important;
+    color: $selection-color-text !important;
+  }
 }

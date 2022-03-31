@@ -28,13 +28,19 @@ $color-gray-85: #d7d7d7;
 $color-gray-75: #c4c4c4;
 $color-gray-38: #606060;
 
+$color-mauro-dark-green: #19381f;
+$color-mauro-gold: #cdb980;
+$color-mauro-light-gold: #f3eee0;
+$color-dark-navy: #003752;
+
 /*
 ----------------------------------
 Colour components
 ----------------------------------
 */
-$color-highlight-box: $color-gray-90;
-$color-hero: $color-gray-90;
-$color-section-header: $color-gray-90;
+$color-hero: $color-mauro-gold;
+$color-section-header: $color-mauro-gold;
+$color-highlight-box: $color-mauro-light-gold;
+$color-highlight-box-strong: $color-mauro-gold;
 $color-stroked-border: $color-black;
 $color-description-info-underline: $color-gray-85;

@@ -56,9 +56,9 @@ export class AppComponent implements OnInit, OnDestroy {
   signedInUser?: UserDetails | null;
 
   logoLink: HeaderImageLink = {
-    label: 'MDM UI Testbed',
+    label: 'Mauro Data Explorer',
     routerLink: '',
-    imageSrc: 'assets/images/app-logo.png',
+    imageSrc: 'assets/images/mauro-data-explorer.svg',
   };
 
   headerLinks: HeaderLink[] = [
