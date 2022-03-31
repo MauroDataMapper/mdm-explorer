@@ -23,15 +23,22 @@ import { SharedModule } from '../shared/shared.module';
 import { CoreModule } from '../core/core.module';
 import { PAGINATION_CONFIG } from './search.types';
 import { PaginationComponent } from './pagination/pagination.component';
+import { SortByComponent } from './sort-by/sort-by.component';
 
 @NgModule({
   declarations: [
     BreadcrumbComponent,
     DataElementSearchResultComponent,
     PaginationComponent,
+    SortByComponent,
   ],
   imports: [CoreModule, SharedModule],
-  exports: [BreadcrumbComponent, DataElementSearchResultComponent, PaginationComponent],
+  exports: [
+    BreadcrumbComponent,
+    DataElementSearchResultComponent,
+    PaginationComponent,
+    SortByComponent,
+  ],
   providers: [
     {
       provide: PAGINATION_CONFIG,

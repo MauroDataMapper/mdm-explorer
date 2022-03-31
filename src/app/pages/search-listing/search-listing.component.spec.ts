@@ -114,6 +114,7 @@ describe('SearchListingComponent', () => {
       expect(harness.component.parameters).toStrictEqual({});
       expect(harness.component.root).toBeUndefined();
       expect(harness.component.resultSet).toBeUndefined();
+      expect(harness.component.sortBy).toBeUndefined();
     });
   });
 
@@ -177,26 +178,31 @@ describe('SearchListingComponent', () => {
       items: [
         {
           id: '1',
-          label: 'result 1',
+          label: 'result one',
           breadcrumbs: [],
           dataClassId: '2',
           dataModelId: '3',
         },
         {
           id: '2',
-          label: 'result 2',
+          label: 'test result',
           breadcrumbs: [],
           dataClassId: '2',
           dataModelId: '3',
         },
         {
           id: '3',
-          label: 'result 3',
+          label: 'result the third',
           breadcrumbs: [],
           dataClassId: '2',
           dataModelId: '3',
         },
       ],
+    };
+
+    const sortedSearchResultsByLabelAsc: DataElementSearchResultSet = {
+      ...searchResults,
+      items: [searchResults.items[0], searchResults.items[2], searchResults.items[1]],
     };
 
     const implementDataClassReturns = (expectedId: DataClassIdentifier) => {
@@ -217,7 +223,7 @@ describe('SearchListingComponent', () => {
       dataElementSearchStub.listing.mockImplementationOnce((params) => {
         expect(params.dataClass?.dataClassId).toBe(parameters.dataClass?.dataClassId);
         expect(params.dataClass?.dataModelId).toBe(parameters.dataClass?.dataModelId);
-        return of(searchResults);
+        return of(sortedSearchResultsByLabelAsc);
       });
     };
 
@@ -227,7 +233,7 @@ describe('SearchListingComponent', () => {
       });
     };
 
-    it('should be in ready state once initialised', fakeAsync(() => {
+    it('should be in ready state once initialised with results sorted by the default sortBy option', fakeAsync(() => {
       const spy = jest.spyOn(toastrStub, 'error');
 
       implementDataClassReturns(parameters.dataClass!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
@@ -240,7 +246,8 @@ describe('SearchListingComponent', () => {
       expect(harness.component.source).toBe('browse');
       expect(harness.component.status).toBe('ready');
       expect(harness.component.root).toBe(dataClass);
-      expect(harness.component.resultSet).toBe(searchResults);
+      expect(harness.component.sortBy).toBe(harness.component.sortByDefaultOption);
+      expect(harness.component.resultSet).toBe(sortedSearchResultsByLabelAsc);
       expect(spy).not.toHaveBeenCalled();
     }));
 
@@ -296,21 +303,21 @@ describe('SearchListingComponent', () => {
       items: [
         {
           id: '1',
-          label: 'result 1',
+          label: 'result one',
           breadcrumbs: [],
           dataClassId: '2',
           dataModelId: '3',
         },
         {
           id: '2',
-          label: 'result 2',
+          label: 'test result',
           breadcrumbs: [],
           dataClassId: '2',
           dataModelId: '3',
         },
         {
           id: '3',
-          label: 'result 3',
+          label: 'result the third',
           breadcrumbs: [],
           dataClassId: '2',
           dataModelId: '3',
@@ -318,10 +325,15 @@ describe('SearchListingComponent', () => {
       ],
     };
 
+    const sortedSearchResultsByLabelAsc: DataElementSearchResultSet = {
+      ...searchResults,
+      items: [searchResults.items[0], searchResults.items[2], searchResults.items[1]],
+    };
+
     const implementSearchReturns = () => {
       dataElementSearchStub.search.mockImplementationOnce((params) => {
         expect(params.search).toBe(parameters.search);
-        return of(searchResults);
+        return of(sortedSearchResultsByLabelAsc);
       });
     };
 
@@ -331,7 +343,7 @@ describe('SearchListingComponent', () => {
       });
     };
 
-    it('should be in ready state once initialised', fakeAsync(() => {
+    it('should be in ready state once initialised with results sorted by the default sortBy option', fakeAsync(() => {
       const spy = jest.spyOn(toastrStub, 'error');
 
       implementSearchReturns();
@@ -343,7 +355,8 @@ describe('SearchListingComponent', () => {
       expect(harness.component.source).toBe('search');
       expect(harness.component.status).toBe('ready');
       expect(harness.component.root).toBeUndefined();
-      expect(harness.component.resultSet).toBe(searchResults);
+      expect(harness.component.sortBy).toBe(harness.component.sortByDefaultOption);
+      expect(harness.component.resultSet).toBe(sortedSearchResultsByLabelAsc);
       expect(spy).not.toHaveBeenCalled();
     }));
 
@@ -434,6 +447,23 @@ describe('SearchListingComponent', () => {
       bookmarkStub.remove.mockImplementationOnce(() => of({}));
       harness.component.bookmarkElement(dataElementBookmarkRemoveEvent);
       expect(spy).toHaveBeenCalled();
+    });
+  });
+
+  describe('selecting a new sortBy option', () => {
+    it('should fire off a state reload upon selection of a new sortBy option', () => {
+      const selectedSortByOption = { value: 'label-asc', displayName: 'name' };
+
+      harness.component.selectSortBy(selectedSortByOption);
+
+      // This simultaneously tests the private getSort and getOrder from sortByOptions methods.
+      expect(stateRouterStub.navigateToKnownPath).toHaveBeenCalledWith(
+        '/search/listing',
+        {
+          sort: 'label',
+          order: 'asc',
+        }
+      );
     });
   });
 });

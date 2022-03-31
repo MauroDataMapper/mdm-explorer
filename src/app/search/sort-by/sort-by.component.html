@@ -1,4 +1,4 @@
-/*
+<!--
 Copyright 2022 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -15,49 +15,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
-*/
-
-@import "../../../styles/base/all";
-
-$back-link-color: $color-mauro-dark-green;
-
-.mdm-search-listing {
-  &__back-link,
-  &__search {
-    margin: 1em 0;
-  }
-
-  &__sort-row {
-    display: flex;
-    justify-content: space-between;
-    margin: 1em 0;
-
-    .vertically-aligned {
-      display: flex;
-      align-items: center;
-    }
-  }
-
-  &__back-link {
-    a {
-      text-decoration: none;
-      font-weight: 500;
-      color: $back-link-color;
-    }
-  }
-
-  &__search-input {
-    width: 50%;
-  }
-
-  &__loading {
-    mat-spinner {
-      margin: 2em auto;
-    }
-  }
-
-  &__error {
-    padding: 2em 3em;
-    text-align: center;
-  }
-}
+-->
+<mat-form-field appearance="outline">
+  <mat-label>Sort By</mat-label>
+  <mat-select
+    [value]="value"
+    [disableOptionCentering]="true"
+    (selectionChange)="select($event)"
+  >
+    <mat-option *ngFor="let option of options" [value]="option">
+      {{ option.displayName }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>

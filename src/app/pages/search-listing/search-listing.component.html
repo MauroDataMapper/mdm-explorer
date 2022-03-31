@@ -43,14 +43,23 @@ SPDX-License-Identifier: Apache-2.0
   </div>
   <div *ngIf="status === 'ready'">
     <div class="mdm-search-listing__sort-row">
-      <ng-container *ngIf="source === 'browse'">
-        {{ resultSet?.totalResults }} results for '
-        <mdm-breadcrumb [item]="root"></mdm-breadcrumb>
-        '
-      </ng-container>
-      <ng-container *ngIf="source === 'search'">
-        {{ resultSet?.totalResults }} results found
-      </ng-container>
+      <div class="vertically-aligned">
+        <ng-container *ngIf="source === 'browse'">
+          {{ resultSet?.totalResults }} results for '
+          <mdm-breadcrumb [item]="root"></mdm-breadcrumb>
+          '
+        </ng-container>
+        <ng-container *ngIf="source === 'search'">
+          {{ resultSet?.totalResults }} results found
+        </ng-container>
+      </div>
+      <div class="vertically-aligned">
+        <mdm-sort-by
+          [value]="sortBy"
+          [options]="searchListingSortByOptions"
+          (valueChange)="selectSortBy($event)"
+        ></mdm-sort-by>
+      </div>
     </div>
     <div *ngIf="resultSet" class="row">
       <mdm-data-element-search-result

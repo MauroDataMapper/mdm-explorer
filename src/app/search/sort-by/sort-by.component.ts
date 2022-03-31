@@ -16,48 +16,25 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { Component, Input, EventEmitter, Output } from '@angular/core';
+import { MatSelectChange } from '@angular/material/select/select';
 
-@import "../../../styles/base/all";
+export interface SortByOption {
+  value: string;
+  displayName: string;
+}
 
-$back-link-color: $color-mauro-dark-green;
+@Component({
+  selector: 'mdm-sort-by',
+  templateUrl: './sort-by.component.html',
+  styleUrls: ['./sort-by.component.scss'],
+})
+export class SortByComponent {
+  @Input() value?: SortByOption;
+  @Input() options?: SortByOption[];
+  @Output() valueChange = new EventEmitter<SortByOption>();
 
-.mdm-search-listing {
-  &__back-link,
-  &__search {
-    margin: 1em 0;
-  }
-
-  &__sort-row {
-    display: flex;
-    justify-content: space-between;
-    margin: 1em 0;
-
-    .vertically-aligned {
-      display: flex;
-      align-items: center;
-    }
-  }
-
-  &__back-link {
-    a {
-      text-decoration: none;
-      font-weight: 500;
-      color: $back-link-color;
-    }
-  }
-
-  &__search-input {
-    width: 50%;
-  }
-
-  &__loading {
-    mat-spinner {
-      margin: 2em auto;
-    }
-  }
-
-  &__error {
-    padding: 2em 3em;
-    text-align: center;
+  select(change: MatSelectChange) {
+    this.valueChange.emit(change.value as SortByOption);
   }
 }
