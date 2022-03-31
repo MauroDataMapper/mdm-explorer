@@ -25,9 +25,9 @@ import {
   EMPTY,
   filter,
   finalize,
-  Observable,
-  Observer,
+  map,
   Subject,
+  switchMap,
   takeUntil,
 } from 'rxjs';
 import { environment } from '../environments/environment';
@@ -133,24 +133,6 @@ export class AppComponent implements OnInit, OnDestroy {
     },
   ];
 
-  // This is a dummy observable. I'm assuming that at some point we will have an obervable/service which actually returns the
-  // current number of requests, perhaps running on a timer updating every minute or two. For the moment we just have this
-  // which returns a value which increments every 5 seconds.
-  private _observeNumberOfRequests = new Observable((observer: Observer<number>) => {
-    let requests = 0;
-    const timeoutFunction = () => {
-      observer.next(requests);
-      ++requests;
-      setTimeout(timeoutFunction, 5000);
-    };
-    const timeoutId = setTimeout(timeoutFunction, 0);
-    return {
-      unsubscribe: () => {
-        clearTimeout(timeoutId);
-      },
-    };
-  });
-
   /**
    * Signal to attach to subscriptions to trigger when they should be unsubscribed.
    */
@@ -188,9 +170,9 @@ export class AppComponent implements OnInit, OnDestroy {
     this.broadcast
       .onUserSignedIn()
       .pipe(takeUntil(this.unsubscribe$))
-      .subscribe((user) => {
-        this.setupSignedInUser(user);
-        this.dataRequests.getRequestsFolder(user.email).subscribe();
+      .subscribe((userSignedIn) => {
+        this.setupSignedInUser(userSignedIn);
+        this.getRequestsInfo(userSignedIn);
       });
 
     this.broadcast
@@ -198,18 +180,18 @@ export class AppComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe(() => this.signOutUser());
 
-    this.setupSignedInUser(this.userDetails.get());
+    const user = this.userDetails.get();
+    if (user) {
+      this.setupSignedInUser(user);
+      this.getRequestsInfo(user);
+    }
 
-    this.signedInUser = this.userDetails.get();
+    this.signedInUser = user;
 
     this.subscribeHttpErrorEvent('http-not-authorized', '/not-authorized');
     this.subscribeHttpErrorEvent('http-not-found', '/not-found');
     this.subscribeHttpErrorEvent('http-not-implemented', '/not-implemented');
     this.subscribeHttpErrorEvent('http-server-error', '/server-error');
-
-    this._observeNumberOfRequests.subscribe(
-      (nextNumber) => (this.numberOfRequests = nextNumber)
-    );
 
     // Check immediately if the last authenticated session is expired and setup a recurring
     // check for this
@@ -260,6 +242,32 @@ export class AppComponent implements OnInit, OnDestroy {
       : undefined;
   }
 
+  /**
+   * Verify that a user's request folder exists (or create if it doesn't), then check how many current requests they
+   * have pending.
+   */
+  private getRequestsInfo(user: UserDetails) {
+    this.dataRequests
+      .getRequestsFolder(user.email)
+      .pipe(
+        catchError(() => {
+          this.toastr.error('There was a problem locating your requests folder.');
+          return EMPTY;
+        }),
+        switchMap(() => this.dataRequests.list(user.email)),
+        catchError(() => {
+          this.toastr.error('There was a problem locating your current requests.');
+          return EMPTY;
+        }),
+        map((requests) => {
+          return requests.filter((req) => req.status === 'unsent').length;
+        })
+      )
+      .subscribe((numberOfRequests) => {
+        this.numberOfRequests = numberOfRequests;
+      });
+  }
+
   private setupIdleTimer() {
     this.userIdle.startWatching();
     this.userIdle
@@ -292,7 +300,7 @@ export class AppComponent implements OnInit, OnDestroy {
       .isCurrentSessionExpired()
       .pipe(filter((authenticated) => !authenticated))
       .subscribe(() => {
-        this.toastr.error('Your session has expired! Please sign in.');
+        this.toastr.info('Your session has expired! Please sign in.');
         this.signOutUser();
       });
   }

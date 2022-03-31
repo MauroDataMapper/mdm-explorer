@@ -39,12 +39,14 @@ import { DataElementSearchService } from 'src/app/data-explorer/data-element-sea
 import {
   DataElementSearchParameters,
   DataElementSearchResultSet,
-  DataElementBookmarkEvent,
-  DataElementCheckedEvent,
   mapParamMapToSearchParameters,
   mapSearchParametersToParams,
   SortOrder,
   DataElementSearchResult,
+} from 'src/app/data-explorer/data-explorer.types';
+import {
+  DataElementBookmarkEvent,
+  DataElementCheckedEvent,
 } from 'src/app/data-explorer/data-explorer.types';
 import {
   CreateRequestComponent,

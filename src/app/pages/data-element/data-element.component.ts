@@ -24,11 +24,11 @@ import {
   Profile,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
-import { DataModelService } from 'src/app/mauro/data-model.service';
 import { ProfileService } from 'src/app/mauro/profile.service';
 import { ToastrService } from 'ngx-toastr';
-import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
 import { switchMap, forkJoin, catchError, EMPTY } from 'rxjs';
+import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
+import { DataModelService } from 'src/app/mauro/data-model.service';
 
 @Component({
   selector: 'mdm-data-element',

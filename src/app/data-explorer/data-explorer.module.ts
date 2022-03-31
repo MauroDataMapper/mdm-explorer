@@ -17,15 +17,17 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { NgModule } from '@angular/core';
+import { DataElementSearchResultComponent } from './data-element-search-result/data-element-search-result.component';
+import { SharedModule } from '../shared/shared.module';
 import { CoreModule } from '../core/core.module';
 import { SortByComponent } from './sort-by/sort-by.component';
-import { SharedModule } from '../shared/shared.module';
-import { DataElementSearchResultComponent } from './data-element-search-result/data-element-search-result.component';
 import { PaginationComponent } from './pagination/pagination.component';
 import { ContactFormComponent } from './contact-form/contact-form.component';
 import { FeedbackDialogComponent } from './feedback-dialog/feedback-dialog.component';
 import { ConfirmComponent } from './confirm/confirm.component';
 import { PAGINATION_CONFIG } from './data-explorer.types';
+import { RequestStatusChipComponent } from './request-status-chip/request-status-chip.component';
+import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +37,8 @@ import { PAGINATION_CONFIG } from './data-explorer.types';
     ContactFormComponent,
     FeedbackDialogComponent,
     ConfirmComponent,
+    RequestStatusChipComponent,
+    BreadcrumbComponent,
   ],
   imports: [CoreModule, SharedModule],
   exports: [
@@ -43,6 +47,8 @@ import { PAGINATION_CONFIG } from './data-explorer.types';
     SortByComponent,
     ContactFormComponent,
     FeedbackDialogComponent,
+    RequestStatusChipComponent,
+    BreadcrumbComponent,
   ],
   providers: [
     {

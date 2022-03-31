@@ -20,6 +20,7 @@ import { Injectable } from '@angular/core';
 import {
   CatalogueItemDomainType,
   DataClass,
+  DataElement,
   DataModel,
   DataModelCreatePayload,
   DataModelDetail,
@@ -38,6 +39,7 @@ import { ExceptionService } from '../core/exception.service';
 import { DataElementSearchService } from './data-element-search.service';
 import { DataElementSearchResultSet } from './data-explorer.types';
 import { DataClassService } from '../mauro/data-class.service';
+import { DataRequest, getDataRequestStatus } from '../data-explorer/data-explorer.types';
 
 @Injectable({
   providedIn: 'root',
@@ -45,11 +47,11 @@ import { DataClassService } from '../mauro/data-class.service';
 export class DataRequestsService {
   constructor(
     private dataModels: DataModelService,
-    private folderService: FolderService,
-    private catalogueUserService: CatalogueUserService,
-    private exceptionService: ExceptionService,
-    private searchService: DataElementSearchService,
-    private dataClassService: DataClassService
+    private folder: FolderService,
+    private catalogueUser: CatalogueUserService,
+    private exception: ExceptionService,
+    private search: DataElementSearchService,
+    private dataClasses: DataClassService
   ) {}
 
   /**
@@ -59,9 +61,9 @@ export class DataRequestsService {
    * @returns an observable containing a FolderDetail object
    */
   getRequestsFolder(userEmail: string): Observable<FolderDetail> {
-    return this.folderService.getOrCreate(`${environment.rootRequestFolder}`).pipe(
+    return this.folder.getOrCreate(`${environment.rootRequestFolder}`).pipe(
       switchMap((rootFolder: FolderDetail) => {
-        return this.folderService.getOrCreateChildOf(
+        return this.folder.getOrCreateChildOf(
           rootFolder.id!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
           this.getDataRequestsFolderName(userEmail)
         );
@@ -70,15 +72,49 @@ export class DataRequestsService {
   }
 
   /**
-   * Lists all of the users requests as DataModel objects.
+   * Lists all of the users requests as {@link DataRequest} objects.
    *
    * @param userEmail the username of the user.
-   * @returns an observable containing an array of dataModels (the users requests)
+   * @returns an observable containing an array of data requests
    */
-  list(userEmail: string): Observable<DataModel[]> {
+  list(userEmail: string): Observable<DataRequest[]> {
     return this.getRequestsFolder(userEmail).pipe(
       switchMap((requestsFolder: FolderDetail): Observable<DataModel[]> => {
         return this.dataModels.listInFolder(requestsFolder.id!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
+      }),
+      map((dataModels) =>
+        dataModels.map((dm) => {
+          return {
+            ...dm,
+            status: getDataRequestStatus(dm),
+          };
+        })
+      )
+    );
+  }
+
+  /**
+   * Gets all Data Elements within a given Data Model, flattened into a single list.
+   *
+   * @param request The {@link DataRequest} (Data Model) that contains the elements.
+   * @returns An observable containing the list of Data Elements.
+   */
+  getRequestDataElements(request: DataRequest): Observable<DataElement[]> {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.dataModels.getDataModelHierarchy(request.id!).pipe(
+      map((dataModel) => {
+        // Flatten every Data Element into one array. Each Data Element will
+        // include a breadcrumb to locate where it came from
+        const dataClasses = dataModel.childDataClasses ?? [];
+
+        return dataClasses.flatMap((parentDataClass) => {
+          const parentElements = parentDataClass.dataElements ?? [];
+          const childElements =
+            parentDataClass.dataClasses?.flatMap((childDataClass) => {
+              return childDataClass.dataElements ?? [];
+            }) ?? [];
+          return parentElements.concat(childElements);
+        });
       })
     );
   }
@@ -102,16 +138,16 @@ export class DataRequestsService {
     // Create the new data model under the user's folder
     return forkJoin([
       this.addUserRequest(user, errors, requestName, requestDescription),
-      this.dataClassService.getAllChildDataClasses(dataClass, errors).pipe(
-        this.exceptionService.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
-        this.dataClassService.getElementsFromDataClasses(errors)
+      this.dataClasses.getAllChildDataClasses(dataClass, errors).pipe(
+        this.exception.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
+        this.dataClasses.getElementsFromDataClasses(errors)
       ),
     ]).pipe(
-      this.exceptionService.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
+      this.exception.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
       // Add all the data elements (which are in a single array) to the new
       // user request (data model)
       this.dataModels.addDataElements(dataClass.model!, errors), // eslint-disable-line @typescript-eslint/no-non-null-assertion
-      this.exceptionService.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
+      this.exception.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
       map((newDataModel: HttpResponse<DataModel>) => {
         return [newDataModel.body, errors] as [DataModel, string[]];
       }),
@@ -130,7 +166,7 @@ export class DataRequestsService {
     const errors: string[] = [];
     let existingDataModel: Uuid;
     try {
-      existingDataModel = this.searchService.getDataModelFromSearchResults(searchResults);
+      existingDataModel = this.search.getDataModelFromSearchResults(searchResults);
     } catch (err) {
       errors[0] = err as string;
       return of([{ label: '', domainType: CatalogueItemDomainType.DataModel }, errors]);
@@ -152,7 +188,7 @@ export class DataRequestsService {
       // Add the data elements (array) to the new
       // user request (data model)
       this.dataModels.addDataElementsById(existingDataModel, errors),
-      this.exceptionService.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
+      this.exception.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
       map((newDataModel: HttpResponse<DataModel>) => {
         return [newDataModel.body as DataModel, errors] as [DataModel, string[]];
       }),
@@ -176,9 +212,9 @@ export class DataRequestsService {
   ): Observable<DataModelDetail> {
     return forkJoin([
       this.getRequestsFolder(user.email),
-      this.catalogueUserService.get(user.id!), // eslint-disable-line @typescript-eslint/no-non-null-assertion
+      this.catalogueUser.get(user.id!), // eslint-disable-line @typescript-eslint/no-non-null-assertion
     ]).pipe(
-      this.exceptionService.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
+      this.exception.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
       switchMap(([folder, catalogueUser]) => {
         const dataModelCreatePayload: DataModelCreatePayload = {
           label: requestName,
@@ -193,11 +229,11 @@ export class DataRequestsService {
           dataModelCreatePayload
         );
       }),
-      this.exceptionService.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
+      this.exception.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
       mergeMap((response: any): Observable<DataModelDetail> => {
         return of((response as DataModelDetailResponse).body);
       }),
-      this.exceptionService.catchAndReportPipeError(errors) // eslint-disable-line @typescript-eslint/no-unsafe-argument
+      this.exception.catchAndReportPipeError(errors) // eslint-disable-line @typescript-eslint/no-unsafe-argument
     );
   }
 
