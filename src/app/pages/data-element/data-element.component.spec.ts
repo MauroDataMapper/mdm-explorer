@@ -16,14 +16,18 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { MockComponent } from 'ng-mocks';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from '../../testing/testing.helpers';
-import { ActivatedRoute, convertToParamMap, ParamMap } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { ClassifiersComponent } from 'src/app/shared/classifiers/classifiers.component';
 import { DataElementComponent } from './data-element.component';
 import { MdmEndpointsService } from '../../mdm-rest-client/mdm-endpoints.service';
 import { createMdmEndpointsStub } from 'src/app/testing/stubs/mdm-endpoints.stub';
+import { MatTabGroup, MatTab } from '@angular/material/tabs';
+import { SummaryMetadataComponent } from 'src/app/shared/summary-metadata/summary-metadata/summary-metadata.component';
 
 describe('DataElementComponent', () => {
   let harness: ComponentHarness<DataElementComponent>;
@@ -33,6 +37,12 @@ describe('DataElementComponent', () => {
     const activatedRoute: ActivatedRoute = {} as ActivatedRoute;
 
     return await setupTestModuleForComponent(DataElementComponent, {
+      declarations: [
+        MockComponent(MatTabGroup),
+        MockComponent(MatTab),
+        MockComponent(ClassifiersComponent),
+        MockComponent(SummaryMetadataComponent),
+      ],
       providers: [
         {
           provide: ActivatedRoute,

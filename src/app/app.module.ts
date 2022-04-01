@@ -35,6 +35,7 @@ import { STATIC_CONTENT_CONFIGURATION } from './core/static-content.service';
 import { CATALOGUE_CONFIGURATION } from './catalogue/catalogue.types';
 import { CoreModule } from './core/core.module';
 import { AppRoutingModule } from './app-routing.module';
+import { NgChartsModule } from 'ng2-charts';
 
 const getOpenIdAuthorizeUrl = () => {
   // Redirect authorization URL refers to a static page route found in `/src/static-pages`. See the `assets`
@@ -77,6 +78,7 @@ const getOpenIdAuthorizeUrl = () => {
     }),
     PagesModule,
     ErrorModule,
+    NgChartsModule,
   ],
   providers: [
     {

@@ -25,6 +25,10 @@ import { SafePipe } from './pipes/safe.pipe';
 import { ArrowDirective } from './directives/arrow.directive';
 import { BookmarkToggleComponent } from './bookmark-toggle/bookmark-toggle.component';
 import { CoreModule } from '../core/core.module';
+import { SummaryMetadataComponent } from './summary-metadata/summary-metadata/summary-metadata.component';
+import { SummaryMetadataReportComponent } from './summary-metadata/summary-metadata-report/summary-metadata-report.component';
+import { SummaryMetadataChartComponent } from './summary-metadata/summary-metadata-chart/summary-metadata-chart.component';
+import { NgChartsModule } from 'ng2-charts';
 
 @NgModule({
   declarations: [
@@ -35,14 +39,20 @@ import { CoreModule } from '../core/core.module';
     SafePipe,
     ArrowDirective,
     BookmarkToggleComponent,
+    SummaryMetadataChartComponent,
+    SummaryMetadataComponent,
+    SummaryMetadataReportComponent,
   ],
-  imports: [CoreModule],
+  imports: [CoreModule, NgChartsModule],
   exports: [
     AlertComponent,
     ClassifiersComponent,
     FooterComponent,
     HeaderComponent,
     BookmarkToggleComponent,
+    SummaryMetadataChartComponent,
+    SummaryMetadataComponent,
+    SummaryMetadataReportComponent,
   ],
 })
 export class SharedModule {}

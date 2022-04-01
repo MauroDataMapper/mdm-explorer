@@ -19,7 +19,6 @@ SPDX-License-Identifier: Apache-2.0
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DataElementDetail, Uuid } from '@maurodatamapper/mdm-resources';
-import { MdmEndpointsService } from 'src/app/mdm-rest-client/mdm-endpoints.service';
 import { DataModelService } from 'src/app/catalogue/data-model.service';
 
 @Component({
@@ -28,16 +27,12 @@ import { DataModelService } from 'src/app/catalogue/data-model.service';
   styleUrls: ['./data-element.component.scss'],
 })
 export class DataElementComponent implements OnInit {
-  dataModelId?: Uuid;
-  dataClassId?: Uuid;
-  dataElementId?: Uuid;
+  dataModelId: Uuid = '';
+  dataClassId: Uuid = '';
+  dataElementId: Uuid = '';
   dataElement?: DataElementDetail;
 
-  constructor(
-    private route: ActivatedRoute,
-    private endpointsService: MdmEndpointsService,
-    private dataModels: DataModelService
-  ) {}
+  constructor(private route: ActivatedRoute, private dataModels: DataModelService) {}
 
   ngOnInit(): void {
     this.route.params.subscribe((parameter) => {
@@ -46,11 +41,7 @@ export class DataElementComponent implements OnInit {
       this.dataElementId = parameter.dataElementId;
 
       this.dataModels
-        .getDataElement(
-          parameter.dataModelId,
-          parameter.dataClassId,
-          parameter.dataElementId
-        )
+        .getDataElement(this.dataModelId, this.dataClassId, this.dataElementId)
         .subscribe((dataElementDetail) => {
           this.dataElement = dataElementDetail;
         });
