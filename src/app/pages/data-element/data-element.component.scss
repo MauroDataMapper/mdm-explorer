@@ -16,3 +16,56 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+@import "../../../styles/base/all";
+
+$detail-heading-background-color: $color-mauro-dark-green;
+$detail-heading-color: $color-white;
+$detail-header-padding: 0.2em 1.2em;
+
+$detail-content-color: $color-mauro-light-gold;
+$detail-content-padding: 1.2em 1.2em;
+
+.mdm-data-element-detail {
+  @include respond-to-mobile {
+    padding: 0;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $detail-header-padding;
+    background-color: $detail-heading-background-color;
+    color: $detail-heading-color;
+
+    h3 {
+      display: inline-block;
+      font-weight: 500;
+      margin: 0 1em;
+      vertical-align: middle;
+    }
+
+    mdm-breadcrumb {
+      vertical-align: middle;
+      font-size: 13px;
+    }
+  }
+
+  &__content,
+  &__footer {
+    padding: $detail-content-padding;
+    background-color: $detail-content-color;
+  }
+}
+
+.mdm-data-element-detail-content {
+  padding: 2em;
+}
+
+.mdm-data-element-card {
+  margin-bottom: 2em;
+}
+
+.mdm-data-element-property-name {
+  font-weight: bold;
+}

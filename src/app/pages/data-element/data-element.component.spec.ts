@@ -24,6 +24,7 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { ClassifiersComponent } from 'src/app/shared/classifiers/classifiers.component';
 import { DataElementComponent } from './data-element.component';
+import { BreadcrumbComponent } from 'src/app/search/breadcrumb/breadcrumb.component';
 import { MdmEndpointsService } from '../../mdm-rest-client/mdm-endpoints.service';
 import { createMdmEndpointsStub } from 'src/app/testing/stubs/mdm-endpoints.stub';
 import { MatTabGroup, MatTab } from '@angular/material/tabs';
@@ -40,6 +41,7 @@ describe('DataElementComponent', () => {
       declarations: [
         MockComponent(MatTabGroup),
         MockComponent(MatTab),
+        MockComponent(BreadcrumbComponent),
         MockComponent(ClassifiersComponent),
         MockComponent(SummaryMetadataComponent),
       ],

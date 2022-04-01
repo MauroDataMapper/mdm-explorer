@@ -39,7 +39,7 @@ export class SummaryMetadataChartComponent implements OnInit {
   };
 
   public barChartType: ChartType = 'bar';
-  public barChartLegend = true;
+  public barChartLegend = false;
   public barChartPlugins = [];
 
   public barChartData: ChartData = {

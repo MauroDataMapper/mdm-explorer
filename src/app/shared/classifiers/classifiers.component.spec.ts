@@ -16,9 +16,10 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { MockComponent } from 'ng-mocks';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { ClassifiersComponent } from './classifiers.component';
+import { MatChipList, MatChip } from '@angular/material/chips';
 
 describe('ClassifiersComponent', () => {
   let component: ClassifiersComponent;
@@ -26,7 +27,11 @@ describe('ClassifiersComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ClassifiersComponent],
+      declarations: [
+        ClassifiersComponent,
+        MockComponent(MatChipList),
+        MockComponent(MatChip),
+      ],
     }).compileComponents();
   });
 

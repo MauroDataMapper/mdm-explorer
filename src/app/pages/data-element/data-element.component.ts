@@ -16,10 +16,12 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Bookmark, BookmarkService } from 'src/app/core/bookmark.service';
 import { ActivatedRoute } from '@angular/router';
 import { DataElementDetail, Uuid } from '@maurodatamapper/mdm-resources';
 import { DataModelService } from 'src/app/catalogue/data-model.service';
+import { DataElementBookmarkEvent } from 'src/app/search/search.types';
 
 @Component({
   selector: 'mdm-data-element',
@@ -27,12 +29,20 @@ import { DataModelService } from 'src/app/catalogue/data-model.service';
   styleUrls: ['./data-element.component.scss'],
 })
 export class DataElementComponent implements OnInit {
+  @Output() bookmark = new EventEmitter<DataElementBookmarkEvent>();
+
   dataModelId: Uuid = '';
   dataClassId: Uuid = '';
   dataElementId: Uuid = '';
   dataElement?: DataElementDetail;
 
-  constructor(private route: ActivatedRoute, private dataModels: DataModelService) {}
+  bookmarks: Bookmark[] = [];
+
+  constructor(
+    private route: ActivatedRoute,
+    private dataModels: DataModelService,
+    private bookmarkService: BookmarkService
+  ) {}
 
   ngOnInit(): void {
     this.route.params.subscribe((parameter) => {
@@ -46,5 +56,30 @@ export class DataElementComponent implements OnInit {
           this.dataElement = dataElementDetail;
         });
     });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  toggleBookmark(selected: boolean) {
+    if (!this.dataElement) {
+      return;
+    }
+
+    // this.bookmark.emit({ item: this.dataElement, selected });
+  }
+
+  /**
+   * Is this.item bookmarked?
+   *
+   * @returns boolean true if this.item is stored in this.bookmarks
+   */
+  isBookmarked(): boolean {
+    let found: boolean;
+    found = false;
+
+    this.bookmarks.forEach((bookmark: Bookmark) => {
+      if (this.dataElement && this.dataElement.id === bookmark.id) found = true;
+    });
+
+    return found;
   }
 }

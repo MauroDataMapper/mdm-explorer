@@ -16,54 +16,92 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-
-<h1>Data Element</h1>
-
-<div class="pt-5 pe-5 ps-5 pb-2 col-md-12 bg-white">
-  <div class="d-flex bd-highlight">
-    <div class="flex-grow-1 bd-highlight">
-      <h3>{{ dataElement?.label }}</h3>
-    </div>
-    <!--<div class="bd-highlight"><mdm-add-to-wishlist-button [item]="CatalogueItem"></mdm-add-to-wishlist-button></div>-->
+<div class="container">
+  <div class="main-row hero">
+    <mdm-breadcrumb [item]="dataElement"></mdm-breadcrumb>
   </div>
 
-  <!--<mdm-classifiers [classifiers]="dataModel.classifiers"></mdm-classifiers>-->
-  <!--<mdm-html-markdown *ngIf="dataModel.description" class="mt-4 lead" [content]="dataModel.description"></mdm-html-markdown>-->
-</div>
-<mdm-classifiers [classifiers]="dataElement?.classifiers"></mdm-classifiers>
-<mat-tab-group>
-  <mat-tab label="Overview">
-    <p>{{ dataElementId }}</p>
-    <p>{{ dataElement?.label }}</p>
-    <p>{{ dataElement?.description }}</p>
-    <mdm-classifiers [classifiers]="dataElement?.classifiers"></mdm-classifiers>
-  </mat-tab>
-  <mat-tab label="Profile"> Content 2 </mat-tab>
-  <mat-tab label="Data">
-    <mdm-summary-metadata
-      [catalogueItemDomainType]="'dataElement'"
-      [catalogueItemId]="dataElementId"
-    ></mdm-summary-metadata>
-  </mat-tab>
-</mat-tab-group>
+  <div *ngIf="dataElement" class="highlight-box mdm-data-element-detailt">
+    <div class="mdm-data-element-detail__header">
+      <span>
+        <h3>{{ dataElement?.label }}</h3>
+      </span>
+      <span>
+        <mdm-bookmark-toggle
+          (toggle)="toggleBookmark($event)"
+          [selected]="isBookmarked()"
+        ></mdm-bookmark-toggle>
+      </span>
+    </div>
+    <mat-tab-group animationDuration="0ms">
+      <mat-tab label="Overview">
+        <div class="mdm-data-element-detail-content">
+          <mat-card
+            *ngIf="dataElement.classifiers && dataElement.classifiers.length > 0"
+            class="mdm-data-element-card"
+          >
+            <mdm-classifiers [classifiers]="dataElement?.classifiers"></mdm-classifiers>
+          </mat-card>
 
-<div>
-  <div class="tab-content" id="myTabContent">
-    <div
-      class="tab-pane fade show active"
-      id="overview"
-      role="tabpanel"
-      aria-labelledby="overview-tab"
-    >
-      <!--<mdm-semantic-links [item]="dataModel" domainType="dataModels"></mdm-semantic-links>-->
-      <!--<mdm-item-profile [item]="dataModel" domainType="dataModels"></mdm-item-profile>-->
-    </div>
-    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-      <!--<mdm-semantic-links [item]="dataModel" domainType="dataModels"></mdm-semantic-links>-->
-      <!--<mdm-item-profile [item]="dataModel" domainType="dataModels"></mdm-item-profile>-->
-    </div>
-    <div class="tab-pane fade" id="variables" role="tabpanel" aria-labelledby="home-tab">
-      <!--<mdm-data-model-elements-profile-table [dataModelId]="dataModel.id"></mdm-data-model-elements-profile-table>-->
-    </div>
+          <mat-card class="mdm-data-element-card">
+            <h2>Data Element</h2>
+            <p>
+              <span class="mdm-data-element-property-name">Label: </span
+              >{{ dataElement?.label }}
+            </p>
+            <p>
+              <span class="mdm-data-element-property-name">Description: </span
+              >{{ dataElement?.description }}
+            </p>
+          </mat-card>
+
+          <mat-card class="mdm-data-element-card">
+            <h2>Data Type</h2>
+            <p>
+              <span class="mdm-data-element-property-name">Label: </span
+              >{{ dataElement.dataType?.label }}
+            </p>
+            <p>
+              <span class="mdm-data-element-property-name">Description: </span
+              >{{ dataElement.dataType?.description }}
+            </p>
+            <div *ngIf="dataElement.dataType?.domainType == 'EnumerationType'">
+              <h3>List of enumeration values</h3>
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Key</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    *ngFor="
+                      let enumerationValue of dataElement.dataType?.enumerationValues
+                    "
+                  >
+                    <td>{{ enumerationValue.key }}</td>
+                    <td>{{ enumerationValue.value }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </mat-card>
+        </div>
+      </mat-tab>
+      <mat-tab label="Profile">
+        <div class="mdm-data-element-detail-content">Content 2</div>
+      </mat-tab>
+      <mat-tab label="Data Summary">
+        <ng-template matTabContent>
+          <div class="mdm-data-element-detail-content">
+            <mdm-summary-metadata
+              [catalogueItemDomainType]="'dataElement'"
+              [catalogueItemId]="dataElementId"
+            ></mdm-summary-metadata>
+          </div>
+        </ng-template>
+      </mat-tab>
+    </mat-tab-group>
   </div>
 </div>
