@@ -45,6 +45,10 @@ export class DataElementComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.bookmarkService.index().subscribe((result) => {
+      this.bookmarks = result;
+    });
+
     this.route.params.subscribe((parameter) => {
       this.dataModelId = parameter.dataModelId;
       this.dataClassId = parameter.dataClassId;
