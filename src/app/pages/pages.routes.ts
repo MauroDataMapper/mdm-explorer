@@ -114,7 +114,7 @@ export const routes: Route[] = [
     canActivate: [AuthorizedGuard],
   },
   {
-    path: 'dataModels/:dataModelId/dataClasses/:dataClassId/dataElements/:dataElementId',
+    path: 'dataElement/:dataModelId/:dataClassId/:dataElementId',
     component: DataElementComponent,
     canActivate: [AuthorizedGuard],
   },

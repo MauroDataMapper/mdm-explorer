@@ -37,7 +37,17 @@ SPDX-License-Identifier: Apache-2.0
           <td>Checkbox Placeholder</td>
           <td>{{ bookmark.label }}</td>
           <td>Add to Request Placeholder</td>
-          <td>View details</td>
+          <td>
+            <a
+              [routerLink]="[
+                '/dataElement',
+                bookmark.dataModelId,
+                bookmark.dataClassId,
+                bookmark.id
+              ]"
+              >View Details</a
+            >
+          </td>
           <td>
             <mdm-bookmark-toggle
               (toggle)="remove(bookmark)"
