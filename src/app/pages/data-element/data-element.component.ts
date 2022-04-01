@@ -22,6 +22,7 @@ import { ActivatedRoute } from '@angular/router';
 import { DataElementDetail, Uuid } from '@maurodatamapper/mdm-resources';
 import { DataModelService } from 'src/app/catalogue/data-model.service';
 import { DataElementBookmarkEvent } from 'src/app/search/search.types';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'mdm-data-element',
@@ -41,7 +42,8 @@ export class DataElementComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private dataModels: DataModelService,
-    private bookmarkService: BookmarkService
+    private bookmarkService: BookmarkService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -62,13 +64,27 @@ export class DataElementComponent implements OnInit {
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   toggleBookmark(selected: boolean) {
     if (!this.dataElement) {
       return;
     }
 
-    // this.bookmark.emit({ item: this.dataElement, selected });
+    const item: Bookmark = {
+      id: this.dataElement.id ?? '',
+      dataModelId: this.dataElement.model ?? '',
+      dataClassId: this.dataElement.dataClass ?? '',
+      label: this.dataElement.label,
+    };
+
+    if (selected) {
+      this.bookmarkService.add(item).subscribe(() => {
+        this.toastr.success(`${item.label} added to bookmarks`);
+      });
+    } else {
+      this.bookmarkService.remove(item).subscribe(() => {
+        this.toastr.success(`${item.label} removed from bookmarks`);
+      });
+    }
   }
 
   /**

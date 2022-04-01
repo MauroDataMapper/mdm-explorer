@@ -112,17 +112,12 @@ export class SearchListingComponent implements OnInit {
   }
 
   bookmarkElement(event: DataElementBookmarkEvent) {
-    const bookmark: Bookmark = {
-      id: event.item.id,
-      label: event.item.label,
-    };
-
     if (event.selected) {
-      this.bookmarkService.add(bookmark).subscribe(() => {
+      this.bookmarkService.add(event.item).subscribe(() => {
         this.toastr.success(`${event.item.label} added to bookmarks`);
       });
     } else {
-      this.bookmarkService.remove(bookmark).subscribe(() => {
+      this.bookmarkService.remove(event.item).subscribe(() => {
         this.toastr.success(`${event.item.label} removed from bookmarks`);
       });
     }

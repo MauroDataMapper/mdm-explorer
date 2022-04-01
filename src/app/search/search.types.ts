@@ -18,6 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { InjectionToken } from '@angular/core';
 import { ParamMap, Params } from '@angular/router';
+import { Bookmark } from 'src/app/core/bookmark.service';
 import {
   Breadcrumb,
   CatalogueItemSearchResult,
@@ -155,6 +156,6 @@ export interface DataElementCheckedEvent {
 }
 
 export interface DataElementBookmarkEvent {
-  item: DataElementSearchResult;
+  item: Bookmark;
   selected: boolean;
 }

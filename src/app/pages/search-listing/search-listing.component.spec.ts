@@ -388,12 +388,24 @@ describe('SearchListingComponent', () => {
     };
 
     const dataElementBookmarkAddEvent: DataElementBookmarkEvent = {
-      item: dataElementSearchResult,
+      item: {
+        id: dataElementSearchResult.id,
+        dataModelId: dataElementSearchResult.dataModelId,
+        dataClassId: dataElementSearchResult.dataClassId,
+        label: dataElementSearchResult.label,
+      },
+      // item: dataElementSearchResult,
       selected: true,
     };
 
     const dataElementBookmarkRemoveEvent: DataElementBookmarkEvent = {
-      item: dataElementSearchResult,
+      // item: dataElementSearchResult,
+      item: {
+        id: dataElementSearchResult.id,
+        dataModelId: dataElementSearchResult.dataModelId,
+        dataClassId: dataElementSearchResult.dataClassId,
+        label: dataElementSearchResult.label,
+      },
       selected: false,
     };
 
