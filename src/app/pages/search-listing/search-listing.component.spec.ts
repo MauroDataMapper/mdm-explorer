@@ -233,6 +233,7 @@ describe('SearchListingComponent', () => {
       implementDataClassReturns(parameters.dataClass!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
       implementListingReturns();
 
+      bookmarkStub.index.mockImplementationOnce(() => of([]));
       harness.component.ngOnInit();
       tick();
 
@@ -249,6 +250,7 @@ describe('SearchListingComponent', () => {
       implementDataClassThrowsError();
       implementListingReturns();
 
+      bookmarkStub.index.mockImplementationOnce(() => of([]));
       harness.component.ngOnInit();
       tick();
 
@@ -264,6 +266,7 @@ describe('SearchListingComponent', () => {
       implementDataClassReturns(parameters.dataClass!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
       implementListingThrowsError();
 
+      bookmarkStub.index.mockImplementationOnce(() => of([]));
       harness.component.ngOnInit();
       tick();
 
@@ -333,6 +336,7 @@ describe('SearchListingComponent', () => {
 
       implementSearchReturns();
 
+      bookmarkStub.index.mockImplementationOnce(() => of([]));
       harness.component.ngOnInit();
       tick();
 
@@ -348,6 +352,7 @@ describe('SearchListingComponent', () => {
 
       implementSearchThrowsError();
 
+      bookmarkStub.index.mockImplementationOnce(() => of([]));
       harness.component.ngOnInit();
       expect(harness.component.source).toBe('search');
       expect(harness.component.status).toBe('error');
@@ -402,6 +407,7 @@ describe('SearchListingComponent', () => {
     it('should raise a success toast when a bookmark is added', () => {
       const spy = jest.spyOn(toastrStub, 'success');
 
+      bookmarkStub.index.mockImplementationOnce(() => of([]));
       harness.component.ngOnInit();
       bookmarkStub.add.mockImplementationOnce(() => of({}));
       harness.component.bookmarkElement(dataElementBookmarkAddEvent);
@@ -411,6 +417,7 @@ describe('SearchListingComponent', () => {
     it('should raise a success toast when a bookmark is removed', () => {
       const spy = jest.spyOn(toastrStub, 'success');
 
+      bookmarkStub.index.mockImplementationOnce(() => of([]));
       harness.component.ngOnInit();
       bookmarkStub.remove.mockImplementationOnce(() => of({}));
       harness.component.bookmarkElement(dataElementBookmarkRemoveEvent);

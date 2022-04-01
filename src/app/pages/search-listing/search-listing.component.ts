@@ -50,6 +50,7 @@ export class SearchListingComponent implements OnInit {
   root?: DataClassDetail;
   searchTerms?: string;
   resultSet?: DataElementSearchResultSet;
+  bookmarks: Bookmark[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -71,6 +72,10 @@ export class SearchListingComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.bookmarkService.index().subscribe((result) => {
+      this.bookmarks = result;
+    });
+
     this.route.queryParamMap
       .pipe(
         switchMap((query) => {

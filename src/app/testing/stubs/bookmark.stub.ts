@@ -19,18 +19,22 @@ SPDX-License-Identifier: Apache-2.0
 import { Bookmark } from 'src/app/core/bookmark.service';
 import { Observable } from 'rxjs';
 
+export type BookmarkIndexFn = () => Observable<any>;
+export type BookmarkIndexMockedFn = jest.MockedFunction<BookmarkIndexFn>;
 export type BookmarkAddFn = (bookmark: Bookmark) => Observable<any>;
 export type BookmarkAddMockedFn = jest.MockedFunction<BookmarkAddFn>;
 export type BookmarkRemoveFn = (bookmark: Bookmark) => Observable<any>;
 export type BookmarkRemoveMockedFn = jest.MockedFunction<BookmarkRemoveFn>;
 
 export interface BookmarkServiceStub {
+  index: BookmarkIndexMockedFn;
   add: BookmarkAddMockedFn;
   remove: BookmarkRemoveMockedFn;
 }
 
 export const createBookmarkServiceStub = (): BookmarkServiceStub => {
   return {
+    index: jest.fn() as BookmarkIndexMockedFn,
     add: jest.fn() as BookmarkAddMockedFn,
     remove: jest.fn() as BookmarkRemoveMockedFn,
   };
