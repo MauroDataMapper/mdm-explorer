@@ -20,7 +20,17 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatSelectionListChange } from '@angular/material/list';
 import { DataClass, DataModel } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, Observable, OperatorFunction, switchMap } from 'rxjs';
+import {
+  catchError,
+  EMPTY,
+  filter,
+  map,
+  mergeMap,
+  Observable,
+  OperatorFunction,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { CatalogueService } from 'src/app/catalogue/catalogue.service';
 import { DataModelService } from 'src/app/catalogue/data-model.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
@@ -36,8 +46,10 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { UserRequestsService } from 'src/app/core/user-requests.service';
 import { UserDetails, UserDetailsService } from 'src/app/security/user-details.service';
-import { ConfirmRequestComponent } from 'src/app/shared/confirm-request/confirm-request.component';
-import { MdmShowErrorComponent } from 'src/app/shared/mdm-show-error/mdm-show-error.component';
+import { ConfirmData } from 'src/app/shared/confirm/confirm.component';
+import { ShowErrorData } from 'src/app/shared/mdm-show-error/mdm-show-error.component';
+import { MdmShowErrorService } from 'src/app/core/mdm-show-error.service';
+import { ConfirmService } from 'src/app/core/confirm-service';
 
 @Component({
   selector: 'mdm-browse',
@@ -58,9 +70,10 @@ export class BrowseComponent implements OnInit {
     private toastr: ToastrService,
     private stateRouter: StateRouterService,
     private userRequestsService: UserRequestsService,
-    private createRequestDialog: MatDialog,
-    private userDetailsService: UserDetailsService,
-    private confirmationDialog: MatDialog
+    private theMatDialog: MatDialog,
+    private showErrorService: MdmShowErrorService,
+    private confirmationService: ConfirmService,
+    userDetailsService: UserDetailsService
   ) {
     this.user = userDetailsService.get();
   }
@@ -77,7 +90,7 @@ export class BrowseComponent implements OnInit {
     const dialogProps = new MatDialogConfig();
     dialogProps.height = 'fit-content';
     dialogProps.width = '343px';
-    const dialogRef = this.createRequestDialog.open(CreateRequestComponent, dialogProps);
+    const dialogRef = this.theMatDialog.open(CreateRequestComponent, dialogProps);
 
     dialogRef
       .afterClosed()
@@ -85,9 +98,9 @@ export class BrowseComponent implements OnInit {
       .subscribe({
         next: ([requestName, resultErrors]: [string, string[]]) => {
           if (resultErrors.length === 0) {
-            this.showConfirmation(requestName, dialogProps);
+            this.showConfirmation(requestName);
           } else {
-            this.showErrorDialog(dialogProps, requestName, resultErrors);
+            this.showErrorDialog(requestName, resultErrors);
           }
         },
         complete: () => (this.showLoadingWheel = false),
@@ -130,69 +143,56 @@ export class BrowseComponent implements OnInit {
     this.stateRouter.navigateToKnownPath('/search/listing', params);
   }
 
-  private showErrorDialog(
-    dialogProps: MatDialogConfig,
-    requestName: string,
-    resultErrors: string[]
-  ) {
-    dialogProps.data = {
+  private showErrorDialog(requestName: string, resultErrors: string[]) {
+    // Restore focus to item that was originally clicked on
+    const errorData: ShowErrorData = {
       heading: 'Request creation error',
-      subHeading: `The following error occurred while trying to add Data Class '${
+      subheading: `The following error occurred while trying to add Data Class '${
         this.selected!.label // eslint-disable-line @typescript-eslint/no-non-null-assertion
       }' to new request '${requestName}'.`,
       message: resultErrors[0],
       buttonLabel: 'Continue browsing',
     };
-    dialogProps.height = 'fit-content';
-    dialogProps.width = '400px';
-    const errorRef = this.confirmationDialog.open(MdmShowErrorComponent, dialogProps);
-    // Restore focus to item that was originally clicked on
+    const errorRef = this.showErrorService.open(errorData, 400);
     errorRef.afterClosed().subscribe(() => this.menuTrigger.focus());
   }
 
-  private showConfirmation(requestName: string, dialogProps: MatDialogConfig) {
-    dialogProps.data = {
-      itemName: this.selected!.label, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-      itemType: 'Data Class',
-      requestName,
+  private showConfirmation(requestName: string) {
+    let confirmationData: ConfirmData = {
+      heading: 'New request created',
+      subheading: `Data Class added to new request: '${requestName}'`,
+      content: [this.selected!.label],
+      buttonActionCaption: 'View Requests',
+      buttonCloseCaption: 'Continue Browsing',
+      buttonActionCallback: () => true, //This will ultimately open the "Browse Requests" page
     };
-    const confirmationRef = this.confirmationDialog.open(
-      ConfirmRequestComponent,
-      dialogProps
-    );
+    const confirmationRef = this.confirmationService.open(confirmationData, 343);
     // Restore focus to item that was originally clicked on
     confirmationRef.afterClosed().subscribe(() => this.menuTrigger.focus());
   }
 
-  private createNewRequestOrBail(): OperatorFunction<any, [string, string[]]> {
-    return (source: Observable<any>): Observable<[string, string[]]> => {
-      const resultObservable = new Observable<[string, string[]]>((subscriber) => {
-        source.subscribe((result: NewRequestDialogResult) => {
-          this.showLoadingWheel = true;
-          if (result.Name !== '' && this.user != null) {
-            this.userRequestsService
-              .createNewUserRequestFromDataClass(
-                result.Name,
-                result.Description,
-                this.user!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-                this.selected! // eslint-disable-line @typescript-eslint/no-non-null-assertion
-              )
-              .subscribe({
-                next: ([
-                  newDataModel, // eslint-disable-line @typescript-eslint/no-unused-vars
-                  errors,
-                ]: [DataModel, string[]]) => {
-                  subscriber.next([newDataModel.label, errors]);
-                },
-                complete: () => subscriber.complete(),
-                error: (err) => subscriber.error(err),
-              });
-          } else {
-            subscriber.complete();
-          }
-        });
-      });
-      return resultObservable;
+  private createNewRequestOrBail(): OperatorFunction<
+    NewRequestDialogResult,
+    [string, string[]]
+  > {
+    return (source: Observable<NewRequestDialogResult>) => {
+      return source.pipe(
+        //side-effect: show the loading wheel
+        tap(() => (this.showLoadingWheel = true)),
+        //if the user didn't enter a name or clicked cancel, then bail
+        filter((result) => result.Name !== '' && this.user != null),
+        //Do the doings
+        mergeMap((result) => {
+          return this.userRequestsService.createNewUserRequestFromDataClass(
+            result.Name,
+            result.Description,
+            this.user!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+            this.selected! // eslint-disable-line @typescript-eslint/no-non-null-assertion
+          );
+        }),
+        //retain just the label, which is the only interesting bit (at the moment)
+        map(([dataModel, errors]) => [dataModel.label, errors])
+      );
     };
   }
 

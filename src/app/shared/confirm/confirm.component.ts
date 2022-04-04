@@ -19,22 +19,39 @@ SPDX-License-Identifier: Apache-2.0
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
+interface ConfirmCallbackType {
+  (): any;
+}
+
+export interface ConfirmData {
+  heading: string;
+  subheading: string;
+  content: string[];
+  buttonActionCaption: string;
+  buttonCloseCaption: string;
+  buttonActionCallback: ConfirmCallbackType;
+}
+
 @Component({
-  selector: 'mdm-confirm-request',
-  templateUrl: './confirm-request.component.html',
-  styleUrls: ['./confirm-request.component.scss'],
+  selector: 'mdm-confirm',
+  templateUrl: './confirm.component.html',
+  styleUrls: ['./confirm.component.scss'],
 })
-export class ConfirmRequestComponent implements OnInit {
+
+//Advisory: This component has a class wrapper which is more
+//convenient to use
+export class ConfirmComponent implements OnInit {
   constructor(
-    public dialogRef: MatDialogRef<ConfirmRequestComponent>,
+    public dialogRef: MatDialogRef<ConfirmComponent>,
     @Inject(MAT_DIALOG_DATA)
-    public data: { itemName: string; itemType: string; requestName: string }
+    public data: ConfirmData
   ) {}
 
   ngOnInit(): void {}
 
-  viewRequests() {
+  action() {
     this.dialogRef.close();
+    this.data.buttonActionCallback();
   }
 
   close() {

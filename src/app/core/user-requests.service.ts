@@ -36,6 +36,7 @@ import {
 } from '@maurodatamapper/mdm-resources';
 import { FolderDetail } from '@maurodatamapper/mdm-resources/lib/es2015/mdm-folder.model';
 import {
+  defaultIfEmpty,
   forkJoin,
   buffer,
   catchError,
@@ -63,6 +64,7 @@ import { DataElementSearchResultSet } from '../search/search.types';
 import { DataElementSearchService } from '../search/data-element-search.service';
 import { DataModelService } from '../catalogue/data-model.service';
 import { HttpResponse } from '@angular/common/http';
+import { DataClassIdentifier } from '../catalogue/catalogue.types';
 
 @Injectable({
   providedIn: 'root',
@@ -138,8 +140,9 @@ export class UserRequestsService {
       this.dataModelService.addDataElements(dataClass.model!, errors), // eslint-disable-line @typescript-eslint/no-non-null-assertion
       this.exceptionService.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
       map((newDataModel: HttpResponse<DataModel>) => {
-        return [newDataModel.body as DataModel, errors];
-      })
+        return [newDataModel.body, errors] as [DataModel, string[]];
+      }),
+      defaultIfEmpty([{ label: requestName } as DataModel, errors])
     );
   }
 
@@ -178,8 +181,9 @@ export class UserRequestsService {
       this.dataModelService.addDataElementsById(existingDataModel, errors),
       this.exceptionService.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
       map((newDataModel: HttpResponse<DataModel>) => {
-        return [newDataModel.body as DataModel, errors];
-      })
+        return [newDataModel.body as DataModel, errors] as [DataModel, string[]];
+      }),
+      defaultIfEmpty([{ label: requestName } as DataModel, errors])
     );
   }
 
@@ -233,15 +237,17 @@ export class UserRequestsService {
     return (source: Observable<DataClass>): Observable<DataElement[]> => {
       return source.pipe(
         mergeMap((foundClass: DataClass) => {
-          return this.endpointsService.dataElement.list(
-            foundClass.model!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-            foundClass.id!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-            queryParams
-          );
+          const dataClassIdent: DataClassIdentifier = {
+            dataModelId: foundClass.model!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+            dataClassId: foundClass.id!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+          };
+          return this.dataModelService.getDataElements(dataClassIdent, queryParams);
         }),
         this.exceptionService.catchAndReportPipeError(errors),
         mergeMap((elementsResponse: any) => {
-          return from((elementsResponse as DataElementIndexResponse).body.items);
+          return from(
+            (elementsResponse as { count: number; items: DataElement[] }).items
+          );
         }),
         toArray()
       );

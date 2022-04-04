@@ -18,21 +18,23 @@ SPDX-License-Identifier: Apache-2.0
 -->
 <div class="mdm-modal">
   <div class="mdm-modal__heading">
-    <h1 mat-dialog-title>New request created</h1>
+    <h1 mat-dialog-title>{{ data.heading }}</h1>
   </div>
   <div class="mdm-modal__content">
     <mat-dialog-content>
-      <p>1 {{ data.itemType }} added to new request: '{{ data.requestName }}'</p>
+      <p>{{ data.subheading }}</p>
       <ul>
-        <li>{{ data.itemName }}</li>
+        <li *ngFor="let item of data.content">{{ item }}</li>
       </ul>
     </mat-dialog-content>
   </div>
   <div class="mdm-modal__actions">
     <mat-dialog-actions>
-      <button mat-dialog-close (click)="viewRequests()">View requests</button>
+      <button mat-dialog-close (click)="action()">
+        {{ data.buttonActionCaption }}
+      </button>
       <button mat-dialog-close class="mdm-modal__action-button" (click)="close()">
-        Continue browsing
+        {{ data.buttonCloseCaption }}
       </button>
     </mat-dialog-actions>
   </div>

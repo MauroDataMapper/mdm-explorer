@@ -19,21 +19,25 @@ SPDX-License-Identifier: Apache-2.0
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
+export interface ShowErrorData {
+  heading: string;
+  subheading: string;
+  message: string;
+  buttonLabel: string;
+}
+
 @Component({
   selector: 'mdm-show-error',
   templateUrl: './mdm-show-error.component.html',
   styleUrls: ['./mdm-show-error.component.scss'],
 })
+//Advisory: This component has a class wrapper which is more
+//convenient to use
 export class MdmShowErrorComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<MdmShowErrorComponent>,
     @Inject(MAT_DIALOG_DATA)
-    public data: {
-      heading: string;
-      subHeading: string;
-      message: string;
-      buttonLabel: string;
-    }
+    public data: ShowErrorData
   ) {}
 
   ngOnInit(): void {}

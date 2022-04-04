@@ -24,15 +24,11 @@ import { HeaderComponent } from './header/header.component';
 import { SafePipe } from './pipes/safe.pipe';
 import { ArrowDirective } from './directives/arrow.directive';
 import { CreateRequestComponent } from './create-request/create-request.component';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { FormsModule } from '@angular/forms';
-import { ConfirmRequestComponent } from './confirm-request/confirm-request.component';
+import { ConfirmComponent } from './confirm/confirm.component';
 import { MdmShowErrorComponent } from './mdm-show-error/mdm-show-error.component';
 import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
 import { BookmarkToggleComponent } from './bookmark-toggle/bookmark-toggle.component';
 import { CoreModule } from '../core/core.module';
-import { CommonModule } from '@angular/common';
 import { SummaryMetadataComponent } from './summary-metadata/summary-metadata/summary-metadata.component';
 import { SummaryMetadataReportComponent } from './summary-metadata/summary-metadata-report/summary-metadata-report.component';
 import { SummaryMetadataChartComponent } from './summary-metadata/summary-metadata-chart/summary-metadata-chart.component';
@@ -49,13 +45,12 @@ import { CallToActionComponent } from './call-to-action/call-to-action.component
     ArrowDirective,
     CreateRequestComponent,
     BookmarkToggleComponent,
-    ConfirmRequestComponent,
-
-    ShowRequestErrorComponent,
+    ConfirmComponent,
     SummaryMetadataChartComponent,
     SummaryMetadataComponent,
     SummaryMetadataReportComponent,
-
+    ConfirmComponent,
+    MdmShowErrorComponent,
     LoadingSpinnerComponent,
     CallToActionComponent,
   ],

@@ -126,7 +126,7 @@ export class DataElementSearchService {
     let currentModel: Uuid | null = null;
     for (let i = 0; i < results.items.length; i++) {
       const item: DataElement | DataElementSearchResult = results.items[i];
-      currentModel = (item as DataElement).model as Uuid;
+      currentModel = (item as unknown as DataElement).model as Uuid;
       if (!currentModel) {
         for (let b = 0; b < item.breadcrumbs.length; b++) {
           if (item.breadcrumbs[b].domainType === 'DataModel') {

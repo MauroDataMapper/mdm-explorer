@@ -58,21 +58,6 @@ import { CatalogueModule } from '../catalogue/catalogue.module';
     HomeComponent,
     ContactSupportComponent,
   ],
-  imports: [
-    CoreModule,
-    CommonModule,
-    SharedModule,
-    SecurityModule,
-    SearchModule,
-    MatButtonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatListModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatMenuModule,
-    MatDialogModule,
-	CatalogueModule,
-  ],
+  imports: [CoreModule, CommonModule, SharedModule, SecurityModule, SearchModule],
 })
 export class PagesModule {}
