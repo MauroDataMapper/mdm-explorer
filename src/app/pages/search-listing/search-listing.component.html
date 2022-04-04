@@ -57,6 +57,7 @@ SPDX-License-Identifier: Apache-2.0
         *ngFor="let dataElement of resultSet.items"
         [item]="dataElement"
         [showBreadcrumb]="source === 'search'"
+        [bookmarks]="bookmarks"
         (checked)="selectElement($event)"
         (bookmark)="bookmarkElement($event)"
       ></mdm-data-element-search-result>

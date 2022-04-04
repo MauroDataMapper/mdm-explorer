@@ -25,6 +25,7 @@ import {
   DataClassDetailResponse,
   DataClassIndexResponse,
   DataElement,
+  DataElementDetail,
   DataElementIndexParameters,
   DataElementIndexResponse,
   DataModel,
@@ -116,6 +117,24 @@ export class DataModelService {
     return this.endpoints.dataElement
       .list(id.dataModelId, id.dataClassId, params)
       .pipe(map((response: DataElementIndexResponse) => response.body));
+  }
+
+  /**
+   * Get one Data Element
+   *
+   * @param dataModelId
+   * @param dataClassId
+   * @param dataElementId
+   * @returns An observable of {@link DataElementDetailResponse}
+   */
+  getDataElement(
+    dataModelId: Uuid,
+    dataClassId: Uuid,
+    dataElementId: Uuid
+  ): Observable<DataElementDetail> {
+    return this.endpoints.dataElement
+      .get(dataModelId, dataClassId, dataElementId)
+      .pipe(map((response: DataElementDetail) => response.body));
   }
 
   /**

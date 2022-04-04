@@ -20,6 +20,7 @@ import { Injectable } from '@angular/core';
 import { map, switchMap, Observable, throwError } from 'rxjs';
 import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
 import { UserDetailsService } from '../security/user-details.service';
+import { Uuid } from '@maurodatamapper/mdm-resources';
 
 @Injectable({
   providedIn: 'root',
@@ -143,6 +144,8 @@ export class BookmarkService {
 }
 
 export interface Bookmark {
-  id: string;
+  id: Uuid;
+  dataModelId: Uuid;
+  dataClassId: Uuid;
   label: string;
 }

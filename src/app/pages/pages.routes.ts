@@ -24,6 +24,7 @@ import { SearchListingComponent } from './search-listing/search-listing.componen
 import { MyAccountComponent } from './my-account/my-account.component';
 import { BookmarkComponent } from './bookmark/bookmark.component';
 import { SearchComponent } from './search/search.component';
+import { DataElementComponent } from './data-element/data-element.component';
 import { Route, UrlMatchResult, UrlSegment } from '@angular/router';
 import { AuthorizedGuard } from '../security/guards/authorized.guard';
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -110,6 +111,11 @@ export const routes: Route[] = [
   {
     path: 'bookmarks',
     component: BookmarkComponent,
+    canActivate: [AuthorizedGuard],
+  },
+  {
+    path: 'dataElement/:dataModelId/:dataClassId/:dataElementId',
+    component: DataElementComponent,
     canActivate: [AuthorizedGuard],
   },
 ];
