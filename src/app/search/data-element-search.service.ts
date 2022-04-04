@@ -56,7 +56,11 @@ export class DataElementSearchService {
    */
   listing(params: DataElementSearchParameters): Observable<DataElementSearchResultSet> {
     const [page, pageParams] = this.getPageParameters(params);
-    const query: DataElementIndexParameters = { ...pageParams };
+    const query: DataElementIndexParameters = {
+      ...pageParams,
+      sort: params.sort,
+      order: params.order,
+    };
 
     if (!params?.dataClass) {
       return throwError(() => new Error('Must provide a root Data Class.'));
@@ -86,6 +90,8 @@ export class DataElementSearchService {
     const [page, pageParams] = this.getPageParameters(params);
     const query: SearchQueryParameters = {
       searchTerm: params.search,
+      sort: params.sort,
+      order: params.order,
       domainTypes: [CatalogueItemDomainType.DataElement],
       ...pageParams,
     };

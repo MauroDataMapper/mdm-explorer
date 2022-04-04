@@ -27,6 +27,8 @@ import {
 } from '@maurodatamapper/mdm-resources';
 import { DataClassIdentifier } from '../catalogue/catalogue.types';
 
+export type SortOrder = 'asc' | 'desc';
+
 /**
  * Represents the parameters to drive a Data Element search.
  */
@@ -53,6 +55,21 @@ export interface DataElementSearchParameters {
    */
   pageSize?: number;
 
+  /**
+   * The field/property name to sort by.
+   */
+  sort?: string;
+
+  /**
+   * State what sort order to use. If supplied, must be either:
+   *
+   * * `'asc'` for ascending order, or
+   * * `'desc'` for descending order.
+   *
+   * If not supplied, the default value used will depend on the resource requested.
+   */
+  order?: SortOrder;
+
   // TODO: more parameters will go here - filters, sorting, pagination etc
 }
 
@@ -73,6 +90,8 @@ export const mapSearchParametersToParams = (
     }),
     ...(parameters.search && { search: parameters.search }),
     ...(parameters.page && { page: parameters.page }),
+    ...(parameters.sort && { sort: parameters.sort }),
+    ...(parameters.order && { order: parameters.order }),
   };
 };
 
@@ -93,6 +112,8 @@ export const mapParamMapToSearchParameters = (
     },
     search: query.get('search') ?? undefined,
     page: query.has('page') ? Number(query.get('page')) : undefined,
+    sort: query.get('sort') ?? '',
+    order: query.has('order') ? (query.get('order') as SortOrder) : undefined,
   };
 };
 

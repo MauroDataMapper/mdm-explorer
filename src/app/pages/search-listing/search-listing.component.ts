@@ -32,11 +32,19 @@ import {
   DataElementCheckedEvent,
   mapParamMapToSearchParameters,
   mapSearchParametersToParams,
+  SortOrder,
 } from 'src/app/search/search.types';
+import { SortByOption } from 'src/app/search/sort-by/sort-by.component';
 
 export type SearchListingSource = 'unknown' | 'browse' | 'search';
-
 export type SearchListingStatus = 'init' | 'loading' | 'ready' | 'error';
+
+/**
+ * These options must be of the form '{propertyToSortBy}-{order}' where propertyToSortBy
+ * can be any property on the objects you are sorting and order must be of type
+ * {@link SortOrder }
+ */
+export type SearchListingSortByOption = 'label-asc' | 'label-desc';
 
 @Component({
   selector: 'mdm-search-listing',
@@ -51,6 +59,17 @@ export class SearchListingComponent implements OnInit {
   searchTerms?: string;
   resultSet?: DataElementSearchResultSet;
   bookmarks: Bookmark[] = [];
+
+  sortBy?: SortByOption;
+  /**
+   * Each new option must have a {@link SearchListingSortByOption} as a value to ensure
+   * the search-listing page can interpret the result emitted by the SortByComponent
+   */
+  searchListingSortByOptions: SortByOption[] = [
+    { value: 'label-asc', displayName: 'Label (a-z)' },
+    { value: 'label-desc', displayName: 'Label (z-a)' },
+  ];
+  sortByDefaultOption: SortByOption = this.searchListingSortByOptions[0];
 
   constructor(
     private route: ActivatedRoute,
@@ -81,6 +100,12 @@ export class SearchListingComponent implements OnInit {
         switchMap((query) => {
           this.parameters = mapParamMapToSearchParameters(query);
           this.searchTerms = this.parameters.search;
+
+          // Set sortBy from route val, or set to default value.
+          this.sortBy = this.setSortByFromRouteOrAsDefault(
+            this.parameters.sort,
+            this.parameters.order
+          );
 
           // If there is a Data Class ID provided, then these parameters came from the "Browse" page,
           // listing Data Elements under a specific Data Class
@@ -133,6 +158,20 @@ export class SearchListingComponent implements OnInit {
     this.stateRouter.navigateToKnownPath('/search/listing', params);
   }
 
+  selectSortBy(selected: SortByOption) {
+    const sortBy = selected.value as SearchListingSortByOption;
+    const sort = this.getSortFromSortByOptionString(sortBy);
+    const order = this.getOrderFromSortByOptionString(sortBy);
+    const next: DataElementSearchParameters = {
+      ...this.parameters,
+      sort,
+      order,
+    };
+
+    const params = mapSearchParametersToParams(next);
+    this.stateRouter.navigateToKnownPath('/search/listing', params);
+  }
+
   private loadDataClass() {
     if (this.source !== 'browse') {
       return of(undefined);
@@ -166,5 +205,38 @@ export class SearchListingComponent implements OnInit {
         return EMPTY;
       })
     );
+  }
+
+  /**
+   * Match route params sort and order to sortBy option or return the default value if not set.
+   *
+   * @param sort the route string value for which property is being sorted on.
+   * @param order the order in which to sort that propery
+   * @returns a SortByOption object with value matching the route string sortBy value or the default sortBy option.
+   */
+  private setSortByFromRouteOrAsDefault(
+    sort: string | undefined,
+    order: string | undefined
+  ): SortByOption {
+    if (!sort || !order) {
+      return this.sortByDefaultOption;
+    }
+    const valueString = `${sort}-${order}`;
+
+    const filteredOptionsList = this.searchListingSortByOptions.filter(
+      (item: SortByOption) => item.value === valueString
+    );
+
+    return filteredOptionsList.length === 0
+      ? this.sortByDefaultOption
+      : filteredOptionsList[0];
+  }
+
+  private getSortFromSortByOptionString(sortBy: string) {
+    return sortBy.split('-')[0];
+  }
+
+  private getOrderFromSortByOptionString(sortBy: string) {
+    return sortBy.split('-')[1] as SortOrder;
   }
 }

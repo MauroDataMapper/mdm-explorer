@@ -31,6 +31,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSelectModule } from '@angular/material/select';
 import { RouterModule } from '@angular/router';
 import { CarouselModule } from 'primeng/carousel';
 
@@ -50,6 +51,7 @@ const materialModules = [
   MatProgressSpinnerModule,
   MatProgressBarModule,
   MatTabsModule,
+  MatSelectModule,
 ];
 
 @NgModule({
