@@ -54,6 +54,10 @@ import {
   MatDialogStub,
 } from 'src/app/testing/stubs/mat-dialog.stub';
 import { MatDialog } from '@angular/material/dialog';
+import {
+  CreateRequestComponent,
+  NewRequestDialogResult,
+} from 'src/app/shared/create-request/create-request.component';
 
 describe('SearchListingComponent', () => {
   let harness: ComponentHarness<SearchListingComponent>;
@@ -64,7 +68,8 @@ describe('SearchListingComponent', () => {
   const toastrStub = createToastrServiceStub();
   const stateRouterStub = createStateRouterStub();
   const endpointsStub: MdmEndpointsServiceStub = createMdmEndpointsStub();
-  const matDialogStub: MatDialogStub = createMatDialogStub();
+  const matDialogStub: MatDialogStub<CreateRequestComponent, NewRequestDialogResult> =
+    createMatDialogStub();
 
   const setupComponentTest = async (parameters: DataElementSearchParameters) => {
     const params = mapSearchParametersToParams(parameters);

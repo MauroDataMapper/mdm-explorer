@@ -19,13 +19,11 @@ SPDX-License-Identifier: Apache-2.0
 import { Injectable } from '@angular/core';
 import {
   CatalogueItemDomainType,
-  ContainerCreatePayload,
   DataClass,
   DataModel,
   DataModelCreatePayload,
   DataModelDetail,
   DataModelDetailResponse,
-  MdmDataClassResource,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { FolderDetail } from '@maurodatamapper/mdm-resources/lib/es2015/mdm-folder.model';
@@ -201,30 +199,6 @@ export class UserRequestsService {
       }),
       this.exceptionService.catchAndReportPipeError(errors) // eslint-disable-line @typescript-eslint/no-unsafe-argument
     );
-  }
-
-  public getElementsFromDataClasses(
-    errors: any[]
-  ): OperatorFunction<DataClass, DataElement[]> {
-    let queryParams: DataElementIndexParameters = {
-      all: true,
-    };
-    return (source: Observable<DataClass>): Observable<DataElement[]> => {
-      return source.pipe(
-        mergeMap((foundClass: DataClass) => {
-          return this.endpointsService.dataElement.list(
-            foundClass.model!,
-            foundClass.id!,
-            queryParams
-          );
-        }),
-        this.exceptionService.catchAndReportPipeError(errors),
-        mergeMap((elementsResponse: any) => {
-          return from((elementsResponse as DataElementIndexResponse).body.items);
-        }),
-        toArray()
-      );
-    };
   }
 
   /**

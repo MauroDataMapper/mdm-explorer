@@ -51,6 +51,13 @@ import { CatalogueModule } from '../catalogue/catalogue.module';
     HomeComponent,
     ContactSupportComponent,
   ],
-  imports: [CoreModule, CommonModule, SharedModule, SecurityModule, SearchModule],
+  imports: [
+    CoreModule,
+    CommonModule,
+    SharedModule,
+    SecurityModule,
+    SearchModule,
+    CatalogueModule,
+  ],
 })
 export class PagesModule {}
