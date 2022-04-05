@@ -19,9 +19,9 @@ SPDX-License-Identifier: Apache-2.0
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 
-export class NewRequestDialogResult {
-  Name = '';
-  Description = '';
+export interface NewRequestDialogResult {
+  Name: string;
+  Description: string;
 }
 
 @Component({
@@ -38,7 +38,10 @@ export class CreateRequestComponent implements OnInit {
   ngOnInit(): void {}
 
   cancel() {
-    const result = new NewRequestDialogResult();
+    const result = {
+      Name: '',
+      Description: '',
+    };
     this.dialogRef.close(result);
   }
 
