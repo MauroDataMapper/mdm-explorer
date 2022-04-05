@@ -36,6 +36,7 @@ import {
   MdmSummaryMetadataResource,
 } from '@maurodatamapper/mdm-resources';
 import { MdmHttpClientService } from './mdm-http-client.service';
+import { MdmPluginResearchResource } from './plugins/plugin-research.resource';
 
 @Injectable({
   providedIn: 'root',
@@ -55,6 +56,7 @@ export class MdmEndpointsService {
     this.configuration,
     this.httpClient
   );
+  pluginResearch = new MdmPluginResearchResource(this.configuration, this.httpClient);
   profile = new MdmProfileResource(this.configuration, this.httpClient);
   security = new MdmSecurityResource(this.configuration, this.httpClient);
   session = new MdmSessionResource(this.configuration, this.httpClient);

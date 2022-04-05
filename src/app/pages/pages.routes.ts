@@ -29,6 +29,7 @@ import { Route, UrlMatchResult, UrlSegment } from '@angular/router';
 import { AuthorizedGuard } from '../security/guards/authorized.guard';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { HomeComponent } from './home/home.component';
+import { ContactSupportComponent } from './contact-support/contact-support.component';
 
 export const buildStaticContentRoute = (path: string, staticAssetPath: string): Route => {
   return {
@@ -74,6 +75,10 @@ export const routes: Route[] = [
   {
     path: 'home',
     component: HomeComponent,
+  },
+  {
+    path: 'contact',
+    component: ContactSupportComponent,
   },
   {
     path: 'sign-in',

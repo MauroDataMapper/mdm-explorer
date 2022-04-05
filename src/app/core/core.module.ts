@@ -34,6 +34,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
 import { RouterModule } from '@angular/router';
 import { CarouselModule } from 'primeng/carousel';
+import { MatDialogModule } from '@angular/material/dialog';
 
 const angularModules = [CommonModule, FormsModule, ReactiveFormsModule, RouterModule];
 const primeNgModules = [CarouselModule];
@@ -52,6 +53,7 @@ const materialModules = [
   MatProgressBarModule,
   MatTabsModule,
   MatSelectModule,
+  MatDialogModule,
 ];
 
 @NgModule({

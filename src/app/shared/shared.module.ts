@@ -29,6 +29,7 @@ import { SummaryMetadataComponent } from './summary-metadata/summary-metadata/su
 import { SummaryMetadataReportComponent } from './summary-metadata/summary-metadata-report/summary-metadata-report.component';
 import { SummaryMetadataChartComponent } from './summary-metadata/summary-metadata-chart/summary-metadata-chart.component';
 import { NgChartsModule } from 'ng2-charts';
+import { CallToActionComponent } from './call-to-action/call-to-action.component';
 
 @NgModule({
   declarations: [
@@ -42,6 +43,7 @@ import { NgChartsModule } from 'ng2-charts';
     SummaryMetadataChartComponent,
     SummaryMetadataComponent,
     SummaryMetadataReportComponent,
+    CallToActionComponent,
   ],
   imports: [CoreModule, NgChartsModule],
   exports: [
@@ -53,6 +55,7 @@ import { NgChartsModule } from 'ng2-charts';
     SummaryMetadataChartComponent,
     SummaryMetadataComponent,
     SummaryMetadataReportComponent,
+    CallToActionComponent,
   ],
 })
 export class SharedModule {}
