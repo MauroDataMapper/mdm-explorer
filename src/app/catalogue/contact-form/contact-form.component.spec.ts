@@ -55,7 +55,7 @@ describe('ContactFormComponent', () => {
     expect(harness.component.message?.value).toBe('');
   });
 
-  it('should disable the form is state is changed to "sending"', () => {
+  it('should disable the form if state is changed to "sending"', () => {
     harness.component.ngOnInit();
 
     const spy = jest.spyOn(harness.component.contactForm, 'disable');
@@ -67,7 +67,7 @@ describe('ContactFormComponent', () => {
     expect(spy).toHaveBeenCalled();
   });
 
-  it('should enable the form is state is changed to not "sending"', () => {
+  it('should enable the form if state is changed to not "sending"', () => {
     harness.component.ngOnInit();
 
     const spy = jest.spyOn(harness.component.contactForm, 'enable');
