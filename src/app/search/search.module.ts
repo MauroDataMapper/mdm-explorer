@@ -21,7 +21,6 @@ import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { DataElementSearchResultComponent } from './data-element-search-result/data-element-search-result.component';
 import { SharedModule } from '../shared/shared.module';
 import { CoreModule } from '../core/core.module';
-import { MatMenuModule } from '@angular/material/menu';
 import { PAGINATION_CONFIG } from './search.types';
 import { PaginationComponent } from './pagination/pagination.component';
 import { SortByComponent } from './sort-by/sort-by.component';

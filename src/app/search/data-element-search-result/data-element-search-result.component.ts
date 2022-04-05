@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, EventEmitter, Input, Output, ViewChild, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { Bookmark } from 'src/app/core/bookmark.service';
 import {
@@ -24,8 +24,6 @@ import {
   DataElementCheckedEvent,
   DataElementSearchResult,
 } from '../search.types';
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { CreateRequestComponent } from 'src/app/shared/create-request/create-request.component';
 import { MatMenuTrigger } from '@angular/material/menu';
 
 export interface CreateRequestEvent {
@@ -53,9 +51,7 @@ export class DataElementSearchResultComponent {
 
   @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
 
-  public showLoadingWheel = false;
-
-  constructor(private createRequestDialog: MatDialog) {}
+  constructor() {}
 
   itemChecked(event: MatCheckboxChange) {
     if (!this.item) {
@@ -74,9 +70,9 @@ export class DataElementSearchResultComponent {
   }
 
   createRequest() {
-    let event: CreateRequestEvent = {
+    const event: CreateRequestEvent = {
       menuTrigger: this.menuTrigger,
-      item: this.item!,
+      item: this.item!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
     };
     this.createRequestClicked.emit(event);
   }

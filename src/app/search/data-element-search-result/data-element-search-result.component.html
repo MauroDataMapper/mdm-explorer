@@ -19,7 +19,6 @@ SPDX-License-Identifier: Apache-2.0
 <div *ngIf="item" class="highlight-box mdm-data-element-search-result">
   <div class="mdm-data-element-search-result__header">
     <span>
-
       <mat-checkbox color="primary" (change)="itemChecked($event)"></mat-checkbox>
       <h3>
         {{ item.label }}
@@ -48,24 +47,4 @@ SPDX-License-Identifier: Apache-2.0
       <span>Create new request</span>
     </button>
   </mat-menu>
-  <!-- Loading wheel -->
-  <div *ngIf="showLoadingWheel">
-    <mdm-loading-spinner
-      caption="Creating new request ..."
-      color="primary"
-    ></mdm-loading-spinner>
-  </div>
-  <!-- Dropdown Menu -->
-  <mat-menu #menu="matMenu" xPosition="after" yPosition="below">
-    <button mat-menu-item (click)="createRequest()" clickable>
-      <span>Create new request</span>
-    </button>
-  </mat-menu>
-  <!-- Loading wheel -->
-  <div *ngIf="showLoadingWheel">
-    <mdm-loading-spinner
-      caption="Creating new request ..."
-      color="primary"
-    ></mdm-loading-spinner>
-  </div>
 </div>

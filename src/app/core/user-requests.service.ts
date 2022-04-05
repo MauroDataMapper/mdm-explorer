@@ -21,12 +21,6 @@ import {
   CatalogueItemDomainType,
   ContainerCreatePayload,
   DataClass,
-  DataClassDetailResponse,
-  DataClassIndexResponse,
-  DataElement,
-  DataElementDetail,
-  DataElementIndexParameters,
-  DataElementIndexResponse,
   DataModel,
   DataModelCreatePayload,
   DataModelDetail,
@@ -35,25 +29,7 @@ import {
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { FolderDetail } from '@maurodatamapper/mdm-resources/lib/es2015/mdm-folder.model';
-import {
-  defaultIfEmpty,
-  forkJoin,
-  buffer,
-  catchError,
-  concatMap,
-  defer,
-  delay,
-  endWith,
-  from,
-  map,
-  merge,
-  mergeMap,
-  Observable,
-  of,
-  OperatorFunction,
-  switchMap,
-  toArray,
-} from 'rxjs';
+import { defaultIfEmpty, forkJoin, map, mergeMap, Observable, of, switchMap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { CatalogueUserService } from '../catalogue/catalogue-user.service';
 import { UserDetails } from '../security/user-details.service';

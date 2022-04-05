@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { DataClassDetail, DataModel } from '@maurodatamapper/mdm-resources';
+import { DataClassDetail } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import {
   catchError,
@@ -84,8 +84,7 @@ export class SearchListingComponent implements OnInit {
   searchTerms?: string;
   resultSet?: DataElementSearchResultSet;
   bookmarks: Bookmark[] = [];
-  showLoadingWheel: boolean = false;
-  private user: UserDetails | null;
+  showLoadingWheel = false;
   sortBy?: SortByOption;
   /**
    * Each new option must have a {@link SearchListingSortByOption} as a value to ensure
@@ -96,6 +95,7 @@ export class SearchListingComponent implements OnInit {
     { value: 'label-desc', displayName: 'Label (z-a)' },
   ];
   sortByDefaultOption: SortByOption = this.searchListingSortByOptions[0];
+  private user: UserDetails | null;
 
   constructor(
     private route: ActivatedRoute,
@@ -299,9 +299,9 @@ export class SearchListingComponent implements OnInit {
     requestName: string,
     resultErrors: string[]
   ) {
-    let item = event.item;
-    let menuTrigger = event.menuTrigger;
-    let errorData: ShowErrorData = {
+    const item = event.item;
+    const menuTrigger = event.menuTrigger;
+    const errorData: ShowErrorData = {
       heading: 'Request creation error',
       subheading: `The following error occurred while trying to add Data Element '${
         item!.label // eslint-disable-line @typescript-eslint/no-non-null-assertion
@@ -315,15 +315,15 @@ export class SearchListingComponent implements OnInit {
   }
 
   private showConfirmation(event: CreateRequestEvent, requestName: string) {
-    let item = event.item;
-    let menuTrigger = event.menuTrigger;
-    let confirmationData: ConfirmData = {
+    const item = event.item;
+    const menuTrigger = event.menuTrigger;
+    const confirmationData: ConfirmData = {
       heading: 'New request created',
       subheading: `Data Element added to new request: '${requestName}'`,
-      content: [item!.label],
+      content: [item!.label], // eslint-disable-line @typescript-eslint/no-non-null-assertion
       buttonActionCaption: 'View Requests',
       buttonCloseCaption: 'Continue Browsing',
-      buttonActionCallback: () => true, //This will ultimately open the "Browse Requests" page
+      buttonActionCallback: () => true, // This will ultimately open the "Browse Requests" page
     };
     const confirmationRef = this.confirmationService.open(confirmationData, 343);
     // Restore focus to item that was originally clicked on
@@ -335,11 +335,11 @@ export class SearchListingComponent implements OnInit {
   ): OperatorFunction<NewRequestDialogResult, [string, string[]]> {
     return (source: Observable<NewRequestDialogResult>) => {
       return source.pipe(
-        //side-effect: show the loading wheel
+        // side-effect: show the loading wheel
         tap(() => (this.showLoadingWheel = true)),
-        //if the user didn't enter a name or clicked cancel, then bail
+        // if the user didn't enter a name or clicked cancel, then bail
         filter((result) => result.Name !== '' && this.user != null),
-        //Do the doings
+        // Do the doings
         mergeMap((result) => {
           const fakeSearchResult: DataElementSearchResultSet = {
             totalResults: 1,
@@ -354,7 +354,7 @@ export class SearchListingComponent implements OnInit {
             fakeSearchResult
           );
         }),
-        //retain just the label, which is the only interesting bit (at the moment)
+        // retain just the label, which is the only interesting bit (at the moment)
         map(([dataModel, errors]) => [dataModel.label, errors])
       );
     };

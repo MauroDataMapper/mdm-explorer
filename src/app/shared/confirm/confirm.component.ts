@@ -19,9 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
-interface ConfirmCallbackType {
-  (): any;
-}
+type ConfirmCallbackType = () => any;
 
 export interface ConfirmData {
   heading: string;
@@ -38,8 +36,8 @@ export interface ConfirmData {
   styleUrls: ['./confirm.component.scss'],
 })
 
-//Advisory: This component has a class wrapper which is more
-//convenient to use
+// Advisory: This component has a class wrapper which is more
+// convenient to use
 export class ConfirmComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<ConfirmComponent>,

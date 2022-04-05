@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatSelectionListChange } from '@angular/material/list';
-import { DataClass, DataModel } from '@maurodatamapper/mdm-resources';
+import { DataClass } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import {
   catchError,
@@ -158,13 +158,13 @@ export class BrowseComponent implements OnInit {
   }
 
   private showConfirmation(requestName: string) {
-    let confirmationData: ConfirmData = {
+    const confirmationData: ConfirmData = {
       heading: 'New request created',
       subheading: `Data Class added to new request: '${requestName}'`,
-      content: [this.selected!.label],
+      content: [this.selected!.label], // eslint-disable-line @typescript-eslint/no-non-null-assertion
       buttonActionCaption: 'View Requests',
       buttonCloseCaption: 'Continue Browsing',
-      buttonActionCallback: () => true, //This will ultimately open the "Browse Requests" page
+      buttonActionCallback: () => true, // This will ultimately open the "Browse Requests" page
     };
     const confirmationRef = this.confirmationService.open(confirmationData, 343);
     // Restore focus to item that was originally clicked on
@@ -177,11 +177,11 @@ export class BrowseComponent implements OnInit {
   > {
     return (source: Observable<NewRequestDialogResult>) => {
       return source.pipe(
-        //side-effect: show the loading wheel
+        // side-effect: show the loading wheel
         tap(() => (this.showLoadingWheel = true)),
-        //if the user didn't enter a name or clicked cancel, then bail
+        // if the user didn't enter a name or clicked cancel, then bail
         filter((result) => result.Name !== '' && this.user != null),
-        //Do the doings
+        // Do the doings
         mergeMap((result) => {
           return this.userRequestsService.createNewUserRequestFromDataClass(
             result.Name,
@@ -190,7 +190,7 @@ export class BrowseComponent implements OnInit {
             this.selected! // eslint-disable-line @typescript-eslint/no-non-null-assertion
           );
         }),
-        //retain just the label, which is the only interesting bit (at the moment)
+        // retain just the label, which is the only interesting bit (at the moment)
         map(([dataModel, errors]) => [dataModel.label, errors])
       );
     };

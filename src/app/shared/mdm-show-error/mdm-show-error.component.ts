@@ -31,8 +31,8 @@ export interface ShowErrorData {
   templateUrl: './mdm-show-error.component.html',
   styleUrls: ['./mdm-show-error.component.scss'],
 })
-//Advisory: This component has a class wrapper which is more
-//convenient to use
+// Advisory: This component has a class wrapper which is more
+// convenient to use
 export class MdmShowErrorComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<MdmShowErrorComponent>,
