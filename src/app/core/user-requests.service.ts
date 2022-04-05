@@ -58,13 +58,12 @@ import { environment } from 'src/environments/environment';
 import { CatalogueUserService } from '../catalogue/catalogue-user.service';
 import { UserDetails } from '../security/user-details.service';
 import { FolderService } from './folder.service';
-import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
 import { ExceptionService } from './exception.service';
 import { DataElementSearchResultSet } from '../search/search.types';
 import { DataElementSearchService } from '../search/data-element-search.service';
 import { DataModelService } from '../catalogue/data-model.service';
 import { HttpResponse } from '@angular/common/http';
-import { DataClassIdentifier } from '../catalogue/catalogue.types';
+import { DataClassService } from '../catalogue/data-class.service';
 
 @Injectable({
   providedIn: 'root',
@@ -73,9 +72,9 @@ export class UserRequestsService {
   constructor(
     private folderService: FolderService,
     private catalogueUserService: CatalogueUserService,
-    private endpointsService: MdmEndpointsService,
     private exceptionService: ExceptionService,
     private searchService: DataElementSearchService,
+    private dataClassService: DataClassService,
     private dataModelService: DataModelService
   ) {}
 
@@ -129,9 +128,9 @@ export class UserRequestsService {
     // Create the new data model under the user's folder
     return forkJoin([
       this.addUserRequest(user, errors, requestName, requestDescription),
-      this.getAllChildDataClasses(dataClass, errors).pipe(
+      this.dataClassService.getAllChildDataClasses(dataClass, errors).pipe(
         this.exceptionService.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
-        this.getElementsFromDataClasses(errors)
+        this.dataClassService.getElementsFromDataClasses(errors)
       ),
     ]).pipe(
       this.exceptionService.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
@@ -185,73 +184,6 @@ export class UserRequestsService {
       }),
       defaultIfEmpty([{ label: requestName } as DataModel, errors])
     );
-  }
-
-  /**
-   * returns Observable<DataClass>.
-   * Creates an observable from the provided DataClass object which contains all
-   * child DataClasses recursively. The output stream includes the provided data class.
-   *
-   * @param foundDataClass: DataClass (usually selected by the user)
-   * @param errors: string[] to which exception messages can be added.
-   * @returns Observable<DataClass>
-   */
-  getAllChildDataClasses(
-    foundDataClass: DataClass,
-    errors: string[]
-  ): Observable<DataClass> {
-    const childDataClasses = this.endpointsService.dataClass
-      .listChildDataClasses(foundDataClass.model!, foundDataClass.id!) // eslint-disable-line @typescript-eslint/no-non-null-assertion
-      .pipe(
-        mergeMap((response: any) => {
-          const childClasses = (response as DataClassIndexResponse).body
-            .items as DataClass[];
-          return from(childClasses);
-        }),
-        this.exceptionService.catchAndReportPipeError(errors),
-        mergeMap((dataClass: DataClass) => {
-          return this.getAllChildDataClasses(dataClass, errors);
-        }),
-        this.exceptionService.catchAndReportPipeError(errors)
-      );
-    return merge(
-      childDataClasses as Observable<DataClass>,
-      of(foundDataClass)
-    ) as Observable<DataClass>;
-  }
-
-  /**
-   * returns pipe operator: source is DataClass, result is DataElement[].
-   * Finds all the data elements that are children of the source data classes and flattens/batches
-   * them into a single array. There is no check for duplicates in the output stream.
-   *
-   * @param errors: string[] to which exception messages can be added.
-   * @returns Observable<DataModelDetail> of the new data model
-   */
-  public getElementsFromDataClasses(
-    errors: any[]
-  ): OperatorFunction<DataClass, DataElement[]> {
-    const queryParams: DataElementIndexParameters = {
-      all: true,
-    };
-    return (source: Observable<DataClass>): Observable<DataElement[]> => {
-      return source.pipe(
-        mergeMap((foundClass: DataClass) => {
-          const dataClassIdent: DataClassIdentifier = {
-            dataModelId: foundClass.model!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-            dataClassId: foundClass.id!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-          };
-          return this.dataModelService.getDataElements(dataClassIdent, queryParams);
-        }),
-        this.exceptionService.catchAndReportPipeError(errors),
-        mergeMap((elementsResponse: any) => {
-          return from(
-            (elementsResponse as { count: number; items: DataElement[] }).items
-          );
-        }),
-        toArray()
-      );
-    };
   }
 
   /**

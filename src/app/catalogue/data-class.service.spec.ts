@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ConfirmService } from './confirm-service';
+import { DataClassService } from './data-class.service';
 
-describe('ConfirmService', () => {
-  let service: ConfirmService;
+describe('DataClassService', () => {
+  let service: DataClassService;
 
   // beforeEach(() => {
   //   TestBed.configureTestingModule({});
-  //   service = TestBed.inject(ConfirmService);
+  //   service = TestBed.inject(DataClassService);
   // });
 
   // it('should be created', () => {
