@@ -23,25 +23,15 @@ import {
   DataElementBookmarkEvent,
   DataElementCheckedEvent,
   DataElementSearchResult,
-  DataElementSearchResultSet,
 } from '../search.types';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import {
-  CreateRequestComponent,
-  NewRequestDialogResult,
-} from 'src/app/shared/create-request/create-request.component';
-import { UserRequestsService } from 'src/app/core/user-requests.service';
-import { UserDetails, UserDetailsService } from 'src/app/security/user-details.service';
-import {
-  MdmShowErrorComponent,
-  ShowErrorData,
-} from 'src/app/shared/mdm-show-error/mdm-show-error.component';
+import { CreateRequestComponent } from 'src/app/shared/create-request/create-request.component';
 import { MatMenuTrigger } from '@angular/material/menu';
-import { ConfirmComponent, ConfirmData } from 'src/app/shared/confirm/confirm.component';
-import { filter, map, mergeMap, Observable, OperatorFunction, tap } from 'rxjs';
-import { DataModel } from '@maurodatamapper/mdm-resources';
-import { MdmShowErrorService } from 'src/app/core/mdm-show-error.service';
-import { ConfirmService } from 'src/app/core/confirm-service';
+
+export interface CreateRequestEvent {
+  menuTrigger: MatMenuTrigger;
+  item: DataElementSearchResult;
+}
 
 @Component({
   selector: 'mdm-data-element-search-result',
@@ -58,21 +48,14 @@ export class DataElementSearchResultComponent {
   @Output() checked = new EventEmitter<DataElementCheckedEvent>();
 
   @Output() bookmark = new EventEmitter<DataElementBookmarkEvent>();
+
+  @Output() createRequestClicked = new EventEmitter<CreateRequestEvent>();
+
   @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
 
   public showLoadingWheel = false;
-  private user: UserDetails | null;
 
-  constructor(
-    private userRequestsService: UserRequestsService,
-    private createRequestDialog: MatDialog,
-    private userDetailsService: UserDetailsService,
-    private confirmationDialog: MatDialog,
-    private showErrorService: MdmShowErrorService,
-    private confirmationService: ConfirmService
-  ) {
-    this.user = userDetailsService.get();
-  }
+  constructor(private createRequestDialog: MatDialog) {}
 
   itemChecked(event: MatCheckboxChange) {
     if (!this.item) {
@@ -91,24 +74,11 @@ export class DataElementSearchResultComponent {
   }
 
   createRequest() {
-    const dialogProps = new MatDialogConfig();
-    dialogProps.height = 'fit-content';
-    dialogProps.width = '343px';
-    const dialogRef = this.createRequestDialog.open(CreateRequestComponent, dialogProps);
-
-    dialogRef
-      .afterClosed()
-      .pipe(this.createNewRequestOrBail())
-      .subscribe({
-        next: ([requestName, resultErrors]: [string, string[]]) => {
-          if (resultErrors.length === 0) {
-            this.showConfirmation(requestName);
-          } else {
-            this.showErrorDialog(requestName, resultErrors);
-          }
-        },
-        complete: () => (this.showLoadingWheel = false),
-      });
+    let event: CreateRequestEvent = {
+      menuTrigger: this.menuTrigger,
+      item: this.item!,
+    };
+    this.createRequestClicked.emit(event);
   }
 
   /**
@@ -125,64 +95,5 @@ export class DataElementSearchResultComponent {
     });
 
     return found;
-  }
-
-  private showErrorDialog(requestName: string, resultErrors: string[]) {
-    let errorData: ShowErrorData = {
-      heading: 'Request creation error',
-      subheading: `The following error occurred while trying to add Data Element '${
-        this.item!.label // eslint-disable-line @typescript-eslint/no-non-null-assertion
-      }' to new request '${requestName}'.`,
-      message: resultErrors[0],
-      buttonLabel: 'Continue searching',
-    };
-    const errorRef = this.showErrorService.open(errorData, 400);
-    // Restore focus to item that was originally clicked on
-    errorRef.afterClosed().subscribe(() => this.menuTrigger.focus());
-  }
-
-  private showConfirmation(requestName: string) {
-    let confirmationData: ConfirmData = {
-      heading: 'New request created',
-      subheading: `Data Element added to new request: '${requestName}'`,
-      content: [this.item!.label],
-      buttonActionCaption: 'View Requests',
-      buttonCloseCaption: 'Continue Browsing',
-      buttonActionCallback: () => true, //This will ultimately open the "Browse Requests" page
-    };
-    const confirmationRef = this.confirmationService.open(confirmationData, 343);
-    // Restore focus to item that was originally clicked on
-    confirmationRef.afterClosed().subscribe(() => this.menuTrigger.focus());
-  }
-
-  private createNewRequestOrBail(): OperatorFunction<
-    NewRequestDialogResult,
-    [string, string[]]
-  > {
-    return (source: Observable<NewRequestDialogResult>) => {
-      return source.pipe(
-        //side-effect: show the loading wheel
-        tap(() => (this.showLoadingWheel = true)),
-        //if the user didn't enter a name or clicked cancel, then bail
-        filter((result) => result.Name !== '' && this.user != null),
-        //Do the doings
-        mergeMap((result) => {
-          const fakeSearchResult: DataElementSearchResultSet = {
-            totalResults: 1,
-            pageSize: 0,
-            page: 0,
-            items: new Array(this.item!), // eslint-disable-line @typescript-eslint/no-non-null-assertion
-          };
-          return this.userRequestsService.createNewUserRequestFromSearchResults(
-            result.Name,
-            result.Description,
-            this.user!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-            fakeSearchResult
-          );
-        }),
-        //retain just the label, which is the only interesting bit (at the moment)
-        map(([dataModel, errors]) => [dataModel.label, errors])
-      );
-    };
   }
 }
