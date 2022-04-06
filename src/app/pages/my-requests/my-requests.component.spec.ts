@@ -23,6 +23,7 @@ import { ToastrService } from 'ngx-toastr';
 import { of, throwError } from 'rxjs';
 import { UserRequestsService } from 'src/app/core/user-requests.service';
 import {
+  DataElementBasic,
   DataRequest,
   DataRequestStatus,
 } from 'src/app/data-explorer/data-explorer.types';
@@ -187,6 +188,16 @@ describe('MyRequestsComponent', () => {
         },
       ];
 
+      const expectedElements: DataElementBasic[] = elements.map((e) => {
+        return {
+          id: e.id ?? '',
+          dataModelId: e.model ?? '',
+          dataClassId: e.dataClass ?? '',
+          label: e.label,
+          breadcrumbs: e.breadcrumbs,
+        };
+      });
+
       const request = { id: '1', status: 'unsent' } as DataRequest;
 
       userRequestsStub.getRequestDataElements.mockImplementationOnce((req) => {
@@ -206,7 +217,7 @@ describe('MyRequestsComponent', () => {
       harness.component.selectRequest(event);
 
       expect(harness.component.state).toBe('idle');
-      expect(harness.component.requestElements).toStrictEqual(elements);
+      expect(harness.component.requestElements).toStrictEqual(expectedElements);
     });
 
     it('should display an error if request elements cannot be found', () => {

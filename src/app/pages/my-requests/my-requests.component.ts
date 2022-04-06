@@ -24,6 +24,7 @@ import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY, finalize } from 'rxjs';
 import { UserRequestsService } from 'src/app/core/user-requests.service';
 import {
+  DataElementBasic,
   DataRequest,
   DataRequestStatus,
 } from 'src/app/data-explorer/data-explorer.types';
@@ -39,7 +40,7 @@ export class MyRequestsComponent implements OnInit {
   filteredRequests: DataRequest[] = [];
   statusFilters: DataRequestStatus[] = [];
   request?: DataRequest;
-  requestElements: DataElement[] = [];
+  requestElements: DataElementBasic[] = [];
   state: 'idle' | 'loading' = 'idle';
 
   constructor(
@@ -116,7 +117,15 @@ export class MyRequestsComponent implements OnInit {
         finalize(() => (this.state = 'idle'))
       )
       .subscribe((dataElements) => {
-        this.requestElements = dataElements;
+        this.requestElements = dataElements.map((element) => {
+          return {
+            id: element.id ?? '',
+            dataModelId: element.model ?? '',
+            dataClassId: element.dataClass ?? '',
+            label: element.label,
+            breadcrumbs: element.breadcrumbs,
+          };
+        });
       });
   }
 }

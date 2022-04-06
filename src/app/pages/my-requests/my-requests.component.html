@@ -86,13 +86,7 @@ SPDX-License-Identifier: Apache-2.0
           <div class="mdm-my-requests__request-elements">
             <mdm-data-element-row
               *ngFor="let element of requestElements"
-              [item]="{
-                id: element.id ?? '',
-                dataModelId: element.model ?? '',
-                dataClassId: element.dataClass ?? '',
-                label: element.label,
-                breadcrumbs: element.breadcrumbs
-              }"
+              [item]="element"
             >
             </mdm-data-element-row>
           </div>
