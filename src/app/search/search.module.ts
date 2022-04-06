@@ -32,6 +32,7 @@ import { SortByComponent } from './sort-by/sort-by.component';
     PaginationComponent,
     SortByComponent,
   ],
+
   imports: [CoreModule, SharedModule],
   exports: [
     BreadcrumbComponent,
@@ -39,6 +40,7 @@ import { SortByComponent } from './sort-by/sort-by.component';
     PaginationComponent,
     SortByComponent,
   ],
+
   providers: [
     {
       provide: PAGINATION_CONFIG,

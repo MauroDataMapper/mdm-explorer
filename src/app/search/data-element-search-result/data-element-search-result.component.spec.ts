@@ -28,10 +28,16 @@ import {
 import { DataElementSearchResult } from '../search.types';
 import { DataElementSearchResultComponent } from './data-element-search-result.component';
 import { MdmEndpointsService } from 'src/app/mdm-rest-client/mdm-endpoints.service';
+import { createDataElementSearchServiceStub } from 'src/app/testing/stubs/data-element-search.stub';
+import { DataElementSearchService } from '../data-element-search.service';
+import { MatDialog } from '@angular/material/dialog';
+import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
 
 describe('DataElementSearchResultComponent', () => {
   let harness: ComponentHarness<DataElementSearchResultComponent>;
   const endpointsStub: MdmEndpointsServiceStub = createMdmEndpointsStub();
+  const dataElementsSearchStub = createDataElementSearchServiceStub();
+  const matDialogStub = createMatDialogStub();
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(DataElementSearchResultComponent, {
@@ -39,6 +45,14 @@ describe('DataElementSearchResultComponent', () => {
         {
           provide: MdmEndpointsService,
           useValue: endpointsStub,
+        },
+        {
+          provide: DataElementSearchService,
+          useValue: dataElementsSearchStub,
+        },
+        {
+          provide: MatDialog,
+          useValue: matDialogStub,
         },
       ],
     });

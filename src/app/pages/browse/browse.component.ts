@@ -16,18 +16,40 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatSelectionListChange } from '@angular/material/list';
 import { DataClass } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, switchMap } from 'rxjs';
+import {
+  catchError,
+  EMPTY,
+  filter,
+  map,
+  mergeMap,
+  Observable,
+  OperatorFunction,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { CatalogueService } from 'src/app/catalogue/catalogue.service';
 import { DataModelService } from 'src/app/catalogue/data-model.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import {
+  CreateRequestComponent,
+  NewRequestDialogResult,
+} from 'src/app/shared/create-request/create-request.component';
+import {
   DataElementSearchParameters,
   mapSearchParametersToParams,
 } from 'src/app/search/search.types';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { MatMenuTrigger } from '@angular/material/menu';
+import { UserRequestsService } from 'src/app/core/user-requests.service';
+import { UserDetails, UserDetailsService } from 'src/app/security/user-details.service';
+import { ConfirmData } from 'src/app/shared/confirm/confirm.component';
+import { ShowErrorData } from 'src/app/shared/mdm-show-error/mdm-show-error.component';
+import { MdmShowErrorService } from 'src/app/core/mdm-show-error.service';
+import { ConfirmService } from 'src/app/core/confirm-service';
 
 @Component({
   selector: 'mdm-browse',
@@ -35,16 +57,26 @@ import {
   styleUrls: ['./browse.component.scss'],
 })
 export class BrowseComponent implements OnInit {
+  @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
   parentDataClasses: DataClass[] = [];
   childDataClasses: DataClass[] = [];
   selected?: DataClass;
+  showLoadingWheel = false;
+  private user: UserDetails | null;
 
   constructor(
     private catalogue: CatalogueService,
     private dataModels: DataModelService,
     private toastr: ToastrService,
-    private stateRouter: StateRouterService
-  ) {}
+    private stateRouter: StateRouterService,
+    private userRequestsService: UserRequestsService,
+    private theMatDialog: MatDialog,
+    private showErrorService: MdmShowErrorService,
+    private confirmationService: ConfirmService,
+    userDetailsService: UserDetailsService
+  ) {
+    this.user = userDetailsService.get();
+  }
 
   get isChildDataClassSelected() {
     return this.selected && this.selected.parentDataClass;
@@ -52,6 +84,27 @@ export class BrowseComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadParentDataClasses();
+  }
+
+  createRequest() {
+    const dialogProps = new MatDialogConfig();
+    dialogProps.height = 'fit-content';
+    dialogProps.width = '343px';
+    const dialogRef = this.theMatDialog.open(CreateRequestComponent, dialogProps);
+
+    dialogRef
+      .afterClosed()
+      .pipe(this.createNewRequestOrBail())
+      .subscribe({
+        next: ([requestName, resultErrors]: [string, string[]]) => {
+          if (resultErrors.length === 0) {
+            this.showConfirmation(requestName);
+          } else {
+            this.showErrorDialog(requestName, resultErrors);
+          }
+        },
+        complete: () => (this.showLoadingWheel = false),
+      });
   }
 
   selectParentDataClass(event: MatSelectionListChange) {
@@ -63,6 +116,10 @@ export class BrowseComponent implements OnInit {
   selectChildDataClass(event: MatSelectionListChange) {
     const selected = event.options[0].value as DataClass;
     this.selected = selected;
+  }
+
+  reselectDataClass(option: DataClass) {
+    this.selected = option;
   }
 
   viewDetails() {
@@ -84,6 +141,59 @@ export class BrowseComponent implements OnInit {
 
     const params = mapSearchParametersToParams(searchParameters);
     this.stateRouter.navigateToKnownPath('/search/listing', params);
+  }
+
+  private showErrorDialog(requestName: string, resultErrors: string[]) {
+    // Restore focus to item that was originally clicked on
+    const errorData: ShowErrorData = {
+      heading: 'Request creation error',
+      subheading: `The following error occurred while trying to add Data Class '${
+        this.selected!.label // eslint-disable-line @typescript-eslint/no-non-null-assertion
+      }' to new request '${requestName}'.`,
+      message: resultErrors[0],
+      buttonLabel: 'Continue browsing',
+    };
+    const errorRef = this.showErrorService.open(errorData, 400);
+    errorRef.afterClosed().subscribe(() => this.menuTrigger.focus());
+  }
+
+  private showConfirmation(requestName: string) {
+    const confirmationData: ConfirmData = {
+      heading: 'New request created',
+      subheading: `Data Class added to new request: '${requestName}'`,
+      content: [this.selected!.label], // eslint-disable-line @typescript-eslint/no-non-null-assertion
+      buttonActionCaption: 'View Requests',
+      buttonCloseCaption: 'Continue Browsing',
+      buttonActionCallback: () => true, // This will ultimately open the "Browse Requests" page
+    };
+    const confirmationRef = this.confirmationService.open(confirmationData, 343);
+    // Restore focus to item that was originally clicked on
+    confirmationRef.afterClosed().subscribe(() => this.menuTrigger.focus());
+  }
+
+  private createNewRequestOrBail(): OperatorFunction<
+    NewRequestDialogResult,
+    [string, string[]]
+  > {
+    return (source: Observable<NewRequestDialogResult>) => {
+      return source.pipe(
+        // side-effect: show the loading wheel
+        tap(() => (this.showLoadingWheel = true)),
+        // if the user didn't enter a name or clicked cancel, then bail
+        filter((result) => result.Name !== '' && this.user != null),
+        // Do the doings
+        mergeMap((result) => {
+          return this.userRequestsService.createNewUserRequestFromDataClass(
+            result.Name,
+            result.Description,
+            this.user!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+            this.selected! // eslint-disable-line @typescript-eslint/no-non-null-assertion
+          );
+        }),
+        // retain just the label, which is the only interesting bit (at the moment)
+        map(([dataModel, errors]) => [dataModel.label, errors])
+      );
+    };
   }
 
   private loadParentDataClasses() {

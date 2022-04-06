@@ -17,12 +17,27 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { DataModel } from '@maurodatamapper/mdm-resources';
+import {
+  CatalogueItemDomainType,
+  DataClass,
+  DataModel,
+  DataModelCreatePayload,
+  DataModelDetail,
+  DataModelDetailResponse,
+  Uuid,
+} from '@maurodatamapper/mdm-resources';
 import { FolderDetail } from '@maurodatamapper/mdm-resources/lib/es2015/mdm-folder.model';
-import { Observable, switchMap } from 'rxjs';
+import { defaultIfEmpty, forkJoin, map, mergeMap, Observable, of, switchMap } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { CatalogueUserService } from '../catalogue/catalogue-user.service';
+import { UserDetails } from '../security/user-details.service';
 import { FolderService } from './folder.service';
+import { ExceptionService } from './exception.service';
+import { DataElementSearchResultSet } from '../search/search.types';
+import { DataElementSearchService } from '../search/data-element-search.service';
 import { DataModelService } from '../catalogue/data-model.service';
+import { HttpResponse } from '@angular/common/http';
+import { DataClassService } from '../catalogue/data-class.service';
 
 @Injectable({
   providedIn: 'root',
@@ -30,7 +45,11 @@ import { DataModelService } from '../catalogue/data-model.service';
 export class UserRequestsService {
   constructor(
     private folderService: FolderService,
-    private dataModel: DataModelService
+    private catalogueUserService: CatalogueUserService,
+    private exceptionService: ExceptionService,
+    private searchService: DataElementSearchService,
+    private dataClassService: DataClassService,
+    private dataModelService: DataModelService
   ) {}
 
   /**
@@ -59,8 +78,126 @@ export class UserRequestsService {
   list(userEmail: string): Observable<DataModel[]> {
     return this.getRequestsFolder(userEmail).pipe(
       switchMap((requestsFolder: FolderDetail): Observable<DataModel[]> => {
-        return this.dataModel.listInFolder(requestsFolder.id!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
+        return this.dataModelService.listInFolder(requestsFolder.id!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
       })
+    );
+  }
+
+  /**
+   * Creates a new user request given a request name, description, a user and a data class
+   *
+   * @param requestName - Name for the new user request
+   * @param requestDescription - Description for the new user request
+   * @param user: user's requests folder for the new request to be added to
+   * @param data class to be added to new request
+   * @returns Observable<DataModelDetailResponse>
+   */
+  createNewUserRequestFromDataClass(
+    requestName: string,
+    requestDescription: string,
+    user: UserDetails,
+    dataClass: DataClass
+  ): Observable<[DataModel, string[]]> {
+    const errors: string[] = [];
+    // Create the new data model under the user's folder
+    return forkJoin([
+      this.addUserRequest(user, errors, requestName, requestDescription),
+      this.dataClassService.getAllChildDataClasses(dataClass, errors).pipe(
+        this.exceptionService.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
+        this.dataClassService.getElementsFromDataClasses(errors)
+      ),
+    ]).pipe(
+      this.exceptionService.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
+      // Add all the data elements (which are in a single array) to the new
+      // user request (data model)
+      this.dataModelService.addDataElements(dataClass.model!, errors), // eslint-disable-line @typescript-eslint/no-non-null-assertion
+      this.exceptionService.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
+      map((newDataModel: HttpResponse<DataModel>) => {
+        return [newDataModel.body, errors] as [DataModel, string[]];
+      }),
+      defaultIfEmpty([{ label: requestName } as DataModel, errors])
+    );
+  }
+
+  createNewUserRequestFromSearchResults(
+    requestName: string,
+    requestDescription: string,
+    user: UserDetails,
+    searchResults: DataElementSearchResultSet
+  ): Observable<[DataModel, string[]]> {
+    // Have to use a deferred observable or a promise here as we don't know the data model
+    // before we have to create the pipe operator that needs the data model.
+    const errors: string[] = [];
+    let existingDataModel: Uuid;
+    try {
+      existingDataModel = this.searchService.getDataModelFromSearchResults(searchResults);
+    } catch (err) {
+      errors[0] = err as string;
+      return of([{ label: '', domainType: CatalogueItemDomainType.DataModel }, errors]);
+    }
+    // Create the new data model under the user's folder
+    return this.addUserRequest(user, errors, requestName, requestDescription).pipe(
+      mergeMap(
+        (response: DataModelDetail): Observable<[Uuid, DataElementSearchResultSet]> => {
+          return of([
+            response.id!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+            searchResults,
+          ]) as Observable<[Uuid, DataElementSearchResultSet]>;
+        }
+      ),
+      map(([newDataModelId, pipedSearchResults]: [Uuid, DataElementSearchResultSet]) => {
+        const ids = pipedSearchResults.items.map((item) => item.id);
+        return [newDataModelId, ids] as [Uuid, Uuid[]];
+      }),
+      // Add the data elements (array) to the new
+      // user request (data model)
+      this.dataModelService.addDataElementsById(existingDataModel, errors),
+      this.exceptionService.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
+      map((newDataModel: HttpResponse<DataModel>) => {
+        return [newDataModel.body as DataModel, errors] as [DataModel, string[]];
+      }),
+      defaultIfEmpty([{ label: requestName } as DataModel, errors])
+    );
+  }
+
+  /**
+   * Creates an observable that adds a new data model to the user's requests folder.
+   *
+   * @param requestName: string, usually input by the user, the label of the new data model
+   * @param user: UserDetails object describing the current signed in user.
+   * @param errors: string[] to which exception messages can be added.
+   * @returns Observable<DataModelDetail> of the new data model
+   */
+  private addUserRequest(
+    user: UserDetails,
+    errors: any[],
+    requestName: string,
+    requestDescription?: string
+  ): Observable<DataModelDetail> {
+    return forkJoin([
+      this.getRequestsFolder(user.email),
+      this.catalogueUserService.get(user.id!), // eslint-disable-line @typescript-eslint/no-non-null-assertion
+    ]).pipe(
+      this.exceptionService.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
+      switchMap(([folder, catalogueUser]) => {
+        const dataModelCreatePayload: DataModelCreatePayload = {
+          label: requestName,
+          description: requestDescription,
+          type: 'Data Asset',
+          folder: folder.id!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+          author: `${user.firstName}${user.firstName ? '' : ' '}${user.lastName}`,
+          organisation: catalogueUser.organisation ?? '',
+        };
+        return this.dataModelService.addToFolder(
+          folder.id!, // eslint-disable-line @typescript-eslint/no-non-null-assertion,  @typescript-eslint/no-unsafe-argument
+          dataModelCreatePayload
+        );
+      }),
+      this.exceptionService.catchAndReportPipeError(errors), // eslint-disable-line @typescript-eslint/no-unsafe-argument
+      mergeMap((response: any): Observable<DataModelDetail> => {
+        return of((response as DataModelDetailResponse).body);
+      }),
+      this.exceptionService.catchAndReportPipeError(errors) // eslint-disable-line @typescript-eslint/no-unsafe-argument
     );
   }
 

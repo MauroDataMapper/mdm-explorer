@@ -16,23 +16,34 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { DataModel, FolderDetail } from '@maurodatamapper/mdm-resources';
+import {
+  DataModel,
+  FolderDetail,
+  MdmResourcesConfiguration,
+} from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
 import { DataModelService } from '../catalogue/data-model.service';
 import { createDataModelServiceStub } from '../testing/stubs/data-model.stub';
 import { createFolderServiceStub } from '../testing/stubs/folder.stub';
 import { setupTestModuleForService } from '../testing/testing.helpers';
 import { FolderService } from './folder.service';
-
 import { UserRequestsService } from './user-requests.service';
+import { DataElementSearchService } from '../search/data-element-search.service';
+import { ExceptionService } from './exception.service';
+import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
+import { createDataElementSearchServiceStub } from '../testing/stubs/data-element-search.stub';
+import { createMdmEndpointsStub } from '../testing/stubs/mdm-endpoints.stub';
 
 describe('UserRequestsService', () => {
   let service: UserRequestsService;
   const folderServiceStub = createFolderServiceStub();
   const dataModelStub = createDataModelServiceStub();
+  const dataElementSearchStub = createDataElementSearchServiceStub();
+  const endpointsStub = createMdmEndpointsStub();
 
   beforeEach(() => {
     service = setupTestModuleForService(UserRequestsService, {
+      // imports: [CATALOGUE_CONFIGURATION],
       providers: [
         {
           provide: FolderService,
@@ -41,6 +52,20 @@ describe('UserRequestsService', () => {
         {
           provide: DataModelService,
           useValue: dataModelStub,
+        },
+        {
+          provide: MdmResourcesConfiguration,
+        },
+        {
+          provide: DataElementSearchService,
+          useValue: dataElementSearchStub,
+        },
+        {
+          provide: ExceptionService,
+        },
+        {
+          provide: MdmEndpointsService,
+          useValue: endpointsStub,
         },
       ],
     });

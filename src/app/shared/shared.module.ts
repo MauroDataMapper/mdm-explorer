@@ -23,6 +23,10 @@ import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
 import { SafePipe } from './pipes/safe.pipe';
 import { ArrowDirective } from './directives/arrow.directive';
+import { CreateRequestComponent } from './create-request/create-request.component';
+import { ConfirmComponent } from './confirm/confirm.component';
+import { MdmShowErrorComponent } from './mdm-show-error/mdm-show-error.component';
+import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
 import { BookmarkToggleComponent } from './bookmark-toggle/bookmark-toggle.component';
 import { CoreModule } from '../core/core.module';
 import { SummaryMetadataComponent } from './summary-metadata/summary-metadata/summary-metadata.component';
@@ -39,10 +43,15 @@ import { CallToActionComponent } from './call-to-action/call-to-action.component
     HeaderComponent,
     SafePipe,
     ArrowDirective,
+    CreateRequestComponent,
     BookmarkToggleComponent,
+    ConfirmComponent,
     SummaryMetadataChartComponent,
     SummaryMetadataComponent,
     SummaryMetadataReportComponent,
+    ConfirmComponent,
+    MdmShowErrorComponent,
+    LoadingSpinnerComponent,
     CallToActionComponent,
   ],
   imports: [CoreModule, NgChartsModule],
@@ -51,6 +60,9 @@ import { CallToActionComponent } from './call-to-action/call-to-action.component
     ClassifiersComponent,
     FooterComponent,
     HeaderComponent,
+    LoadingSpinnerComponent,
+    ArrowDirective,
+    BookmarkToggleComponent,
     BookmarkToggleComponent,
     SummaryMetadataChartComponent,
     SummaryMetadataComponent,

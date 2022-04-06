@@ -69,6 +69,7 @@ SPDX-License-Identifier: Apache-2.0
         [bookmarks]="bookmarks"
         (checked)="selectElement($event)"
         (bookmark)="bookmarkElement($event)"
+        (createRequestClicked)="createRequest($event)"
       ></mdm-data-element-search-result>
       <mdm-pagination
         [currentPage]="resultSet.page"
@@ -78,4 +79,11 @@ SPDX-License-Identifier: Apache-2.0
       ></mdm-pagination>
     </div>
   </div>
+</div>
+<!-- Loading wheel -->
+<div *ngIf="showLoadingWheel">
+  <mdm-loading-spinner
+    caption="Creating new request ..."
+    color="primary"
+  ></mdm-loading-spinner>
 </div>

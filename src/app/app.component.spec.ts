@@ -28,10 +28,13 @@ import {
   MdmEndpointsServiceStub,
 } from './testing/stubs/mdm-endpoints.stub';
 import { ComponentHarness, setupTestModuleForComponent } from './testing/testing.helpers';
+import { createDataElementSearchServiceStub } from './testing/stubs/data-element-search.stub';
+import { DataElementSearchService } from './search/data-element-search.service';
 
 describe('AppComponent', () => {
   let harness: ComponentHarness<AppComponent>;
   const endpointsStub: MdmEndpointsServiceStub = createMdmEndpointsStub();
+  const dataElementSearchStub = createDataElementSearchServiceStub();
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(AppComponent, {
@@ -44,6 +47,10 @@ describe('AppComponent', () => {
         {
           provide: StateRouterService,
           useValue: jest.fn(),
+        },
+        {
+          provide: DataElementSearchService,
+          useValue: dataElementSearchStub,
         },
       ],
     });

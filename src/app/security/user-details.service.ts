@@ -50,7 +50,6 @@ export class UserDetailsService {
     if (!userEmail || userEmail.length === 0) {
       return null;
     }
-
     return {
       id: localStorage.getItem('userId') ?? '',
       token: localStorage.getItem('token') ?? undefined,

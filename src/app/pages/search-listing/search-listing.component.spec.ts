@@ -49,6 +49,15 @@ import {
 import { MdmEndpointsService } from 'src/app/mdm-rest-client/mdm-endpoints.service';
 
 import { SearchListingComponent, SearchListingSource } from './search-listing.component';
+import {
+  createMatDialogStub,
+  MatDialogStub,
+} from 'src/app/testing/stubs/mat-dialog.stub';
+import { MatDialog } from '@angular/material/dialog';
+import {
+  CreateRequestComponent,
+  NewRequestDialogResult,
+} from 'src/app/shared/create-request/create-request.component';
 
 describe('SearchListingComponent', () => {
   let harness: ComponentHarness<SearchListingComponent>;
@@ -59,6 +68,8 @@ describe('SearchListingComponent', () => {
   const toastrStub = createToastrServiceStub();
   const stateRouterStub = createStateRouterStub();
   const endpointsStub: MdmEndpointsServiceStub = createMdmEndpointsStub();
+  const matDialogStub: MatDialogStub<CreateRequestComponent, NewRequestDialogResult> =
+    createMatDialogStub();
 
   const setupComponentTest = async (parameters: DataElementSearchParameters) => {
     const params = mapSearchParametersToParams(parameters);
@@ -97,6 +108,10 @@ describe('SearchListingComponent', () => {
         {
           provide: BookmarkService,
           useValue: bookmarkStub,
+        },
+        {
+          provide: MatDialog,
+          useValue: matDialogStub,
         },
       ],
     });

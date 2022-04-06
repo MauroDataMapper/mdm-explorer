@@ -29,14 +29,17 @@ import {
   DataElementIndexParameters,
   DataElementIndexResponse,
   DataModel,
+  DataModelCreatePayload,
   DataModelDetail,
   DataModelDetailResponse,
   DataModelIndexResponse,
+  DataModelSubsetPayload,
   MdmIndexBody,
   SearchQueryParameters,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
-import { map, Observable, of } from 'rxjs';
+import { map, mergeMap, Observable, of, OperatorFunction } from 'rxjs';
+import { ExceptionService } from '../core/exception.service';
 import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
 import { DataClassIdentifier, isDataClass } from './catalogue.types';
 
@@ -47,7 +50,10 @@ import { DataClassIdentifier, isDataClass } from './catalogue.types';
   providedIn: 'root',
 })
 export class DataModelService {
-  constructor(private endpoints: MdmEndpointsService) {}
+  constructor(
+    private endpoints: MdmEndpointsService,
+    private exceptionService: ExceptionService
+  ) {}
 
   /**
    * Gets a Data Model based on the full path to the model in the catalogue.
@@ -164,5 +170,76 @@ export class DataModelService {
     return this.endpoints.dataModel
       .listInFolder(folderId)
       .pipe(map((response: DataModelIndexResponse) => response.body.items));
+  }
+
+  /**
+   * Adds a data model as a child to the folder.
+   *
+   * @param folderId the parent folder of the dataModel you want to add.
+   * @returns An observable of {@link DataModel} object just added.
+   */
+  addToFolder(folder: Uuid, dataModelCreatePayload: DataModelCreatePayload) {
+    return this.endpoints.dataModel.addToFolder(folder, dataModelCreatePayload);
+  }
+
+  /**
+   * returns pipe operator: source is DataElement[], result is DataModelDetail.
+   * Adds the source DataElements, which exist in the oldDataModel, to the newDataModel
+   *
+   * @param oldDataModelId: Uuid of the source data model
+   * @param newDataModelId: Observable of DataModel Uuids to which the elements need to be added
+   * This was created to add to just 1 data model, but would work just as well with multiple data models
+   * @param errors: string[] to which exception messages can be added.
+   * @returns Observable<DataModelDetail> of the new data model
+   */
+  addDataElements(
+    oldDataModelId: Uuid,
+    errors: string[]
+  ): OperatorFunction<[DataModel, DataElement[]], any> {
+    return (source) => {
+      return source.pipe(
+        mergeMap(([newDataModel, elements]: [DataModel, DataElement[]]) => {
+          const idArray = elements.map((element) => element.id);
+          return (
+            of([
+              newDataModel.id!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+              idArray,
+            ]) as Observable<[Uuid, Uuid[]]>
+          ).pipe(this.addDataElementsById(oldDataModelId, errors));
+        })
+      );
+    };
+  }
+
+  /**
+   * returns pipe operator: source is string[], result is DataModelDetail.
+   * Adds the source DataElement Uuids, which exist in the oldDataModel, to the newDataModel
+   *
+   * @param oldDataModelId: Uuid of the source data model
+   * @param newDataModelId: Observable of DataModel Uuids to which the elements need to be added
+   * This was created to add to just 1 data model, but would work just as well with multiple data models
+   * @param errors: string[] to which exception messages can be added.
+   * @returns Observable<DataModelDetail> of the new data model
+   */
+  addDataElementsById(
+    oldDataModelId: Uuid,
+    errors: string[]
+  ): OperatorFunction<[Uuid, Uuid[]], any> {
+    return (source: Observable<[Uuid, Uuid[]]>) => {
+      return source.pipe(
+        mergeMap(([newDataModelId, elements]: [Uuid, Uuid[]]) => {
+          const datamodelSubsetPayload: DataModelSubsetPayload = {
+            additions: elements,
+            deletions: [],
+          };
+          return this.endpoints.dataModel.copySubset(
+            oldDataModelId,
+            newDataModelId,
+            datamodelSubsetPayload
+          );
+        }),
+        this.exceptionService.catchAndReportPipeError(errors)
+      );
+    };
   }
 }
