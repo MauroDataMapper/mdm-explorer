@@ -164,7 +164,7 @@ export class BrowseComponent implements OnInit {
       content: [this.selected!.label], // eslint-disable-line @typescript-eslint/no-non-null-assertion
       buttonActionCaption: 'View Requests',
       buttonCloseCaption: 'Continue Browsing',
-      buttonActionCallback: () => true, // This will ultimately open the "Browse Requests" page
+      buttonActionCallback: () => this.stateRouter.navigateToKnownPath('/requests'),
     };
     const confirmationRef = this.confirmationService.open(confirmationData, 343);
     // Restore focus to item that was originally clicked on

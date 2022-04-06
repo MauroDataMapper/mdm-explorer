@@ -204,7 +204,7 @@ export const getDataRequestStatus = (model: DataModel): DataRequestStatus => {
  */
 export interface DataRequest extends DataModel {
   /**
-   * Get the status of this request - unsent, submitted,
+   * Get the status of this request, one of {@link DataRequestStatus}.
    */
   status: DataRequestStatus;
 }

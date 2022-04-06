@@ -91,11 +91,10 @@ export class MyRequestsComponent implements OnInit {
   }
 
   private filterRequests() {
-    this.filteredRequests = this.allRequests.filter((req) => {
-      return this.statusFilters.length > 0
-        ? this.statusFilters.includes(req.status)
-        : true;
-    });
+    this.filteredRequests =
+      this.statusFilters.length === 0
+        ? this.allRequests
+        : this.allRequests.filter((req) => this.statusFilters.includes(req.status));
   }
 
   private setRequest(request?: DataRequest) {
