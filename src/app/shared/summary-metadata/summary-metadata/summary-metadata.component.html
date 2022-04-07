@@ -16,12 +16,14 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<div *ngFor="let item of summaryMetadata">
-  <p>{{ item.description }}</p>
-  <mdm-summary-metadata-report
-    [catalogueItemDomainType]="this.catalogueItemDomainType"
-    [catalogueItemId]="this.catalogueItemId"
-    [summaryMetadata]="item"
-  >
-  </mdm-summary-metadata-report>
-</div>
+<mat-card *ngIf="summaryMetadata.length > 0" class="mdm-data-element-card">
+  <div *ngFor="let item of summaryMetadata">
+    <h2>{{ item.description }}</h2>
+    <mdm-summary-metadata-report
+      [catalogueItemDomainType]="this.catalogueItemDomainType"
+      [catalogueItemId]="this.catalogueItemId"
+      [summaryMetadata]="item"
+    >
+    </mdm-summary-metadata-report>
+  </div>
+</mat-card>
