@@ -26,4 +26,11 @@ import { DataRequestStatus } from '../data-explorer.types';
 })
 export class RequestStatusChipComponent {
   @Input() status?: DataRequestStatus;
+
+  getCssClasses() {
+    return {
+      'mdm-request-status-chip--unsent': this.status === 'unsent',
+      'mdm-request-status-chip--submitted': this.status === 'submitted',
+    };
+  }
 }

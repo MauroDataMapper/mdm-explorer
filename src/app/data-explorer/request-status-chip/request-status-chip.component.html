@@ -16,13 +16,6 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<div
-  *ngIf="status"
-  class="mdm-request-status-chip"
-  [ngClass]="{
-    'mdm-request-status-chip--unsent': status === 'unsent',
-    'mdm-request-status-chip--submitted': status === 'submitted'
-  }"
->
+<div *ngIf="status" class="mdm-request-status-chip" [ngClass]="getCssClasses()">
   {{ status }}
 </div>
