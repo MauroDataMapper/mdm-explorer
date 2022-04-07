@@ -61,10 +61,6 @@ SPDX-License-Identifier: Apache-2.0
               <span class="mdm-data-element-property-name">Label: </span
               >{{ dataElement.dataType?.label }}
             </p>
-            <p>
-              <span class="mdm-data-element-property-name">Description: </span
-              >{{ dataElement.dataType?.description }}
-            </p>
             <div *ngIf="dataElement.dataType?.domainType == 'EnumerationType'">
               <h3>List of enumeration values</h3>
               <table class="table table-striped">
