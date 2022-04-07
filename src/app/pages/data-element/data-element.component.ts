@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
   CatalogueItemDomainType,
@@ -28,7 +28,6 @@ import { DataModelService } from 'src/app/mauro/data-model.service';
 import { ProfileService } from 'src/app/data-explorer/profile.service';
 import { ToastrService } from 'ngx-toastr';
 import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
-import { DataElementBookmarkEvent } from 'src/app/data-explorer/data-explorer.types';
 import { switchMap, forkJoin, catchError, EMPTY } from 'rxjs';
 
 @Component({
@@ -37,8 +36,6 @@ import { switchMap, forkJoin, catchError, EMPTY } from 'rxjs';
   styleUrls: ['./data-element.component.scss'],
 })
 export class DataElementComponent implements OnInit {
-  @Output() bookmark = new EventEmitter<DataElementBookmarkEvent>();
-
   dataModelId: Uuid = '';
   dataClassId: Uuid = '';
   dataElementId: Uuid = '';
