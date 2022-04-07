@@ -44,6 +44,7 @@ export class DataElementComponent implements OnInit {
   dataElementId: Uuid = '';
   dataElement?: DataElementDetail;
   researchProfile?: Profile;
+  identifiableData?: string;
 
   bookmarks: Bookmark[] = [];
 
@@ -73,6 +74,22 @@ export class DataElementComponent implements OnInit {
       .subscribe(([dataElementDetail, profile]) => {
         this.dataElement = dataElementDetail;
         this.researchProfile = profile;
+
+        // Check for the Identifiable Data value
+        if (this.researchProfile && this.researchProfile.sections.length > 0) {
+          const identifiableInformation = this.researchProfile.sections.find(
+            (section) => section.name === 'Identifiable Information'
+          );
+
+          if (identifiableInformation && identifiableInformation.fields.length > 0) {
+            const identifiableDataField = identifiableInformation.fields.find(
+              (field) => field.fieldName === 'Identifiable Data'
+            );
+            if (identifiableDataField) {
+              this.identifiableData = identifiableDataField.currentValue;
+            }
+          }
+        }
       });
   }
 

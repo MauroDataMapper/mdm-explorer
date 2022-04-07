@@ -34,6 +34,22 @@ SPDX-License-Identifier: Apache-2.0
       </span>
     </div>
 
+    <div *ngIf="identifiableData" class="mdm-data-element-detail__header">
+      <h3>
+        <span [ngSwitch]="identifiableData">
+          <i *ngSwitchCase="'Legally Restricted'" class="bi bi-shield-fill"></i>
+          <i *ngSwitchCase="'Identifying'" class="bi bi-shield-fill"></i>
+          <i *ngSwitchCase="'Pseudonymised'" class="bi bi-shield-shaded"></i>
+          <i *ngSwitchCase="'Maybe identifying'" class="bi bi-shield-shaded"></i>
+          <i *ngSwitchCase="'Anonymous'" class="bi bi-shield"></i>
+          <i *ngSwitchDefault></i>
+        </span>
+        <span>
+          {{ identifiableData }}
+        </span>
+      </h3>
+    </div>
+
     <div class="mdm-data-element-detail-content">
       <mat-card
         *ngIf="dataElement.classifiers && dataElement.classifiers.length > 0"
