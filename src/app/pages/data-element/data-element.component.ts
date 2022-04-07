@@ -29,6 +29,7 @@ import { ProfileService } from 'src/app/data-explorer/profile.service';
 import { ToastrService } from 'ngx-toastr';
 import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
 import { DataElementBookmarkEvent } from 'src/app/data-explorer/data-explorer.types';
+import { switchMap, forkJoin, catchError, EMPTY } from 'rxjs';
 
 @Component({
   selector: 'mdm-data-element',
@@ -59,28 +60,20 @@ export class DataElementComponent implements OnInit {
       this.bookmarks = result;
     });
 
-    this.route.params.subscribe((parameter) => {
-      this.dataModelId = parameter.dataModelId;
-      this.dataClassId = parameter.dataClassId;
-      this.dataElementId = parameter.dataElementId;
+    this.route.params
+      .pipe(
+        switchMap((params) => {
+          this.dataModelId = params.dataModelId;
+          this.dataClassId = params.dataClassId;
+          this.dataElementId = params.dataElementId;
 
-      this.dataModels
-        .getDataElement(this.dataModelId, this.dataClassId, this.dataElementId)
-        .subscribe((dataElementDetail) => {
-          this.dataElement = dataElementDetail;
-        });
-
-      this.profileService
-        .get(
-          CatalogueItemDomainType.DataElement,
-          this.dataElementId,
-          'uk.ac.ox.softeng.maurodatamapper.plugins.research',
-          'ResearchDataElementProfileProviderService'
-        )
-        .subscribe((result) => {
-          this.researchProfile = result;
-        });
-    });
+          return forkJoin([this.loadDataElement(), this.loadProfile()]);
+        })
+      )
+      .subscribe(([dataElementDetail, profile]) => {
+        this.dataElement = dataElementDetail;
+        this.researchProfile = profile;
+      });
   }
 
   toggleBookmark(selected: boolean) {
@@ -120,5 +113,32 @@ export class DataElementComponent implements OnInit {
     });
 
     return found;
+  }
+
+  private loadDataElement() {
+    return this.dataModels
+      .getDataElement(this.dataModelId, this.dataClassId, this.dataElementId)
+      .pipe(
+        catchError(() => {
+          this.toastr.error('Unable to retrieve the chosen Data Element.');
+          return EMPTY;
+        })
+      );
+  }
+
+  private loadProfile() {
+    return this.profileService
+      .get(
+        CatalogueItemDomainType.DataElement,
+        this.dataElementId,
+        'uk.ac.ox.softeng.maurodatamapper.plugins.research',
+        'ResearchDataElementProfileProviderService'
+      )
+      .pipe(
+        catchError(() => {
+          this.toastr.error('Unable to retrieve the Data Element Profile.');
+          return EMPTY;
+        })
+      );
   }
 }
