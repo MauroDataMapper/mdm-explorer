@@ -70,10 +70,12 @@ SPDX-License-Identifier: Apache-2.0
               [value]="req"
               [selected]="req === request"
             >
-              <div>
-                {{ req.label }}
+              <p>
+                <span class="mdm-my-requests__request-name" title="{{ req.label }}">{{
+                  req.label
+                }}</span>
                 <mdm-request-status-chip [status]="req.status"></mdm-request-status-chip>
-              </div>
+              </p>
             </mat-list-option>
           </mat-selection-list>
         </div>

@@ -51,7 +51,7 @@ export class MyRequestsComponent implements OnInit {
 
   get hasMultipleRequestStatus() {
     const counts = countDataRequestStatus(this.allRequests);
-    return counts.unsent > 0 || counts.submitted > 0;
+    return counts.unsent > 0 && counts.submitted > 0;
   }
 
   ngOnInit(): void {

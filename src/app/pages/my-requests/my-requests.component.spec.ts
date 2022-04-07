@@ -157,8 +157,8 @@ describe('MyRequestsComponent', () => {
   describe('has multiple request status', () => {
     it.each([
       [false, 0, 0],
-      [true, 1, 0],
-      [true, 0, 1],
+      [false, 1, 0],
+      [false, 0, 1],
       [true, 2, 2],
     ])(
       'should say hasMultipleRequestStatus is %p when unsent count is %p and submitted count is %p',

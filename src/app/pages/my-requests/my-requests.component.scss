@@ -39,7 +39,6 @@ $request-elements-max-height: 500px;
     border-radius: $header-border-radius;
 
     h1 {
-      //display: inline-block;
       margin: 0;
     }
   }
@@ -55,6 +54,15 @@ $request-elements-max-height: 500px;
 
   &__progress {
     margin: 0 0 1em 0;
+  }
+
+  &__request-name {
+    display: inline-block;
+    width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
   }
 
   &__request-header {
