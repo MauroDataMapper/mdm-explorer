@@ -19,7 +19,6 @@ SPDX-License-Identifier: Apache-2.0
 import { Component, OnInit } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatSelectionListChange } from '@angular/material/list';
-import { DataElement } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY, finalize } from 'rxjs';
 import { UserRequestsService } from 'src/app/core/user-requests.service';
@@ -27,6 +26,7 @@ import {
   DataElementBasic,
   DataRequest,
   DataRequestStatus,
+  countDataRequestStatus,
 } from 'src/app/data-explorer/data-explorer.types';
 import { SecurityService } from 'src/app/security/security.service';
 
@@ -48,6 +48,11 @@ export class MyRequestsComponent implements OnInit {
     private userRequests: UserRequestsService,
     private toastr: ToastrService
   ) {}
+
+  get hasMultipleRequestStatus() {
+    const counts = countDataRequestStatus(this.allRequests);
+    return counts.unsent > 0 || counts.submitted > 0;
+  }
 
   ngOnInit(): void {
     const user = this.security.getSignedInUser();

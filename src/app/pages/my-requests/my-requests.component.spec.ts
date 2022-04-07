@@ -154,6 +154,33 @@ describe('MyRequestsComponent', () => {
     });
   });
 
+  describe('has multiple request status', () => {
+    it.each([
+      [false, 0, 0],
+      [true, 1, 0],
+      [true, 0, 1],
+      [true, 2, 2],
+    ])(
+      'should say hasMultipleRequestStatus is %p when unsent count is %p and submitted count is %p',
+      (expected, unsentCount, submittedCount) => {
+        const generateRequests = (count: number, status: DataRequestStatus) => {
+          return [...Array(count).keys()].map(() => {
+            return { status } as DataRequest;
+          });
+        };
+
+        const requests = [
+          ...generateRequests(unsentCount, 'unsent'),
+          ...generateRequests(submittedCount, 'submitted'),
+        ];
+
+        harness.component.allRequests = requests;
+        const actual = harness.component.hasMultipleRequestStatus;
+        expect(actual).toBe(expected);
+      }
+    );
+  });
+
   describe('select request', () => {
     beforeEach(() => {
       toastrStub.error.mockClear();

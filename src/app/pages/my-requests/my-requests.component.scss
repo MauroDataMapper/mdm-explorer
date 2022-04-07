@@ -19,7 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 @import "../../../styles/base/all";
 
 $header-padding: 1em 1.2em;
-$header-filter-margin: 0 1em;
+$header-filter-margin: 0.5em 1em 0 0;
 $header-border: 1px solid $color-mauro-dark-green;
 $header-border-radius: 4px;
 
@@ -39,8 +39,8 @@ $request-elements-max-height: 500px;
     border-radius: $header-border-radius;
 
     h1 {
-      display: inline-block;
-      margin: 0 3em 0 0;
+      //display: inline-block;
+      margin: 0;
     }
   }
 

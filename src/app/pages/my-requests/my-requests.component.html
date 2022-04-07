@@ -21,22 +21,33 @@ SPDX-License-Identifier: Apache-2.0
     <div class="container">
       <div class="row">
         <div class="highlight-box mdm-my-requests__header">
-          <h1>My Requests</h1>
-          <div *ngIf="filteredRequests.length > 0" class="mdm-my-requests__filter">
-            <mat-checkbox
-              color="primary"
-              value="submitted"
-              (change)="filterByStatus($event)"
-            ></mat-checkbox>
-            <label>submitted</label>
-          </div>
-          <div *ngIf="filteredRequests.length > 0" class="mdm-my-requests__filter">
-            <mat-checkbox
-              color="primary"
-              value="unsent"
-              (change)="filterByStatus($event)"
-            ></mat-checkbox>
-            <label>unsent</label>
+          <div class="container">
+            <div class="row">
+              <div class="col-md-3">
+                <h1>My Requests</h1>
+              </div>
+              <div
+                *ngIf="hasMultipleRequestStatus && filteredRequests.length > 0"
+                class="col-md-9"
+              >
+                <div class="mdm-my-requests__filter">
+                  <mat-checkbox
+                    color="primary"
+                    value="submitted"
+                    (change)="filterByStatus($event)"
+                  ></mat-checkbox>
+                  <label>submitted</label>
+                </div>
+                <div class="mdm-my-requests__filter">
+                  <mat-checkbox
+                    color="primary"
+                    value="unsent"
+                    (change)="filterByStatus($event)"
+                  ></mat-checkbox>
+                  <label>unsent</label>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
