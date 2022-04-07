@@ -81,6 +81,10 @@ SPDX-License-Identifier: Apache-2.0
         </div>
       </mat-card>
 
+      <mat-card *ngIf="researchProfile" class="mdm-data-element-card">
+        <mdm-data-element-profile [profile]="researchProfile"></mdm-data-element-profile>
+      </mat-card>
+
       <mdm-summary-metadata
         [catalogueItemDomainType]="'dataElement'"
         [catalogueItemId]="dataElementId"

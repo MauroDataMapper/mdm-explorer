@@ -18,8 +18,14 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { DataElementDetail, Uuid } from '@maurodatamapper/mdm-resources';
+import {
+  CatalogueItemDomainType,
+  DataElementDetail,
+  Profile,
+  Uuid,
+} from '@maurodatamapper/mdm-resources';
 import { DataModelService } from 'src/app/mauro/data-model.service';
+import { ProfileService } from 'src/app/data-explorer/profile.service';
 import { ToastrService } from 'ngx-toastr';
 import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
 import { DataElementBookmarkEvent } from 'src/app/data-explorer/data-explorer.types';
@@ -36,6 +42,7 @@ export class DataElementComponent implements OnInit {
   dataClassId: Uuid = '';
   dataElementId: Uuid = '';
   dataElement?: DataElementDetail;
+  researchProfile?: Profile;
 
   bookmarks: Bookmark[] = [];
 
@@ -43,6 +50,7 @@ export class DataElementComponent implements OnInit {
     private route: ActivatedRoute,
     private dataModels: DataModelService,
     private bookmarkService: BookmarkService,
+    private profileService: ProfileService,
     private toastr: ToastrService
   ) {}
 
@@ -60,6 +68,17 @@ export class DataElementComponent implements OnInit {
         .getDataElement(this.dataModelId, this.dataClassId, this.dataElementId)
         .subscribe((dataElementDetail) => {
           this.dataElement = dataElementDetail;
+        });
+
+      this.profileService
+        .get(
+          CatalogueItemDomainType.DataElement,
+          this.dataElementId,
+          'uk.ac.ox.softeng.maurodatamapper.plugins.research',
+          'ResearchDataElementProfileProviderService'
+        )
+        .subscribe((result) => {
+          this.researchProfile = result;
         });
     });
   }
