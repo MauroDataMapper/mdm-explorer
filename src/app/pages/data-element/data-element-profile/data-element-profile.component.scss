@@ -1,4 +1,4 @@
-<!--
+/*
 Copyright 2022 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -15,12 +15,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
--->
-<ng-container *ngIf="item">
-  <ng-container *ngFor="let crumb of item.breadcrumbs">
-    <span *ngIf="crumb.domainType !== 'DataModel'"> {{ crumb.label }} > </span>
-  </ng-container>
-  <span>
-    {{ item.label }}
-  </span>
-</ng-container>
+*/
+@import "../../../../styles/base/all";
+
+tr.mdm-data-element-profile-section-name {
+  background-color: $color-mauro-dark-green;
+  color: $color-white;
+}

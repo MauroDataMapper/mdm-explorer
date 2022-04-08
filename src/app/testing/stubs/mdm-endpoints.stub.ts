@@ -56,6 +56,10 @@ import {
   createSessionStub,
   MdmSessionResourceStub,
 } from './mdm-resources/session-resource.stub';
+import {
+  createProfileStub,
+  MdmProfileResourcesStub,
+} from './mdm-resources/profile-resource.stub';
 
 export interface MdmEndpointsServiceStub {
   apiProperties: MdmApiPropertiesResourceStub;
@@ -68,6 +72,7 @@ export interface MdmEndpointsServiceStub {
   pluginResearch: MdmPluginResearchResourceStub;
   security: MdmSecurityResourceStub;
   session: MdmSessionResourceStub;
+  profile: MdmProfileResourcesStub;
 }
 
 export const createMdmEndpointsStub = (): MdmEndpointsServiceStub => {
@@ -82,5 +87,6 @@ export const createMdmEndpointsStub = (): MdmEndpointsServiceStub => {
     pluginResearch: createPluginResearchStub(),
     security: createSecurityStub(),
     session: createSessionStub(),
+    profile: createProfileStub(),
   };
 };

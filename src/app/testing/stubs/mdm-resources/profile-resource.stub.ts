@@ -1,4 +1,4 @@
-<!--
+/*
 Copyright 2022 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -15,12 +15,23 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
--->
-<ng-container *ngIf="item">
-  <ng-container *ngFor="let crumb of item.breadcrumbs">
-    <span *ngIf="crumb.domainType !== 'DataModel'"> {{ crumb.label }} > </span>
-  </ng-container>
-  <span>
-    {{ item.label }}
-  </span>
-</ng-container>
+*/
+import { CatalogueItemDomainType, Profile, Uuid } from '@maurodatamapper/mdm-resources';
+import { Observable } from 'rxjs';
+
+export type ProfileGetFn = (
+  catalogueItemDomainType: CatalogueItemDomainType,
+  catalogueItemId: Uuid,
+  profileNamespace: string,
+  profileName: string
+) => Observable<Profile>;
+
+export interface MdmProfileResourcesStub {
+  profile: jest.MockedFunction<ProfileGetFn>;
+}
+
+export const createProfileStub = (): MdmProfileResourcesStub => {
+  return {
+    profile: jest.fn() as jest.MockedFunction<ProfileGetFn>,
+  };
+};

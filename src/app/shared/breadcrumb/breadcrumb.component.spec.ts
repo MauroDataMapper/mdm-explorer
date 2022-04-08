@@ -60,6 +60,7 @@ describe('BreadcrumbComponent', () => {
     harness.detectChanges();
 
     const crumbSpans = dom.querySelectorAll('span');
-    expect(crumbSpans.length).toBe(item.breadcrumbs!.length + 1); // eslint-disable-line @typescript-eslint/no-non-null-assertion
+    // Note: don't display breadcrumb for the data model
+    expect(crumbSpans.length).toBe(item.breadcrumbs!.length); // eslint-disable-line @typescript-eslint/no-non-null-assertion
   });
 });

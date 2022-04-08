@@ -25,6 +25,7 @@ import { ForgotPasswordComponent } from './forgot-password/forgot-password.compo
 import { StaticContentComponent } from './static-content/static-content.component';
 import { BrowseComponent } from './browse/browse.component';
 import { DataElementComponent } from './data-element/data-element.component';
+import { DataElementProfileComponent } from './data-element/data-element-profile/data-element-profile.component';
 import { SearchListingComponent } from './search-listing/search-listing.component';
 import { SearchComponent } from './search/search.component';
 import { MyAccountComponent } from './my-account/my-account.component';
@@ -53,6 +54,7 @@ import { DataExplorerModule } from '../data-explorer/data-explorer.module';
     StaticContentComponent,
     BrowseComponent,
     DataElementComponent,
+    DataElementProfileComponent,
     SearchListingComponent,
     MyAccountComponent,
     SearchComponent,

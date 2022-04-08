@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 -->
 <div class="container">
   <div class="main-row hero">
-    <mdm-breadcrumb [item]="dataElement"></mdm-breadcrumb>
+    <h1><mdm-breadcrumb [item]="dataElement"></mdm-breadcrumb></h1>
   </div>
 
   <div *ngIf="dataElement" class="highlight-box mdm-data-element-detailt">
@@ -33,75 +33,78 @@ SPDX-License-Identifier: Apache-2.0
         ></mdm-bookmark-toggle>
       </span>
     </div>
-    <mat-tab-group animationDuration="0ms">
-      <mat-tab label="Overview">
-        <div class="mdm-data-element-detail-content">
-          <mat-card
-            *ngIf="dataElement.classifiers && dataElement.classifiers.length > 0"
-            class="mdm-data-element-card"
-          >
-            <mdm-classifiers [classifiers]="dataElement?.classifiers"></mdm-classifiers>
-          </mat-card>
 
-          <mat-card class="mdm-data-element-card">
-            <h2>Data Element</h2>
-            <p>
-              <span class="mdm-data-element-property-name">Label: </span
-              >{{ dataElement?.label }}
-            </p>
-            <p>
-              <span class="mdm-data-element-property-name">Description: </span
-              >{{ dataElement?.description }}
-            </p>
-          </mat-card>
+    <div *ngIf="identifiableData" class="mdm-data-element-detail__header">
+      <h3>
+        <span [ngSwitch]="identifiableData">
+          <i *ngSwitchCase="'Legally Restricted'" class="bi bi-shield-fill"></i>
+          <i *ngSwitchCase="'Identifying'" class="bi bi-shield-fill"></i>
+          <i *ngSwitchCase="'Pseudonymised'" class="bi bi-shield-shaded"></i>
+          <i *ngSwitchCase="'Maybe identifying'" class="bi bi-shield-shaded"></i>
+          <i *ngSwitchCase="'Anonymous'" class="bi bi-shield"></i>
+          <i *ngSwitchDefault></i>
+        </span>
+        <span>
+          {{ identifiableData }}
+        </span>
+      </h3>
+    </div>
 
-          <mat-card class="mdm-data-element-card">
-            <h2>Data Type</h2>
-            <p>
-              <span class="mdm-data-element-property-name">Label: </span
-              >{{ dataElement.dataType?.label }}
-            </p>
-            <p>
-              <span class="mdm-data-element-property-name">Description: </span
-              >{{ dataElement.dataType?.description }}
-            </p>
-            <div *ngIf="dataElement.dataType?.domainType == 'EnumerationType'">
-              <h3>List of enumeration values</h3>
-              <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th>Key</th>
-                    <th>Value</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    *ngFor="
-                      let enumerationValue of dataElement.dataType?.enumerationValues
-                    "
-                  >
-                    <td>{{ enumerationValue.key }}</td>
-                    <td>{{ enumerationValue.value }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </mat-card>
+    <div class="mdm-data-element-detail-content">
+      <mat-card
+        *ngIf="dataElement.classifiers && dataElement.classifiers.length > 0"
+        class="mdm-data-element-card"
+      >
+        <mdm-classifiers [classifiers]="dataElement?.classifiers"></mdm-classifiers>
+      </mat-card>
+
+      <mat-card class="mdm-data-element-card">
+        <h2>Data Element</h2>
+        <p>
+          <span class="mdm-data-element-property-name">Label: </span
+          >{{ dataElement?.label }}
+        </p>
+        <p>
+          <span class="mdm-data-element-property-name">Description: </span
+          >{{ dataElement?.description }}
+        </p>
+      </mat-card>
+
+      <mat-card class="mdm-data-element-card">
+        <h2>Data Type</h2>
+        <p>
+          <span class="mdm-data-element-property-name">Label: </span
+          >{{ dataElement.dataType?.label }}
+        </p>
+        <div *ngIf="dataElement.dataType?.domainType == 'EnumerationType'">
+          <h3>List of enumeration values</h3>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let enumerationValue of dataElement.dataType?.enumerationValues"
+              >
+                <td>{{ enumerationValue.key }}</td>
+                <td>{{ enumerationValue.value }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </mat-tab>
-      <mat-tab label="Profile">
-        <div class="mdm-data-element-detail-content">Content 2</div>
-      </mat-tab>
-      <mat-tab label="Data Summary">
-        <ng-template matTabContent>
-          <div class="mdm-data-element-detail-content">
-            <mdm-summary-metadata
-              [catalogueItemDomainType]="'dataElement'"
-              [catalogueItemId]="dataElementId"
-            ></mdm-summary-metadata>
-          </div>
-        </ng-template>
-      </mat-tab>
-    </mat-tab-group>
+      </mat-card>
+
+      <mat-card *ngIf="researchProfile" class="mdm-data-element-card">
+        <mdm-data-element-profile [profile]="researchProfile"></mdm-data-element-profile>
+      </mat-card>
+
+      <mdm-summary-metadata
+        [catalogueItemDomainType]="'dataElement'"
+        [catalogueItemId]="dataElementId"
+      ></mdm-summary-metadata>
+    </div>
   </div>
 </div>

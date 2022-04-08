@@ -16,13 +16,19 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { DataElementDetail, Uuid } from '@maurodatamapper/mdm-resources';
+import {
+  CatalogueItemDomainType,
+  DataElementDetail,
+  Profile,
+  Uuid,
+} from '@maurodatamapper/mdm-resources';
 import { DataModelService } from 'src/app/mauro/data-model.service';
+import { ProfileService } from 'src/app/mauro/profile.service';
 import { ToastrService } from 'ngx-toastr';
 import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
-import { DataElementBookmarkEvent } from 'src/app/data-explorer/data-explorer.types';
+import { switchMap, forkJoin, catchError, EMPTY } from 'rxjs';
 
 @Component({
   selector: 'mdm-data-element',
@@ -30,12 +36,12 @@ import { DataElementBookmarkEvent } from 'src/app/data-explorer/data-explorer.ty
   styleUrls: ['./data-element.component.scss'],
 })
 export class DataElementComponent implements OnInit {
-  @Output() bookmark = new EventEmitter<DataElementBookmarkEvent>();
-
   dataModelId: Uuid = '';
   dataClassId: Uuid = '';
   dataElementId: Uuid = '';
   dataElement?: DataElementDetail;
+  researchProfile?: Profile;
+  identifiableData?: string;
 
   bookmarks: Bookmark[] = [];
 
@@ -43,6 +49,7 @@ export class DataElementComponent implements OnInit {
     private route: ActivatedRoute,
     private dataModels: DataModelService,
     private bookmarkService: BookmarkService,
+    private profileService: ProfileService,
     private toastr: ToastrService
   ) {}
 
@@ -51,17 +58,36 @@ export class DataElementComponent implements OnInit {
       this.bookmarks = result;
     });
 
-    this.route.params.subscribe((parameter) => {
-      this.dataModelId = parameter.dataModelId;
-      this.dataClassId = parameter.dataClassId;
-      this.dataElementId = parameter.dataElementId;
+    this.route.params
+      .pipe(
+        switchMap((params) => {
+          this.dataModelId = params.dataModelId;
+          this.dataClassId = params.dataClassId;
+          this.dataElementId = params.dataElementId;
 
-      this.dataModels
-        .getDataElement(this.dataModelId, this.dataClassId, this.dataElementId)
-        .subscribe((dataElementDetail) => {
-          this.dataElement = dataElementDetail;
-        });
-    });
+          return forkJoin([this.loadDataElement(), this.loadProfile()]);
+        })
+      )
+      .subscribe(([dataElementDetail, profile]) => {
+        this.dataElement = dataElementDetail;
+        this.researchProfile = profile;
+
+        // Check for the Identifiable Data value
+        if (this.researchProfile && this.researchProfile.sections.length > 0) {
+          const identifiableInformation = this.researchProfile.sections.find(
+            (section) => section.name === 'Identifiable Information'
+          );
+
+          if (identifiableInformation && identifiableInformation.fields.length > 0) {
+            const identifiableDataField = identifiableInformation.fields.find(
+              (field) => field.fieldName === 'Identifiable Data'
+            );
+            if (identifiableDataField) {
+              this.identifiableData = identifiableDataField.currentValue;
+            }
+          }
+        }
+      });
   }
 
   toggleBookmark(selected: boolean) {
@@ -101,5 +127,32 @@ export class DataElementComponent implements OnInit {
     });
 
     return found;
+  }
+
+  private loadDataElement() {
+    return this.dataModels
+      .getDataElement(this.dataModelId, this.dataClassId, this.dataElementId)
+      .pipe(
+        catchError(() => {
+          this.toastr.error('Unable to retrieve the chosen Data Element.');
+          return EMPTY;
+        })
+      );
+  }
+
+  private loadProfile() {
+    return this.profileService
+      .get(
+        CatalogueItemDomainType.DataElement,
+        this.dataElementId,
+        'uk.ac.ox.softeng.maurodatamapper.plugins.research',
+        'ResearchDataElementProfileProviderService'
+      )
+      .pipe(
+        catchError(() => {
+          this.toastr.error('Unable to retrieve the Data Element Profile.');
+          return EMPTY;
+        })
+      );
   }
 }

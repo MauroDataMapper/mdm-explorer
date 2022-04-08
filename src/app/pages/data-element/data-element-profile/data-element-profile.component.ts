@@ -1,4 +1,4 @@
-<!--
+/*
 Copyright 2022 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -15,12 +15,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
--->
-<ng-container *ngIf="item">
-  <ng-container *ngFor="let crumb of item.breadcrumbs">
-    <span *ngIf="crumb.domainType !== 'DataModel'"> {{ crumb.label }} > </span>
-  </ng-container>
-  <span>
-    {{ item.label }}
-  </span>
-</ng-container>
+*/
+import { Component, Input } from '@angular/core';
+import { Profile } from '@maurodatamapper/mdm-resources';
+
+@Component({
+  selector: 'mdm-data-element-profile',
+  templateUrl: './data-element-profile.component.html',
+  styleUrls: ['./data-element-profile.component.scss'],
+})
+export class DataElementProfileComponent {
+  @Input() profile?: Profile;
+}
