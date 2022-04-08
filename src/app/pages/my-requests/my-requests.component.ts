@@ -25,7 +25,6 @@ import {
   DataElementBasic,
   DataRequest,
   DataRequestStatus,
-  countDataRequestStatus,
 } from 'src/app/data-explorer/data-explorer.types';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import { SecurityService } from 'src/app/security/security.service';
@@ -50,8 +49,9 @@ export class MyRequestsComponent implements OnInit {
   ) {}
 
   get hasMultipleRequestStatus() {
-    const counts = countDataRequestStatus(this.allRequests);
-    return counts.unsent > 0 && counts.submitted > 0;
+    const statuses = this.allRequests.map((req) => req.status);
+    const distinct = new Set(statuses);
+    return distinct.size > 1;
   }
 
   ngOnInit(): void {

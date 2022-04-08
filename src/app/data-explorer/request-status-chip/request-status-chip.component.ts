@@ -27,7 +27,11 @@ import { DataRequestStatus } from '../data-explorer.types';
 export class RequestStatusChipComponent {
   @Input() status?: DataRequestStatus;
 
-  getCssClasses() {
+  /**
+   * Get the CSS class to use to represent status, mapped to an object that can be applied to
+   * the NgClass directive.
+   */
+  get statusCssClassMap() {
     return {
       'mdm-request-status-chip--unsent': this.status === 'unsent',
       'mdm-request-status-chip--submitted': this.status === 'submitted',

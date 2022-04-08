@@ -209,25 +209,6 @@ export interface DataRequest extends DataModel {
   status: DataRequestStatus;
 }
 
-/**
- * Returns a group of {@link DataRequestStatus} keys mapped to how many of that status was found in the
- * given array of {@link DataRequest} objects.
- */
-export const countDataRequestStatus = (
-  requests: DataRequest[]
-): { [status in DataRequestStatus]: number } => {
-  return requests.reduce(
-    (counts, req) => {
-      counts[req.status]++;
-      return counts;
-    },
-    {
-      unsent: 0,
-      submitted: 0,
-    }
-  );
-};
-
 export interface DataElementBasic {
   id: Uuid;
   dataModelId: Uuid;
