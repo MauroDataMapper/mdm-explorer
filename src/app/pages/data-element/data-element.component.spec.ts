@@ -33,7 +33,7 @@ import { createToastrServiceStub } from 'src/app/testing/stubs/toastr.stub';
 import { ToastrService } from 'ngx-toastr';
 import { createBookmarkServiceStub } from 'src/app/testing/stubs/bookmark.stub';
 import { BookmarkService } from 'src/app/data-explorer/bookmark.service';
-import { ProfileService } from 'src/app/data-explorer/profile.service';
+import { ProfileService } from 'src/app/mauro/profile.service';
 
 describe('DataElementComponent', () => {
   let harness: ComponentHarness<DataElementComponent>;

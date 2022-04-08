@@ -21,7 +21,7 @@ import { ChartOptions, ChartType, ChartData } from 'chart.js';
 import {
   SummaryMetadata,
   SummaryMetadataReport,
-} from 'src/app/data-explorer/summary-metadata-service';
+} from 'src/app/mauro/summary-metadata.service';
 
 @Component({
   selector: 'mdm-summary-metadata-chart',
