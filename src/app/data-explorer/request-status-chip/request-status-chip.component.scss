@@ -16,22 +16,6 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-<<<<<<< HEAD:src/app/testing/stubs/data-requests.stub.ts
-import { DataModel } from '@maurodatamapper/mdm-resources';
-import { Observable } from 'rxjs';
-
-export type DataRequestsListFn = (username: string) => Observable<DataModel[]>;
-
-export interface DataRequestsServiceStub {
-  list: jest.MockedFunction<DataRequestsListFn>;
-}
-
-export const createDataRequestsServiceStub = (): DataRequestsServiceStub => {
-  return {
-    list: jest.fn() as jest.MockedFunction<DataRequestsListFn>,
-  };
-};
-=======
 @import "../../../styles/base/all";
 
 $chip-unsent-color: $color-teal;
@@ -54,4 +38,3 @@ $chip-text-color-light: $color-white;
     background-color: $chip-submitted-color;
   }
 }
->>>>>>> c89d47f (MC-9794 Create My Requests page):src/app/data-explorer/request-status-chip/request-status-chip.component.scss

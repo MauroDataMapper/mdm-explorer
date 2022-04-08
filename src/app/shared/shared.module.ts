@@ -33,7 +33,6 @@ import { SummaryMetadataReportComponent } from './summary-metadata/summary-metad
 import { SummaryMetadataChartComponent } from './summary-metadata/summary-metadata-chart/summary-metadata-chart.component';
 import { NgChartsModule } from 'ng2-charts';
 import { CallToActionComponent } from './call-to-action/call-to-action.component';
-import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +43,6 @@ import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
     SafePipe,
     ArrowDirective,
     CreateRequestComponent,
-    BreadcrumbComponent,
     BookmarkToggleComponent,
     SummaryMetadataChartComponent,
     SummaryMetadataComponent,
@@ -61,7 +59,6 @@ import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
     HeaderComponent,
     LoadingSpinnerComponent,
     ArrowDirective,
-    BreadcrumbComponent,
     BookmarkToggleComponent,
     SummaryMetadataChartComponent,
     SummaryMetadataComponent,

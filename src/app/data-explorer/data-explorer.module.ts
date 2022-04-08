@@ -28,10 +28,12 @@ import { ConfirmComponent } from './confirm/confirm.component';
 import { PAGINATION_CONFIG } from './data-explorer.types';
 import { RequestStatusChipComponent } from './request-status-chip/request-status-chip.component';
 import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
+import { DataElementRowComponent } from './data-element-row/data-element-row.component';
 
 @NgModule({
   declarations: [
     DataElementSearchResultComponent,
+    DataElementRowComponent,
     PaginationComponent,
     SortByComponent,
     ContactFormComponent,
@@ -43,6 +45,7 @@ import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
   imports: [CoreModule, SharedModule],
   exports: [
     DataElementSearchResultComponent,
+    DataElementRowComponent,
     PaginationComponent,
     SortByComponent,
     ContactFormComponent,

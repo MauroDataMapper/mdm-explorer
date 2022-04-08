@@ -21,13 +21,13 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatSelectionListChange } from '@angular/material/list';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY, finalize } from 'rxjs';
-import { UserRequestsService } from 'src/app/core/user-requests.service';
 import {
   DataElementBasic,
   DataRequest,
   DataRequestStatus,
   countDataRequestStatus,
 } from 'src/app/data-explorer/data-explorer.types';
+import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import { SecurityService } from 'src/app/security/security.service';
 
 @Component({
@@ -45,7 +45,7 @@ export class MyRequestsComponent implements OnInit {
 
   constructor(
     private security: SecurityService,
-    private userRequests: UserRequestsService,
+    private dataRequests: DataRequestsService,
     private toastr: ToastrService
   ) {}
 
@@ -62,7 +62,7 @@ export class MyRequestsComponent implements OnInit {
 
     this.state = 'loading';
 
-    this.userRequests
+    this.dataRequests
       .list(user.email)
       .pipe(
         catchError(() => {
@@ -112,7 +112,7 @@ export class MyRequestsComponent implements OnInit {
 
     this.state = 'loading';
 
-    this.userRequests
+    this.dataRequests
       .getRequestDataElements(this.request)
       .pipe(
         catchError(() => {

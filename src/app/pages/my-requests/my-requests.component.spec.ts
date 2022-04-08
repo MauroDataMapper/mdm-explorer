@@ -21,17 +21,17 @@ import { MatSelectionListChange } from '@angular/material/list';
 import { CatalogueItemDomainType, DataElement } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { of, throwError } from 'rxjs';
-import { UserRequestsService } from 'src/app/core/user-requests.service';
 import {
   DataElementBasic,
   DataRequest,
   DataRequestStatus,
 } from 'src/app/data-explorer/data-explorer.types';
+import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import { SecurityService } from 'src/app/security/security.service';
 import { UserDetails } from 'src/app/security/user-details.service';
+import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
 import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { createToastrServiceStub } from 'src/app/testing/stubs/toastr.stub';
-import { createUserRequestsServiceStub } from 'src/app/testing/stubs/user-requests.stub';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
@@ -41,7 +41,7 @@ import { MyRequestsComponent } from './my-requests.component';
 describe('MyRequestsComponent', () => {
   let harness: ComponentHarness<MyRequestsComponent>;
   const securityStub = createSecurityServiceStub();
-  const userRequestsStub = createUserRequestsServiceStub();
+  const dataRequestsStub = createDataRequestsServiceStub();
   const toastrStub = createToastrServiceStub();
 
   beforeEach(async () => {
@@ -52,8 +52,8 @@ describe('MyRequestsComponent', () => {
           useValue: securityStub,
         },
         {
-          provide: UserRequestsService,
-          useValue: userRequestsStub,
+          provide: DataRequestsService,
+          useValue: dataRequestsStub,
         },
         {
           provide: ToastrService,
@@ -81,13 +81,13 @@ describe('MyRequestsComponent', () => {
     };
 
     beforeEach(() => {
-      userRequestsStub.list.mockClear();
+      dataRequestsStub.list.mockClear();
       toastrStub.error.mockClear();
     });
 
     it('should do nothing if there is no user', () => {
       harness.component.ngOnInit();
-      expect(userRequestsStub.list).not.toHaveBeenCalled();
+      expect(dataRequestsStub.list).not.toHaveBeenCalled();
     });
 
     it('should display all requests available to a user', () => {
@@ -108,7 +108,7 @@ describe('MyRequestsComponent', () => {
 
       mockSignedInUser();
 
-      userRequestsStub.list.mockImplementationOnce((email) => {
+      dataRequestsStub.list.mockImplementationOnce((email) => {
         expect(email).toBe(user.email);
         expect(harness.component.state).toBe('loading');
         return of(requests);
@@ -125,7 +125,7 @@ describe('MyRequestsComponent', () => {
     it('should display an error if failed to get requests', () => {
       mockSignedInUser();
 
-      userRequestsStub.list.mockImplementationOnce(() => throwError(() => new Error()));
+      dataRequestsStub.list.mockImplementationOnce(() => throwError(() => new Error()));
 
       harness.component.ngOnInit();
 
@@ -139,7 +139,7 @@ describe('MyRequestsComponent', () => {
     it('should handle having no requests available', () => {
       mockSignedInUser();
 
-      userRequestsStub.list.mockImplementationOnce((email) => {
+      dataRequestsStub.list.mockImplementationOnce((email) => {
         expect(email).toBe(user.email);
         expect(harness.component.state).toBe('loading');
         return of([]);
@@ -227,7 +227,7 @@ describe('MyRequestsComponent', () => {
 
       const request = { id: '1', status: 'unsent' } as DataRequest;
 
-      userRequestsStub.getRequestDataElements.mockImplementationOnce((req) => {
+      dataRequestsStub.getRequestDataElements.mockImplementationOnce((req) => {
         expect(req).toStrictEqual(request);
         expect(harness.component.state).toBe('loading');
         return of(elements);
@@ -250,7 +250,7 @@ describe('MyRequestsComponent', () => {
     it('should display an error if request elements cannot be found', () => {
       const request = { id: '1', status: 'unsent' } as DataRequest;
 
-      userRequestsStub.getRequestDataElements.mockImplementationOnce(() =>
+      dataRequestsStub.getRequestDataElements.mockImplementationOnce(() =>
         throwError(() => new Error())
       );
 
