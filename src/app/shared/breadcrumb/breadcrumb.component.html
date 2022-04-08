@@ -17,7 +17,9 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 -->
 <ng-container *ngIf="item">
-  <span *ngFor="let crumb of item.breadcrumbs"> {{ crumb.label }} > </span>
+  <ng-container *ngFor="let crumb of item.breadcrumbs">
+    <span *ngIf="crumb.domainType !== 'DataModel'"> {{ crumb.label }} > </span>
+  </ng-container>
   <span>
     {{ item.label }}
   </span>
