@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { CatalogueItemDomainType, Profile } from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
-import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
+import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { createMdmEndpointsStub } from '../testing/stubs/mdm-endpoints.stub';
 import { setupTestModuleForService } from '../testing/testing.helpers';
 import { ProfileService } from './profile.service';

@@ -19,7 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 import { Injectable } from '@angular/core';
 import { CatalogueItemDomainType, Uuid, Profile } from '@maurodatamapper/mdm-resources';
 import { map, Observable } from 'rxjs';
-import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
+import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 
 /**
  * Service to get profile for a data element
