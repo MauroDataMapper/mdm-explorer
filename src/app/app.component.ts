@@ -83,6 +83,7 @@ export class AppComponent implements OnInit, OnDestroy {
       label: 'Help',
       routerLink: '/help',
       arrow: 'angle-down',
+      menuName: 'help-menu',
     },
   ];
 

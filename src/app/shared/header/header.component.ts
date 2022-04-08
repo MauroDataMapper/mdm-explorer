@@ -45,6 +45,11 @@ export interface HeaderLink {
   onlySignedIn?: boolean;
 
   arrow?: ArrowDirection;
+
+  /**
+   * Provide the name of this header links dropdown menu.
+   */
+  menuName?: string;
 }
 
 export interface HeaderImageLink extends HeaderLink {
