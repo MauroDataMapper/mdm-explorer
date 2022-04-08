@@ -25,10 +25,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import {
-  CatalogueUser,
-  CatalogueUserPayload,
-} from '../../catalogue/catalogue-user.service';
+import { CatalogueUser, CatalogueUserPayload } from '../../mauro/catalogue-user.service';
 
 @Component({
   selector: 'mdm-catalogue-user-form',

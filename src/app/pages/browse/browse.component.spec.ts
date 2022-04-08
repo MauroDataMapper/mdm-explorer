@@ -22,29 +22,34 @@ import {
   CatalogueItemDomainType,
   DataClass,
   DataModelDetail,
+  MdmResourcesConfiguration,
 } from '@maurodatamapper/mdm-resources';
 import { MockComponent } from 'ng-mocks';
 import { ToastrService } from 'ngx-toastr';
 import { of, throwError } from 'rxjs';
-import { CatalogueService } from 'src/app/catalogue/catalogue.service';
-import { DataModelService } from 'src/app/catalogue/data-model.service';
+import { DataModelService } from 'src/app/mauro/data-model.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
-import { createCatalogueServiceStub } from 'src/app/testing/stubs/catalogue.stub';
 import { createDataModelServiceStub } from 'src/app/testing/stubs/data-model.stub';
 import { createStateRouterStub } from 'src/app/testing/stubs/state-router.stub';
 import { createToastrServiceStub } from 'src/app/testing/stubs/toastr.stub';
+import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
 import { BrowseComponent } from './browse.component';
+import { MatDialog } from '@angular/material/dialog';
+import { MatMenu } from '@angular/material/menu';
+import { createDataExplorerServiceStub } from 'src/app/testing/stubs/data-explorer.stub';
+import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 
 describe('BrowseComponent', () => {
   let harness: ComponentHarness<BrowseComponent>;
   const dataModelStub = createDataModelServiceStub();
-  const catalogueStub = createCatalogueServiceStub();
+  const dataExplorerStub = createDataExplorerServiceStub();
   const stateRouterStub = createStateRouterStub();
   const toastrStub = createToastrServiceStub();
+  const matDialogStub = createMatDialogStub();
 
   const rootDataModel: DataModelDetail = {
     id: '123',
@@ -56,15 +61,15 @@ describe('BrowseComponent', () => {
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(BrowseComponent, {
-      declarations: [MockComponent(MatSelectionList)],
+      declarations: [MockComponent(MatSelectionList), MockComponent(MatMenu)],
       providers: [
         {
           provide: DataModelService,
           useValue: dataModelStub,
         },
         {
-          provide: CatalogueService,
-          useValue: catalogueStub,
+          provide: DataExplorerService,
+          useValue: dataExplorerStub,
         },
         {
           provide: StateRouterService,
@@ -73,6 +78,13 @@ describe('BrowseComponent', () => {
         {
           provide: ToastrService,
           useValue: toastrStub,
+        },
+        {
+          provide: MatDialog,
+          useValue: matDialogStub,
+        },
+        {
+          provide: MdmResourcesConfiguration,
         },
       ],
     });
@@ -88,19 +100,19 @@ describe('BrowseComponent', () => {
     });
 
     it('should display an error when root data model is missing', () => {
-      catalogueStub.getRootDataModel.mockImplementationOnce(() =>
+      dataExplorerStub.getRootDataModel.mockImplementationOnce(() =>
         throwError(() => new HttpErrorResponse({ status: 400 }))
       );
 
       harness.component.ngOnInit();
 
       expect(toastrStub.error).toHaveBeenCalled();
-      expect(catalogueStub.getRootDataModel).toHaveBeenCalled();
+      expect(dataExplorerStub.getRootDataModel).toHaveBeenCalled();
       expect(dataModelStub.getDataClasses).not.toHaveBeenCalled();
     });
 
     it('should display an error when parent data classes is missing', () => {
-      catalogueStub.getRootDataModel.mockImplementationOnce(() => of(rootDataModel));
+      dataExplorerStub.getRootDataModel.mockImplementationOnce(() => of(rootDataModel));
 
       dataModelStub.getDataClasses.mockImplementationOnce(() =>
         throwError(() => new HttpErrorResponse({ status: 400 }))
@@ -109,7 +121,7 @@ describe('BrowseComponent', () => {
       harness.component.ngOnInit();
 
       expect(toastrStub.error).toHaveBeenCalled();
-      expect(catalogueStub.getRootDataModel).toHaveBeenCalled();
+      expect(dataExplorerStub.getRootDataModel).toHaveBeenCalled();
       expect(dataModelStub.getDataClasses).toHaveBeenCalled();
     });
 
@@ -127,7 +139,7 @@ describe('BrowseComponent', () => {
         },
       ];
 
-      catalogueStub.getRootDataModel.mockImplementationOnce(() => of(rootDataModel));
+      dataExplorerStub.getRootDataModel.mockImplementationOnce(() => of(rootDataModel));
       dataModelStub.getDataClasses.mockImplementationOnce(() => of(dataClasses));
 
       harness.component.ngOnInit();

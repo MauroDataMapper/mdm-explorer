@@ -23,7 +23,7 @@ import {
   CatalogueUser,
   CatalogueUserPayload,
   CatalogueUserService,
-} from 'src/app/catalogue/catalogue-user.service';
+} from 'src/app/mauro/catalogue-user.service';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { SecurityService } from 'src/app/security/security.service';

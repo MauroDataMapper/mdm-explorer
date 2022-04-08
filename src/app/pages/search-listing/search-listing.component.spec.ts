@@ -21,18 +21,18 @@ import { ActivatedRoute, convertToParamMap, ParamMap } from '@angular/router';
 import { CatalogueItemDomainType, DataClassDetail } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { of, throwError } from 'rxjs';
-import { BookmarkService } from 'src/app/core/bookmark.service';
-import { DataClassIdentifier } from 'src/app/catalogue/catalogue.types';
-import { DataModelService } from 'src/app/catalogue/data-model.service';
+import { BookmarkService } from 'src/app/data-explorer/bookmark.service';
+import { DataClassIdentifier } from 'src/app/mauro/mauro.types';
+import { DataModelService } from 'src/app/mauro/data-model.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
-import { DataElementSearchService } from 'src/app/search/data-element-search.service';
+import { DataElementSearchService } from 'src/app/data-explorer/data-element-search.service';
 import {
   DataElementBookmarkEvent,
   DataElementSearchParameters,
   DataElementSearchResult,
   DataElementSearchResultSet,
   mapSearchParametersToParams,
-} from 'src/app/search/search.types';
+} from 'src/app/data-explorer/data-explorer.types';
 import { createBookmarkServiceStub } from 'src/app/testing/stubs/bookmark.stub';
 import { createDataElementSearchServiceStub } from 'src/app/testing/stubs/data-element-search.stub';
 import { createDataModelServiceStub } from 'src/app/testing/stubs/data-model.stub';
@@ -46,9 +46,18 @@ import {
   createMdmEndpointsStub,
   MdmEndpointsServiceStub,
 } from 'src/app/testing/stubs/mdm-endpoints.stub';
-import { MdmEndpointsService } from 'src/app/mdm-rest-client/mdm-endpoints.service';
+import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
 
 import { SearchListingComponent, SearchListingSource } from './search-listing.component';
+import {
+  createMatDialogStub,
+  MatDialogStub,
+} from 'src/app/testing/stubs/mat-dialog.stub';
+import { MatDialog } from '@angular/material/dialog';
+import {
+  CreateRequestComponent,
+  NewRequestDialogResult,
+} from 'src/app/shared/create-request/create-request.component';
 
 describe('SearchListingComponent', () => {
   let harness: ComponentHarness<SearchListingComponent>;
@@ -59,6 +68,8 @@ describe('SearchListingComponent', () => {
   const toastrStub = createToastrServiceStub();
   const stateRouterStub = createStateRouterStub();
   const endpointsStub: MdmEndpointsServiceStub = createMdmEndpointsStub();
+  const matDialogStub: MatDialogStub<CreateRequestComponent, NewRequestDialogResult> =
+    createMatDialogStub();
 
   const setupComponentTest = async (parameters: DataElementSearchParameters) => {
     const params = mapSearchParametersToParams(parameters);
@@ -98,6 +109,10 @@ describe('SearchListingComponent', () => {
           provide: BookmarkService,
           useValue: bookmarkStub,
         },
+        {
+          provide: MatDialog,
+          useValue: matDialogStub,
+        },
       ],
     });
   };
@@ -114,6 +129,7 @@ describe('SearchListingComponent', () => {
       expect(harness.component.parameters).toStrictEqual({});
       expect(harness.component.root).toBeUndefined();
       expect(harness.component.resultSet).toBeUndefined();
+      expect(harness.component.sortBy).toBeUndefined();
     });
   });
 
@@ -177,26 +193,31 @@ describe('SearchListingComponent', () => {
       items: [
         {
           id: '1',
-          label: 'result 1',
+          label: 'result one',
           breadcrumbs: [],
           dataClassId: '2',
           dataModelId: '3',
         },
         {
           id: '2',
-          label: 'result 2',
+          label: 'test result',
           breadcrumbs: [],
           dataClassId: '2',
           dataModelId: '3',
         },
         {
           id: '3',
-          label: 'result 3',
+          label: 'result the third',
           breadcrumbs: [],
           dataClassId: '2',
           dataModelId: '3',
         },
       ],
+    };
+
+    const sortedSearchResultsByLabelAsc: DataElementSearchResultSet = {
+      ...searchResults,
+      items: [searchResults.items[0], searchResults.items[2], searchResults.items[1]],
     };
 
     const implementDataClassReturns = (expectedId: DataClassIdentifier) => {
@@ -217,7 +238,7 @@ describe('SearchListingComponent', () => {
       dataElementSearchStub.listing.mockImplementationOnce((params) => {
         expect(params.dataClass?.dataClassId).toBe(parameters.dataClass?.dataClassId);
         expect(params.dataClass?.dataModelId).toBe(parameters.dataClass?.dataModelId);
-        return of(searchResults);
+        return of(sortedSearchResultsByLabelAsc);
       });
     };
 
@@ -227,7 +248,7 @@ describe('SearchListingComponent', () => {
       });
     };
 
-    it('should be in ready state once initialised', fakeAsync(() => {
+    it('should be in ready state once initialised with results sorted by the default sortBy option', fakeAsync(() => {
       const spy = jest.spyOn(toastrStub, 'error');
 
       implementDataClassReturns(parameters.dataClass!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
@@ -240,7 +261,8 @@ describe('SearchListingComponent', () => {
       expect(harness.component.source).toBe('browse');
       expect(harness.component.status).toBe('ready');
       expect(harness.component.root).toBe(dataClass);
-      expect(harness.component.resultSet).toBe(searchResults);
+      expect(harness.component.sortBy).toBe(harness.component.sortByDefaultOption);
+      expect(harness.component.resultSet).toBe(sortedSearchResultsByLabelAsc);
       expect(spy).not.toHaveBeenCalled();
     }));
 
@@ -296,21 +318,21 @@ describe('SearchListingComponent', () => {
       items: [
         {
           id: '1',
-          label: 'result 1',
+          label: 'result one',
           breadcrumbs: [],
           dataClassId: '2',
           dataModelId: '3',
         },
         {
           id: '2',
-          label: 'result 2',
+          label: 'test result',
           breadcrumbs: [],
           dataClassId: '2',
           dataModelId: '3',
         },
         {
           id: '3',
-          label: 'result 3',
+          label: 'result the third',
           breadcrumbs: [],
           dataClassId: '2',
           dataModelId: '3',
@@ -318,10 +340,15 @@ describe('SearchListingComponent', () => {
       ],
     };
 
+    const sortedSearchResultsByLabelAsc: DataElementSearchResultSet = {
+      ...searchResults,
+      items: [searchResults.items[0], searchResults.items[2], searchResults.items[1]],
+    };
+
     const implementSearchReturns = () => {
       dataElementSearchStub.search.mockImplementationOnce((params) => {
         expect(params.search).toBe(parameters.search);
-        return of(searchResults);
+        return of(sortedSearchResultsByLabelAsc);
       });
     };
 
@@ -331,7 +358,7 @@ describe('SearchListingComponent', () => {
       });
     };
 
-    it('should be in ready state once initialised', fakeAsync(() => {
+    it('should be in ready state once initialised with results sorted by the default sortBy option', fakeAsync(() => {
       const spy = jest.spyOn(toastrStub, 'error');
 
       implementSearchReturns();
@@ -343,7 +370,8 @@ describe('SearchListingComponent', () => {
       expect(harness.component.source).toBe('search');
       expect(harness.component.status).toBe('ready');
       expect(harness.component.root).toBeUndefined();
-      expect(harness.component.resultSet).toBe(searchResults);
+      expect(harness.component.sortBy).toBe(harness.component.sortByDefaultOption);
+      expect(harness.component.resultSet).toBe(sortedSearchResultsByLabelAsc);
       expect(spy).not.toHaveBeenCalled();
     }));
 
@@ -434,6 +462,23 @@ describe('SearchListingComponent', () => {
       bookmarkStub.remove.mockImplementationOnce(() => of({}));
       harness.component.bookmarkElement(dataElementBookmarkRemoveEvent);
       expect(spy).toHaveBeenCalled();
+    });
+  });
+
+  describe('selecting a new sortBy option', () => {
+    it('should fire off a state reload upon selection of a new sortBy option', () => {
+      const selectedSortByOption = { value: 'label-asc', displayName: 'name' };
+
+      harness.component.selectSortBy(selectedSortByOption);
+
+      // This simultaneously tests the private getSort and getOrder from sortByOptions methods.
+      expect(stateRouterStub.navigateToKnownPath).toHaveBeenCalledWith(
+        '/search/listing',
+        {
+          sort: 'label',
+          order: 'asc',
+        }
+      );
     });
   });
 });

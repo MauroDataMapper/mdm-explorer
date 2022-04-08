@@ -23,12 +23,17 @@ import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
 import { SafePipe } from './pipes/safe.pipe';
 import { ArrowDirective } from './directives/arrow.directive';
+import { CreateRequestComponent } from './create-request/create-request.component';
+import { ShowErrorComponent } from './show-error/show-error.component';
+import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
 import { BookmarkToggleComponent } from './bookmark-toggle/bookmark-toggle.component';
 import { CoreModule } from '../core/core.module';
 import { SummaryMetadataComponent } from './summary-metadata/summary-metadata/summary-metadata.component';
 import { SummaryMetadataReportComponent } from './summary-metadata/summary-metadata-report/summary-metadata-report.component';
 import { SummaryMetadataChartComponent } from './summary-metadata/summary-metadata-chart/summary-metadata-chart.component';
 import { NgChartsModule } from 'ng2-charts';
+import { CallToActionComponent } from './call-to-action/call-to-action.component';
+import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 
 @NgModule({
   declarations: [
@@ -38,10 +43,15 @@ import { NgChartsModule } from 'ng2-charts';
     HeaderComponent,
     SafePipe,
     ArrowDirective,
+    CreateRequestComponent,
+    BreadcrumbComponent,
     BookmarkToggleComponent,
     SummaryMetadataChartComponent,
     SummaryMetadataComponent,
     SummaryMetadataReportComponent,
+    ShowErrorComponent,
+    LoadingSpinnerComponent,
+    CallToActionComponent,
   ],
   imports: [CoreModule, NgChartsModule],
   exports: [
@@ -49,10 +59,14 @@ import { NgChartsModule } from 'ng2-charts';
     ClassifiersComponent,
     FooterComponent,
     HeaderComponent,
+    LoadingSpinnerComponent,
+    ArrowDirective,
+    BreadcrumbComponent,
     BookmarkToggleComponent,
     SummaryMetadataChartComponent,
     SummaryMetadataComponent,
     SummaryMetadataReportComponent,
+    CallToActionComponent,
   ],
 })
 export class SharedModule {}

@@ -45,6 +45,10 @@ import {
   MdmFolderResourceStub,
 } from './mdm-resources/folder-resource.stub';
 import {
+  createPluginResearchStub,
+  MdmPluginResearchResourceStub,
+} from './mdm-resources/plugin-research-resource.stub';
+import {
   createSecurityStub,
   MdmSecurityResourceStub,
 } from './mdm-resources/security-resource-stub';
@@ -61,6 +65,7 @@ export interface MdmEndpointsServiceStub {
   dataElement: MdmDataElementResourceStub;
   dataModel: MdmDataModelResourcesStub;
   folder: MdmFolderResourceStub;
+  pluginResearch: MdmPluginResearchResourceStub;
   security: MdmSecurityResourceStub;
   session: MdmSessionResourceStub;
 }
@@ -74,6 +79,7 @@ export const createMdmEndpointsStub = (): MdmEndpointsServiceStub => {
     dataElement: createDataElementStub(),
     dataModel: createDataModelStub(),
     folder: createFolderStub(),
+    pluginResearch: createPluginResearchStub(),
     security: createSecurityStub(),
     session: createSessionStub(),
   };

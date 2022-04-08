@@ -33,13 +33,14 @@ import {
 import { environment } from '../environments/environment';
 import { BroadcastEvent, BroadcastService } from './core/broadcast.service';
 import { StateRouterService } from './core/state-router.service';
-import { UserRequestsService } from './core/user-requests.service';
-import { ErrorService } from './error/error.service';
-import { MdmHttpError } from './mdm-rest-client/mdm-rest-client.types';
+import { DataRequestsService } from './data-explorer/data-requests.service';
+import { ErrorService } from './pages/error/error.service';
+import { MdmHttpError } from './mauro/mauro.types';
 import { SecurityService } from './security/security.service';
 import { UserDetails, UserDetailsService } from './security/user-details.service';
 import { FooterLink } from './shared/footer/footer.component';
 import { HeaderImageLink, HeaderLink } from './shared/header/header.component';
+import { OverlayContainer } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'mdm-root',
@@ -48,6 +49,8 @@ import { HeaderImageLink, HeaderLink } from './shared/header/header.component';
 })
 export class AppComponent implements OnInit, OnDestroy {
   title = 'mdm-research-browser';
+
+  themeCssSelector = 'default-theme';
 
   numberOfRequests = 0;
 
@@ -157,11 +160,12 @@ export class AppComponent implements OnInit, OnDestroy {
     private broadcast: BroadcastService,
     private security: SecurityService,
     private userDetails: UserDetailsService,
-    private userRequests: UserRequestsService,
+    private dataRequests: DataRequestsService,
     private stateRouter: StateRouterService,
     private toastr: ToastrService,
     private userIdle: UserIdleService,
-    private error: ErrorService
+    private error: ErrorService,
+    private overlayContainer: OverlayContainer
   ) {}
 
   @HostListener('window:mousemove', ['$event'])
@@ -170,6 +174,8 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.setTheme();
+
     this.broadcast
       .on<HttpErrorResponse>('http-application-offline')
       .pipe(takeUntil(this.unsubscribe$))
@@ -184,7 +190,7 @@ export class AppComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((user) => {
         this.setupSignedInUser(user);
-        this.userRequests.getRequestsFolder(user.email).subscribe();
+        this.dataRequests.getRequestsFolder(user.email).subscribe();
       });
 
     this.broadcast
@@ -289,5 +295,12 @@ export class AppComponent implements OnInit, OnDestroy {
         this.toastr.error('Your session has expired! Please sign in.');
         this.signOutUser();
       });
+  }
+
+  private setTheme() {
+    // Material theme is wrapped inside a CSS class but the overlay container is not part of Angular
+    // Material. Have to manually set the correct theme class to this container too
+    this.overlayContainer.getContainerElement().classList.add(this.themeCssSelector);
+    this.overlayContainer.getContainerElement().classList.add('overlay-container');
   }
 }

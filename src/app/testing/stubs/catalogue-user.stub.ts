@@ -21,7 +21,7 @@ import { Observable } from 'rxjs';
 import {
   CatalogueUser,
   CatalogueUserPayload,
-} from 'src/app/catalogue/catalogue-user.service';
+} from 'src/app/mauro/catalogue-user.service';
 
 export type CatalogueUserGetFn = (id: Uuid) => Observable<CatalogueUser>;
 export type CatalogueUserGetMockedFn = jest.MockedFunction<CatalogueUserGetFn>;

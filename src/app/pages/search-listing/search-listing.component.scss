@@ -23,9 +23,19 @@ $back-link-color: $color-mauro-dark-green;
 
 .mdm-search-listing {
   &__back-link,
-  &__search,
-  &__sort-row {
+  &__search {
     margin: 1em 0;
+  }
+
+  &__sort-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 1em 0;
+
+    .vertically-aligned {
+      display: flex;
+      align-items: center;
+    }
   }
 
   &__back-link {

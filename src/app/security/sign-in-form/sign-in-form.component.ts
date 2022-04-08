@@ -28,7 +28,8 @@ import {
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatFormFieldAppearance } from '@angular/material/form-field';
 import { PublicOpenIdConnectProvider } from '@maurodatamapper/mdm-resources';
-import { defaultEmailPattern, SignInErrorType } from '../security.types';
+import { defaultEmailPattern } from 'src/app/core/core.types';
+import { SignInErrorType } from '../security.types';
 
 export interface SignInClickEvent {
   userName: string;

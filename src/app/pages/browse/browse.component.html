@@ -18,21 +18,29 @@ SPDX-License-Identifier: Apache-2.0
 -->
 <div class="container">
   <div class="main-row hero">
-    <h1>Browse the catalogue</h1>
+    <h1 class="page-title">Browse the catalogue</h1>
   </div>
   <div class="highlight-box mdm-browse">
     <div class="highlight-box__header">
-      <a href="#"><i class="fa-solid fa-circle-info"></i>Browsing tips</a>
+      <a href="#"><i class="fa-solid fa-circle-info"></i> Browsing tips</a>
     </div>
     <div class="highlight-box__content">
       <div class="mdm-browse__list-container">
         <div class="mdm-browse__list">
           <mat-selection-list
+            #parentList
             [multiple]="false"
             (selectionChange)="selectParentDataClass($event)"
           >
-            <mat-list-option *ngFor="let item of parentDataClasses" [value]="item">
-              {{ item.label }}
+            <mat-list-option
+              *ngFor="let item of parentDataClasses"
+              [value]="item"
+              (click)="reselectDataClass(item)"
+            >
+              <span
+                >{{ item.label }}
+                <span [matMenuTriggerFor]="menu" [mdmArrow]="'angle-down'"> </span
+              ></span>
             </mat-list-option>
           </mat-selection-list>
         </div>
@@ -41,8 +49,15 @@ SPDX-License-Identifier: Apache-2.0
             [multiple]="false"
             (selectionChange)="selectChildDataClass($event)"
           >
-            <mat-list-option *ngFor="let item of childDataClasses" [value]="item">
-              {{ item.label }}
+            <mat-list-option
+              *ngFor="let item of childDataClasses"
+              [value]="item"
+              (click)="reselectDataClass(item)"
+            >
+              <span
+                >{{ item.label }}
+                <span [matMenuTriggerFor]="menu" [mdmArrow]="'angle-down'"></span>
+              </span>
             </mat-list-option>
           </mat-selection-list>
         </div>
@@ -59,12 +74,25 @@ SPDX-License-Identifier: Apache-2.0
       </button>
     </div>
   </div>
-  <div *ngIf="selected && selected.label && selected.description" class="highlight-box">
-    <div class="highlight-box__content">
-      <h2>{{ selected.label }}</h2>
-      <div>
-        {{ selected.description }}
-      </div>
+</div>
+<!-- Dropdown Menu -->
+<mat-menu #menu="matMenu" xPosition="after" yPosition="below">
+  <button mat-menu-item (click)="createRequest()" clickable>
+    <span>Create new request</span>
+  </button>
+</mat-menu>
+<div *ngIf="selected && selected.label && selected.description" class="highlight-box">
+  <div class="highlight-box__content">
+    <h2>{{ selected.label }}</h2>
+    <div>
+      {{ selected.description }}
     </div>
   </div>
+</div>
+<!-- Loading wheel -->
+<div *ngIf="showLoadingWheel">
+  <mdm-loading-spinner
+    caption="Creating new request ..."
+    color="primary"
+  ></mdm-loading-spinner>
 </div>

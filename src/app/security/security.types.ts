@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { HttpErrorResponse } from '@angular/common/http';
 import { InjectionToken } from '@angular/core';
-import { MdmHttpError } from '../mdm-rest-client/mdm-rest-client.types';
+import { MdmHttpError } from '../mauro/mauro.types';
 
 export enum SignInErrorType {
   UnknownError,
@@ -79,10 +79,6 @@ export interface OpenIdConnectSession {
   sessionState: string;
   code: string;
 }
-
-// eslint-disable-next-line no-useless-escape
-export const defaultEmailPattern =
-  /^[_A-Za-z0-9-'!#%&=\/~\`\+\$\*\?\^\{\|\}]+(\.[_A-Za-z0-9-'!#%&=\/~\`\+\$\*\?\^\{\|\}]+)*@[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-\+]+)*(\.[A-Za-z]{2,})$/;
 
 export const AUTHORIZATION_REDIRECT_URL = new InjectionToken<string>(
   'Authorization Redirect URL'

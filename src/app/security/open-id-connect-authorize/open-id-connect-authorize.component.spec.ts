@@ -16,9 +16,12 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { MdmEndpointsService } from 'src/app/mdm-rest-client/mdm-endpoints.service';
+import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
 import { createMdmEndpointsStub } from 'src/app/testing/stubs/mdm-endpoints.stub';
-import { ComponentHarness, setupTestModuleForComponent } from 'src/app/testing/testing.helpers';
+import {
+  ComponentHarness,
+  setupTestModuleForComponent,
+} from 'src/app/testing/testing.helpers';
 import { OpenIdConnectAuthorizeComponent } from './open-id-connect-authorize.component';
 
 describe('OpenIdConnectAuthorizeComponent', () => {
@@ -26,16 +29,14 @@ describe('OpenIdConnectAuthorizeComponent', () => {
   const endpointsStub = createMdmEndpointsStub();
 
   beforeEach(async () => {
-    harness = await setupTestModuleForComponent(
-      OpenIdConnectAuthorizeComponent,
-      {
-        providers: [
-          {
-            provide: MdmEndpointsService,
-            useValue: endpointsStub
-          }
-        ]
-      });
+    harness = await setupTestModuleForComponent(OpenIdConnectAuthorizeComponent, {
+      providers: [
+        {
+          provide: MdmEndpointsService,
+          useValue: endpointsStub,
+        },
+      ],
+    });
   });
 
   it('should create', () => {

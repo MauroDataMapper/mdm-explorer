@@ -19,7 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 import { SimpleChange } from '@angular/core';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MockComponent } from 'ng-mocks';
-import { CatalogueSearchPayload } from 'src/app/catalogue/catalogue.service';
+import { CatalogueSearchPayload } from 'src/app/data-explorer/data-explorer.types';
 import {
   ComponentHarness,
   setupTestModuleForComponent,

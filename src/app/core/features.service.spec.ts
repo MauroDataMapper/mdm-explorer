@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { ApiProperty } from '@maurodatamapper/mdm-resources';
 import { of } from 'rxjs';
-import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
+import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { createMdmEndpointsStub } from '../testing/stubs/mdm-endpoints.stub';
 import { setupTestModuleForService } from '../testing/testing.helpers';
 import { FeaturesService } from './features.service';
@@ -31,16 +31,14 @@ describe('FeaturesService', () => {
     // Default endpoint call
     endpointsStub.apiProperties.listPublic.mockImplementationOnce(() => of([]));
 
-    service = setupTestModuleForService(
-      FeaturesService,
-      {
-        providers: [
-          {
-            provide: MdmEndpointsService,
-            useValue: endpointsStub
-          }
-        ]
-      });
+    service = setupTestModuleForService(FeaturesService, {
+      providers: [
+        {
+          provide: MdmEndpointsService,
+          useValue: endpointsStub,
+        },
+      ],
+    });
   });
 
   it('should be created', () => {
@@ -48,19 +46,21 @@ describe('FeaturesService', () => {
   });
 
   it.each([
-    ['feature.use_open_id_connect', true, (s: FeaturesService) => s.useOpenIdConnect]
+    ['feature.use_open_id_connect', true, (s: FeaturesService) => s.useOpenIdConnect],
   ])('should set feature toggle according to api property', (name, state, accessor) => {
     const apiProperty: ApiProperty = {
       key: name,
       value: JSON.stringify(state),
-      category: 'Features'
+      category: 'Features',
     };
 
     endpointsStub.apiProperties.listPublic.mockClear();
-    endpointsStub.apiProperties.listPublic.mockImplementationOnce(() => of({
-      count: 1,
-      items: [apiProperty]
-    }));
+    endpointsStub.apiProperties.listPublic.mockImplementationOnce(() =>
+      of({
+        count: 1,
+        items: [apiProperty],
+      })
+    );
 
     service.loadFromServer();
     expect(accessor(service)).toBe(state);

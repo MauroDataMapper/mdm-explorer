@@ -20,23 +20,33 @@ import { RouterOutlet } from '@angular/router';
 import { MockComponent } from 'ng-mocks';
 import { AppComponent } from './app.component';
 import { StateRouterService } from './core/state-router.service';
-import { MdmEndpointsService } from './mdm-rest-client/mdm-endpoints.service';
+import { DataRequestsService } from './data-explorer/data-requests.service';
+import { MdmEndpointsService } from './mauro/mdm-endpoints.service';
 import { FooterComponent } from './shared/footer/footer.component';
 import { HeaderComponent } from './shared/header/header.component';
+import { createDataRequestsServiceStub } from './testing/stubs/data-requests.stub';
 import {
   createMdmEndpointsStub,
   MdmEndpointsServiceStub,
 } from './testing/stubs/mdm-endpoints.stub';
 import { ComponentHarness, setupTestModuleForComponent } from './testing/testing.helpers';
+import { createDataElementSearchServiceStub } from './testing/stubs/data-element-search.stub';
+import { DataElementSearchService } from './data-explorer/data-element-search.service';
 
 describe('AppComponent', () => {
   let harness: ComponentHarness<AppComponent>;
+  const dataRequestsStub = createDataRequestsServiceStub();
   const endpointsStub: MdmEndpointsServiceStub = createMdmEndpointsStub();
+  const dataElementSearchStub = createDataElementSearchServiceStub();
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(AppComponent, {
       declarations: [HeaderComponent, FooterComponent, MockComponent(RouterOutlet)],
       providers: [
+        {
+          provide: DataRequestsService,
+          useValue: dataRequestsStub,
+        },
         {
           provide: MdmEndpointsService,
           useValue: endpointsStub,
@@ -44,6 +54,10 @@ describe('AppComponent', () => {
         {
           provide: StateRouterService,
           useValue: jest.fn(),
+        },
+        {
+          provide: DataElementSearchService,
+          useValue: dataElementSearchStub,
         },
       ],
     });

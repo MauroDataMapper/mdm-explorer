@@ -21,17 +21,15 @@ import { ApiProperty, ApiPropertyIndexResponse } from '@maurodatamapper/mdm-reso
 import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { MdmEndpointsService } from '../mdm-rest-client/mdm-endpoints.service';
+import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FeaturesService {
   useOpenIdConnect = false;
 
-  constructor(
-    private endpoints: MdmEndpointsService,
-    private toastr: ToastrService) {
+  constructor(private endpoints: MdmEndpointsService, private toastr: ToastrService) {
     this.setFeatures([]);
     this.loadFromServer();
   }
@@ -41,12 +39,16 @@ export class FeaturesService {
       .listPublic()
       .pipe(
         catchError(() => {
-          this.toastr.error('There was a problem getting the configuration properties for features.');
+          this.toastr.error(
+            'There was a problem getting the configuration properties for features.'
+          );
           return EMPTY;
         })
       )
       .subscribe((response: ApiPropertyIndexResponse) => {
-        const featureFlags = response.body.items.filter(prop => prop.category === 'Features');
+        const featureFlags = response.body.items.filter(
+          (prop) => prop.category === 'Features'
+        );
         this.setFeatures(featureFlags);
       });
   }
@@ -55,11 +57,16 @@ export class FeaturesService {
     this.useOpenIdConnect = this.getBooleanValue(
       properties,
       'feature.use_open_id_connect',
-      environment.features.useOpenIdConnect);
+      environment.features.useOpenIdConnect
+    );
   }
 
-  private getBooleanValue(properties: ApiProperty[], key: string, defaultValue: boolean): boolean {
-    const feature = properties.find(prop => prop.key === key);
+  private getBooleanValue(
+    properties: ApiProperty[],
+    key: string,
+    defaultValue: boolean
+  ): boolean {
+    const feature = properties.find((prop) => prop.key === key);
     return feature ? feature.value === 'true' : defaultValue;
   }
 }
