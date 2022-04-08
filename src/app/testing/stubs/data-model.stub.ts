@@ -28,7 +28,7 @@ import {
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
-import { DataClassIdentifier } from 'src/app/catalogue/catalogue.types';
+import { DataClassIdentifier } from 'src/app/mauro/mauro.types';
 
 export type DataModelGetDataModelFn = (path: string) => Observable<DataModelDetail>;
 export type DataModelGetDataClassesFn = (

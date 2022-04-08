@@ -21,11 +21,11 @@ import { DataModel } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, throwError } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
-import { UserRequestsService } from 'src/app/core/user-requests.service';
+import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import {
   DataElementSearchParameters,
   mapSearchParametersToParams,
-} from 'src/app/search/search.types';
+} from 'src/app/data-explorer/data-explorer.types';
 import { SecurityService } from 'src/app/security/security.service';
 
 @Component({
@@ -40,7 +40,7 @@ export class DashboardComponent implements OnInit {
   constructor(
     private security: SecurityService,
     private stateRouter: StateRouterService,
-    private userRequests: UserRequestsService,
+    private dataRequests: DataRequestsService,
     private toastr: ToastrService
   ) {}
 
@@ -55,7 +55,7 @@ export class DashboardComponent implements OnInit {
   }
 
   loadRequests(username: string) {
-    this.userRequests
+    this.dataRequests
       .list(username)
       .pipe(
         catchError((error) => {

@@ -23,16 +23,15 @@ import { PagesModule } from './pages/pages.module';
 import { environment } from '../environments/environment';
 import { ToastrModule } from 'ngx-toastr';
 import { UserIdleModule } from 'angular-user-idle';
-import { MdmRestClientModule } from './mdm-rest-client/mdm-rest-client.module';
+import { MauroModule } from './mauro/mauro.module';
 import { SharedModule } from './shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ErrorModule } from './error/error.module';
 import {
   AUTHORIZATION_REDIRECT_URL,
   OPENID_CONNECT_CONFIG,
 } from './security/security.types';
 import { STATIC_CONTENT_CONFIGURATION } from './core/static-content.service';
-import { CATALOGUE_CONFIGURATION } from './catalogue/catalogue.types';
+import { DATA_EXPLORER_CONFIGURATION } from './data-explorer/data-explorer.types';
 import { CoreModule } from './core/core.module';
 import { AppRoutingModule } from './app-routing.module';
 import { NgChartsModule } from 'ng2-charts';
@@ -60,7 +59,7 @@ const getOpenIdAuthorizeUrl = () => {
     BrowserAnimationsModule,
     CoreModule,
     SharedModule,
-    MdmRestClientModule.forRoot({
+    MauroModule.forRoot({
       apiEndpoint: environment.apiEndpoint,
       defaultHttpRequestOptions: {
         withCredentials: true,
@@ -77,7 +76,6 @@ const getOpenIdAuthorizeUrl = () => {
       timeout: 300,
     }),
     PagesModule,
-    ErrorModule,
     NgChartsModule,
   ],
   providers: [
@@ -98,7 +96,7 @@ const getOpenIdAuthorizeUrl = () => {
       },
     },
     {
-      provide: CATALOGUE_CONFIGURATION,
+      provide: DATA_EXPLORER_CONFIGURATION,
       useValue: {
         rootDataModelPath: environment.rootDataModelPath,
       },

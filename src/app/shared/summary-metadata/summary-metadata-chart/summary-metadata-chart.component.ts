@@ -21,7 +21,7 @@ import { ChartOptions, ChartType, ChartData } from 'chart.js';
 import {
   SummaryMetadata,
   SummaryMetadataReport,
-} from 'src/app/catalogue/summary-metadata-service';
+} from 'src/app/data-explorer/summary-metadata-service';
 
 @Component({
   selector: 'mdm-summary-metadata-chart',

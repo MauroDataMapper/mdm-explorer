@@ -24,8 +24,7 @@ import { HeaderComponent } from './header/header.component';
 import { SafePipe } from './pipes/safe.pipe';
 import { ArrowDirective } from './directives/arrow.directive';
 import { CreateRequestComponent } from './create-request/create-request.component';
-import { ConfirmComponent } from './confirm/confirm.component';
-import { MdmShowErrorComponent } from './mdm-show-error/mdm-show-error.component';
+import { ShowErrorComponent } from './show-error/show-error.component';
 import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
 import { BookmarkToggleComponent } from './bookmark-toggle/bookmark-toggle.component';
 import { CoreModule } from '../core/core.module';
@@ -34,6 +33,7 @@ import { SummaryMetadataReportComponent } from './summary-metadata/summary-metad
 import { SummaryMetadataChartComponent } from './summary-metadata/summary-metadata-chart/summary-metadata-chart.component';
 import { NgChartsModule } from 'ng2-charts';
 import { CallToActionComponent } from './call-to-action/call-to-action.component';
+import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 
 @NgModule({
   declarations: [
@@ -44,13 +44,12 @@ import { CallToActionComponent } from './call-to-action/call-to-action.component
     SafePipe,
     ArrowDirective,
     CreateRequestComponent,
+    BreadcrumbComponent,
     BookmarkToggleComponent,
-    ConfirmComponent,
     SummaryMetadataChartComponent,
     SummaryMetadataComponent,
     SummaryMetadataReportComponent,
-    ConfirmComponent,
-    MdmShowErrorComponent,
+    ShowErrorComponent,
     LoadingSpinnerComponent,
     CallToActionComponent,
   ],
@@ -62,7 +61,7 @@ import { CallToActionComponent } from './call-to-action/call-to-action.component
     HeaderComponent,
     LoadingSpinnerComponent,
     ArrowDirective,
-    BookmarkToggleComponent,
+    BreadcrumbComponent,
     BookmarkToggleComponent,
     SummaryMetadataChartComponent,
     SummaryMetadataComponent,

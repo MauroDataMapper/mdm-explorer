@@ -17,12 +17,12 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { Bookmark, BookmarkService } from 'src/app/core/bookmark.service';
 import { ActivatedRoute } from '@angular/router';
 import { DataElementDetail, Uuid } from '@maurodatamapper/mdm-resources';
-import { DataModelService } from 'src/app/catalogue/data-model.service';
-import { DataElementBookmarkEvent } from 'src/app/search/search.types';
+import { DataModelService } from 'src/app/mauro/data-model.service';
 import { ToastrService } from 'ngx-toastr';
+import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
+import { DataElementBookmarkEvent } from 'src/app/data-explorer/data-explorer.types';
 
 @Component({
   selector: 'mdm-data-element',

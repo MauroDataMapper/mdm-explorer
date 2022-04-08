@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { HttpErrorResponse } from '@angular/common/http';
 import { InjectionToken } from '@angular/core';
-import { MdmHttpError } from '../mdm-rest-client/mdm-rest-client.types';
+import { MdmHttpError } from '../mauro/mauro.types';
 
 export enum SignInErrorType {
   UnknownError,

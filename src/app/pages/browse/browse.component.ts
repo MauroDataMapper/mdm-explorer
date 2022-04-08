@@ -31,8 +31,7 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
-import { CatalogueService } from 'src/app/catalogue/catalogue.service';
-import { DataModelService } from 'src/app/catalogue/data-model.service';
+import { DataModelService } from 'src/app/mauro/data-model.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import {
   CreateRequestComponent,
@@ -41,15 +40,16 @@ import {
 import {
   DataElementSearchParameters,
   mapSearchParametersToParams,
-} from 'src/app/search/search.types';
+} from 'src/app/data-explorer/data-explorer.types';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
-import { UserRequestsService } from 'src/app/core/user-requests.service';
 import { UserDetails, UserDetailsService } from 'src/app/security/user-details.service';
-import { ConfirmData } from 'src/app/shared/confirm/confirm.component';
-import { ShowErrorData } from 'src/app/shared/mdm-show-error/mdm-show-error.component';
-import { MdmShowErrorService } from 'src/app/core/mdm-show-error.service';
-import { ConfirmService } from 'src/app/core/confirm-service';
+import { ConfirmData } from 'src/app/data-explorer/confirm/confirm.component';
+import { ShowErrorData } from 'src/app/shared/show-error/show-error.component';
+import { ShowErrorService } from 'src/app/shared/show-error.service';
+import { ConfirmService } from 'src/app/data-explorer/confirm.service';
+import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 
 @Component({
   selector: 'mdm-browse',
@@ -65,13 +65,13 @@ export class BrowseComponent implements OnInit {
   private user: UserDetails | null;
 
   constructor(
-    private catalogue: CatalogueService,
+    private dataRequests: DataRequestsService,
+    private dataExplorer: DataExplorerService,
     private dataModels: DataModelService,
     private toastr: ToastrService,
     private stateRouter: StateRouterService,
-    private userRequestsService: UserRequestsService,
     private theMatDialog: MatDialog,
-    private showErrorService: MdmShowErrorService,
+    private showErrorService: ShowErrorService,
     private confirmationService: ConfirmService,
     userDetailsService: UserDetailsService
   ) {
@@ -183,7 +183,7 @@ export class BrowseComponent implements OnInit {
         filter((result) => result.Name !== '' && this.user != null),
         // Do the doings
         mergeMap((result) => {
-          return this.userRequestsService.createNewUserRequestFromDataClass(
+          return this.dataRequests.createNewUserRequestFromDataClass(
             result.Name,
             result.Description,
             this.user!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
@@ -197,7 +197,7 @@ export class BrowseComponent implements OnInit {
   }
 
   private loadParentDataClasses() {
-    this.catalogue
+    this.dataExplorer
       .getRootDataModel()
       .pipe(
         catchError(() => {

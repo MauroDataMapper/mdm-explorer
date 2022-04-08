@@ -19,13 +19,13 @@ SPDX-License-Identifier: Apache-2.0
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { catchError, EMPTY, filter, switchMap, tap } from 'rxjs';
-import { ContactFormState } from 'src/app/catalogue/contact-form/contact-form.component';
 import {
   FeedbackDialogComponent,
   FeedbackDialogResponse,
-} from 'src/app/catalogue/feedback-dialog/feedback-dialog.component';
-import { PluginResearchContactPayload } from 'src/app/mdm-rest-client/plugins/plugin-research.resource';
-import { ResearchPluginService } from 'src/app/mdm-rest-client/research-plugin.service';
+} from 'src/app/data-explorer/feedback-dialog/feedback-dialog.component';
+import { ContactFormState } from 'src/app/data-explorer/contact-form/contact-form.component';
+import { PluginResearchContactPayload } from 'src/app/mauro/plugins/plugin-research.resource';
+import { ResearchPluginService } from 'src/app/mauro/research-plugin.service';
 
 @Component({
   selector: 'mdm-contact-support',

@@ -21,18 +21,18 @@ import { ActivatedRoute, convertToParamMap, ParamMap } from '@angular/router';
 import { CatalogueItemDomainType, DataClassDetail } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { of, throwError } from 'rxjs';
-import { BookmarkService } from 'src/app/core/bookmark.service';
-import { DataClassIdentifier } from 'src/app/catalogue/catalogue.types';
-import { DataModelService } from 'src/app/catalogue/data-model.service';
+import { BookmarkService } from 'src/app/data-explorer/bookmark.service';
+import { DataClassIdentifier } from 'src/app/mauro/mauro.types';
+import { DataModelService } from 'src/app/mauro/data-model.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
-import { DataElementSearchService } from 'src/app/search/data-element-search.service';
+import { DataElementSearchService } from 'src/app/data-explorer/data-element-search.service';
 import {
   DataElementBookmarkEvent,
   DataElementSearchParameters,
   DataElementSearchResult,
   DataElementSearchResultSet,
   mapSearchParametersToParams,
-} from 'src/app/search/search.types';
+} from 'src/app/data-explorer/data-explorer.types';
 import { createBookmarkServiceStub } from 'src/app/testing/stubs/bookmark.stub';
 import { createDataElementSearchServiceStub } from 'src/app/testing/stubs/data-element-search.stub';
 import { createDataModelServiceStub } from 'src/app/testing/stubs/data-model.stub';
@@ -46,7 +46,7 @@ import {
   createMdmEndpointsStub,
   MdmEndpointsServiceStub,
 } from 'src/app/testing/stubs/mdm-endpoints.stub';
-import { MdmEndpointsService } from 'src/app/mdm-rest-client/mdm-endpoints.service';
+import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
 
 import { SearchListingComponent, SearchListingSource } from './search-listing.component';
 import {

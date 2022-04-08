@@ -33,9 +33,9 @@ import {
 import { environment } from '../environments/environment';
 import { BroadcastEvent, BroadcastService } from './core/broadcast.service';
 import { StateRouterService } from './core/state-router.service';
-import { UserRequestsService } from './core/user-requests.service';
-import { ErrorService } from './error/error.service';
-import { MdmHttpError } from './mdm-rest-client/mdm-rest-client.types';
+import { DataRequestsService } from './data-explorer/data-requests.service';
+import { ErrorService } from './pages/error/error.service';
+import { MdmHttpError } from './mauro/mauro.types';
 import { SecurityService } from './security/security.service';
 import { UserDetails, UserDetailsService } from './security/user-details.service';
 import { FooterLink } from './shared/footer/footer.component';
@@ -160,7 +160,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private broadcast: BroadcastService,
     private security: SecurityService,
     private userDetails: UserDetailsService,
-    private userRequests: UserRequestsService,
+    private dataRequests: DataRequestsService,
     private stateRouter: StateRouterService,
     private toastr: ToastrService,
     private userIdle: UserIdleService,
@@ -190,7 +190,7 @@ export class AppComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((user) => {
         this.setupSignedInUser(user);
-        this.userRequests.getRequestsFolder(user.email).subscribe();
+        this.dataRequests.getRequestsFolder(user.email).subscribe();
       });
 
     this.broadcast

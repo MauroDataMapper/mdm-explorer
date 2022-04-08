@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Observable } from 'rxjs';
-import { PluginResearchContactPayload } from 'src/app/mdm-rest-client/plugins/plugin-research.resource';
+import { PluginResearchContactPayload } from 'src/app/mauro/plugins/plugin-research.resource';
 
 export type ResearchPluginContactFn = (
   data: PluginResearchContactPayload

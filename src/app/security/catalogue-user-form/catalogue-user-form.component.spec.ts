@@ -22,7 +22,7 @@ import { MockComponent } from 'ng-mocks';
 import {
   CatalogueUser,
   CatalogueUserPayload,
-} from 'src/app/catalogue/catalogue-user.service';
+} from 'src/app/mauro/catalogue-user.service';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
