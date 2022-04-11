@@ -31,8 +31,23 @@ SPDX-License-Identifier: Apache-2.0
             [routerLink]="link.routerLink"
             routerLinkActive="active"
           >
-            <span [mdmArrow]="link.arrow">{{ link.label }} </span>
+            <span
+              >{{ link.label }}
+              <span [mdmArrow]="link.arrow" [matMenuTriggerFor]="menu"> </span
+            ></span>
           </a>
+
+          <!-- Lazily rendered dropdown menu.  -->
+          <mat-menu #menu="matMenu" xPosition="after" yPosition="below">
+            <ng-template matMenuContent>
+              <a
+                *ngFor="let menuItem of link.menuLinks"
+                [routerLink]="menuItem.routerLink"
+                mat-menu-item
+                >{{ menuItem.label }}</a
+              >
+            </ng-template>
+          </mat-menu>
         </li>
       </ul>
     </nav>

@@ -47,9 +47,9 @@ export interface HeaderLink {
   arrow?: ArrowDirection;
 
   /**
-   * Provide the name of this header links dropdown menu.
+   * Link information for the menu items.
    */
-  menuName?: string;
+  menuLinks?: HeaderLink[];
 }
 
 export interface HeaderImageLink extends HeaderLink {
