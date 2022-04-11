@@ -66,12 +66,24 @@ export class AppComponent implements OnInit, OnDestroy {
 
   helpMenuLinks: HeaderLink[] = [
     {
-      label: 'How to Browse',
-      routerLink: '/browse',
+      label: 'How to videos and guides',
+      routerLink: '/help',
     },
     {
-      label: 'How to Search',
-      routerLink: '/search',
+      label: 'Glossary',
+      routerLink: '',
+    },
+    {
+      label: 'Lorem ipsum',
+      routerLink: '',
+    },
+    {
+      label: 'FAQs',
+      routerLink: '',
+    },
+    {
+      label: 'Contact and support',
+      routerLink: '',
     },
   ];
 
