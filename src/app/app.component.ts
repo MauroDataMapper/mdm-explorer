@@ -64,6 +64,17 @@ export class AppComponent implements OnInit, OnDestroy {
     imageSrc: 'assets/images/mauro-data-explorer.svg',
   };
 
+  helpMenuLinks: HeaderLink[] = [
+    {
+      label: 'How to Browse',
+      routerLink: '/browse',
+    },
+    {
+      label: 'How to Search',
+      routerLink: '/search',
+    },
+  ];
+
   headerLinks: HeaderLink[] = [
     {
       label: 'About',
@@ -83,7 +94,7 @@ export class AppComponent implements OnInit, OnDestroy {
       label: 'Help',
       routerLink: '/help',
       arrow: 'angle-down',
-      menuName: 'help-menu',
+      menuLinks: this.helpMenuLinks,
     },
   ];
 
