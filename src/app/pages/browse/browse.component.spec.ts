@@ -22,7 +22,6 @@ import {
   CatalogueItemDomainType,
   DataClass,
   DataModelDetail,
-  MdmResourcesConfiguration,
 } from '@maurodatamapper/mdm-resources';
 import { MockComponent } from 'ng-mocks';
 import { ToastrService } from 'ngx-toastr';
@@ -42,6 +41,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatMenu } from '@angular/material/menu';
 import { createDataExplorerServiceStub } from 'src/app/testing/stubs/data-explorer.stub';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
+import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
+import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { CreateRequestDialogResponse } from 'src/app/data-explorer/create-request-dialog/create-request-dialog.component';
+import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
+import { SecurityService } from 'src/app/security/security.service';
+import { UserDetails } from 'src/app/security/user-details.service';
 
 describe('BrowseComponent', () => {
   let harness: ComponentHarness<BrowseComponent>;
@@ -50,6 +55,17 @@ describe('BrowseComponent', () => {
   const stateRouterStub = createStateRouterStub();
   const toastrStub = createToastrServiceStub();
   const matDialogStub = createMatDialogStub();
+  const dataRequestsStub = createDataRequestsServiceStub();
+  const securityStub = createSecurityServiceStub();
+
+  const user: UserDetails = {
+    id: '123',
+    firstName: 'test',
+    lastName: 'user',
+    email: 'test@test.com',
+  };
+
+  securityStub.getSignedInUser.mockImplementation(() => user);
 
   const rootDataModel: DataModelDetail = {
     id: '123',
@@ -84,7 +100,12 @@ describe('BrowseComponent', () => {
           useValue: matDialogStub,
         },
         {
-          provide: MdmResourcesConfiguration,
+          provide: DataRequestsService,
+          useValue: dataRequestsStub,
+        },
+        {
+          provide: SecurityService,
+          useValue: securityStub,
         },
       ],
     });
@@ -274,6 +295,44 @@ describe('BrowseComponent', () => {
           dc: harness.component.selected.id,
           pdc: harness.component.selected.parentDataClass,
         }
+      );
+    });
+  });
+
+  describe('create request from data class', () => {
+    const selected: DataClass = {
+      id: '123',
+      label: 'test class',
+    } as DataClass;
+
+    beforeEach(() => {
+      dataRequestsStub.createNewUserRequestFromDataClass.mockClear();
+
+      harness.component.selected = selected;
+    });
+
+    it('should not continue if cancelling the Create Request dialog', () => {
+      matDialogStub.usage.afterClosed.mockImplementationOnce(() => of());
+
+      harness.component.createRequest();
+      expect(dataRequestsStub.createNewUserRequestFromDataClass).not.toHaveBeenCalled();
+    });
+
+    it('should create a new request', () => {
+      const requestCreation: CreateRequestDialogResponse = {
+        name: 'test request',
+        description: 'test description',
+      };
+
+      matDialogStub.usage.afterClosed.mockImplementationOnce(() => of(requestCreation));
+
+      harness.component.createRequest();
+
+      expect(dataRequestsStub.createNewUserRequestFromDataClass).toHaveBeenCalledWith(
+        requestCreation.name,
+        requestCreation.description,
+        user,
+        selected
       );
     });
   });

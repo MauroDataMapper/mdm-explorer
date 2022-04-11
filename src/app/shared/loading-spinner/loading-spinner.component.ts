@@ -16,19 +16,16 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { ThemePalette } from '@angular/material/core';
 
 @Component({
   selector: 'mdm-loading-spinner',
   templateUrl: './loading-spinner.component.html',
   styleUrls: ['./loading-spinner.component.scss'],
 })
-export class LoadingSpinnerComponent implements OnInit {
-  @Input() color = 'primary';
+export class LoadingSpinnerComponent {
+  @Input() color: ThemePalette = 'primary';
   @Input() diameter = 50;
   @Input() caption = 'Loading ...';
-
-  constructor() {}
-
-  ngOnInit(): void {}
 }

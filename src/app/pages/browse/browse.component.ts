@@ -16,40 +16,22 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatSelectionListChange } from '@angular/material/list';
 import { DataClass } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import {
-  catchError,
-  EMPTY,
-  filter,
-  map,
-  mergeMap,
-  Observable,
-  OperatorFunction,
-  switchMap,
-  tap,
-} from 'rxjs';
+import { catchError, EMPTY, filter, finalize, switchMap } from 'rxjs';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
-import {
-  CreateRequestComponent,
-  NewRequestDialogResult,
-} from 'src/app/shared/create-request/create-request.component';
 import {
   DataElementSearchParameters,
   mapSearchParametersToParams,
 } from 'src/app/data-explorer/data-explorer.types';
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { MatMenuTrigger } from '@angular/material/menu';
-import { UserDetails, UserDetailsService } from 'src/app/security/user-details.service';
-import { ConfirmData } from 'src/app/data-explorer/confirm/confirm.component';
-import { ShowErrorData } from 'src/app/shared/show-error/show-error.component';
-import { ShowErrorService } from 'src/app/shared/show-error.service';
-import { ConfirmService } from 'src/app/data-explorer/confirm.service';
+import { UserDetails } from 'src/app/security/user-details.service';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
+import { DialogService } from 'src/app/data-explorer/dialog.service';
+import { SecurityService } from 'src/app/security/security.service';
 
 @Component({
   selector: 'mdm-browse',
@@ -57,11 +39,10 @@ import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service
   styleUrls: ['./browse.component.scss'],
 })
 export class BrowseComponent implements OnInit {
-  @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
   parentDataClasses: DataClass[] = [];
   childDataClasses: DataClass[] = [];
   selected?: DataClass;
-  showLoadingWheel = false;
+  creatingRequest = false;
   private user: UserDetails | null;
 
   constructor(
@@ -70,12 +51,10 @@ export class BrowseComponent implements OnInit {
     private dataModels: DataModelService,
     private toastr: ToastrService,
     private stateRouter: StateRouterService,
-    private theMatDialog: MatDialog,
-    private showErrorService: ShowErrorService,
-    private confirmationService: ConfirmService,
-    userDetailsService: UserDetailsService
+    private dialogs: DialogService,
+    security: SecurityService
   ) {
-    this.user = userDetailsService.get();
+    this.user = security.getSignedInUser();
   }
 
   get isChildDataClassSelected() {
@@ -87,23 +66,46 @@ export class BrowseComponent implements OnInit {
   }
 
   createRequest() {
-    const dialogProps = new MatDialogConfig();
-    dialogProps.height = 'fit-content';
-    dialogProps.width = '343px';
-    const dialogRef = this.theMatDialog.open(CreateRequestComponent, dialogProps);
-
-    dialogRef
+    this.dialogs
+      .openCreateRequest()
       .afterClosed()
-      .pipe(this.createNewRequestOrBail())
-      .subscribe({
-        next: ([requestName, resultErrors]: [string, string[]]) => {
-          if (resultErrors.length === 0) {
-            this.showConfirmation(requestName);
-          } else {
-            this.showErrorDialog(requestName, resultErrors);
+      .pipe(
+        filter((response) => !!response),
+        switchMap((response) => {
+          if (!response || !this.user || !this.selected) {
+            return EMPTY;
           }
-        },
-        complete: () => (this.showLoadingWheel = false),
+
+          this.creatingRequest = true;
+          return this.dataRequests.createNewUserRequestFromDataClass(
+            response.name,
+            response.description,
+            this.user,
+            this.selected
+          );
+        }),
+        switchMap(([dataRequest, errors]) => {
+          if (errors.length > 0) {
+            this.toastr.error(
+              `There was a problem creating your request. ${errors[0]}`,
+              'Request creation error'
+            );
+            return EMPTY;
+          }
+
+          return this.dialogs
+            .openRequestCreated({
+              request: dataRequest,
+              addedClass: this.selected,
+            })
+            .afterClosed();
+        }),
+        finalize(() => (this.creatingRequest = false))
+      )
+      .subscribe((action) => {
+        if (action === 'view-requests') {
+          this.stateRouter.navigateToKnownPath('/requests');
+        }
       });
   }
 
@@ -141,59 +143,6 @@ export class BrowseComponent implements OnInit {
 
     const params = mapSearchParametersToParams(searchParameters);
     this.stateRouter.navigateToKnownPath('/search/listing', params);
-  }
-
-  private showErrorDialog(requestName: string, resultErrors: string[]) {
-    // Restore focus to item that was originally clicked on
-    const errorData: ShowErrorData = {
-      heading: 'Request creation error',
-      subheading: `The following error occurred while trying to add Data Class '${
-        this.selected!.label // eslint-disable-line @typescript-eslint/no-non-null-assertion
-      }' to new request '${requestName}'.`,
-      message: resultErrors[0],
-      buttonLabel: 'Continue browsing',
-    };
-    const errorRef = this.showErrorService.open(errorData, 400);
-    errorRef.afterClosed().subscribe(() => this.menuTrigger.focus());
-  }
-
-  private showConfirmation(requestName: string) {
-    const confirmationData: ConfirmData = {
-      heading: 'New request created',
-      subheading: `Data Class added to new request: '${requestName}'`,
-      content: [this.selected!.label], // eslint-disable-line @typescript-eslint/no-non-null-assertion
-      buttonActionCaption: 'View Requests',
-      buttonCloseCaption: 'Continue Browsing',
-      buttonActionCallback: () => this.stateRouter.navigateToKnownPath('/requests'),
-    };
-    const confirmationRef = this.confirmationService.open(confirmationData, 343);
-    // Restore focus to item that was originally clicked on
-    confirmationRef.afterClosed().subscribe(() => this.menuTrigger.focus());
-  }
-
-  private createNewRequestOrBail(): OperatorFunction<
-    NewRequestDialogResult,
-    [string, string[]]
-  > {
-    return (source: Observable<NewRequestDialogResult>) => {
-      return source.pipe(
-        // side-effect: show the loading wheel
-        tap(() => (this.showLoadingWheel = true)),
-        // if the user didn't enter a name or clicked cancel, then bail
-        filter((result) => result.Name !== '' && this.user != null),
-        // Do the doings
-        mergeMap((result) => {
-          return this.dataRequests.createNewUserRequestFromDataClass(
-            result.Name,
-            result.Description,
-            this.user!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-            this.selected! // eslint-disable-line @typescript-eslint/no-non-null-assertion
-          );
-        }),
-        // retain just the label, which is the only interesting bit (at the moment)
-        map(([dataModel, errors]) => [dataModel.label, errors])
-      );
-    };
   }
 
   private loadParentDataClasses() {

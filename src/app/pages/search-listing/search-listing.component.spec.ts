@@ -55,9 +55,15 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { DataElementBookmarkEvent } from 'src/app/data-explorer/data-explorer.types';
 import {
-  CreateRequestComponent,
-  NewRequestDialogResult,
-} from 'src/app/shared/create-request/create-request.component';
+  CreateRequestDialogComponent,
+  CreateRequestDialogResponse,
+} from 'src/app/data-explorer/create-request-dialog/create-request-dialog.component';
+import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
+import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
+import { UserDetails } from 'src/app/security/user-details.service';
+import { SecurityService } from 'src/app/security/security.service';
+import { CreateRequestEvent } from 'src/app/data-explorer/data-element-search-result/data-element-search-result.component';
 
 describe('SearchListingComponent', () => {
   let harness: ComponentHarness<SearchListingComponent>;
@@ -68,8 +74,21 @@ describe('SearchListingComponent', () => {
   const toastrStub = createToastrServiceStub();
   const stateRouterStub = createStateRouterStub();
   const endpointsStub: MdmEndpointsServiceStub = createMdmEndpointsStub();
-  const matDialogStub: MatDialogStub<CreateRequestComponent, NewRequestDialogResult> =
-    createMatDialogStub();
+  const matDialogStub: MatDialogStub<
+    CreateRequestDialogComponent,
+    CreateRequestDialogResponse
+  > = createMatDialogStub();
+  const dataRequestsStub = createDataRequestsServiceStub();
+  const securityStub = createSecurityServiceStub();
+
+  const user: UserDetails = {
+    id: '123',
+    firstName: 'test',
+    lastName: 'user',
+    email: 'test@test.com',
+  };
+
+  securityStub.getSignedInUser.mockImplementation(() => user);
 
   const setupComponentTest = async (parameters: DataElementSearchParameters) => {
     const params = mapSearchParametersToParams(parameters);
@@ -112,6 +131,14 @@ describe('SearchListingComponent', () => {
         {
           provide: MatDialog,
           useValue: matDialogStub,
+        },
+        {
+          provide: DataRequestsService,
+          useValue: dataRequestsStub,
+        },
+        {
+          provide: SecurityService,
+          useValue: securityStub,
         },
       ],
     });
@@ -478,6 +505,48 @@ describe('SearchListingComponent', () => {
           sort: 'label',
           order: 'asc',
         }
+      );
+    });
+  });
+
+  describe('create request from single data element', () => {
+    const dataElement: DataElementSearchResult = {
+      id: '1',
+      dataClassId: '2',
+      dataModelId: '3',
+      label: 'element 1',
+    };
+
+    const event: CreateRequestEvent = {
+      item: dataElement,
+    };
+
+    beforeEach(() => {
+      dataRequestsStub.createNewUserRequestFromSearchResults.mockClear();
+    });
+
+    it('should not continue if cancelling the Create Request dialog', () => {
+      matDialogStub.usage.afterClosed.mockImplementationOnce(() => of());
+
+      harness.component.createRequest(event);
+      expect(dataRequestsStub.createNewUserRequestFromDataClass).not.toHaveBeenCalled();
+    });
+
+    it('should create a new request', () => {
+      const requestCreation: CreateRequestDialogResponse = {
+        name: 'test request',
+        description: 'test description',
+      };
+
+      matDialogStub.usage.afterClosed.mockImplementationOnce(() => of(requestCreation));
+
+      harness.component.createRequest(event);
+
+      expect(dataRequestsStub.createNewUserRequestFromSearchResults).toHaveBeenCalledWith(
+        requestCreation.name,
+        requestCreation.description,
+        user,
+        [dataElement]
       );
     });
   });

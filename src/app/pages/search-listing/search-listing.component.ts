@@ -20,19 +20,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DataClassDetail } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import {
-  catchError,
-  EMPTY,
-  filter,
-  forkJoin,
-  map,
-  mergeMap,
-  Observable,
-  of,
-  OperatorFunction,
-  switchMap,
-  tap,
-} from 'rxjs';
+import { catchError, EMPTY, filter, finalize, forkJoin, of, switchMap } from 'rxjs';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { KnownRouterPath, StateRouterService } from 'src/app/core/state-router.service';
 import { DataElementSearchService } from 'src/app/data-explorer/data-element-search.service';
@@ -42,26 +30,18 @@ import {
   mapParamMapToSearchParameters,
   mapSearchParametersToParams,
   SortOrder,
-  DataElementSearchResult,
 } from 'src/app/data-explorer/data-explorer.types';
 import {
   DataElementBookmarkEvent,
   DataElementCheckedEvent,
 } from 'src/app/data-explorer/data-explorer.types';
-import {
-  CreateRequestComponent,
-  NewRequestDialogResult,
-} from 'src/app/shared/create-request/create-request.component';
-import { ConfirmData } from 'src/app/data-explorer/confirm/confirm.component';
-import { ShowErrorData } from 'src/app/shared/show-error/show-error.component';
-import { ShowErrorService } from 'src/app/shared/show-error.service';
-import { ConfirmService } from 'src/app/data-explorer/confirm.service';
-import { UserDetails, UserDetailsService } from 'src/app/security/user-details.service';
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { UserDetails } from 'src/app/security/user-details.service';
 import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import { CreateRequestEvent } from 'src/app/data-explorer/data-element-search-result/data-element-search-result.component';
 import { SortByOption } from 'src/app/data-explorer/sort-by/sort-by.component';
+import { DialogService } from 'src/app/data-explorer/dialog.service';
+import { SecurityService } from 'src/app/security/security.service';
 
 export type SearchListingSource = 'unknown' | 'browse' | 'search';
 export type SearchListingStatus = 'init' | 'loading' | 'ready' | 'error';
@@ -86,7 +66,7 @@ export class SearchListingComponent implements OnInit {
   searchTerms?: string;
   resultSet?: DataElementSearchResultSet;
   bookmarks: Bookmark[] = [];
-  showLoadingWheel = false;
+  creatingRequest = false;
   sortBy?: SortByOption;
   /**
    * Each new option must have a {@link SearchListingSortByOption} as a value to ensure
@@ -105,14 +85,12 @@ export class SearchListingComponent implements OnInit {
     private dataModels: DataModelService,
     private toastr: ToastrService,
     private stateRouter: StateRouterService,
-    private bookmarkService: BookmarkService,
-    private showErrorService: ShowErrorService,
-    private confirmationService: ConfirmService,
-    private theMatDialog: MatDialog,
+    private bookmarksService: BookmarkService,
+    private dialogs: DialogService,
     private dataRequests: DataRequestsService,
-    userDetailsService: UserDetailsService
+    security: SecurityService
   ) {
-    this.user = userDetailsService.get();
+    this.user = security.getSignedInUser();
   }
 
   get backRouterLink(): KnownRouterPath {
@@ -126,7 +104,7 @@ export class SearchListingComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.bookmarkService.index().subscribe((result) => {
+    this.bookmarksService.index().subscribe((result) => {
       this.bookmarks = result;
     });
 
@@ -173,11 +151,11 @@ export class SearchListingComponent implements OnInit {
 
   bookmarkElement(event: DataElementBookmarkEvent) {
     if (event.selected) {
-      this.bookmarkService.add(event.item).subscribe(() => {
+      this.bookmarksService.add(event.item).subscribe(() => {
         this.toastr.success(`${event.item.label} added to bookmarks`);
       });
     } else {
-      this.bookmarkService.remove(event.item).subscribe(() => {
+      this.bookmarksService.remove(event.item).subscribe(() => {
         this.toastr.success(`${event.item.label} removed from bookmarks`);
       });
     }
@@ -208,23 +186,46 @@ export class SearchListingComponent implements OnInit {
   }
 
   createRequest(event: CreateRequestEvent) {
-    const dialogProps = new MatDialogConfig();
-    dialogProps.height = 'fit-content';
-    dialogProps.width = '343px';
-    const dialogRef = this.theMatDialog.open(CreateRequestComponent, dialogProps);
-
-    dialogRef
+    this.dialogs
+      .openCreateRequest()
       .afterClosed()
-      .pipe(this.createNewRequestOrBail(event.item))
-      .subscribe({
-        next: ([requestName, resultErrors]: [string, string[]]) => {
-          if (resultErrors.length === 0) {
-            this.showConfirmation(event, requestName);
-          } else {
-            this.showErrorDialog(event, requestName, resultErrors);
+      .pipe(
+        filter((response) => !!response),
+        switchMap((response) => {
+          if (!response || !this.user) {
+            return EMPTY;
           }
-        },
-        complete: () => (this.showLoadingWheel = false),
+
+          this.creatingRequest = true;
+          return this.dataRequests.createNewUserRequestFromSearchResults(
+            response.name,
+            response.description,
+            this.user,
+            [event.item]
+          );
+        }),
+        switchMap(([dataRequest, errors]) => {
+          if (errors.length > 0) {
+            this.toastr.error(
+              `There was a problem creating your request. ${errors[0]}`,
+              'Request creation error'
+            );
+            return EMPTY;
+          }
+
+          return this.dialogs
+            .openRequestCreated({
+              request: dataRequest,
+              addedElements: [event.item],
+            })
+            .afterClosed();
+        }),
+        finalize(() => (this.creatingRequest = false))
+      )
+      .subscribe((action) => {
+        if (action === 'view-requests') {
+          this.stateRouter.navigateToKnownPath('/requests');
+        }
       });
   }
 
@@ -294,71 +295,5 @@ export class SearchListingComponent implements OnInit {
 
   private getOrderFromSortByOptionString(sortBy: string) {
     return sortBy.split('-')[1] as SortOrder;
-  }
-
-  private showErrorDialog(
-    event: CreateRequestEvent,
-    requestName: string,
-    resultErrors: string[]
-  ) {
-    const item = event.item;
-    const menuTrigger = event.menuTrigger;
-    const errorData: ShowErrorData = {
-      heading: 'Request creation error',
-      subheading: `The following error occurred while trying to add Data Element '${
-        item!.label // eslint-disable-line @typescript-eslint/no-non-null-assertion
-      }' to new request '${requestName}'.`,
-      message: resultErrors[0],
-      buttonLabel: 'Continue searching',
-    };
-    const errorRef = this.showErrorService.open(errorData, 400);
-    // Restore focus to item that was originally clicked on
-    errorRef.afterClosed().subscribe(() => menuTrigger.focus());
-  }
-
-  private showConfirmation(event: CreateRequestEvent, requestName: string) {
-    const item = event.item;
-    const menuTrigger = event.menuTrigger;
-    const confirmationData: ConfirmData = {
-      heading: 'New request created',
-      subheading: `Data Element added to new request: '${requestName}'`,
-      content: [item!.label], // eslint-disable-line @typescript-eslint/no-non-null-assertion
-      buttonActionCaption: 'View Requests',
-      buttonCloseCaption: 'Continue Browsing',
-      buttonActionCallback: () => true, // This will ultimately open the "Browse Requests" page
-    };
-    const confirmationRef = this.confirmationService.open(confirmationData, 343);
-    // Restore focus to item that was originally clicked on
-    confirmationRef.afterClosed().subscribe(() => menuTrigger.focus());
-  }
-
-  private createNewRequestOrBail(
-    item: DataElementSearchResult
-  ): OperatorFunction<NewRequestDialogResult, [string, string[]]> {
-    return (source: Observable<NewRequestDialogResult>) => {
-      return source.pipe(
-        // side-effect: show the loading wheel
-        tap(() => (this.showLoadingWheel = true)),
-        // if the user didn't enter a name or clicked cancel, then bail
-        filter((result) => result.Name !== '' && this.user != null),
-        // Do the doings
-        mergeMap((result) => {
-          const fakeSearchResult: DataElementSearchResultSet = {
-            totalResults: 1,
-            pageSize: 0,
-            page: 0,
-            items: new Array(item!), // eslint-disable-line @typescript-eslint/no-non-null-assertion
-          };
-          return this.dataRequests.createNewUserRequestFromSearchResults(
-            result.Name,
-            result.Description,
-            this.user!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-            fakeSearchResult
-          );
-        }),
-        // retain just the label, which is the only interesting bit (at the moment)
-        map(([dataModel, errors]) => [dataModel.label, errors])
-      );
-    };
   }
 }
