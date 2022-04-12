@@ -45,6 +45,11 @@ export interface HeaderLink {
   onlySignedIn?: boolean;
 
   arrow?: ArrowDirection;
+
+  /**
+   * Link information for the menu items.
+   */
+  menuLinks?: HeaderLink[];
 }
 
 export interface HeaderImageLink extends HeaderLink {

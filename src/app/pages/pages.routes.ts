@@ -69,6 +69,7 @@ const dynamicStaticPageMatcher = (segments: UrlSegment[]): UrlMatchResult | null
 
 export const routes: Route[] = [
   buildStaticContentRoute('about', 'about'),
+  buildStaticContentRoute('help', 'help'),
   {
     matcher: dynamicStaticPageMatcher,
     component: StaticContentComponent,
