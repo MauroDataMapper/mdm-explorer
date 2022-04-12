@@ -20,9 +20,14 @@ import {
   DataModel,
   FolderDetail,
   MdmResourcesConfiguration,
+  CatalogueItemDomainType,
+  DataElement,
+  DataElementDetail,
+  DataModelFull,
 } from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
 import { DataModelService } from '../mauro/data-model.service';
+import { DataRequest } from '../data-explorer/data-explorer.types';
 import { createDataModelServiceStub } from '../testing/stubs/data-model.stub';
 import { createFolderServiceStub } from '../testing/stubs/folder.stub';
 import { setupTestModuleForService } from '../testing/testing.helpers';
@@ -133,13 +138,77 @@ describe('DataRequestsService', () => {
     });
 
     const expected$ = cold('---a|', {
-      a: dms,
+      a: dms.map((dm) => {
+        return { ...dm, status: 'unsent' };
+      }),
     });
 
     // Act
     const actual$ = service.list(userEmail);
 
     // Assert
+    expect(actual$).toBeObservable(expected$);
+  });
+
+  it('should return a flattened list of data elements from a data model', () => {
+    const request = { id: '123' } as DataRequest;
+    const dataElements = [
+      { id: '1' },
+      { id: '2' },
+      { id: '3' },
+      { id: '4' },
+      { id: '5' },
+      { id: '6' },
+    ] as DataElement[];
+
+    const expectedDataElements: DataElementDetail[] = dataElements.map((de) => {
+      return {
+        id: de.id,
+        label: `element ${de.id}`,
+        domainType: CatalogueItemDomainType.DataElement,
+        availableActions: ['show'],
+      };
+    });
+
+    // Test with a hierarchy that includes Data Elements in single and parent/child Data Classes
+    const hierarchy: DataModelFull = {
+      label: 'test model',
+      domainType: CatalogueItemDomainType.DataModel,
+      availableActions: ['show'],
+      finalised: false,
+      childDataClasses: [
+        {
+          label: 'class 1',
+          domainType: CatalogueItemDomainType.DataClass,
+          availableActions: ['show'],
+          dataElements: expectedDataElements.slice(0, 2),
+        },
+        {
+          label: 'class 2',
+          domainType: CatalogueItemDomainType.DataClass,
+          availableActions: ['show'],
+          dataElements: expectedDataElements.slice(2, 4),
+          dataClasses: [
+            {
+              label: 'class 3',
+              domainType: CatalogueItemDomainType.DataClass,
+              availableActions: ['show'],
+              dataElements: expectedDataElements.slice(4, 6),
+            },
+          ],
+        },
+      ],
+    };
+
+    dataModelsStub.getDataModelHierarchy.mockImplementationOnce((req) => {
+      expect(req).toBe(request.id);
+      return cold('--a|', {
+        a: hierarchy,
+      });
+    });
+
+    const expected$ = cold('--a|', { a: expectedDataElements });
+    const actual$ = service.getRequestDataElements(request);
     expect(actual$).toBeObservable(expected$);
   });
 });

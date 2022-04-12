@@ -16,17 +16,23 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { DataModel } from '@maurodatamapper/mdm-resources';
+import { DataElement, DataModel } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
+import { DataRequest } from 'src/app/data-explorer/data-explorer.types';
 
 export type DataRequestsListFn = (username: string) => Observable<DataModel[]>;
+export type DataRequestsGetElementsFn = (
+  request: DataRequest
+) => Observable<DataElement[]>;
 
 export interface DataRequestsServiceStub {
   list: jest.MockedFunction<DataRequestsListFn>;
+  getRequestDataElements: jest.MockedFunction<DataRequestsGetElementsFn>;
 }
 
 export const createDataRequestsServiceStub = (): DataRequestsServiceStub => {
   return {
     list: jest.fn() as jest.MockedFunction<DataRequestsListFn>,
+    getRequestDataElements: jest.fn() as jest.MockedFunction<DataRequestsGetElementsFn>,
   };
 };

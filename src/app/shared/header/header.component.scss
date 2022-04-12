@@ -24,13 +24,13 @@ $screen-size-md: 1000px;
 $screen-size-sm: 620px;
 $profile-img-width: 32px;
 $header-background: $color-mauro-dark-green;
+$request-count-color: $color-yellow;
 
 .mdm-header {
   position: relative;
   z-index: 2;
   display: flex;
   padding: 0 $header-gap;
-  //margin: 0 0 $header-gap;
   background-color: $header-background;
   flex-wrap: wrap;
 
@@ -145,7 +145,8 @@ $header-background: $color-mauro-dark-green;
           align-items: center;
           justify-content: center;
           text-align: center;
-          padding: 0rem 1rem;
+          margin: 0rem 1rem;
+          padding: 0rem 0.5rem;
           font-weight: 500;
           font-size: 0.8rem;
           text-decoration: none;
@@ -164,7 +165,6 @@ $header-background: $color-mauro-dark-green;
       z-index: 15;
       top: 0;
       right: $header-gap;
-      height: 100%;
 
       a {
         margin-left: 0.5rem;
@@ -174,6 +174,12 @@ $header-background: $color-mauro-dark-green;
         text-decoration: none;
         color: $link-color;
       }
+    }
+
+    &--request-count {
+      padding: 0 4px;
+      font-size: 15px;
+      color: $request-count-color;
     }
   }
 

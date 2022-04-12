@@ -17,13 +17,13 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
-import { DataModel } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, throwError } from 'rxjs';
+import { catchError, map, throwError } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import {
   DataElementSearchParameters,
+  DataRequest,
   mapSearchParametersToParams,
 } from 'src/app/data-explorer/data-explorer.types';
 import { SecurityService } from 'src/app/security/security.service';
@@ -35,7 +35,7 @@ import { SecurityService } from 'src/app/security/security.service';
 })
 export class DashboardComponent implements OnInit {
   searchTerms = '';
-  currentUserRequests: DataModel[] = [];
+  currentUserRequests: DataRequest[] = [];
 
   constructor(
     private security: SecurityService,
@@ -61,10 +61,11 @@ export class DashboardComponent implements OnInit {
         catchError((error) => {
           this.toastr.error('Unable to retrieve your current requests from the server.');
           return throwError(() => error);
-        })
+        }),
+        map((requests) => requests.filter((req) => req.status === 'unsent'))
       )
-      .subscribe((dataModels: DataModel[]) => {
-        this.currentUserRequests = [...dataModels];
+      .subscribe((dataRequests: DataRequest[]) => {
+        this.currentUserRequests = [...dataRequests];
       });
   }
 

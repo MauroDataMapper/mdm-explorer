@@ -60,26 +60,22 @@ SPDX-License-Identifier: Apache-2.0
             [routerLink]="rightLink.routerLink"
             routerLinkActive="active"
           >
-            <!-- fontawesome bookmark -->
             <span class="far fa-bookmark" style="font-size: x-large"></span
             ><span [mdmArrow]="rightLink.arrow"> {{ rightLink?.label }} </span>
           </a>
         </li>
-        <li class="mdm-header__containOverlay">
+        <li>
           <a
+            [id]="accountLink.routerLink"
             *ngIf="!accountLink.onlySignedIn || (accountLink.onlySignedIn && isSignedIn)"
             [routerLink]="accountLink.routerLink"
-            [id]="accountLink.routerLink"
             routerLinkActive="active"
           >
-            <div>
-              <!-- fontawesome shopping cart -->
-              <span class="fab fa-opencart" style="font-size: xx-large"></span>
-              <span [mdmArrow]="accountLink.arrow">&NonBreakingSpace;</span>
-              <div class="mdm-header__overlayRequests">
-                {{ numberOfRequests }}
-              </div>
-            </div>
+            <span class="fas fa-cart-shopping" style="font-size: x-large"></span>
+            <span *ngIf="numberOfRequests > 0" class="mdm-header__links--request-count">{{
+              numberOfRequests
+            }}</span>
+            <span [mdmArrow]="accountLink.arrow"> {{ accountLink?.label }} </span>
           </a>
         </li>
       </ul>

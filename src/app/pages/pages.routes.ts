@@ -34,6 +34,7 @@ import { NotImplementedComponent } from './error/not-implemented/not-implemented
 import { NotAuthorizedComponent } from './error/not-authorized/not-authorized.component';
 import { ServerErrorComponent } from './error/server-error/server-error.component';
 import { NotFoundComponent } from './error/not-found/not-found.component';
+import { MyRequestsComponent } from './my-requests/my-requests.component';
 
 export const buildStaticContentRoute = (path: string, staticAssetPath: string): Route => {
   return {
@@ -142,6 +143,11 @@ export const routes: Route[] = [
   {
     path: 'dataElement/:dataModelId/:dataClassId/:dataElementId',
     component: DataElementComponent,
+    canActivate: [AuthorizedGuard],
+  },
+  {
+    path: 'requests',
+    component: MyRequestsComponent,
     canActivate: [AuthorizedGuard],
   },
 ];

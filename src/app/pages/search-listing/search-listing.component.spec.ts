@@ -27,7 +27,6 @@ import { DataModelService } from 'src/app/mauro/data-model.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { DataElementSearchService } from 'src/app/data-explorer/data-element-search.service';
 import {
-  DataElementBookmarkEvent,
   DataElementSearchParameters,
   DataElementSearchResult,
   DataElementSearchResultSet,
@@ -54,6 +53,7 @@ import {
   MatDialogStub,
 } from 'src/app/testing/stubs/mat-dialog.stub';
 import { MatDialog } from '@angular/material/dialog';
+import { DataElementBookmarkEvent } from 'src/app/data-explorer/data-explorer.types';
 import {
   CreateRequestComponent,
   NewRequestDialogResult,

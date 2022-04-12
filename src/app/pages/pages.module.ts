@@ -25,7 +25,6 @@ import { ForgotPasswordComponent } from './forgot-password/forgot-password.compo
 import { StaticContentComponent } from './static-content/static-content.component';
 import { BrowseComponent } from './browse/browse.component';
 import { DataElementComponent } from './data-element/data-element.component';
-import { DataElementProfileComponent } from './data-element/data-element-profile/data-element-profile.component';
 import { SearchListingComponent } from './search-listing/search-listing.component';
 import { SearchComponent } from './search/search.component';
 import { MyAccountComponent } from './my-account/my-account.component';
@@ -33,13 +32,15 @@ import { CoreModule } from '../core/core.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { HomeComponent } from './home/home.component';
 import { ContactSupportComponent } from './contact-support/contact-support.component';
+import { NgxJsonViewerModule } from 'ngx-json-viewer';
+import { MyRequestsComponent } from './my-requests/my-requests.component';
+import { DataExplorerModule } from '../data-explorer/data-explorer.module';
 import { ErrorComponent } from './error/error.component';
 import { NotImplementedComponent } from './error/not-implemented/not-implemented.component';
 import { NotAuthorizedComponent } from './error/not-authorized/not-authorized.component';
 import { NotFoundComponent } from './error/not-found/not-found.component';
 import { ServerErrorComponent } from './error/server-error/server-error.component';
-import { NgxJsonViewerModule } from 'ngx-json-viewer';
-import { DataExplorerModule } from '../data-explorer/data-explorer.module';
+import { DataElementProfileComponent } from './data-element/data-element-profile/data-element-profile.component';
 
 @NgModule({
   declarations: [
@@ -61,6 +62,7 @@ import { DataExplorerModule } from '../data-explorer/data-explorer.module';
     DashboardComponent,
     HomeComponent,
     ContactSupportComponent,
+    MyRequestsComponent,
   ],
   imports: [
     CoreModule,

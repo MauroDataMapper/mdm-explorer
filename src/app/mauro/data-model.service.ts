@@ -32,6 +32,8 @@ import {
   DataModelCreatePayload,
   DataModelDetail,
   DataModelDetailResponse,
+  DataModelFull,
+  DataModelFullResponse,
   DataModelIndexResponse,
   DataModelSubsetPayload,
   MdmIndexBody,
@@ -241,5 +243,17 @@ export class DataModelService {
         this.exceptionService.catchAndReportPipeError(errors)
       );
     };
+  }
+
+  /**
+   * Gets the hierarchical information of a Data Model, including Data Types, Classes and Elements.
+   *
+   * @param id The ID of the root Data Model to get.
+   * @returns The full hierarchy details of the Data Model as a {@link DataModelFull} object.
+   */
+  getDataModelHierarchy(id: Uuid): Observable<DataModelFull> {
+    return this.endpoints.dataModel
+      .hierarchy(id)
+      .pipe(map((response: DataModelFullResponse) => response.body));
   }
 }

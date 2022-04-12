@@ -16,10 +16,12 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { DataModel } from '@maurodatamapper/mdm-resources';
+import { MockComponent } from 'ng-mocks';
 import { ToastrService } from 'ngx-toastr';
+import { Carousel } from 'primeng/carousel';
 import { of, throwError } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
+import { DataRequest } from 'src/app/data-explorer/data-explorer.types';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import { SecurityService } from 'src/app/security/security.service';
 import { UserDetails } from 'src/app/security/user-details.service';
@@ -43,6 +45,7 @@ describe('DashboardComponent', () => {
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(DashboardComponent, {
+      declarations: [MockComponent(Carousel)],
       providers: [
         {
           provide: SecurityService,
@@ -87,9 +90,10 @@ describe('DashboardComponent', () => {
       });
 
       const openRequests = [
-        { label: 'dataModel-1' },
-        { label: 'dataModel-2' },
-      ] as DataModel[];
+        { label: 'dataModel-1', status: 'unsent' },
+        { label: 'dataModel-2', status: 'unsent' },
+        { label: 'dataModel-3', status: 'submitted' },
+      ] as DataRequest[];
 
       dataRequestsStub.list.mockImplementationOnce(() => {
         return of(openRequests);
@@ -97,7 +101,8 @@ describe('DashboardComponent', () => {
 
       harness.component.ngOnInit();
 
-      expect(harness.component.currentUserRequests).toEqual(openRequests);
+      const expected = openRequests.filter((r) => r.status === 'unsent');
+      expect(harness.component.currentUserRequests).toEqual(expected);
     });
   });
 

@@ -32,7 +32,8 @@ export type KnownRouterPath =
   | '/browse'
   | '/search'
   | '/search/listing'
-  | '/dashboard';
+  | '/dashboard'
+  | '/requests';
 
 /**
  * Wrapper service around the {@link Router} from `@angular/router` package.
