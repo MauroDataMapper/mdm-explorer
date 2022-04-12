@@ -27,6 +27,9 @@ SPDX-License-Identifier: Apache-2.0
         <h3>{{ dataElement?.label }}</h3>
       </span>
       <span>
+        <mdm-data-element-in-request
+          [dataElement]="dataElement"
+        ></mdm-data-element-in-request>
         <mdm-bookmark-toggle
           (toggle)="toggleBookmark($event)"
           [selected]="isBookmarked()"
