@@ -26,14 +26,14 @@ import { ClassifiersComponent } from 'src/app/shared/classifiers/classifiers.com
 import { DataElementComponent } from './data-element.component';
 import { MatTabGroup, MatTab } from '@angular/material/tabs';
 import { SummaryMetadataComponent } from 'src/app/shared/summary-metadata/summary-metadata/summary-metadata.component';
-import { BreadcrumbComponent } from 'src/app/shared/breadcrumb/breadcrumb.component';
 import { createDataModelServiceStub } from 'src/app/testing/stubs/data-model.stub';
-import { DataModelService } from 'src/app/mauro/data-model.service';
 import { createToastrServiceStub } from 'src/app/testing/stubs/toastr.stub';
 import { ToastrService } from 'ngx-toastr';
 import { createBookmarkServiceStub } from 'src/app/testing/stubs/bookmark.stub';
-import { BookmarkService } from 'src/app/data-explorer/bookmark.service';
 import { ProfileService } from 'src/app/mauro/profile.service';
+import { BreadcrumbComponent } from 'src/app/data-explorer/breadcrumb/breadcrumb.component';
+import { DataModelService } from 'src/app/mauro/data-model.service';
+import { BookmarkService } from 'src/app/data-explorer/bookmark.service';
 
 describe('DataElementComponent', () => {
   let harness: ComponentHarness<DataElementComponent>;

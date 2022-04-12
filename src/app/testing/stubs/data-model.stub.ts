@@ -29,6 +29,7 @@ import {
 } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
 import { DataClassIdentifier } from 'src/app/mauro/mauro.types';
+import { DataRequest } from 'src/app/data-explorer/data-explorer.types';
 
 export type DataModelGetDataModelFn = (path: string) => Observable<DataModelDetail>;
 export type DataModelGetDataClassesFn = (
@@ -45,6 +46,7 @@ export type DataModelSearchDataModelFn = (
   params: SearchQueryParameters
 ) => Observable<MdmIndexBody<CatalogueItemSearchResult>>;
 export type DataModelListInFolderFn = (folderId: Uuid) => Observable<DataModel[]>;
+export type DataModelGetHierarchyFn = (request: DataRequest) => Observable<DataElement[]>;
 
 export interface DataModelServiceStub {
   getDataModel: jest.MockedFunction<DataModelGetDataModelFn>;
@@ -53,6 +55,7 @@ export interface DataModelServiceStub {
   getDataElements: jest.MockedFunction<DataModelGetDataElementsFn>;
   searchDataModel: jest.MockedFunction<DataModelSearchDataModelFn>;
   listInFolder: jest.MockedFunction<DataModelListInFolderFn>;
+  getDataModelHierarchy: jest.MockedFunction<DataModelGetHierarchyFn>;
 }
 
 export const createDataModelServiceStub = (): DataModelServiceStub => {
@@ -63,5 +66,6 @@ export const createDataModelServiceStub = (): DataModelServiceStub => {
     getDataElements: jest.fn() as jest.MockedFunction<DataModelGetDataElementsFn>,
     searchDataModel: jest.fn() as jest.MockedFunction<DataModelSearchDataModelFn>,
     listInFolder: jest.fn() as jest.MockedFunction<DataModelListInFolderFn>,
+    getDataModelHierarchy: jest.fn() as jest.MockedFunction<DataModelGetHierarchyFn>,
   };
 };

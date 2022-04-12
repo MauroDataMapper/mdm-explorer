@@ -22,10 +22,10 @@ import {
   Breadcrumb,
   CatalogueItemSearchResult,
   DataElement,
+  DataModel,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { DataClassIdentifier } from '../mauro/mauro.types';
-import { Bookmark } from './bookmark.service';
 
 export interface DataExplorerConfiguration {
   rootDataModelPath: string;
@@ -36,6 +36,7 @@ export const DATA_EXPLORER_CONFIGURATION = new InjectionToken<DataExplorerConfig
 );
 
 export type SortOrder = 'asc' | 'desc';
+
 export interface CatalogueSearchPayload {
   searchTerms: string;
   publication: string;
@@ -154,13 +155,8 @@ export const PAGINATION_CONFIG = new InjectionToken<PaginationConfiguration>(
   'PaginationConfiguration'
 );
 
-export interface DataElementSearchResult {
-  id: Uuid;
-  dataModelId: Uuid;
-  dataClassId: Uuid;
-  label: string;
+export interface DataElementSearchResult extends DataElementBasic {
   description?: string;
-  breadcrumbs: Breadcrumb[];
 }
 
 export interface DataElementSearchResultSet {
@@ -189,12 +185,44 @@ export const mapSearchResult = (
   };
 };
 
+export type DataRequestStatus = 'unsent' | 'submitted';
+
+/**
+ * Determine the status of a request made by a user for data access.
+ */
+export const getDataRequestStatus = (model: DataModel): DataRequestStatus => {
+  if (model.modelVersion) {
+    // Model was finalised, so is now locked
+    return 'submitted';
+  }
+
+  return 'unsent';
+};
+
+/**
+ * Define a Data Request, which is an extension of a {@link DataModel}.
+ */
+export interface DataRequest extends DataModel {
+  /**
+   * Get the status of this request, one of {@link DataRequestStatus}.
+   */
+  status: DataRequestStatus;
+}
+
+export interface DataElementBasic {
+  id: Uuid;
+  dataModelId: Uuid;
+  dataClassId: Uuid;
+  label: string;
+  breadcrumbs?: Breadcrumb[];
+}
+
 export interface DataElementCheckedEvent {
-  item: DataElementSearchResult;
+  item: DataElementBasic;
   checked: boolean;
 }
 
 export interface DataElementBookmarkEvent {
-  item: Bookmark;
+  item: DataElementBasic;
   selected: boolean;
 }

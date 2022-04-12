@@ -24,6 +24,7 @@ import {
   DataElement,
   DataModel,
   DataModelDetail,
+  DataModelFull,
   SearchQueryParameters,
 } from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
@@ -354,6 +355,52 @@ describe('DataModelService', () => {
 
       const actual$ = service.listInFolder('folderId');
 
+      expect(actual$).toBeObservable(expected$);
+    });
+  });
+
+  describe('data model hierarchies', () => {
+    it('should return a data model hierarchy', () => {
+      const hierarchy: DataModelFull = {
+        id: '123',
+        label: 'test model',
+        domainType: CatalogueItemDomainType.DataModel,
+        availableActions: ['show'],
+        finalised: false,
+        dataTypes: [
+          {
+            label: 'test type',
+            domainType: CatalogueItemDomainType.ModelDataType,
+            availableActions: ['show'],
+          },
+        ],
+        childDataClasses: [
+          {
+            label: 'test class',
+            domainType: CatalogueItemDomainType.DataClass,
+            availableActions: ['show'],
+            dataElements: [
+              {
+                label: 'test element',
+                domainType: CatalogueItemDomainType.DataElement,
+                availableActions: ['show'],
+              },
+            ],
+          },
+        ],
+      };
+
+      endpointsStub.dataModel.hierarchy.mockImplementationOnce((id) => {
+        expect(id).toBe(hierarchy.id);
+        return cold('--a|', {
+          a: {
+            body: hierarchy,
+          },
+        });
+      });
+
+      const expected$ = cold('--a|', { a: hierarchy });
+      const actual$ = service.getDataModelHierarchy('123');
       expect(actual$).toBeObservable(expected$);
     });
   });
