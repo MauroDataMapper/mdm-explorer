@@ -83,7 +83,7 @@ export class AppComponent implements OnInit, OnDestroy {
     },
     {
       label: 'Contact and support',
-      routerLink: '',
+      routerLink: '/contact',
     },
   ];
 
