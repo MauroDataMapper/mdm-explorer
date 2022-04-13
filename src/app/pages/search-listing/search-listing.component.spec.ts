@@ -522,14 +522,14 @@ describe('SearchListingComponent', () => {
     };
 
     beforeEach(() => {
-      dataRequestsStub.createNewUserRequestFromSearchResults.mockClear();
+      dataRequestsStub.createFromSearchResults.mockClear();
     });
 
     it('should not continue if cancelling the Create Request dialog', () => {
       matDialogStub.usage.afterClosed.mockImplementationOnce(() => of());
 
       harness.component.createRequest(event);
-      expect(dataRequestsStub.createNewUserRequestFromDataClass).not.toHaveBeenCalled();
+      expect(dataRequestsStub.createFromDataClass).not.toHaveBeenCalled();
     });
 
     it('should create a new request', () => {
@@ -542,7 +542,7 @@ describe('SearchListingComponent', () => {
 
       harness.component.createRequest(event);
 
-      expect(dataRequestsStub.createNewUserRequestFromSearchResults).toHaveBeenCalledWith(
+      expect(dataRequestsStub.createFromSearchResults).toHaveBeenCalledWith(
         requestCreation.name,
         requestCreation.description,
         user,

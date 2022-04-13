@@ -77,7 +77,7 @@ export class BrowseComponent implements OnInit {
           }
 
           this.creatingRequest = true;
-          return this.dataRequests.createNewUserRequestFromDataClass(
+          return this.dataRequests.createFromDataClass(
             response.name,
             response.description,
             this.user,

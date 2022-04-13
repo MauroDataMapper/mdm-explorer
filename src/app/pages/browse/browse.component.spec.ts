@@ -306,7 +306,7 @@ describe('BrowseComponent', () => {
     } as DataClass;
 
     beforeEach(() => {
-      dataRequestsStub.createNewUserRequestFromDataClass.mockClear();
+      dataRequestsStub.createFromDataClass.mockClear();
 
       harness.component.selected = selected;
     });
@@ -315,7 +315,7 @@ describe('BrowseComponent', () => {
       matDialogStub.usage.afterClosed.mockImplementationOnce(() => of());
 
       harness.component.createRequest();
-      expect(dataRequestsStub.createNewUserRequestFromDataClass).not.toHaveBeenCalled();
+      expect(dataRequestsStub.createFromDataClass).not.toHaveBeenCalled();
     });
 
     it('should create a new request', () => {
@@ -328,7 +328,7 @@ describe('BrowseComponent', () => {
 
       harness.component.createRequest();
 
-      expect(dataRequestsStub.createNewUserRequestFromDataClass).toHaveBeenCalledWith(
+      expect(dataRequestsStub.createFromDataClass).toHaveBeenCalledWith(
         requestCreation.name,
         requestCreation.description,
         user,

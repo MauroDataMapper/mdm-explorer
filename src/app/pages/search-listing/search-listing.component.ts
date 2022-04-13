@@ -65,7 +65,7 @@ export class SearchListingComponent implements OnInit {
   root?: DataClassDetail;
   searchTerms?: string;
   resultSet?: DataElementSearchResultSet;
-  bookmarks: Bookmark[] = [];
+  userBookmarks: Bookmark[] = [];
   creatingRequest = false;
   sortBy?: SortByOption;
   /**
@@ -85,7 +85,7 @@ export class SearchListingComponent implements OnInit {
     private dataModels: DataModelService,
     private toastr: ToastrService,
     private stateRouter: StateRouterService,
-    private bookmarksService: BookmarkService,
+    private bookmarks: BookmarkService,
     private dialogs: DialogService,
     private dataRequests: DataRequestsService,
     security: SecurityService
@@ -104,8 +104,8 @@ export class SearchListingComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.bookmarksService.index().subscribe((result) => {
-      this.bookmarks = result;
+    this.bookmarks.index().subscribe((result) => {
+      this.userBookmarks = result;
     });
 
     this.route.queryParamMap
@@ -151,11 +151,11 @@ export class SearchListingComponent implements OnInit {
 
   bookmarkElement(event: DataElementBookmarkEvent) {
     if (event.selected) {
-      this.bookmarksService.add(event.item).subscribe(() => {
+      this.bookmarks.add(event.item).subscribe(() => {
         this.toastr.success(`${event.item.label} added to bookmarks`);
       });
     } else {
-      this.bookmarksService.remove(event.item).subscribe(() => {
+      this.bookmarks.remove(event.item).subscribe(() => {
         this.toastr.success(`${event.item.label} removed from bookmarks`);
       });
     }
@@ -197,7 +197,7 @@ export class SearchListingComponent implements OnInit {
           }
 
           this.creatingRequest = true;
-          return this.dataRequests.createNewUserRequestFromSearchResults(
+          return this.dataRequests.createFromSearchResults(
             response.name,
             response.description,
             this.user,

@@ -44,17 +44,17 @@ export type DataRequestsCreateFromSearchResultsFn = (
 export interface DataRequestsServiceStub {
   list: jest.MockedFunction<DataRequestsListFn>;
   getRequestDataElements: jest.MockedFunction<DataRequestsGetElementsFn>;
-  createNewUserRequestFromDataClass: jest.MockedFunction<DataRequestsCreateFromDataClassFn>;
-  createNewUserRequestFromSearchResults: jest.MockedFunction<DataRequestsCreateFromSearchResultsFn>;
+  createFromDataClass: jest.MockedFunction<DataRequestsCreateFromDataClassFn>;
+  createFromSearchResults: jest.MockedFunction<DataRequestsCreateFromSearchResultsFn>;
 }
 
 export const createDataRequestsServiceStub = (): DataRequestsServiceStub => {
   return {
     list: jest.fn() as jest.MockedFunction<DataRequestsListFn>,
     getRequestDataElements: jest.fn() as jest.MockedFunction<DataRequestsGetElementsFn>,
-    createNewUserRequestFromDataClass:
+    createFromDataClass:
       jest.fn() as jest.MockedFunction<DataRequestsCreateFromDataClassFn>,
-    createNewUserRequestFromSearchResults:
+    createFromSearchResults:
       jest.fn() as jest.MockedFunction<DataRequestsCreateFromSearchResultsFn>,
   };
 };

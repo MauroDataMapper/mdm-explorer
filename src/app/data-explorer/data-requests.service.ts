@@ -128,7 +128,7 @@ export class DataRequestsService {
    * @param data class to be added to new request
    * @returns Observable<DataModelDetailResponse>
    */
-  createNewUserRequestFromDataClass(
+  createFromDataClass(
     requestName: string,
     requestDescription: string,
     user: UserDetails,
@@ -155,7 +155,7 @@ export class DataRequestsService {
     );
   }
 
-  createNewUserRequestFromSearchResults(
+  createFromSearchResults(
     requestName: string,
     requestDescription: string,
     user: UserDetails,
