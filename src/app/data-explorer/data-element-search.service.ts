@@ -118,14 +118,14 @@ export class DataElementSearchService {
     );
   }
 
-  getDataModelFromSearchResults(results: DataElementSearchResultSet): Uuid {
+  getDataModelFromSearchResults(items: DataElementSearchResult[]): Uuid {
     // The result set *should* all be in the same model, and *should* all
     // have the model accessible. Try and get model from model property,
     // otherwise attempt to retrieve from breadcrumbs.
     let model: Uuid | null = null;
     let currentModel: Uuid | null = null;
-    for (let i = 0; i < results.items.length; i++) {
-      const item: DataElementSearchResult = results.items[i];
+    for (let i = 0; i < items.length; i++) {
+      const item: DataElementSearchResult = items[i];
       currentModel = (item as unknown as DataElement).model as Uuid;
       if (!currentModel && item.breadcrumbs) {
         for (let b = 0; b < item.breadcrumbs.length; b++) {

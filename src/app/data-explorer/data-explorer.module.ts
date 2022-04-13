@@ -24,23 +24,25 @@ import { SortByComponent } from './sort-by/sort-by.component';
 import { PaginationComponent } from './pagination/pagination.component';
 import { ContactFormComponent } from './contact-form/contact-form.component';
 import { FeedbackDialogComponent } from './feedback-dialog/feedback-dialog.component';
-import { ConfirmComponent } from './confirm/confirm.component';
 import { PAGINATION_CONFIG } from './data-explorer.types';
 import { RequestStatusChipComponent } from './request-status-chip/request-status-chip.component';
 import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { DataElementRowComponent } from './data-element-row/data-element-row.component';
+import { CreateRequestDialogComponent } from './create-request-dialog/create-request-dialog.component';
+import { RequestCreatedDialogComponent } from './request-created-dialog/request-created-dialog.component';
 
 @NgModule({
   declarations: [
     DataElementSearchResultComponent,
     DataElementRowComponent,
+    RequestStatusChipComponent,
     PaginationComponent,
     SortByComponent,
     ContactFormComponent,
     FeedbackDialogComponent,
-    ConfirmComponent,
-    RequestStatusChipComponent,
     BreadcrumbComponent,
+    CreateRequestDialogComponent,
+    RequestCreatedDialogComponent,
   ],
   imports: [CoreModule, SharedModule],
   exports: [

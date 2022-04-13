@@ -37,7 +37,7 @@ import { FolderService } from '../mauro/folder.service';
 import { CatalogueUserService } from '../mauro/catalogue-user.service';
 import { ExceptionService } from '../core/exception.service';
 import { DataElementSearchService } from './data-element-search.service';
-import { DataElementSearchResultSet } from './data-explorer.types';
+import { DataElementSearchResult } from './data-explorer.types';
 import { DataClassService } from '../mauro/data-class.service';
 import { DataRequest, getDataRequestStatus } from '../data-explorer/data-explorer.types';
 
@@ -128,7 +128,7 @@ export class DataRequestsService {
    * @param data class to be added to new request
    * @returns Observable<DataModelDetailResponse>
    */
-  createNewUserRequestFromDataClass(
+  createFromDataClass(
     requestName: string,
     requestDescription: string,
     user: UserDetails,
@@ -155,18 +155,18 @@ export class DataRequestsService {
     );
   }
 
-  createNewUserRequestFromSearchResults(
+  createFromSearchResults(
     requestName: string,
     requestDescription: string,
     user: UserDetails,
-    searchResults: DataElementSearchResultSet
+    items: DataElementSearchResult[]
   ): Observable<[DataModel, string[]]> {
     // Have to use a deferred observable or a promise here as we don't know the data model
     // before we have to create the pipe operator that needs the data model.
     const errors: string[] = [];
     let existingDataModel: Uuid;
     try {
-      existingDataModel = this.search.getDataModelFromSearchResults(searchResults);
+      existingDataModel = this.search.getDataModelFromSearchResults(items);
     } catch (err) {
       errors[0] = err as string;
       return of([{ label: '', domainType: CatalogueItemDomainType.DataModel }, errors]);
@@ -174,15 +174,15 @@ export class DataRequestsService {
     // Create the new data model under the user's folder
     return this.addUserRequest(user, errors, requestName, requestDescription).pipe(
       mergeMap(
-        (response: DataModelDetail): Observable<[Uuid, DataElementSearchResultSet]> => {
+        (response: DataModelDetail): Observable<[Uuid, DataElementSearchResult[]]> => {
           return of([
             response.id!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-            searchResults,
-          ]) as Observable<[Uuid, DataElementSearchResultSet]>;
+            items,
+          ]);
         }
       ),
-      map(([newDataModelId, pipedSearchResults]: [Uuid, DataElementSearchResultSet]) => {
-        const ids = pipedSearchResults.items.map((item) => item.id);
+      map(([newDataModelId, pipedItems]) => {
+        const ids = pipedItems.map((item) => item.id);
         return [newDataModelId, ids] as [Uuid, Uuid[]];
       }),
       // Add the data elements (array) to the new

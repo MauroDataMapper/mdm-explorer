@@ -17,15 +17,11 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { catchError, EMPTY, filter, switchMap, tap } from 'rxjs';
-import {
-  FeedbackDialogComponent,
-  FeedbackDialogResponse,
-} from 'src/app/data-explorer/feedback-dialog/feedback-dialog.component';
 import { ContactFormState } from 'src/app/data-explorer/contact-form/contact-form.component';
 import { PluginResearchContactPayload } from 'src/app/mauro/plugins/plugin-research.resource';
 import { ResearchPluginService } from 'src/app/mauro/research-plugin.service';
+import { DialogService } from 'src/app/data-explorer/dialog.service';
 
 @Component({
   selector: 'mdm-contact-support',
@@ -36,7 +32,7 @@ export class ContactSupportComponent {
   state: ContactFormState = 'idle';
   contactData?: PluginResearchContactPayload;
 
-  constructor(private research: ResearchPluginService, private dialog: MatDialog) {}
+  constructor(private research: ResearchPluginService, private dialog: DialogService) {}
 
   reset() {
     this.contactData = {
@@ -58,7 +54,7 @@ export class ContactSupportComponent {
 
   sendFeedback() {
     this.dialog
-      .open<FeedbackDialogComponent, any, FeedbackDialogResponse>(FeedbackDialogComponent)
+      .openFeedbackForm()
       .afterClosed()
       .pipe(
         filter((response) => !!response),

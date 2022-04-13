@@ -66,7 +66,7 @@ SPDX-License-Identifier: Apache-2.0
         *ngFor="let dataElement of resultSet.items"
         [item]="dataElement"
         [showBreadcrumb]="source === 'search'"
-        [bookmarks]="bookmarks"
+        [bookmarks]="userBookmarks"
         (checked)="selectElement($event)"
         (bookmark)="bookmarkElement($event)"
         (createRequestClicked)="createRequest($event)"
@@ -81,7 +81,7 @@ SPDX-License-Identifier: Apache-2.0
   </div>
 </div>
 <!-- Loading wheel -->
-<div *ngIf="showLoadingWheel">
+<div *ngIf="creatingRequest">
   <mdm-loading-spinner
     caption="Creating new request ..."
     color="primary"

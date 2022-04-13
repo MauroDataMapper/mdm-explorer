@@ -23,8 +23,6 @@ import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
 import { SafePipe } from './pipes/safe.pipe';
 import { ArrowDirective } from './directives/arrow.directive';
-import { CreateRequestComponent } from './create-request/create-request.component';
-import { ShowErrorComponent } from './show-error/show-error.component';
 import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
 import { BookmarkToggleComponent } from './bookmark-toggle/bookmark-toggle.component';
 import { CoreModule } from '../core/core.module';
@@ -42,12 +40,10 @@ import { CallToActionComponent } from './call-to-action/call-to-action.component
     HeaderComponent,
     SafePipe,
     ArrowDirective,
-    CreateRequestComponent,
     BookmarkToggleComponent,
     SummaryMetadataChartComponent,
     SummaryMetadataComponent,
     SummaryMetadataReportComponent,
-    ShowErrorComponent,
     LoadingSpinnerComponent,
     CallToActionComponent,
   ],

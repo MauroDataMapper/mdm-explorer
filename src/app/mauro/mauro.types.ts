@@ -20,6 +20,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import {
   CatalogueItemDomainType,
   DataClass,
+  DataElement,
   DataModel,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
@@ -43,5 +44,9 @@ export interface DataClassIdentifier {
 export const isDataModel = (item: DataModel | DataClass): item is DataModel =>
   item.domainType === CatalogueItemDomainType.DataModel;
 
-export const isDataClass = (item: DataModel | DataClass): item is DataClass =>
-  item.domainType === CatalogueItemDomainType.DataClass;
+export const isDataClass = (
+  item: DataModel | DataClass | DataElement
+): item is DataClass => item.domainType === CatalogueItemDomainType.DataClass;
+
+export const isDataElement = (item: DataClass | DataElement): item is DataElement =>
+  item.domainType === CatalogueItemDomainType.DataElement;

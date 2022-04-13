@@ -16,41 +16,25 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-@import "../../../styles.scss";
+import { MatDialog } from '@angular/material/dialog';
+import { setupTestModuleForService } from '../testing/testing.helpers';
+import { DialogService } from './dialog.service';
 
-$emphasis-background: $color-gray-38;
-$emphasis-text: white;
+describe('DialogService', () => {
+  let service: DialogService;
 
-.mdm-modal {
-  background-color: white;
-  height: 100%;
+  beforeEach(() => {
+    service = setupTestModuleForService(DialogService, {
+      providers: [
+        {
+          provide: MatDialog,
+          useValue: jest.fn(),
+        },
+      ],
+    });
+  });
 
-  &__heading {
-    background-color: $emphasis-background;
-    padding-left: 10px;
-    color: $emphasis-text;
-  }
-
-  &__content {
-    padding-left: 10px;
-    & label {
-      padding-top: 5px;
-    }
-  }
-
-  &__actions {
-    padding: 10px;
-    padding-bottom: 30px;
-    & mat-dialog-actions {
-      justify-content: flex-end;
-      align-items: flex-end;
-    }
-    & button {
-      margin: 0 5px 0 5px;
-    }
-  }
-  &__action-button {
-    background-color: $emphasis-background;
-    color: $emphasis-text;
-  }
-}
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+});

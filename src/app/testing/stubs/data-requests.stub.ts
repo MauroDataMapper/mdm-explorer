@@ -16,23 +16,45 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { DataElement, DataModel } from '@maurodatamapper/mdm-resources';
+import { DataClass, DataElement, DataModel } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
-import { DataRequest } from 'src/app/data-explorer/data-explorer.types';
+import {
+  DataElementSearchResultSet,
+  DataRequest,
+} from 'src/app/data-explorer/data-explorer.types';
+import { UserDetails } from 'src/app/security/user-details.service';
 
 export type DataRequestsListFn = (username: string) => Observable<DataModel[]>;
 export type DataRequestsGetElementsFn = (
   request: DataRequest
 ) => Observable<DataElement[]>;
+export type DataRequestsCreateFromDataClassFn = (
+  requestName: string,
+  requestDescription: string,
+  user: UserDetails,
+  dataClass: DataClass
+) => Observable<[DataModel, string[]]>;
+export type DataRequestsCreateFromSearchResultsFn = (
+  requestName: string,
+  requestDescription: string,
+  user: UserDetails,
+  searchResults: DataElementSearchResultSet
+) => Observable<[DataModel, string[]]>;
 
 export interface DataRequestsServiceStub {
   list: jest.MockedFunction<DataRequestsListFn>;
   getRequestDataElements: jest.MockedFunction<DataRequestsGetElementsFn>;
+  createFromDataClass: jest.MockedFunction<DataRequestsCreateFromDataClassFn>;
+  createFromSearchResults: jest.MockedFunction<DataRequestsCreateFromSearchResultsFn>;
 }
 
 export const createDataRequestsServiceStub = (): DataRequestsServiceStub => {
   return {
     list: jest.fn() as jest.MockedFunction<DataRequestsListFn>,
     getRequestDataElements: jest.fn() as jest.MockedFunction<DataRequestsGetElementsFn>,
+    createFromDataClass:
+      jest.fn() as jest.MockedFunction<DataRequestsCreateFromDataClassFn>,
+    createFromSearchResults:
+      jest.fn() as jest.MockedFunction<DataRequestsCreateFromSearchResultsFn>,
   };
 };
