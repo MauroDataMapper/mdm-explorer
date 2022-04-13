@@ -27,6 +27,7 @@ SPDX-License-Identifier: Apache-2.0
           <li>
             <mat-checkbox
               #menuItems
+              color="primary"
               [checked]="isInRequests(item)"
               [value]="item.id ?? ''"
               (click)="$event.stopPropagation()"
@@ -39,7 +40,7 @@ SPDX-License-Identifier: Apache-2.0
       <mat-divider *ngIf="ready"></mat-divider>
     </ng-container>
     <section>
-      <button #createRequestTigger mat-raised-button color="primary">
+      <button #createRequestTigger mat-stroked-button color="primary">
         Create new request
       </button>
     </section>
