@@ -17,7 +17,12 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import {
+  DataModelDetail,
+  DataModelDetailResponse,
+  Uuid,
+} from '@maurodatamapper/mdm-resources';
+import { map, Observable, switchMap } from 'rxjs';
 import { MdmEndpointsService } from './mdm-endpoints.service';
 import {
   PluginResearchContactPayload,
@@ -34,5 +39,12 @@ export class ResearchPluginService {
     return this.endpoints.pluginResearch
       .contact(data)
       .pipe(map((response: PluginResearchContactResponse) => response.body));
+  }
+
+  submitRequest(id: Uuid): Observable<DataModelDetail> {
+    return this.endpoints.pluginResearch.submitRequest(id).pipe(
+      switchMap(() => this.endpoints.dataModel.get(id)),
+      map((response: DataModelDetailResponse) => response.body)
+    );
   }
 }

@@ -1,4 +1,4 @@
-/*
+<!--
 Copyright 2022 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -15,15 +15,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
-*/
-export interface BroadcastServiceStub {
-  dispatch: jest.Mock;
-  dataRequestChanged: jest.Mock;
-}
-
-export const createBroadcastServiceStub = (): BroadcastServiceStub => {
-  return {
-    dispatch: jest.fn(),
-    dataRequestChanged: jest.fn(),
-  };
-};
+-->
+<h1 mat-dialog-title>{{ heading }}</h1>
+<mat-dialog-content *ngIf="message">
+  {{ message }}
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-flat-button color="primary" (click)="close()">Continue</button>
+</mat-dialog-actions>

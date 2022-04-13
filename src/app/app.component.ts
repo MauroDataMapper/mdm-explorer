@@ -217,6 +217,8 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subscribeHttpErrorEvent('http-not-implemented', '/not-implemented');
     this.subscribeHttpErrorEvent('http-server-error', '/server-error');
 
+    this.subscribeDataRequestChanges();
+
     // Check immediately if the last authenticated session is expired and setup a recurring
     // check for this
     this.checkSessionExpiry();
@@ -289,6 +291,29 @@ export class AppComponent implements OnInit, OnDestroy {
       )
       .subscribe((numberOfRequests) => {
         this.numberOfRequests = numberOfRequests;
+      });
+  }
+
+  private subscribeDataRequestChanges() {
+    this.broadcast
+      .onDataRequestChanged()
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((data) => {
+        if (
+          data.change === 'created' ||
+          (data.change === 'modified' && data.request.status === 'unsent')
+        ) {
+          this.numberOfRequests++;
+          return;
+        }
+
+        if (
+          data.change === 'deleted' ||
+          (data.change === 'modified' && data.request.status === 'submitted')
+        ) {
+          this.numberOfRequests = Math.max(0, this.numberOfRequests - 1);
+          return;
+        }
       });
   }
 

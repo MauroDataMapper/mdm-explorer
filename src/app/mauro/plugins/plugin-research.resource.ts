@@ -22,6 +22,7 @@ import {
   MdmResponse,
   MdmRestHandler,
   RequestSettings,
+  Uuid,
 } from '@maurodatamapper/mdm-resources';
 
 export interface PluginResearchContactPayload {
@@ -55,5 +56,19 @@ export class MdmPluginResearchResource extends MdmResource {
   contact(data: PluginResearchContactPayload, options?: RequestSettings) {
     const url = `${this.apiEndpoint}/contact`;
     return this.simplePost(url, data, options);
+  }
+
+  /**
+   * `HTTP PUT` - Submit an access request to the data owner for further processing.
+   *
+   * @param id The unique identifier of the Data Request (Data Model) to submit.
+   * @param options Optional REST handler parameters, if required.
+   * @returns The result of the `PUT` request:
+   *
+   * `200 OK` - will return an empty response. The HTTP status explains that it was successful.
+   */
+  submitRequest(id: Uuid, options?: RequestSettings) {
+    const url = `${this.apiEndpoint}/researchAccessRequest/${id}`;
+    return this.simplePut(url, null, options);
   }
 }

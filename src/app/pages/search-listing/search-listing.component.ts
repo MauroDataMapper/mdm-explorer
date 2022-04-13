@@ -29,6 +29,7 @@ import {
   DataElementSearchResultSet,
   mapParamMapToSearchParameters,
   mapSearchParametersToParams,
+  mapToDataRequest,
   SortOrder,
 } from 'src/app/data-explorer/data-explorer.types';
 import {
@@ -42,6 +43,7 @@ import { CreateRequestEvent } from 'src/app/data-explorer/data-element-search-re
 import { SortByOption } from 'src/app/data-explorer/sort-by/sort-by.component';
 import { DialogService } from 'src/app/data-explorer/dialog.service';
 import { SecurityService } from 'src/app/security/security.service';
+import { BroadcastService } from 'src/app/core/broadcast.service';
 
 export type SearchListingSource = 'unknown' | 'browse' | 'search';
 export type SearchListingStatus = 'init' | 'loading' | 'ready' | 'error';
@@ -88,7 +90,8 @@ export class SearchListingComponent implements OnInit {
     private bookmarks: BookmarkService,
     private dialogs: DialogService,
     private dataRequests: DataRequestsService,
-    security: SecurityService
+    security: SecurityService,
+    private broadcast: BroadcastService
   ) {
     this.user = security.getSignedInUser();
   }
@@ -212,6 +215,11 @@ export class SearchListingComponent implements OnInit {
             );
             return EMPTY;
           }
+
+          this.broadcast.dataRequestChanged({
+            request: mapToDataRequest(dataRequest),
+            change: 'created',
+          });
 
           return this.dialogs
             .openRequestCreated({

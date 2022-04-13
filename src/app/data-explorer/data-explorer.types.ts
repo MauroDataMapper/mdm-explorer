@@ -209,6 +209,18 @@ export interface DataRequest extends DataModel {
   status: DataRequestStatus;
 }
 
+export const mapToDataRequest = (dataModel: DataModel): DataRequest => {
+  return {
+    ...dataModel,
+    status: getDataRequestStatus(dataModel),
+  };
+};
+
+export interface DataRequestChangeBroadcastEvent {
+  request: DataRequest;
+  change: 'created' | 'modified' | 'deleted';
+}
+
 export interface DataElementBasic {
   id: Uuid;
   dataModelId: Uuid;
