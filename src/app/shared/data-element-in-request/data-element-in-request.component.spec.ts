@@ -16,6 +16,8 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { MockComponent } from 'ng-mocks';
+import { MatMenu } from '@angular/material/menu';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
@@ -45,6 +47,7 @@ describe('DataElementInRequestComponent', () => {
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(DataElementInRequestComponent, {
+      declarations: [MockComponent(MatMenu)],
       providers: [
         {
           provide: DataModelService,

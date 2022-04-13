@@ -23,7 +23,7 @@ import { StateRouterService } from 'src/app/core/state-router.service';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import { DataElementDetail, Uuid } from '@maurodatamapper/mdm-resources';
 import { SecurityService } from 'src/app/security/security.service';
-import { MatOptionSelectionChange } from '@angular/material/core';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 
@@ -100,19 +100,20 @@ export class DataElementInRequestComponent implements OnInit {
     return this.dataModels.getIntersection(sourceDataModelId, targetDataModelId).pipe();
   }
 
-  optionChanged(event: MatOptionSelectionChange) {
-    if (
-      this.dataElement &&
-      this.dataElement.id &&
-      this.dataElement.model &&
-      event.isUserInput
-    ) {
+  /**
+   * Do a subset operation to add or remove this data element from the
+   * request data model (target data model) whose ID is specified in event.source.value
+   *
+   * @param event
+   */
+  changed(event: MatCheckboxChange) {
+    if (this.dataElement && this.dataElement.id && this.dataElement.model) {
       const targetDataModelId = event.source.value;
       const datamodelSubsetPayload: DataModelSubsetPayload = {
         additions: [],
         deletions: [],
       };
-      if (event.source.selected) {
+      if (event.checked) {
         // Do a subset add for this data element in the request
         datamodelSubsetPayload.additions = [this.dataElement.id];
       } else {
@@ -124,5 +125,15 @@ export class DataElementInRequestComponent implements OnInit {
         .copySubset(this.dataElement.model, targetDataModelId, datamodelSubsetPayload) // eslint-disable-line @typescript-eslint/no-unsafe-argument
         .subscribe(() => {});
     }
+  }
+
+  /**
+   * Is this data element present in the targetDataModel?
+   *
+   * @param targetDataModel
+   * @returns boolean
+   */
+  isInRequests(targetDataModel: DataModel): boolean {
+    return this.inRequests.indexOf(targetDataModel.id ?? '') > -1;
   }
 }

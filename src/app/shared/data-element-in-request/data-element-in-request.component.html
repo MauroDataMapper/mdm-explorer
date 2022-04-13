@@ -16,14 +16,32 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<mat-form-field *ngIf="ready">
-  <mat-label>Add element to request</mat-label>
-  <mat-select name="requestList" multiple [(ngModel)]="inRequests">
-    <mat-option
-      [value]="item.id"
-      (onSelectionChange)="optionChanged($event)"
-      *ngFor="let item of dataAccessRequests"
-      >{{ item.label }}</mat-option
-    >
-  </mat-select>
-</mat-form-field>
+<ng-container>
+  <button #matMenuTrigger mat-raised-button color="primary" [matMenuTriggerFor]="menu">
+    Add to request
+  </button>
+  <mat-menu #menu="matMenu">
+    <ng-container *ngIf="ready">
+      <section>
+        <ul *ngFor="let item of dataAccessRequests; let i = index">
+          <li>
+            <mat-checkbox
+              #menuItems
+              [checked]="isInRequests(item)"
+              [value]="item.id ?? ''"
+              (click)="$event.stopPropagation()"
+              (change)="changed($event)"
+              >{{ item.label }}</mat-checkbox
+            >
+          </li>
+        </ul>
+      </section>
+      <mat-divider *ngIf="ready"></mat-divider>
+    </ng-container>
+    <section>
+      <button #createRequestTigger mat-raised-button color="primary">
+        Create new request
+      </button>
+    </section>
+  </mat-menu>
+</ng-container>
