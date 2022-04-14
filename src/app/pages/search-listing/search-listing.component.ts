@@ -20,7 +20,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DataClassDetail } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, filter, finalize, forkJoin, of, switchMap } from 'rxjs';
+import { catchError, EMPTY, forkJoin, of, switchMap } from 'rxjs';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { KnownRouterPath, StateRouterService } from 'src/app/core/state-router.service';
 import { DataElementSearchService } from 'src/app/data-explorer/data-element-search.service';
@@ -37,12 +37,8 @@ import {
 } from 'src/app/data-explorer/data-explorer.types';
 import { UserDetails } from 'src/app/security/user-details.service';
 import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
-import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
-import { CreateRequestEvent } from 'src/app/data-explorer/data-element-search-result/data-element-search-result.component';
 import { SortByOption } from 'src/app/data-explorer/sort-by/sort-by.component';
-import { DialogService } from 'src/app/data-explorer/dialog.service';
 import { SecurityService } from 'src/app/security/security.service';
-import { BroadcastService } from 'src/app/core/broadcast.service';
 
 export type SearchListingSource = 'unknown' | 'browse' | 'search';
 export type SearchListingStatus = 'init' | 'loading' | 'ready' | 'error';
@@ -87,10 +83,7 @@ export class SearchListingComponent implements OnInit {
     private toastr: ToastrService,
     private stateRouter: StateRouterService,
     private bookmarks: BookmarkService,
-    private dialogs: DialogService,
-    private dataRequests: DataRequestsService,
-    security: SecurityService,
-    private broadcast: BroadcastService
+    security: SecurityService
   ) {
     this.user = security.getSignedInUser();
   }
@@ -185,51 +178,6 @@ export class SearchListingComponent implements OnInit {
 
     const params = mapSearchParametersToParams(next);
     this.stateRouter.navigateToKnownPath('/search/listing', params);
-  }
-
-  createRequest(event: CreateRequestEvent) {
-    this.dialogs
-      .openCreateRequest()
-      .afterClosed()
-      .pipe(
-        filter((response) => !!response),
-        switchMap((response) => {
-          if (!response || !this.user) {
-            return EMPTY;
-          }
-
-          this.creatingRequest = true;
-          return this.dataRequests.createFromDataElements(
-            [event.item],
-            this.user,
-            response.name,
-            response.description
-          );
-        }),
-        catchError((error) => {
-          this.toastr.error(
-            `There was a problem creating your request. ${error}`,
-            'Request creation error'
-          );
-          return EMPTY;
-        }),
-        switchMap((dataRequest) => {
-          this.broadcast.dispatch('data-request-added');
-
-          return this.dialogs
-            .openRequestCreated({
-              request: dataRequest,
-              addedElements: [event.item],
-            })
-            .afterClosed();
-        }),
-        finalize(() => (this.creatingRequest = false))
-      )
-      .subscribe((action) => {
-        if (action === 'view-requests') {
-          this.stateRouter.navigateToKnownPath('/requests');
-        }
-      });
   }
 
   private loadDataClass() {

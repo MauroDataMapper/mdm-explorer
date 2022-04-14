@@ -30,24 +30,38 @@ import { DataModelService } from 'src/app/mauro/data-model.service';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import { createDataModelServiceStub } from 'src/app/testing/stubs/data-model.stub';
 import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
-import { createSecurityStub } from 'src/app/testing/stubs/mdm-resources/security-resource-stub';
+import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { createStateRouterStub } from 'src/app/testing/stubs/state-router.stub';
+import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
+
 import {
   createMdmEndpointsStub,
   MdmEndpointsServiceStub,
 } from 'src/app/testing/stubs/mdm-endpoints.stub';
+import { MatDialog } from '@angular/material/dialog';
+import { UserDetails } from 'src/app/security/user-details.service';
 
 describe('DataElementInRequestComponent', () => {
   let harness: ComponentHarness<DataElementInRequestComponent>;
   const dataModelsStub = createDataModelServiceStub();
   const dataRequestsStub = createDataRequestsServiceStub();
-  const securityStub = createSecurityStub();
+  const securityStub = createSecurityServiceStub();
   const stateRouterStub = createStateRouterStub();
   const endpointsStub: MdmEndpointsServiceStub = createMdmEndpointsStub();
+  const matDialogStub = createMatDialogStub();
+
+  const user: UserDetails = {
+    id: '123',
+    firstName: 'test',
+    lastName: 'user',
+    email: 'test@test.com',
+  };
+
+  securityStub.getSignedInUser.mockImplementation(() => user);
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(DataElementInRequestComponent, {
-      declarations: [MockComponent(MatMenu)],
+      declarations: [MockComponent(MatMenu), MockComponent(MatDialog)],
       providers: [
         {
           provide: DataModelService,
@@ -68,6 +82,10 @@ describe('DataElementInRequestComponent', () => {
         {
           provide: SecurityService,
           useValue: securityStub,
+        },
+        {
+          provide: MatDialog,
+          useValue: matDialogStub,
         },
       ],
     });

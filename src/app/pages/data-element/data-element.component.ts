@@ -33,6 +33,7 @@ import {
   DataExplorerConfiguration,
   DATA_EXPLORER_CONFIGURATION,
 } from 'src/app/data-explorer/data-explorer.types';
+import { DataElementSearchResult } from 'src/app/data-explorer/data-explorer.types';
 
 @Component({
   selector: 'mdm-data-element',
@@ -44,6 +45,10 @@ export class DataElementComponent implements OnInit {
   dataClassId: Uuid = '';
   dataElementId: Uuid = '';
   dataElement?: DataElementDetail;
+
+  // A workaround
+  dataElementSearchResult?: DataElementSearchResult;
+
   researchProfile?: Profile;
   identifiableData?: string;
 
@@ -75,6 +80,13 @@ export class DataElementComponent implements OnInit {
       )
       .subscribe(([dataElementDetail, profile]) => {
         this.dataElement = dataElementDetail;
+        this.dataElementSearchResult = {
+          id: dataElementDetail.id ?? '',
+          dataClassId: dataElementDetail.dataClass ?? '',
+          dataModelId: dataElementDetail.model ?? '',
+          label: dataElementDetail.label,
+          breadcrumbs: dataElementDetail.breadcrumbs,
+        };
         this.researchProfile = profile;
 
         // Check for the Identifiable Data value

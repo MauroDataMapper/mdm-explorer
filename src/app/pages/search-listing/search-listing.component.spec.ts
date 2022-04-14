@@ -63,7 +63,6 @@ import { DataRequestsService } from 'src/app/data-explorer/data-requests.service
 import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { UserDetails } from 'src/app/security/user-details.service';
 import { SecurityService } from 'src/app/security/security.service';
-import { CreateRequestEvent } from 'src/app/data-explorer/data-element-search-result/data-element-search-result.component';
 
 describe('SearchListingComponent', () => {
   let harness: ComponentHarness<SearchListingComponent>;
@@ -509,7 +508,7 @@ describe('SearchListingComponent', () => {
     });
   });
 
-  describe('create request from single data element', () => {
+  /* describe('create request from single data element', () => {
     const dataElement: DataElementSearchResult = {
       id: '1',
       dataClassId: '2',
@@ -549,5 +548,5 @@ describe('SearchListingComponent', () => {
         requestCreation.description
       );
     });
-  });
+  });*/
 });

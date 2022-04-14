@@ -25,10 +25,6 @@ import {
   DataElementSearchResult,
 } from '../data-explorer.types';
 
-export interface CreateRequestEvent {
-  item: DataElementSearchResult;
-}
-
 @Component({
   selector: 'mdm-data-element-search-result',
   templateUrl: './data-element-search-result.component.html',
@@ -44,8 +40,6 @@ export class DataElementSearchResultComponent {
   @Output() checked = new EventEmitter<DataElementCheckedEvent>();
 
   @Output() bookmark = new EventEmitter<DataElementBookmarkEvent>();
-
-  @Output() createRequestClicked = new EventEmitter<CreateRequestEvent>();
 
   constructor() {}
 
@@ -63,13 +57,6 @@ export class DataElementSearchResultComponent {
     }
 
     this.bookmark.emit({ item: this.item, selected });
-  }
-
-  createRequest() {
-    const event: CreateRequestEvent = {
-      item: this.item!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-    };
-    this.createRequestClicked.emit(event);
   }
 
   /**

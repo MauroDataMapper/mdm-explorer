@@ -16,9 +16,9 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DataModel, DataModelSubsetPayload } from '@maurodatamapper/mdm-resources';
-import { forkJoin, switchMap } from 'rxjs';
+import { EMPTY, filter, finalize, forkJoin, switchMap } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import { Uuid } from '@maurodatamapper/mdm-resources';
@@ -26,6 +26,14 @@ import { SecurityService } from 'src/app/security/security.service';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
 import { DataModelService } from 'src/app/mauro/data-model.service';
+import { DataElementSearchResult } from 'src/app/data-explorer/data-explorer.types';
+import { DialogService } from 'src/app/data-explorer/dialog.service';
+import { UserDetails } from 'src/app/security/user-details.service';
+import { ToastrService } from 'ngx-toastr';
+
+export interface CreateRequestEvent {
+  item: DataElementSearchResult;
+}
 
 @Component({
   selector: 'mdm-data-element-in-request',
@@ -33,27 +41,36 @@ import { DataModelService } from 'src/app/mauro/data-model.service';
   styleUrls: ['./data-element-in-request.component.scss'],
 })
 export class DataElementInRequestComponent implements OnInit {
-  @Input() dataElementId: Uuid = '';
-  @Input() dataModelId: Uuid = '';
+  @Input() dataElement?: DataElementSearchResult;
+
+  @Output() createRequestClicked = new EventEmitter<CreateRequestEvent>();
 
   dataAccessRequests: DataModel[] = [];
+
+  creatingRequest = false;
 
   ready = false;
 
   // A list of requests to which this data element belongs
   inRequests: Uuid[] = [];
 
+  private user: UserDetails | null;
+
   constructor(
-    private security: SecurityService,
+    security: SecurityService,
     private stateRouter: StateRouterService,
     private dataModels: DataModelService,
     private dataRequests: DataRequestsService,
-    private endpoints: MdmEndpointsService
-  ) {}
+    private endpoints: MdmEndpointsService,
+    private dialogs: DialogService,
+    private toastr: ToastrService
+  ) {
+    this.user = security.getSignedInUser();
+  }
 
   ngOnInit(): void {
-    const user = this.security.getSignedInUser();
-    if (user === null) {
+    // const user = this.security.getSignedInUser();
+    if (this.user === null) {
       this.stateRouter.navigateToKnownPath('/home');
       return;
     }
@@ -67,7 +84,7 @@ export class DataElementInRequestComponent implements OnInit {
      * data element.
      */
     this.dataRequests
-      .list(user.email)
+      .list(this.user.email)
       .pipe(
         switchMap((dataModels: DataModel[]) => {
           this.dataAccessRequests = [...dataModels];
@@ -75,8 +92,8 @@ export class DataElementInRequestComponent implements OnInit {
           const checks: any[] = [];
 
           this.dataAccessRequests.forEach((item: DataModel) => {
-            if (item.id) {
-              checks.push(this.checkIntersection(this.dataModelId, item.id));
+            if (this.dataElement && item.id) {
+              checks.push(this.checkIntersection(this.dataElement.dataModelId, item.id));
               checkedTargetDataModelIds.push(item.id);
             }
           });
@@ -89,7 +106,10 @@ export class DataElementInRequestComponent implements OnInit {
           const mySourceDataModelId = checkedTargetDataModelIds[i];
           const intersections = intersectionsForEachTargetDataModel[i];
 
-          if (intersections.intersects.indexOf(this.dataElementId) > -1) {
+          if (
+            this.dataElement &&
+            intersections.intersects.indexOf(this.dataElement.id) > -1
+          ) {
             this.inRequests.push(mySourceDataModelId);
           }
           this.ready = true;
@@ -108,22 +128,28 @@ export class DataElementInRequestComponent implements OnInit {
    * @param event
    */
   changed(event: MatCheckboxChange) {
-    const targetDataModelId = event.source.value;
-    const datamodelSubsetPayload: DataModelSubsetPayload = {
-      additions: [],
-      deletions: [],
-    };
-    if (event.checked) {
-      // Do a subset add for this data element in the request
-      datamodelSubsetPayload.additions = [this.dataElementId];
-    } else {
-      // Do a subset remove for this data element in the request
-      datamodelSubsetPayload.deletions = [this.dataElementId];
-    }
+    if (this.dataElement) {
+      const targetDataModelId = event.source.value;
+      const datamodelSubsetPayload: DataModelSubsetPayload = {
+        additions: [],
+        deletions: [],
+      };
+      if (event.checked) {
+        // Do a subset add for this data element in the request
+        datamodelSubsetPayload.additions = [this.dataElement.id];
+      } else {
+        // Do a subset remove for this data element in the request
+        datamodelSubsetPayload.deletions = [this.dataElement.id];
+      }
 
-    this.endpoints.dataModel
-      .copySubset(this.dataModelId, targetDataModelId, datamodelSubsetPayload)
-      .subscribe(() => {}); // eslint-disable-line @typescript-eslint/no-unsafe-argument
+      this.endpoints.dataModel
+        .copySubset(
+          this.dataElement.dataModelId,
+          targetDataModelId,
+          datamodelSubsetPayload
+        )
+        .subscribe(() => {}); // eslint-disable-line @typescript-eslint/no-unsafe-argument
+    }
   }
 
   /**
@@ -134,5 +160,58 @@ export class DataElementInRequestComponent implements OnInit {
    */
   isInRequests(targetDataModel: DataModel): boolean {
     return this.inRequests.indexOf(targetDataModel.id ?? '') > -1;
+  }
+
+  onClickCreateRequest() {
+    if (this.dataElement) {
+      const event: CreateRequestEvent = {
+        item: this.dataElement, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+      };
+      this.createRequest(event);
+    }
+  }
+
+  createRequest(event: CreateRequestEvent) {
+    this.dialogs
+      .openCreateRequest()
+      .afterClosed()
+      .pipe(
+        filter((response) => !!response),
+        switchMap((response) => {
+          if (!response || !this.user) {
+            return EMPTY;
+          }
+
+          this.creatingRequest = true;
+          return this.dataRequests.createFromSearchResults(
+            response.name,
+            response.description,
+            this.user,
+            [event.item]
+          );
+        }),
+        switchMap(([dataRequest, errors]) => {
+          if (errors.length > 0) {
+            this.toastr.error(
+              `There was a problem creating your request. ${errors[0]}`,
+              'Request creation error'
+            );
+            return EMPTY;
+          }
+
+          return this.dialogs
+            .openRequestCreated({
+              request: dataRequest,
+              addedElements: [event.item],
+            })
+            .afterClosed();
+        }),
+        finalize(() => (this.creatingRequest = false))
+      )
+      .subscribe((action) => {
+        if (action === 'view-requests') {
+          this.stateRouter.navigateToKnownPath('/requests');
+        }
+      });
   }
 }

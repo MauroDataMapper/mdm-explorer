@@ -28,8 +28,8 @@ SPDX-License-Identifier: Apache-2.0
       </span>
       <span>
         <mdm-data-element-in-request
-          [dataElementId]="dataElementId"
-          [dataModelId]="dataModelId"
+          *ngIf="dataElementSearchResult"
+          [dataElement]="dataElementSearchResult"
         ></mdm-data-element-in-request>
         <mdm-bookmark-toggle
           (toggle)="toggleBookmark($event)"

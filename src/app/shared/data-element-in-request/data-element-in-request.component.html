@@ -40,7 +40,13 @@ SPDX-License-Identifier: Apache-2.0
       <mat-divider *ngIf="ready"></mat-divider>
     </ng-container>
     <section>
-      <button #createRequestTigger mat-stroked-button color="primary">
+      <button
+        #createRequestTigger
+        mat-stroked-button
+        color="primary"
+        (click)="onClickCreateRequest()"
+        clickable
+      >
         Create new request
       </button>
     </section>
