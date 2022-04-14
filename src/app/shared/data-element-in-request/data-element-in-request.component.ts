@@ -30,6 +30,7 @@ import { DataElementSearchResult } from 'src/app/data-explorer/data-explorer.typ
 import { DialogService } from 'src/app/data-explorer/dialog.service';
 import { UserDetails } from 'src/app/security/user-details.service';
 import { ToastrService } from 'ngx-toastr';
+import { BroadcastService } from 'src/app/core/broadcast.service';
 
 export interface CreateRequestEvent {
   item: DataElementSearchResult;
@@ -63,7 +64,8 @@ export class DataElementInRequestComponent implements OnInit {
     private dataRequests: DataRequestsService,
     private endpoints: MdmEndpointsService,
     private dialogs: DialogService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private broadcast: BroadcastService
   ) {
     this.user = security.getSignedInUser();
   }
@@ -198,6 +200,8 @@ export class DataElementInRequestComponent implements OnInit {
             );
             return EMPTY;
           }
+
+          this.broadcast.dispatch('data-request-added');
 
           return this.dialogs
             .openRequestCreated({
