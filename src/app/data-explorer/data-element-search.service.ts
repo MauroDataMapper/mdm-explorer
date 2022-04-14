@@ -19,11 +19,9 @@ SPDX-License-Identifier: Apache-2.0
 import { Injectable } from '@angular/core';
 import {
   CatalogueItemDomainType,
-  DataElement,
   DataElementIndexParameters,
   PageParameters,
   SearchQueryParameters,
-  Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { map, Observable, switchMap, throwError } from 'rxjs';
 import { DataModelService } from '../mauro/data-model.service';
@@ -31,7 +29,6 @@ import { DataExplorerService } from './data-explorer.service';
 import { PaginationService } from './pagination.service';
 import {
   DataElementSearchParameters,
-  DataElementSearchResult,
   DataElementSearchResultSet,
   mapSearchResult,
 } from './data-explorer.types';
@@ -116,37 +113,6 @@ export class DataElementSearchService {
         };
       })
     );
-  }
-
-  getDataModelFromSearchResults(items: DataElementSearchResult[]): Uuid {
-    // The result set *should* all be in the same model, and *should* all
-    // have the model accessible. Try and get model from model property,
-    // otherwise attempt to retrieve from breadcrumbs.
-    let model: Uuid | null = null;
-    let currentModel: Uuid | null = null;
-    for (let i = 0; i < items.length; i++) {
-      const item: DataElementSearchResult = items[i];
-      currentModel = (item as unknown as DataElement).model as Uuid;
-      if (!currentModel && item.breadcrumbs) {
-        for (let b = 0; b < item.breadcrumbs.length; b++) {
-          if (item.breadcrumbs[b].domainType === 'DataModel') {
-            currentModel = item.breadcrumbs[b].id;
-            break;
-          }
-        }
-      }
-      if (!currentModel) {
-        throw new Error(`Data Element '${item.label}' has no model id`);
-      } else if (model !== null && model !== currentModel) {
-        throw new Error(
-          `Data Elements are drawn from different models: ${model} and ${currentModel}`
-        );
-      }
-      if (model == null) {
-        model = currentModel;
-      }
-    }
-    return currentModel!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
   }
 
   private getPageParameters(

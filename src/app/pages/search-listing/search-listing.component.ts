@@ -199,22 +199,21 @@ export class SearchListingComponent implements OnInit {
           }
 
           this.creatingRequest = true;
-          return this.dataRequests.createFromSearchResults(
-            response.name,
-            response.description,
+          return this.dataRequests.createFromDataElements(
+            [event.item],
             this.user,
-            [event.item]
+            response.name,
+            response.description
           );
         }),
-        switchMap(([dataRequest, errors]) => {
-          if (errors.length > 0) {
-            this.toastr.error(
-              `There was a problem creating your request. ${errors[0]}`,
-              'Request creation error'
-            );
-            return EMPTY;
-          }
-
+        catchError((error) => {
+          this.toastr.error(
+            `There was a problem creating your request. ${error}`,
+            'Request creation error'
+          );
+          return EMPTY;
+        }),
+        switchMap((dataRequest) => {
           this.broadcast.dispatch('data-request-added');
 
           return this.dialogs

@@ -23,8 +23,10 @@ import {
   DataClassDetail,
   DataElement,
   DataModel,
+  DataModelCreatePayload,
   DataModelDetail,
   DataModelFull,
+  DataModelSubsetPayload,
   SearchQueryParameters,
 } from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
@@ -401,6 +403,172 @@ describe('DataModelService', () => {
 
       const expected$ = cold('--a|', { a: hierarchy });
       const actual$ = service.getDataModelHierarchy('123');
+      expect(actual$).toBeObservable(expected$);
+    });
+  });
+
+  describe('add to folder', () => {
+    it('should return a new data model', () => {
+      const folderId = '1';
+      const payload: DataModelCreatePayload = {
+        folder: folderId,
+        type: 'Data Asset',
+        label: 'test',
+        author: 'tester',
+        organisation: 'test org',
+      };
+
+      const dataModel: DataModelDetail = {
+        id: '2',
+        label: payload.label,
+        domainType: CatalogueItemDomainType.DataModel,
+        availableActions: ['show'],
+        finalised: false,
+      };
+
+      endpointsStub.dataModel.addToFolder.mockImplementationOnce((fId, pl) => {
+        expect(fId).toBe(folderId);
+        expect(pl).toBe(payload);
+        return cold('--a|', { a: { body: dataModel } });
+      });
+
+      const expected$ = cold('--a|', { a: dataModel });
+      const actual$ = service.addToFolder(folderId, payload);
+      expect(actual$).toBeObservable(expected$);
+    });
+  });
+
+  describe('copy subset', () => {
+    it('should copy a subset to a target model', () => {
+      const sourceId = '123';
+      const targetId = '456';
+      const payload: DataModelSubsetPayload = {
+        additions: ['1', '2', '3'],
+        deletions: ['4', '5'],
+      };
+
+      const targetDataModel: DataModelDetail = {
+        id: targetId,
+        label: 'target',
+        domainType: CatalogueItemDomainType.DataModel,
+        availableActions: ['show'],
+        finalised: false,
+      };
+
+      endpointsStub.dataModel.copySubset.mockImplementation((sId, tId, pl) => {
+        expect(sId).toBe(sourceId);
+        expect(tId).toBe(targetId);
+        expect(pl).toBe(payload);
+        return cold('--a|', { a: { body: targetDataModel } });
+      });
+
+      const expected$ = cold('--a|', { a: targetDataModel });
+      const actual$ = service.copySubset(sourceId, targetId, payload);
+      expect(actual$).toBeObservable(expected$);
+    });
+  });
+
+  describe('get data elements for data class', () => {
+    const dataClass: DataClass = {
+      id: '1',
+      label: 'class 1',
+      domainType: CatalogueItemDomainType.DataClass,
+      model: '2',
+    };
+
+    const mockImplementReturnChildDataClasses = (dataClasses: DataClass[]) => {
+      endpointsStub.dataClass.listChildDataClasses.mockImplementationOnce(() =>
+        cold('-a|', {
+          a: {
+            body: {
+              count: dataClasses.length,
+              items: dataClasses,
+            },
+          },
+        })
+      );
+    };
+
+    const mockImplementReturnDataElements = (dataElements: DataElement[]) => {
+      endpointsStub.dataElement.list.mockImplementationOnce(() => {
+        return cold('-a|', {
+          a: {
+            body: {
+              count: dataElements.length,
+              items: dataElements,
+            },
+          },
+        });
+      });
+    };
+
+    it('should return data elements for a single child data class', () => {
+      const dataElements: DataElement[] = [
+        {
+          id: '1',
+          label: 'element 1',
+          domainType: CatalogueItemDomainType.DataElement,
+        },
+        {
+          id: '2',
+          label: 'element 2',
+          domainType: CatalogueItemDomainType.DataElement,
+        },
+      ];
+
+      mockImplementReturnChildDataClasses([]);
+      mockImplementReturnDataElements(dataElements);
+
+      const expected$ = cold('---(a|)', {
+        a: dataElements,
+      });
+      const actual$ = service.getDataElementsForDataClass(dataClass);
+      expect(actual$).toBeObservable(expected$);
+    });
+
+    it('should return data elements for a parent class and all child data classes', () => {
+      const childDataClass: DataClass = {
+        id: '2',
+        label: 'class 2',
+        domainType: CatalogueItemDomainType.DataClass,
+        model: '2',
+      };
+
+      mockImplementReturnChildDataClasses([childDataClass]);
+
+      const dataElementsForClass1: DataElement[] = [
+        {
+          id: '1',
+          label: 'element 1',
+          domainType: CatalogueItemDomainType.DataElement,
+        },
+        {
+          id: '2',
+          label: 'element 2',
+          domainType: CatalogueItemDomainType.DataElement,
+        },
+      ];
+
+      const dataElementsForClass2: DataElement[] = [
+        {
+          id: '3',
+          label: 'element 3',
+          domainType: CatalogueItemDomainType.DataElement,
+        },
+        {
+          id: '4',
+          label: 'element 4',
+          domainType: CatalogueItemDomainType.DataElement,
+        },
+      ];
+
+      mockImplementReturnDataElements(dataElementsForClass1);
+      mockImplementReturnDataElements(dataElementsForClass2);
+
+      const expected$ = cold('---(a|)', {
+        a: dataElementsForClass1.concat(dataElementsForClass2),
+      });
+      const actual$ = service.getDataElementsForDataClass(dataClass);
       expect(actual$).toBeObservable(expected$);
     });
   });
