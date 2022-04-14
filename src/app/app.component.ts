@@ -52,7 +52,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   themeCssSelector = 'default-theme';
 
-  numberOfRequests = 0;
+  unsentRequestsCount = 0;
 
   signedInUserProfileImageSrc?: string;
 
@@ -290,7 +290,7 @@ export class AppComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe((numberOfRequests) => {
-        this.numberOfRequests = numberOfRequests;
+        this.unsentRequestsCount = numberOfRequests;
       });
   }
 
@@ -303,7 +303,7 @@ export class AppComponent implements OnInit, OnDestroy {
           data.change === 'created' ||
           (data.change === 'modified' && data.request.status === 'unsent')
         ) {
-          this.numberOfRequests++;
+          this.unsentRequestsCount++;
           return;
         }
 
@@ -311,7 +311,7 @@ export class AppComponent implements OnInit, OnDestroy {
           data.change === 'deleted' ||
           (data.change === 'modified' && data.request.status === 'submitted')
         ) {
-          this.numberOfRequests = Math.max(0, this.numberOfRequests - 1);
+          this.unsentRequestsCount = Math.max(0, this.unsentRequestsCount - 1);
           return;
         }
       });
