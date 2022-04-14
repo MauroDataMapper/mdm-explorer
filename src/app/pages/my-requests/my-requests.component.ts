@@ -125,7 +125,7 @@ export class MyRequestsComponent implements OnInit {
       .subscribe((dataModel) => {
         // Refresh the current state of the request in view
         this.request = mapToDataRequest(dataModel);
-        this.broadcast.dataRequestChanged({ request: this.request, change: 'modified' });
+        this.broadcast.dispatch('data-request-submitted');
         this.updateRequestList(this.request);
 
         this.dialogs.openSuccess({

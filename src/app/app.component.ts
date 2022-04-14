@@ -289,32 +289,23 @@ export class AppComponent implements OnInit, OnDestroy {
           return requests.filter((req) => req.status === 'unsent').length;
         })
       )
-      .subscribe((numberOfRequests) => {
-        this.unsentRequestsCount = numberOfRequests;
+      .subscribe((unsentRequestsCount) => {
+        this.unsentRequestsCount = unsentRequestsCount;
       });
   }
 
   private subscribeDataRequestChanges() {
     this.broadcast
-      .onDataRequestChanged()
+      .on('data-request-added')
       .pipe(takeUntil(this.unsubscribe$))
-      .subscribe((data) => {
-        if (
-          data.change === 'created' ||
-          (data.change === 'modified' && data.request.status === 'unsent')
-        ) {
-          this.unsentRequestsCount++;
-          return;
-        }
+      .subscribe(() => this.unsentRequestsCount++);
 
-        if (
-          data.change === 'deleted' ||
-          (data.change === 'modified' && data.request.status === 'submitted')
-        ) {
-          this.unsentRequestsCount = Math.max(0, this.unsentRequestsCount - 1);
-          return;
-        }
-      });
+    this.broadcast
+      .on('data-request-submitted')
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(
+        () => (this.unsentRequestsCount = Math.max(0, this.unsentRequestsCount - 1))
+      );
   }
 
   private setupIdleTimer() {

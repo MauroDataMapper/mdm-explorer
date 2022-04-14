@@ -29,7 +29,6 @@ import {
   DataElementSearchResultSet,
   mapParamMapToSearchParameters,
   mapSearchParametersToParams,
-  mapToDataRequest,
   SortOrder,
 } from 'src/app/data-explorer/data-explorer.types';
 import {
@@ -216,10 +215,7 @@ export class SearchListingComponent implements OnInit {
             return EMPTY;
           }
 
-          this.broadcast.dataRequestChanged({
-            request: mapToDataRequest(dataRequest),
-            change: 'created',
-          });
+          this.broadcast.dispatch('data-request-added');
 
           return this.dialogs
             .openRequestCreated({

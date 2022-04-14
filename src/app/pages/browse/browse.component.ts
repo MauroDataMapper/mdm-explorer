@@ -26,7 +26,6 @@ import { StateRouterService } from 'src/app/core/state-router.service';
 import {
   DataElementSearchParameters,
   mapSearchParametersToParams,
-  mapToDataRequest,
 } from 'src/app/data-explorer/data-explorer.types';
 import { UserDetails } from 'src/app/security/user-details.service';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
@@ -96,10 +95,7 @@ export class BrowseComponent implements OnInit {
             return EMPTY;
           }
 
-          this.broadcast.dataRequestChanged({
-            request: mapToDataRequest(dataRequest),
-            change: 'created',
-          });
+          this.broadcast.dispatch('data-request-added');
 
           return this.dialogs
             .openRequestCreated({

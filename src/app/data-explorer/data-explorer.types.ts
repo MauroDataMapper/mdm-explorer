@@ -216,11 +216,6 @@ export const mapToDataRequest = (dataModel: DataModel): DataRequest => {
   };
 };
 
-export interface DataRequestChangeBroadcastEvent {
-  request: DataRequest;
-  change: 'created' | 'modified' | 'deleted';
-}
-
 export interface DataElementBasic {
   id: Uuid;
   dataModelId: Uuid;

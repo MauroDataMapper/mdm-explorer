@@ -18,12 +18,10 @@ SPDX-License-Identifier: Apache-2.0
 */
 export interface BroadcastServiceStub {
   dispatch: jest.Mock;
-  dataRequestChanged: jest.Mock;
 }
 
 export const createBroadcastServiceStub = (): BroadcastServiceStub => {
   return {
     dispatch: jest.fn(),
-    dataRequestChanged: jest.fn(),
   };
 };

@@ -18,7 +18,6 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
 import { filter, map, Observable, Subject } from 'rxjs';
-import { DataRequestChangeBroadcastEvent } from '../data-explorer/data-explorer.types';
 import { UserDetails } from '../security/user-details.service';
 
 export type BroadcastEvent =
@@ -31,7 +30,8 @@ export type BroadcastEvent =
   | 'user-signed-in'
   | 'user-signed-out'
   | 'sign-out-user'
-  | 'data-request-changed';
+  | 'data-request-added'
+  | 'data-request-submitted';
 
 /**
  * Represents a message to broadcast with an optional data payload.
@@ -91,13 +91,5 @@ export class BroadcastService {
    */
   onUserSignedIn(): Observable<UserDetails> {
     return this.on<UserDetails>('user-signed-in');
-  }
-
-  dataRequestChanged(data: DataRequestChangeBroadcastEvent) {
-    this.dispatch<DataRequestChangeBroadcastEvent>('data-request-changed', data);
-  }
-
-  onDataRequestChanged(): Observable<DataRequestChangeBroadcastEvent> {
-    return this.on<DataRequestChangeBroadcastEvent>('data-request-changed');
   }
 }

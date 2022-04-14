@@ -72,9 +72,11 @@ SPDX-License-Identifier: Apache-2.0
             routerLinkActive="active"
           >
             <span class="fas fa-cart-shopping" style="font-size: x-large"></span>
-            <span *ngIf="numberOfRequests > 0" class="mdm-header__links--request-count">{{
-              numberOfRequests
-            }}</span>
+            <span
+              *ngIf="unsentRequestCount > 0"
+              class="mdm-header__links--request-count"
+              >{{ unsentRequestCount }}</span
+            >
             <span [mdmArrow]="accountLink.arrow"> {{ accountLink?.label }} </span>
           </a>
         </li>

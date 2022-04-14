@@ -380,7 +380,7 @@ describe('MyRequestsComponent', () => {
     beforeEach(() => {
       researchPluginStub.submitRequest.mockClear();
       toastrStub.error.mockClear();
-      broadcastStub.dataRequestChanged.mockClear();
+      broadcastStub.dispatch.mockClear();
     });
 
     it('should do nothing if there is no request', () => {
@@ -433,10 +433,7 @@ describe('MyRequestsComponent', () => {
 
       expect(researchPluginStub.submitRequest).toHaveBeenCalled();
       expect(harness.component.request.status).toBe('submitted');
-      expect(broadcastStub.dataRequestChanged).toHaveBeenCalledWith({
-        request: harness.component.request,
-        change: 'modified',
-      });
+      expect(broadcastStub.dispatch).toHaveBeenCalledWith('data-request-submitted');
     });
   });
 });
