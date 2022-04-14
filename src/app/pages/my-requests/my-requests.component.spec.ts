@@ -17,19 +17,29 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSelectionListChange } from '@angular/material/list';
-import { CatalogueItemDomainType, DataElement } from '@maurodatamapper/mdm-resources';
+import {
+  CatalogueItemDomainType,
+  DataElement,
+  DataModelDetail,
+} from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { of, throwError } from 'rxjs';
+import { BroadcastService } from 'src/app/core/broadcast.service';
 import {
   DataElementBasic,
   DataRequest,
   DataRequestStatus,
 } from 'src/app/data-explorer/data-explorer.types';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { ResearchPluginService } from 'src/app/mauro/research-plugin.service';
 import { SecurityService } from 'src/app/security/security.service';
 import { UserDetails } from 'src/app/security/user-details.service';
+import { createBroadcastServiceStub } from 'src/app/testing/stubs/broadcast.stub';
 import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
+import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
+import { createResearchPluginServiceStub } from 'src/app/testing/stubs/research-plugin.stub';
 import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { createToastrServiceStub } from 'src/app/testing/stubs/toastr.stub';
 import {
@@ -43,6 +53,9 @@ describe('MyRequestsComponent', () => {
   const securityStub = createSecurityServiceStub();
   const dataRequestsStub = createDataRequestsServiceStub();
   const toastrStub = createToastrServiceStub();
+  const researchPluginStub = createResearchPluginServiceStub();
+  const dialogsStub = createMatDialogStub();
+  const broadcastStub = createBroadcastServiceStub();
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(MyRequestsComponent, {
@@ -58,6 +71,18 @@ describe('MyRequestsComponent', () => {
         {
           provide: ToastrService,
           useValue: toastrStub,
+        },
+        {
+          provide: ResearchPluginService,
+          useValue: researchPluginStub,
+        },
+        {
+          provide: MatDialog,
+          useValue: dialogsStub,
+        },
+        {
+          provide: BroadcastService,
+          useValue: broadcastStub,
         },
       ],
     });
@@ -342,5 +367,73 @@ describe('MyRequestsComponent', () => {
         expect(harness.component.filteredRequests).toStrictEqual(requests);
       }
     );
+  });
+
+  describe('submit requests', () => {
+    const request: DataRequest = {
+      id: '123',
+      label: 'request',
+      domainType: CatalogueItemDomainType.DataModel,
+      status: 'unsent',
+    };
+
+    beforeEach(() => {
+      researchPluginStub.submitRequest.mockClear();
+      toastrStub.error.mockClear();
+      broadcastStub.dispatch.mockClear();
+    });
+
+    it('should do nothing if there is no request', () => {
+      harness.component.submitRequest();
+
+      expect(researchPluginStub.submitRequest).not.toHaveBeenCalled();
+    });
+
+    it('should do nothing if current request is not in unsent state', () => {
+      harness.component.request = {
+        ...request,
+        status: 'submitted',
+      };
+
+      harness.component.submitRequest();
+
+      expect(researchPluginStub.submitRequest).not.toHaveBeenCalled();
+    });
+
+    it('should raise error if failed to submit', () => {
+      researchPluginStub.submitRequest.mockImplementationOnce((id) => {
+        expect(id).toBe(request.id);
+        return throwError(() => new Error());
+      });
+
+      harness.component.request = request;
+      harness.component.submitRequest();
+
+      expect(researchPluginStub.submitRequest).toHaveBeenCalled();
+      expect(toastrStub.error).toHaveBeenCalled();
+    });
+
+    it('should update status of current request once submitted', () => {
+      const submittedDataModel: DataModelDetail = {
+        id: request.id,
+        label: request.label,
+        domainType: CatalogueItemDomainType.DataModel,
+        availableActions: ['show'],
+        finalised: true,
+        modelVersion: '1.0.0',
+      };
+
+      researchPluginStub.submitRequest.mockImplementationOnce((id) => {
+        expect(id).toBe(request.id);
+        return of(submittedDataModel);
+      });
+
+      harness.component.request = request;
+      harness.component.submitRequest();
+
+      expect(researchPluginStub.submitRequest).toHaveBeenCalled();
+      expect(harness.component.request.status).toBe('submitted');
+      expect(broadcastStub.dispatch).toHaveBeenCalledWith('data-request-submitted');
+    });
   });
 });

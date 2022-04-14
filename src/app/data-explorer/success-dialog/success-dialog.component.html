@@ -16,23 +16,10 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<div class="default-theme">
-  <div class="mat-typography mdm-app-component">
-    <mdm-header
-      [logoLink]="logoLink"
-      [links]="headerLinks"
-      [signInLink]="signInLink"
-      [signedInUser]="signedInUser"
-      [signedInUserProfileImageSrc]="signedInUserProfileImageSrc"
-      [rightLinks]="headerRightLinks"
-      [accountLink]="accountLink"
-      [unsentRequestCount]="unsentRequestsCount"
-    ></mdm-header>
-
-    <main>
-      <router-outlet></router-outlet>
-    </main>
-
-    <mdm-footer version="0.1.0" [links]="footerLinks"></mdm-footer>
-  </div>
-</div>
+<h1 mat-dialog-title>{{ heading }}</h1>
+<mat-dialog-content *ngIf="message">
+  {{ message }}
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-flat-button color="primary" (click)="close()">Continue</button>
+</mat-dialog-actions>

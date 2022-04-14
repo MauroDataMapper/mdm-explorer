@@ -37,9 +37,9 @@ import { FolderService } from '../mauro/folder.service';
 import { CatalogueUserService } from '../mauro/catalogue-user.service';
 import { ExceptionService } from '../core/exception.service';
 import { DataElementSearchService } from './data-element-search.service';
-import { DataElementSearchResult } from './data-explorer.types';
+import { DataElementSearchResult, mapToDataRequest } from './data-explorer.types';
 import { DataClassService } from '../mauro/data-class.service';
-import { DataRequest, getDataRequestStatus } from '../data-explorer/data-explorer.types';
+import { DataRequest } from '../data-explorer/data-explorer.types';
 
 @Injectable({
   providedIn: 'root',
@@ -82,14 +82,7 @@ export class DataRequestsService {
       switchMap((requestsFolder: FolderDetail): Observable<DataModel[]> => {
         return this.dataModels.listInFolder(requestsFolder.id!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
       }),
-      map((dataModels) =>
-        dataModels.map((dm) => {
-          return {
-            ...dm,
-            status: getDataRequestStatus(dm),
-          };
-        })
-      )
+      map((dataModels) => dataModels.map(mapToDataRequest))
     );
   }
 

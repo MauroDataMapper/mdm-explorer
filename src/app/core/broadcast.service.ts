@@ -29,7 +29,9 @@ export type BroadcastEvent =
   | 'http-server-error'
   | 'user-signed-in'
   | 'user-signed-out'
-  | 'sign-out-user';
+  | 'sign-out-user'
+  | 'data-request-added'
+  | 'data-request-submitted';
 
 /**
  * Represents a message to broadcast with an optional data payload.

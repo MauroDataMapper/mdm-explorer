@@ -21,12 +21,16 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatSelectionListChange } from '@angular/material/list';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY, finalize } from 'rxjs';
+import { BroadcastService } from 'src/app/core/broadcast.service';
 import {
   DataElementBasic,
   DataRequest,
   DataRequestStatus,
+  mapToDataRequest,
 } from 'src/app/data-explorer/data-explorer.types';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { DialogService } from 'src/app/data-explorer/dialog.service';
+import { ResearchPluginService } from 'src/app/mauro/research-plugin.service';
 import { SecurityService } from 'src/app/security/security.service';
 
 @Component({
@@ -41,11 +45,15 @@ export class MyRequestsComponent implements OnInit {
   request?: DataRequest;
   requestElements: DataElementBasic[] = [];
   state: 'idle' | 'loading' = 'idle';
+  submittingRequest = false;
 
   constructor(
     private security: SecurityService,
     private dataRequests: DataRequestsService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private researchPlugin: ResearchPluginService,
+    private dialogs: DialogService,
+    private broadcast: BroadcastService
   ) {}
 
   get hasMultipleRequestStatus() {
@@ -96,6 +104,37 @@ export class MyRequestsComponent implements OnInit {
     this.filterRequests();
   }
 
+  submitRequest() {
+    if (!this.request || !this.request.id || this.request.status !== 'unsent') {
+      return;
+    }
+
+    this.submittingRequest = true;
+    this.researchPlugin
+      .submitRequest(this.request.id)
+      .pipe(
+        catchError(() => {
+          this.toastr.error(
+            'There was a problem submitting your request. Please try again or contact us for support.',
+            'Submission error'
+          );
+          return EMPTY;
+        }),
+        finalize(() => (this.submittingRequest = false))
+      )
+      .subscribe((dataModel) => {
+        // Refresh the current state of the request in view
+        this.request = mapToDataRequest(dataModel);
+        this.broadcast.dispatch('data-request-submitted');
+        this.updateRequestList(this.request);
+
+        this.dialogs.openSuccess({
+          heading: 'Request submitted',
+          message: `Your request "${this.request.label}" has been successfully submitted. It will now be reviewed and you will be contacted shortly to discuss further steps.`,
+        });
+      });
+  }
+
   private filterRequests() {
     this.filteredRequests =
       this.statusFilters.length === 0
@@ -132,5 +171,11 @@ export class MyRequestsComponent implements OnInit {
           };
         });
       });
+  }
+
+  private updateRequestList(request: DataRequest) {
+    const index = this.allRequests.findIndex((req) => req.id === request.id);
+    this.allRequests[index] = request;
+    this.filterRequests();
   }
 }

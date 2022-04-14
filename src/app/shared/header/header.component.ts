@@ -94,7 +94,7 @@ export class HeaderComponent {
     routerLink: 'app.container.home',
   };
 
-  @Input() numberOfRequests = 0;
+  @Input() unsentRequestCount = 0;
 
   /**
    * Provide the link to redirect to sign-in.

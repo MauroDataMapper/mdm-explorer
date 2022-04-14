@@ -82,11 +82,20 @@ SPDX-License-Identifier: Apache-2.0
         <div class="col-md-9">
           <div *ngIf="request">
             <div class="mdm-my-requests__request-header">
-              <div class="mdm-my-requests__request-header--name">
-                {{ request.label }}
-                <mdm-request-status-chip
-                  [status]="request.status"
-                ></mdm-request-status-chip>
+              <div class="mdm-my-requests__request-header-title">
+                <div class="mdm-my-requests__request-header--name">
+                  {{ request.label }}
+                  <mdm-request-status-chip
+                    [status]="request.status"
+                  ></mdm-request-status-chip>
+                </div>
+                <button
+                  *ngIf="request.status === 'unsent'"
+                  mat-raised-button
+                  (click)="submitRequest()"
+                >
+                  Submit request
+                </button>
               </div>
               <div
                 *ngIf="request.description"
@@ -107,4 +116,11 @@ SPDX-License-Identifier: Apache-2.0
       </div>
     </div>
   </div>
+</div>
+
+<div *ngIf="submittingRequest">
+  <mdm-loading-spinner
+    caption="Submitting your request ..."
+    color="primary"
+  ></mdm-loading-spinner>
 </div>

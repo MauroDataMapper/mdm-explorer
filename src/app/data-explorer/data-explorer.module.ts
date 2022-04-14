@@ -30,6 +30,7 @@ import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { DataElementRowComponent } from './data-element-row/data-element-row.component';
 import { CreateRequestDialogComponent } from './create-request-dialog/create-request-dialog.component';
 import { RequestCreatedDialogComponent } from './request-created-dialog/request-created-dialog.component';
+import { SuccessDialogComponent } from './success-dialog/success-dialog.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { RequestCreatedDialogComponent } from './request-created-dialog/request-
     BreadcrumbComponent,
     CreateRequestDialogComponent,
     RequestCreatedDialogComponent,
+    SuccessDialogComponent,
   ],
   imports: [CoreModule, SharedModule],
   exports: [
