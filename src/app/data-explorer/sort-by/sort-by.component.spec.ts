@@ -16,12 +16,13 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { MatSelectChange } from '@angular/material/select';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatSelect, MatSelectChange } from '@angular/material/select';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
-
+import { MockComponent } from 'ng-mocks';
 import { SortByComponent } from './sort-by.component';
 
 describe('SortByComponent', () => {
@@ -29,6 +30,11 @@ describe('SortByComponent', () => {
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(SortByComponent, {
+      declarations: [
+        MockComponent(MatFormField),
+        MockComponent(MatLabel),
+        MockComponent(MatSelect),
+      ],
       providers: [],
     });
   });

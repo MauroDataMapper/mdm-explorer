@@ -22,7 +22,7 @@ import {
   MatDialogContent,
   MatDialogRef,
 } from '@angular/material/dialog';
-import { MatFormField } from '@angular/material/form-field';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MockComponent } from 'ng-mocks';
 import { createMatDialogRefStub } from 'src/app/testing/stubs/mat-dialog.stub';
 import {
@@ -44,6 +44,7 @@ describe('CreateRequestDialogComponent', () => {
         MockComponent(MatDialogContent),
         MockComponent(MatDialogActions),
         MockComponent(MatFormField),
+        MockComponent(MatLabel),
       ],
       providers: [
         {

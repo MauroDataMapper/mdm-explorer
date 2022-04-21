@@ -16,7 +16,12 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  MatDialogActions,
+  MatDialogContent,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 import { DataClass, DataModel } from '@maurodatamapper/mdm-resources';
 import { createMatDialogRefStub } from 'src/app/testing/stubs/mat-dialog.stub';
 import {
@@ -29,6 +34,7 @@ import {
   RequestCreatedData,
   RequestCreatedDialogComponent,
 } from './request-created-dialog.component';
+import { MockComponent } from 'ng-mocks';
 
 describe('RequestCreatedDialogComponent', () => {
   let harness: ComponentHarness<RequestCreatedDialogComponent>;
@@ -40,6 +46,7 @@ describe('RequestCreatedDialogComponent', () => {
 
   const setupTestbed = async (data: RequestCreatedData) => {
     harness = await setupTestModuleForComponent(RequestCreatedDialogComponent, {
+      declarations: [MockComponent(MatDialogActions), MockComponent(MatDialogContent)],
       providers: [
         {
           provide: MatDialogRef,
