@@ -175,6 +175,7 @@ export class DataRequestsService {
    * 1. List all data access requests
    * 2. For each data access request, get intersections
    * This is a step towards a new endpoint which will return all intersections for all data access requests in a single API call.
+   *
    * @param sourceDataModelId
    * @returns
    */
@@ -214,6 +215,7 @@ export class DataRequestsService {
    * Get the intersection between a source and target data model, returning an updated
    * version of the patameter sourceTargetIntersections. This is a step towards handling all intersections
    * in a single API call.
+   *
    * @param sourceDataModelId
    * @param targetDataModelId
    * @param sourceTargetIntersections
