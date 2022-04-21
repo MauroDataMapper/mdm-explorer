@@ -26,7 +26,10 @@ SPDX-License-Identifier: Apache-2.0
       <mdm-breadcrumb *ngIf="showBreadcrumb" [item]="item"></mdm-breadcrumb>
     </span>
     <span>
-      <mdm-data-element-in-request [dataElement]="item"></mdm-data-element-in-request>
+      <mdm-data-element-in-request
+        [dataElement]="item"
+        [sourceTargetIntersections]="sourceTargetIntersections"
+      ></mdm-data-element-in-request>
       <mdm-bookmark-toggle
         (toggle)="toggleBookmark($event)"
         [selected]="isBookmarked()"

@@ -18,9 +18,12 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DataModel, DataModelSubsetPayload } from '@maurodatamapper/mdm-resources';
-import { EMPTY, filter, finalize, forkJoin, switchMap } from 'rxjs';
+import { EMPTY, filter, finalize, switchMap } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
-import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import {
+  DataRequestsService,
+  SourceTargetIntersections,
+} from 'src/app/data-explorer/data-requests.service';
 import { Uuid } from '@maurodatamapper/mdm-resources';
 import { SecurityService } from 'src/app/security/security.service';
 import { MatCheckboxChange } from '@angular/material/checkbox';
@@ -43,6 +46,8 @@ export interface CreateRequestEvent {
 })
 export class DataElementInRequestComponent implements OnInit {
   @Input() dataElement?: DataElementSearchResult;
+
+  @Input() sourceTargetIntersections: SourceTargetIntersections[] = [];
 
   @Output() createRequestClicked = new EventEmitter<CreateRequestEvent>();
 
@@ -77,50 +82,28 @@ export class DataElementInRequestComponent implements OnInit {
       return;
     }
 
-    const checkedTargetDataModelIds: Uuid[] = [];
+    if (this.sourceTargetIntersections.length > 0) {
+      this.dataAccessRequests = this.sourceTargetIntersections[0].dataAccessRequests;
 
-    /**
-     * Get all the data access requests.
-     * For each request, use the intersects method to check whether this data element is in the request.
-     * This is slow and it would benefit from an endpoint which returns a list of data models containing this
-     * data element.
-     */
-    this.dataRequests
-      .list(this.user.email)
-      .pipe(
-        switchMap((dataModels: DataModel[]) => {
-          this.dataAccessRequests = [...dataModels];
+      for (
+        let i = 0;
+        i < this.sourceTargetIntersections[0].sourceTargetIntersections.length;
+        i++
+      ) {
+        const sourceTargetIntersection =
+          this.sourceTargetIntersections[0].sourceTargetIntersections[i];
 
-          const checks: any[] = [];
+        const targetDataModelId = sourceTargetIntersection.targetDataModelId;
 
-          this.dataAccessRequests.forEach((item: DataModel) => {
-            if (this.dataElement && item.id) {
-              checks.push(this.checkIntersection(this.dataElement.dataModelId, item.id));
-              checkedTargetDataModelIds.push(item.id);
-            }
-          });
+        const intersections = sourceTargetIntersection.intersects;
 
-          return forkJoin(checks);
-        })
-      )
-      .subscribe((intersectionsForEachTargetDataModel) => {
-        for (let i = 0; i < checkedTargetDataModelIds.length; i++) {
-          const mySourceDataModelId = checkedTargetDataModelIds[i];
-          const intersections = intersectionsForEachTargetDataModel[i];
-
-          if (
-            this.dataElement &&
-            intersections.intersects.indexOf(this.dataElement.id) > -1
-          ) {
-            this.inRequests.push(mySourceDataModelId);
-          }
-          this.ready = true;
+        if (this.dataElement && intersections.indexOf(this.dataElement.id) > -1) {
+          this.inRequests.push(targetDataModelId);
         }
-      });
-  }
+      }
+    }
 
-  checkIntersection(sourceDataModelId: Uuid, targetDataModelId: Uuid) {
-    return this.dataModels.getIntersection(sourceDataModelId, targetDataModelId).pipe();
+    this.ready = true;
   }
 
   /**

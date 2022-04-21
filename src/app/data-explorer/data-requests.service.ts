@@ -21,9 +21,19 @@ import {
   DataElement,
   DataModel,
   DataModelCreatePayload,
+  Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { FolderDetail } from '@maurodatamapper/mdm-resources';
-import { forkJoin, map, Observable, switchMap, throwError } from 'rxjs';
+import {
+  defaultIfEmpty,
+  forkJoin,
+  map,
+  mergeMap,
+  Observable,
+  of,
+  switchMap,
+  throwError,
+} from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { UserDetails } from '../security/user-details.service';
 import { DataModelService } from '../mauro/data-model.service';
@@ -32,6 +42,28 @@ import { CatalogueUserService } from '../mauro/catalogue-user.service';
 import { DataElementBasic, mapToDataRequest } from './data-explorer.types';
 import { DataRequest } from '../data-explorer/data-explorer.types';
 import { DataExplorerService } from './data-explorer.service';
+import { SecurityService } from '../security/security.service';
+
+/**
+ * Work in progress replacement for DataModelIntersection, in which the source and target model
+ * IDs are also present.
+ */
+export interface SourceTargetIntersection {
+  sourceDataModelId: Uuid;
+
+  targetDataModelId: Uuid;
+
+  intersects: Uuid[];
+}
+
+/**
+ * A collection of the above, plus data access requests.
+ */
+export interface SourceTargetIntersections {
+  dataAccessRequests: DataModel[];
+
+  sourceTargetIntersections: SourceTargetIntersection[];
+}
 
 @Injectable({
   providedIn: 'root',
@@ -41,7 +73,8 @@ export class DataRequestsService {
     private dataModels: DataModelService,
     private folder: FolderService,
     private catalogueUser: CatalogueUserService,
-    private dataExplorer: DataExplorerService
+    private dataExplorer: DataExplorerService,
+    private security: SecurityService
   ) {}
 
   /**
@@ -138,7 +171,75 @@ export class DataRequestsService {
   }
 
   /**
-   * Creates a new Data Request and copies the selected source Data Elements to that request.
+   * Given a source data model, return an observable containing all intersections for all data access requests, by:
+   * 1. List all data access requests
+   * 2. For each data access request, get intersections
+   * This is a step towards a new endpoint which will return all intersections for all data access requests in a single API call.
+   * @param sourceDataModelId
+   * @returns
+   */
+  getRequestsIntersections(
+    sourceDataModelId: Uuid
+  ): Observable<SourceTargetIntersections[]> {
+    const user = this.security.getSignedInUser();
+
+    if (user === null) {
+      return throwError(() => new Error('Must be logged in to use User Preferences'));
+    }
+    const sourceTargetIntersections: SourceTargetIntersections = {
+      dataAccessRequests: [],
+      sourceTargetIntersections: [],
+    };
+
+    return this.list(user.email).pipe(
+      switchMap((dataModels: DataModel[]) => {
+        sourceTargetIntersections.dataAccessRequests = [...dataModels];
+
+        const gets: Observable<SourceTargetIntersections>[] = [];
+
+        sourceTargetIntersections.dataAccessRequests.forEach((item: DataModel) => {
+          if (item.id) {
+            gets.push(
+              this.getIntersection(sourceDataModelId, item.id, sourceTargetIntersections)
+            );
+          }
+        });
+
+        return forkJoin(gets);
+      })
+    );
+  }
+
+  /**
+   * Get the intersection between a source and target data model, returning an updated
+   * version of the patameter sourceTargetIntersections. This is a step towards handling all intersections
+   * in a single API call.
+   * @param sourceDataModelId
+   * @param targetDataModelId
+   * @param sourceTargetIntersections
+   * @returns
+   */
+  getIntersection(
+    sourceDataModelId: Uuid,
+    targetDataModelId: Uuid,
+    sourceTargetIntersections: SourceTargetIntersections
+  ): Observable<SourceTargetIntersections> {
+    return this.dataModels.getIntersection(sourceDataModelId, targetDataModelId).pipe(
+      map((x) => {
+        const z: SourceTargetIntersection = {
+          sourceDataModelId,
+          targetDataModelId,
+          intersects: x.intersects,
+        };
+
+        sourceTargetIntersections.sourceTargetIntersections.push(z);
+        return sourceTargetIntersections;
+      })
+    );
+  }
+
+  /**
+   * Creates an observable that adds a new data model to the user's requests folder.
    *
    * @param elements The list of data elements to copy.
    * @param user The user to crate the request for.

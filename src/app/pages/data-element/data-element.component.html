@@ -30,6 +30,7 @@ SPDX-License-Identifier: Apache-2.0
         <mdm-data-element-in-request
           *ngIf="dataElementSearchResult"
           [dataElement]="dataElementSearchResult"
+          [sourceTargetIntersections]="sourceTargetIntersections"
         ></mdm-data-element-in-request>
         <mdm-bookmark-toggle
           (toggle)="toggleBookmark($event)"

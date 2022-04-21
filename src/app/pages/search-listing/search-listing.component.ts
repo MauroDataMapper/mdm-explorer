@@ -20,7 +20,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DataClassDetail } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, forkJoin, of, switchMap } from 'rxjs';
+import { catchError, EMPTY, forkJoin, of, switchMap, throwError } from 'rxjs';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { KnownRouterPath, StateRouterService } from 'src/app/core/state-router.service';
 import { DataElementSearchService } from 'src/app/data-explorer/data-element-search.service';
@@ -39,6 +39,11 @@ import { UserDetails } from 'src/app/security/user-details.service';
 import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
 import { SortByOption } from 'src/app/data-explorer/sort-by/sort-by.component';
 import { SecurityService } from 'src/app/security/security.service';
+import {
+  DataRequestsService,
+  SourceTargetIntersections,
+} from 'src/app/data-explorer/data-requests.service';
+import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 
 export type SearchListingSource = 'unknown' | 'browse' | 'search';
 export type SearchListingStatus = 'init' | 'loading' | 'ready' | 'error';
@@ -65,6 +70,7 @@ export class SearchListingComponent implements OnInit {
   userBookmarks: Bookmark[] = [];
   creatingRequest = false;
   sortBy?: SortByOption;
+  sourceTargetIntersections: SourceTargetIntersections[] = [];
   /**
    * Each new option must have a {@link SearchListingSortByOption} as a value to ensure
    * the search-listing page can interpret the result emitted by the SortByComponent
@@ -80,6 +86,8 @@ export class SearchListingComponent implements OnInit {
     private route: ActivatedRoute,
     private dataElementsSearch: DataElementSearchService,
     private dataModels: DataModelService,
+    private explorer: DataExplorerService,
+    private dataRequests: DataRequestsService,
     private toastr: ToastrService,
     private stateRouter: StateRouterService,
     private bookmarks: BookmarkService,
@@ -121,13 +129,18 @@ export class SearchListingComponent implements OnInit {
 
           this.status = 'loading';
 
-          return forkJoin([this.loadDataClass(), this.loadSearchResults()]);
+          return forkJoin([
+            this.loadDataClass(),
+            this.loadSearchResults(),
+            this.loadIntersections(),
+          ]);
         })
       )
-      .subscribe(([dataClass, resultSet]) => {
+      .subscribe(([dataClass, resultSet, sourceTargetIntersections]) => {
         this.status = 'ready';
         this.root = dataClass;
         this.resultSet = resultSet;
+        this.sourceTargetIntersections = sourceTargetIntersections;
       });
   }
 
@@ -211,6 +224,18 @@ export class SearchListingComponent implements OnInit {
       catchError(() => {
         this.status = 'error';
         return EMPTY;
+      })
+    );
+  }
+
+  private loadIntersections() {
+    return this.explorer.getRootDataModel().pipe(
+      switchMap((dataModel) => {
+        if (!dataModel.id) {
+          return throwError(() => new Error('Root Data Model has no id.'));
+        }
+
+        return this.dataRequests.getRequestsIntersections(dataModel.id);
       })
     );
   }

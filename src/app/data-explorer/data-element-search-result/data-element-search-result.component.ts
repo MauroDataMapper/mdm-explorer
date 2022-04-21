@@ -24,6 +24,7 @@ import {
   DataElementCheckedEvent,
   DataElementSearchResult,
 } from '../data-explorer.types';
+import { SourceTargetIntersections } from '../data-requests.service';
 
 @Component({
   selector: 'mdm-data-element-search-result',
@@ -36,6 +37,8 @@ export class DataElementSearchResultComponent {
   @Input() showBreadcrumb = false;
 
   @Input() bookmarks: Bookmark[] = [];
+
+  @Input() sourceTargetIntersections: SourceTargetIntersections[] = [];
 
   @Output() checked = new EventEmitter<DataElementCheckedEvent>();
 
