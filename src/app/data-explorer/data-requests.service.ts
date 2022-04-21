@@ -194,7 +194,13 @@ export class DataRequestsService {
 
     return this.list(user.email).pipe(
       switchMap((dataModels: DataModel[]) => {
-        sourceTargetIntersections.dataAccessRequests = [...dataModels];
+        // Only list data access requests that have not been submitted
+        // i.e. do not have a modelVersion
+        dataModels.forEach((dataModel: DataModel) => {
+          if (!dataModel.modelVersion) {
+            sourceTargetIntersections.dataAccessRequests.push(dataModel);
+          }
+        });
 
         const gets: Observable<SourceTargetIntersections>[] = [];
 
