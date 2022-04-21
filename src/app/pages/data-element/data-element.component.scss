@@ -25,6 +25,8 @@ $detail-header-padding: 0.2em 1.2em;
 $detail-content-color: $color-mauro-light-gold;
 $detail-content-padding: 1.2em 1.2em;
 
+$detail-identifiable-background-color: $color-mauro-gold;
+
 .mdm-data-element-detail {
   @include respond-to-mobile {
     padding: 0;
@@ -48,6 +50,22 @@ $detail-content-padding: 1.2em 1.2em;
     mdm-breadcrumb {
       vertical-align: middle;
       font-size: 13px;
+    }
+  }
+
+  &__identifiable {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $detail-header-padding;
+    background-color: $detail-identifiable-background-color;
+    color: $detail-heading-color;
+
+    h3 {
+      display: inline-block;
+      font-weight: 500;
+      margin: 0 1em;
+      vertical-align: middle;
     }
   }
 
