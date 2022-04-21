@@ -18,7 +18,11 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { fakeAsync, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, ParamMap } from '@angular/router';
-import { CatalogueItemDomainType, DataClassDetail } from '@maurodatamapper/mdm-resources';
+import {
+  CatalogueItemDomainType,
+  DataClassDetail,
+  DataModelDetail,
+} from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { of, throwError } from 'rxjs';
 import { BookmarkService } from 'src/app/data-explorer/bookmark.service';
@@ -59,10 +63,15 @@ import {
   CreateRequestDialogResponse,
 } from 'src/app/data-explorer/create-request-dialog/create-request-dialog.component';
 import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
-import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import {
+  DataRequestsService,
+  SourceTargetIntersections,
+} from 'src/app/data-explorer/data-requests.service';
 import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { UserDetails } from 'src/app/security/user-details.service';
 import { SecurityService } from 'src/app/security/security.service';
+import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
+import { createDataExplorerServiceStub } from 'src/app/testing/stubs/data-explorer.stub';
 
 describe('SearchListingComponent', () => {
   let harness: ComponentHarness<SearchListingComponent>;
@@ -79,6 +88,7 @@ describe('SearchListingComponent', () => {
   > = createMatDialogStub();
   const dataRequestsStub = createDataRequestsServiceStub();
   const securityStub = createSecurityServiceStub();
+  const dataExplorerStub = createDataExplorerServiceStub();
 
   const user: UserDetails = {
     id: '123',
@@ -86,6 +96,23 @@ describe('SearchListingComponent', () => {
     lastName: 'user',
     email: 'test@test.com',
   };
+
+  const mockedRootDataModel: DataModelDetail = {
+    id: '123',
+    label: 'model',
+    domainType: CatalogueItemDomainType.DataModel,
+    finalised: true,
+    availableActions: ['show'],
+  };
+
+  const mockedSourceTargetIntersections: SourceTargetIntersections = {
+    dataAccessRequests: [],
+    sourceTargetIntersections: [],
+  };
+
+  const mockedIntersections: SourceTargetIntersections[] = [
+    mockedSourceTargetIntersections,
+  ];
 
   securityStub.getSignedInUser.mockImplementation(() => user);
 
@@ -138,6 +165,10 @@ describe('SearchListingComponent', () => {
         {
           provide: SecurityService,
           useValue: securityStub,
+        },
+        {
+          provide: DataExplorerService,
+          useValue: dataExplorerStub,
         },
       ],
     });
@@ -281,6 +312,12 @@ describe('SearchListingComponent', () => {
       implementListingReturns();
 
       bookmarkStub.index.mockImplementationOnce(() => of([]));
+      dataExplorerStub.getRootDataModel.mockImplementationOnce(() =>
+        of(mockedRootDataModel)
+      );
+      dataRequestsStub.getRequestsIntersections.mockImplementationOnce(() =>
+        of([mockedIntersections])
+      );
       harness.component.ngOnInit();
       tick();
 
@@ -299,6 +336,12 @@ describe('SearchListingComponent', () => {
       implementListingReturns();
 
       bookmarkStub.index.mockImplementationOnce(() => of([]));
+      dataExplorerStub.getRootDataModel.mockImplementationOnce(() =>
+        of(mockedRootDataModel)
+      );
+      dataRequestsStub.getRequestsIntersections.mockImplementationOnce(() =>
+        of([mockedIntersections])
+      );
       harness.component.ngOnInit();
       tick();
 
@@ -315,6 +358,12 @@ describe('SearchListingComponent', () => {
       implementListingThrowsError();
 
       bookmarkStub.index.mockImplementationOnce(() => of([]));
+      dataExplorerStub.getRootDataModel.mockImplementationOnce(() =>
+        of(mockedRootDataModel)
+      );
+      dataRequestsStub.getRequestsIntersections.mockImplementationOnce(() =>
+        of([mockedIntersections])
+      );
       harness.component.ngOnInit();
       tick();
 
@@ -390,6 +439,12 @@ describe('SearchListingComponent', () => {
       implementSearchReturns();
 
       bookmarkStub.index.mockImplementationOnce(() => of([]));
+      dataExplorerStub.getRootDataModel.mockImplementationOnce(() =>
+        of(mockedRootDataModel)
+      );
+      dataRequestsStub.getRequestsIntersections.mockImplementationOnce(() =>
+        of([mockedIntersections])
+      );
       harness.component.ngOnInit();
       tick();
 
@@ -407,6 +462,12 @@ describe('SearchListingComponent', () => {
       implementSearchThrowsError();
 
       bookmarkStub.index.mockImplementationOnce(() => of([]));
+      dataExplorerStub.getRootDataModel.mockImplementationOnce(() =>
+        of(mockedRootDataModel)
+      );
+      dataRequestsStub.getRequestsIntersections.mockImplementationOnce(() =>
+        of([mockedIntersections])
+      );
       harness.component.ngOnInit();
       expect(harness.component.source).toBe('search');
       expect(harness.component.status).toBe('error');
@@ -507,46 +568,4 @@ describe('SearchListingComponent', () => {
       );
     });
   });
-
-  /* describe('create request from single data element', () => {
-    const dataElement: DataElementSearchResult = {
-      id: '1',
-      dataClassId: '2',
-      dataModelId: '3',
-      label: 'element 1',
-    };
-
-    const event: CreateRequestEvent = {
-      item: dataElement,
-    };
-
-    beforeEach(() => {
-      dataRequestsStub.createFromDataElements.mockClear();
-    });
-
-    it('should not continue if cancelling the Create Request dialog', () => {
-      matDialogStub.usage.afterClosed.mockImplementationOnce(() => of());
-
-      harness.component.createRequest(event);
-      expect(dataRequestsStub.createFromDataElements).not.toHaveBeenCalled();
-    });
-
-    it('should create a new request', () => {
-      const requestCreation: CreateRequestDialogResponse = {
-        name: 'test request',
-        description: 'test description',
-      };
-
-      matDialogStub.usage.afterClosed.mockImplementationOnce(() => of(requestCreation));
-
-      harness.component.createRequest(event);
-
-      expect(dataRequestsStub.createFromDataElements).toHaveBeenCalledWith(
-        [dataElement],
-        user,
-        requestCreation.name,
-        requestCreation.description
-      );
-    });
-  });*/
 });

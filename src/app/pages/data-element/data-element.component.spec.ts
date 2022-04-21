@@ -34,6 +34,8 @@ import { ProfileService } from 'src/app/mauro/profile.service';
 import { BreadcrumbComponent } from 'src/app/data-explorer/breadcrumb/breadcrumb.component';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { BookmarkService, Bookmark } from 'src/app/data-explorer/bookmark.service';
+import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
+import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import {
   DataExplorerConfiguration,
   DATA_EXPLORER_CONFIGURATION,
@@ -53,6 +55,7 @@ describe('DataElementComponent', () => {
   const dataModelStub = createDataModelServiceStub();
   const bookmarkStub = createBookmarkServiceStub();
   const toastrStub = createToastrServiceStub();
+  const dataRequestsStub = createDataRequestsServiceStub();
   const profileStub = createProfileServiceStub();
   const config: DataExplorerConfiguration = {
     rootDataModelPath: 'my test model',
@@ -116,6 +119,10 @@ describe('DataElementComponent', () => {
         {
           provide: DATA_EXPLORER_CONFIGURATION,
           useValue: config,
+        },
+        {
+          provide: DataRequestsService,
+          useValue: dataRequestsStub,
         },
       ],
     });
