@@ -20,24 +20,32 @@ SPDX-License-Identifier: Apache-2.0
 @import "./base/all";
 
 .container {
+  text-align: center;
+
   h1,
   h2 {
     font-family: "Segoe UI", sans-serif;
+  }
+
+  p {
+    font-weight: normal;
+    font-size: 1.1em;
+    line-height: 2em;
   }
 }
 
 .homepage__nav-column {
   display: flex;
-  flex-flow: column nowrap;
+  flex-flow: row;
   justify-content: flex-start;
-  text-align: center;
 
   .card {
     background-color: $color-highlight-box-strong;
     border: 1px solid #e5e5e5;
     border-radius: 10px;
-    padding: 5em 10%;
-    margin-bottom: 1em;
+    flex-basis: 100%;
+    padding: 5em 1.5em;
+    margin: 0 1em;
 
     .div-link {
       position: absolute;
@@ -53,18 +61,17 @@ SPDX-License-Identifier: Apache-2.0
     }
 
     h2 {
-      font-size: x-large;
-      font-weight: 600;
+      font-size: xx-large;
+      font-weight: 625;
     }
   }
 }
 
 .main-row {
-  text-align: center;
   padding-bottom: 2.5em;
 
   h1 {
-    font-weight: lighter;
-    font-size: 3em;
+    font-weight: 350;
+    font-size: 3.5em;
   }
 }
