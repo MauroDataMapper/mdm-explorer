@@ -19,6 +19,9 @@ SPDX-License-Identifier: Apache-2.0
 @import "../../../styles/base/colours";
 
 .mdm-dashboard {
+  &__search-form {
+    padding: 0 5em 0 5em;
+  }
   &__search-input {
     margin-top: 1.5em;
   }
