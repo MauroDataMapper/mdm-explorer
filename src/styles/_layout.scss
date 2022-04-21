@@ -111,6 +111,7 @@ Variation on .hero to include a coloured background.
 .section-header
 
 Represents a sub-heading (h2), so slightly smaller than a .hero but still spans the width of a page.
+Padding matches half the defult BS5 Gutter value (1.5em)
 */
 .section-header {
   padding: $section-header-padding-gap 0;
@@ -118,6 +119,10 @@ Represents a sub-heading (h2), so slightly smaller than a .hero but still spans 
 
   h2 {
     margin: 0 0 0.375em;
+    padding-left: 0.5em;
+  }
+  p {
+    padding-left: 0.75em;
   }
 }
 
