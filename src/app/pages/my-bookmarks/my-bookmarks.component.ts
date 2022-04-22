@@ -26,19 +26,19 @@ import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.servic
   styleUrls: ['./my-bookmarks.component.scss'],
 })
 export class MyBookmarksComponent implements OnInit {
-  bookmarks: Bookmark[] = [];
+  allBookmarks: Bookmark[] = [];
 
-  constructor(private bookmarkService: BookmarkService, private toastr: ToastrService) {}
+  constructor(private bookmarks: BookmarkService, private toastr: ToastrService) {}
 
   ngOnInit(): void {
-    this.bookmarkService.index().subscribe((result) => {
-      this.bookmarks = result;
+    this.bookmarks.index().subscribe((result) => {
+      this.allBookmarks = result;
     });
   }
 
   remove(bookmark: Bookmark): void {
-    this.bookmarkService.remove(bookmark).subscribe((result) => {
-      this.bookmarks = result;
+    this.bookmarks.remove(bookmark).subscribe((result) => {
+      this.allBookmarks = result;
       this.toastr.success(`${bookmark.label} removed from bookmarks`);
     });
   }
