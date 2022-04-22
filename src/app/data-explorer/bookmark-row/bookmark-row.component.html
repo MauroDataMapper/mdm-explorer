@@ -1,0 +1,20 @@
+<div *ngIf="bookmark" class="highlight-box mdm-bookmark-row">
+  <span>
+    <mat-checkbox></mat-checkbox>
+    <h3>{{ bookmark.label }}</h3>
+    <a
+      [routerLink]="[
+        '/dataElement',
+        bookmark.dataModelId,
+        bookmark.dataClassId,
+        bookmark.id
+      ]"
+      >View Details</a
+    >
+    <mdm-bookmark-toggle
+      (toggle)="remove(bookmark)"
+      [selected]="true"
+    ></mdm-bookmark-toggle>
+    <mdm-breadcrumb [item]="bookmark"></mdm-breadcrumb>
+  </span>
+</div>
