@@ -20,42 +20,8 @@ SPDX-License-Identifier: Apache-2.0
   <div class="main-row hero">
     <h1>Bookmarks</h1>
   </div>
-
-  <div class="table-responsive">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Checkbox</th>
-          <th>Label</th>
-          <th>Add to Request</th>
-          <th>View Details</th>
-          <th>Delete</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let bookmark of allBookmarks">
-          <td>Checkbox Placeholder</td>
-          <td>{{ bookmark.label }}</td>
-          <td>Add to Request Placeholder</td>
-          <td>
-            <a
-              [routerLink]="[
-                '/dataElement',
-                bookmark.dataModelId,
-                bookmark.dataClassId,
-                bookmark.id
-              ]"
-              >View Details</a
-            >
-          </td>
-          <td>
-            <mdm-bookmark-toggle
-              (toggle)="remove(bookmark)"
-              [selected]="true"
-            ></mdm-bookmark-toggle>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="mdm-my-bookmarks">
+    <mdm-bookmark-row *ngFor="let bookmark of allBookmarks" [bookmark]="bookmark">
+    </mdm-bookmark-row>
   </div>
 </div>
