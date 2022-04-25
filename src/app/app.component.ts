@@ -52,7 +52,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   themeCssSelector = 'default-theme';
 
-  numberOfRequests = 0;
+  unsentRequestsCount = 0;
 
   signedInUserProfileImageSrc?: string;
 
@@ -217,6 +217,8 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subscribeHttpErrorEvent('http-not-implemented', '/not-implemented');
     this.subscribeHttpErrorEvent('http-server-error', '/server-error');
 
+    this.subscribeDataRequestChanges();
+
     // Check immediately if the last authenticated session is expired and setup a recurring
     // check for this
     this.checkSessionExpiry();
@@ -287,9 +289,23 @@ export class AppComponent implements OnInit, OnDestroy {
           return requests.filter((req) => req.status === 'unsent').length;
         })
       )
-      .subscribe((numberOfRequests) => {
-        this.numberOfRequests = numberOfRequests;
+      .subscribe((unsentRequestsCount) => {
+        this.unsentRequestsCount = unsentRequestsCount;
       });
+  }
+
+  private subscribeDataRequestChanges() {
+    this.broadcast
+      .on('data-request-added')
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(() => this.unsentRequestsCount++);
+
+    this.broadcast
+      .on('data-request-submitted')
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(
+        () => (this.unsentRequestsCount = Math.max(0, this.unsentRequestsCount - 1))
+      );
   }
 
   private setupIdleTimer() {

@@ -18,6 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import {
   CatalogueItemSearchResponse,
+  DataModelDetailResponse,
   DataModelFullResponse,
   DataModelIndexResponse,
   SearchQueryParameters,
@@ -25,6 +26,7 @@ import {
 } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
 
+export type DataModelGetFn = (id: Uuid) => Observable<DataModelDetailResponse>;
 export type DataModelSearchFn = (
   id: Uuid,
   query?: SearchQueryParameters
@@ -38,6 +40,7 @@ export type DataModelListInFolderFn = (
 export type DataModelHierarchyFn = (id: Uuid) => Observable<DataModelFullResponse>;
 
 export interface MdmDataModelResourcesStub {
+  get: jest.MockedFunction<DataModelGetFn>;
   search: jest.MockedFunction<DataModelSearchFn>;
   listInFolder: jest.MockedFunction<DataModelListInFolderFn>;
   hierarchy: jest.MockedFunction<DataModelHierarchyFn>;
@@ -45,6 +48,7 @@ export interface MdmDataModelResourcesStub {
 
 export const createDataModelStub = (): MdmDataModelResourcesStub => {
   return {
+    get: jest.fn() as jest.MockedFunction<DataModelGetFn>,
     search: jest.fn() as jest.MockedFunction<DataModelSearchFn>,
     listInFolder: jest.fn() as jest.MockedFunction<DataModelListInFolderFn>,
     hierarchy: jest.fn() as jest.MockedFunction<DataModelHierarchyFn>,

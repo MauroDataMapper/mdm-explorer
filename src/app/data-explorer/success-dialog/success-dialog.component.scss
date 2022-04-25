@@ -1,4 +1,4 @@
-<!--
+/*
 Copyright 2022 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -15,24 +15,4 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
--->
-<div class="default-theme">
-  <div class="mat-typography mdm-app-component">
-    <mdm-header
-      [logoLink]="logoLink"
-      [links]="headerLinks"
-      [signInLink]="signInLink"
-      [signedInUser]="signedInUser"
-      [signedInUserProfileImageSrc]="signedInUserProfileImageSrc"
-      [rightLinks]="headerRightLinks"
-      [accountLink]="accountLink"
-      [unsentRequestCount]="unsentRequestsCount"
-    ></mdm-header>
-
-    <main>
-      <router-outlet></router-outlet>
-    </main>
-
-    <mdm-footer version="0.1.0" [links]="footerLinks"></mdm-footer>
-  </div>
-</div>
+*/

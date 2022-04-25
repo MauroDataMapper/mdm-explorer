@@ -16,6 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { CatalogueItemDomainType, DataModelDetail } from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
 import { createMdmEndpointsStub } from '../testing/stubs/mdm-endpoints.stub';
 import { setupTestModuleForService } from '../testing/testing.helpers';
@@ -60,6 +61,31 @@ describe('ResearchPluginService', () => {
 
     const expected$ = cold('-a|', { a: form });
     const actual$ = service.contact(form);
+    expect(actual$).toBeObservable(expected$);
+  });
+
+  it('should submit a data request', () => {
+    const id = '123';
+    const dataModel: DataModelDetail = {
+      id,
+      label: 'test request',
+      domainType: CatalogueItemDomainType.DataModel,
+      availableActions: ['show'],
+      finalised: true,
+    };
+
+    endpointsStub.pluginResearch.submitRequest.mockImplementationOnce((ident) => {
+      expect(ident).toBe(id);
+      return cold('--a|', { a: { body: {} } });
+    });
+
+    endpointsStub.dataModel.get.mockImplementationOnce((ident) => {
+      expect(ident).toBe(id);
+      return cold('--a|', { a: { body: dataModel } });
+    });
+
+    const expected$ = cold('----a|', { a: dataModel });
+    const actual$ = service.submitRequest(id);
     expect(actual$).toBeObservable(expected$);
   });
 });

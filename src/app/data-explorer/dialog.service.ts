@@ -31,6 +31,10 @@ import {
   RequestCreatedData,
   RequestCreatedDialogComponent,
 } from './request-created-dialog/request-created-dialog.component';
+import {
+  SuccessDialogComponent,
+  SuccessDialogData,
+} from './success-dialog/success-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -61,6 +65,16 @@ export class DialogService {
   openFeedbackForm() {
     return this.matDialog.open<FeedbackDialogComponent, any, FeedbackDialogResponse>(
       FeedbackDialogComponent
+    );
+  }
+
+  openSuccess(data: SuccessDialogData) {
+    return this.matDialog.open<SuccessDialogComponent, SuccessDialogData>(
+      SuccessDialogComponent,
+      {
+        maxWidth: 500,
+        data,
+      }
     );
   }
 }

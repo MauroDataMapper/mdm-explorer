@@ -32,6 +32,7 @@ import { DataRequestsService } from 'src/app/data-explorer/data-requests.service
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import { DialogService } from 'src/app/data-explorer/dialog.service';
 import { SecurityService } from 'src/app/security/security.service';
+import { BroadcastService } from 'src/app/core/broadcast.service';
 
 @Component({
   selector: 'mdm-browse',
@@ -52,7 +53,8 @@ export class BrowseComponent implements OnInit {
     private toastr: ToastrService,
     private stateRouter: StateRouterService,
     private dialogs: DialogService,
-    security: SecurityService
+    security: SecurityService,
+    private broadcast: BroadcastService
   ) {
     this.user = security.getSignedInUser();
   }
@@ -92,6 +94,8 @@ export class BrowseComponent implements OnInit {
             );
             return EMPTY;
           }
+
+          this.broadcast.dispatch('data-request-added');
 
           return this.dialogs
             .openRequestCreated({

@@ -80,6 +80,11 @@ $request-elements-max-height: 500px;
     }
   }
 
+  &__request-header-title {
+    display: flex;
+    justify-content: space-between;
+  }
+
   &__request-elements {
     overflow-y: scroll;
     max-height: $request-elements-max-height;

@@ -16,35 +16,34 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-@import "../../../styles/base/colours";
+import { Component, Inject } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
-.mdm-dashboard {
-  &__search-form {
-    padding: 0 5em 0 5em;
-  }
-  &__search-input {
-    margin-top: 1.5em;
-  }
-  &__search-advanced {
-    float: right;
-  }
+export interface SuccessDialogData {
+  heading: string;
+  message?: string;
 }
 
-.mdm-dashboard {
-  &__request-card {
-    background-color: $color-white;
-    border: 1px solid #e5e5e5;
-    border-radius: 10px;
-    margin-left: 1em;
-    margin-right: 1em;
-    padding: 1em;
+@Component({
+  selector: 'mdm-success-dialog',
+  templateUrl: './success-dialog.component.html',
+  styleUrls: ['./success-dialog.component.scss'],
+})
+export class SuccessDialogComponent {
+  constructor(
+    private dialogRef: MatDialogRef<SuccessDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) private data: SuccessDialogData
+  ) {}
 
-    h3 {
-      font-weight: 500;
-    }
+  get heading() {
+    return this.data.heading;
   }
 
-  div.p-carousel-header {
-    margin-top: -5em;
+  get message() {
+    return this.data.message;
+  }
+
+  close() {
+    this.dialogRef.close();
   }
 }
