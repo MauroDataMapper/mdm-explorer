@@ -26,19 +26,18 @@ export class BookmarkRowComponent {
   @Output() remove = new EventEmitter<RemoveBookmarkEvent>();
   @Output() addToRequest = new EventEmitter<AddToRequestEvent>();
 
-  toggleItem(event: MatCheckboxChange) {
+  handleChecked(event: MatCheckboxChange) {
     if (!this.bookmark) return;
-
     this.checked.emit({ item: this.bookmark, checked: event.checked });
   }
 
   handleRemove() {
     if (!this.bookmark) return;
-
     this.remove.emit({ item: this.bookmark });
   }
 
   handleAddToRequest() {
     if (!this.bookmark) return;
+    // Wire up in later task.
   }
 }
