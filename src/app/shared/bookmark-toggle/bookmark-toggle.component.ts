@@ -18,6 +18,8 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
+export type TooltipHelpText = 'Add to bookmarks' | 'Remove from bookmarks';
+
 @Component({
   selector: 'mdm-bookmark-toggle',
   templateUrl: './bookmark-toggle.component.html',
@@ -25,11 +27,17 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class BookmarkToggleComponent {
   @Input() selected = false;
-
   @Output() toggle = new EventEmitter<boolean>();
+
+  tooltipText: TooltipHelpText = this.getTooltipText();
 
   toggleState() {
     this.selected = !this.selected;
+    this.tooltipText = this.getTooltipText();
     this.toggle.emit(this.selected);
+  }
+
+  getTooltipText() {
+    return this.selected ? 'Remove from bookmarks' : 'Add to bookmarks';
   }
 }

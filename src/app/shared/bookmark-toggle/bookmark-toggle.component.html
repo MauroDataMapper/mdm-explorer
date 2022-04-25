@@ -16,7 +16,12 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<button mat-icon-button (click)="toggleState()">
+<button
+  mat-icon-button
+  #toolTip="matTooltip"
+  [matTooltip]="tooltipText"
+  (click)="toggleState()"
+>
   <mat-icon
     *ngIf="!selected"
     fontSet="fa-regular"
