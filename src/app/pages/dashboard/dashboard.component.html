@@ -19,14 +19,24 @@ SPDX-License-Identifier: Apache-2.0
 <div class="container hero-top-spacer">
   <div class="flex-container">
     <div class="flex-container__card">
-      <form role="form" name="search" (submit)="search()">
-        <mat-form-field appearance="outline" class="mdm-dashboard__search-input">
-          <input matInput placeholder="Search" name="search" [(ngModel)]="searchTerms" />
-          <button mat-icon-button matSuffix type="submit">
-            <mat-icon fontSet="fa-solid" fontIcon="fa-magnifying-glass"></mat-icon>
-          </button>
-        </mat-form-field>
-      </form>
+      <div class="mdm-dashboard__search-form">
+        <form role="form" name="search" (submit)="search()">
+          <mat-form-field appearance="outline" class="mdm-dashboard__search-input">
+            <input
+              matInput
+              placeholder="Search"
+              name="search"
+              [(ngModel)]="searchTerms"
+            />
+            <button mat-icon-button matSuffix type="submit">
+              <mat-icon fontSet="fa-solid" fontIcon="fa-magnifying-glass"></mat-icon>
+            </button>
+          </mat-form-field>
+        </form>
+        <a class="mdm-dashboard__search-advanced" routerLink="/search">
+          Advanced Search...</a
+        >
+      </div>
     </div>
     <div class="flex-container__card">
       <p-carousel [value]="currentUserRequests" [numVisible]="3" [numScroll]="3">
@@ -40,11 +50,6 @@ SPDX-License-Identifier: Apache-2.0
           </div>
         </ng-template>
       </p-carousel>
-    </div>
-
-    <div class="flex-container__card">
-      <h2>Recent Activity</h2>
-      <p>TODO: decide what recent activity is/how to store it.</p>
     </div>
   </div>
 </div>

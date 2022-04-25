@@ -19,18 +19,25 @@ SPDX-License-Identifier: Apache-2.0
 @import "../../../styles/base/colours";
 
 .mdm-dashboard {
+  &__search-form {
+    padding: 0 5em 0 5em;
+  }
   &__search-input {
     margin-top: 1.5em;
+  }
+  &__search-advanced {
+    float: right;
   }
 }
 
 .mdm-dashboard {
   &__request-card {
-    background-color: $color-highlight-box;
+    background-color: $color-white;
     border: 1px solid #e5e5e5;
     border-radius: 10px;
     margin-left: 1em;
     margin-right: 1em;
+    padding: 1em;
 
     h3 {
       font-weight: 500;
