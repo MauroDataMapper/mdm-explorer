@@ -19,6 +19,11 @@ SPDX-License-Identifier: Apache-2.0
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
+import {
+  AddToRequestEvent,
+  BookMarkCheckedEvent as BookmarkCheckedEvent,
+  RemoveBookmarkEvent,
+} from 'src/app/data-explorer/data-explorer.types';
 
 @Component({
   selector: 'mdm-my-bookmarks',
@@ -26,20 +31,34 @@ import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.servic
   styleUrls: ['./my-bookmarks.component.scss'],
 })
 export class MyBookmarksComponent implements OnInit {
-  allBookmarks: Bookmark[] = [];
+  allBookmarks: Set<Bookmark> = new Set();
+  selectedBookmarks: Set<Bookmark> = new Set();
 
   constructor(private bookmarks: BookmarkService, private toastr: ToastrService) {}
 
   ngOnInit(): void {
     this.bookmarks.index().subscribe((result) => {
-      this.allBookmarks = result;
+      this.allBookmarks = new Set(result);
     });
   }
 
-  remove(bookmark: Bookmark): void {
-    this.bookmarks.remove(bookmark).subscribe((result) => {
-      this.allBookmarks = result;
-      this.toastr.success(`${bookmark.label} removed from bookmarks`);
+  onChecked(event: BookmarkCheckedEvent) {
+    if (event.checked) {
+      this.selectedBookmarks.add(event.item);
+    } else {
+      this.selectedBookmarks.delete(event.item);
+    }
+  }
+
+  onAddToRequest(event: AddToRequestEvent) {
+    // Wait to hook up with incoming PR.
+  }
+
+  onRemove(event: RemoveBookmarkEvent): void {
+    this.bookmarks.remove(event.item).subscribe((results) => {
+      this.allBookmarks = new Set(results);
+      this.selectedBookmarks.delete(event.item);
+      this.toastr.success(`${event.item.label} removed from bookmarks`);
     });
   }
 }

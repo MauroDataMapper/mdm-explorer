@@ -20,20 +20,34 @@ import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from '../../testing/testing.helpers';
-import { MdmEndpointsService } from '../../mauro/mdm-endpoints.service';
-import { createMdmEndpointsStub } from 'src/app/testing/stubs/mdm-endpoints.stub';
 import { MyBookmarksComponent } from './my-bookmarks.component';
+import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
+import { createBookmarkServiceStub } from 'src/app/testing/stubs/bookmark.stub';
+import { createToastrServiceStub } from 'src/app/testing/stubs/toastr.stub';
+import { ToastrService } from 'ngx-toastr';
+import { of } from 'rxjs';
+import {
+  BookMarkCheckedEvent,
+  RemoveBookmarkEvent,
+} from 'src/app/data-explorer/data-explorer.types';
 
-describe('BookmarkComponent', () => {
+describe('MyBookmarkComponent', () => {
   let harness: ComponentHarness<MyBookmarksComponent>;
-  const endpointsStub = createMdmEndpointsStub();
+  const emptySet = new Set();
+
+  const bookmarkStub = createBookmarkServiceStub();
+  const toastrStub = createToastrServiceStub();
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(MyBookmarksComponent, {
       providers: [
         {
-          provide: MdmEndpointsService,
-          useValue: endpointsStub,
+          provide: BookmarkService,
+          useValue: bookmarkStub,
+        },
+        {
+          provide: ToastrService,
+          useValue: toastrStub,
         },
       ],
     });
@@ -41,5 +55,69 @@ describe('BookmarkComponent', () => {
 
   it('should create', () => {
     expect(harness.isComponentCreated).toBeTruthy();
+    expect(harness.component.allBookmarks).toStrictEqual(emptySet);
+    expect(harness.component.selectedBookmarks).toStrictEqual(emptySet);
+  });
+
+  describe('on initialization', () => {
+    it('should load bookmarks', () => {
+      const b1 = { label: 'b1' } as Bookmark;
+      const b2 = { label: 'b2' } as Bookmark;
+      const bookmarks = new Set([b1, b2]);
+
+      bookmarkStub.index.mockImplementationOnce(() => {
+        return of(bookmarks);
+      });
+
+      harness.component.ngOnInit();
+
+      expect(harness.component.allBookmarks).toStrictEqual(bookmarks);
+    });
+  });
+
+  describe('select bookmark', () => {
+    it.each([true, false])(
+      'should add/remove the bookmark to selectedBookmarks when checked is %p',
+      (checked) => {
+        const b1 = { label: 'b1' } as Bookmark;
+        const event = { checked, item: b1 } as BookMarkCheckedEvent;
+
+        const expected = checked ? new Set([b1]) : emptySet;
+
+        harness.component.onChecked(event);
+
+        expect(harness.component.selectedBookmarks).toStrictEqual(expected);
+      }
+    );
+  });
+
+  describe('remove bookmark', () => {
+    const b1 = { label: 'b1' } as Bookmark;
+    const b2 = { label: 'b2' } as Bookmark;
+    const all = new Set([b1, b2]);
+    const selected = new Set([b1]);
+    const event = { item: b1 } as RemoveBookmarkEvent;
+
+    it('should remove bookmark from allBookmarks, selectedBookmarks, and fire a toastr success message', () => {
+      const allAfterRemoval = new Set([b2]);
+      const selectedAfterRemoval = emptySet;
+
+      bookmarkStub.remove.mockImplementationOnce((bookmark) => {
+        return of(allAfterRemoval);
+      });
+
+      harness.component.allBookmarks = all;
+      harness.component.selectedBookmarks = selected;
+      harness.component.onRemove(event);
+
+      expect(harness.component.allBookmarks).toStrictEqual(allAfterRemoval);
+      expect(harness.component.selectedBookmarks).toStrictEqual(selectedAfterRemoval);
+      expect(bookmarkStub.remove).toHaveBeenCalledWith(event.item);
+      expect(toastrStub.success).toHaveBeenCalled();
+    });
+  });
+
+  describe('add to existing request', () => {
+    it('should ask the dataRequest service to add element(s) to the selected request', () => {});
   });
 });

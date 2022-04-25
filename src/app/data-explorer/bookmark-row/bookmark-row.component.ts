@@ -7,7 +7,11 @@ import {
 } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox/checkbox';
 import { Bookmark } from '../bookmark.service';
-import { DataElementCheckedEvent } from '../data-explorer.types';
+import {
+  BookMarkCheckedEvent,
+  AddToRequestEvent,
+  RemoveBookmarkEvent,
+} from '../data-explorer.types';
 
 @Component({
   selector: 'mdm-bookmark-row',
@@ -18,15 +22,23 @@ import { DataElementCheckedEvent } from '../data-explorer.types';
 export class BookmarkRowComponent {
   @Input() bookmark?: Bookmark;
 
-  @Output() checked = new EventEmitter<DataElementCheckedEvent>();
+  @Output() checked = new EventEmitter<BookMarkCheckedEvent>();
+  @Output() remove = new EventEmitter<RemoveBookmarkEvent>();
+  @Output() addToRequest = new EventEmitter<AddToRequestEvent>();
 
-  itemChecked(event: MatCheckboxChange) {
-    if (!this.bookmark) {
-      return;
-    }
+  toggleItem(event: MatCheckboxChange) {
+    if (!this.bookmark) return;
 
     this.checked.emit({ item: this.bookmark, checked: event.checked });
   }
 
-  remove(bookmark: Bookmark) {}
+  handleRemove() {
+    if (!this.bookmark) return;
+
+    this.remove.emit({ item: this.bookmark });
+  }
+
+  handleAddToRequest() {
+    if (!this.bookmark) return;
+  }
 }

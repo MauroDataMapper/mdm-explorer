@@ -21,7 +21,13 @@ SPDX-License-Identifier: Apache-2.0
     <h1>Bookmarks</h1>
   </div>
   <div class="mdm-my-bookmarks">
-    <mdm-bookmark-row *ngFor="let bookmark of allBookmarks" [bookmark]="bookmark">
+    <mdm-bookmark-row
+      *ngFor="let bookmark of allBookmarks"
+      [bookmark]="bookmark"
+      (checked)="onChecked($event)"
+      (remove)="onRemove($event)"
+      (addToRequest)="onAddToRequest($event)"
+    >
     </mdm-bookmark-row>
   </div>
 </div>

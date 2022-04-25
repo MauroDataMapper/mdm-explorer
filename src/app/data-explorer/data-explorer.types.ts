@@ -237,6 +237,15 @@ export interface BookMarkCheckedEvent {
   checked: boolean;
 }
 
+export interface AddToRequestEvent {
+  item: Bookmark;
+  requestId: Uuid;
+}
+
+export interface RemoveBookmarkEvent {
+  item: Bookmark;
+}
+
 export interface DataElementBookmarkEvent {
   item: DataElementBasic;
   selected: boolean;

@@ -1,25 +1,42 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatCheckboxChange } from '@angular/material/checkbox/checkbox';
+import {
+  ComponentHarness,
+  setupTestModuleForComponent,
+} from 'src/app/testing/testing.helpers';
 
 import { BookmarkRowComponent } from './bookmark-row.component';
+import { Bookmark } from '../bookmark.service';
 
 describe('BookmarkRowComponent', () => {
-  let component: BookmarkRowComponent;
-  let fixture: ComponentFixture<BookmarkRowComponent>;
+  let harness: ComponentHarness<BookmarkRowComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ BookmarkRowComponent ]
-    })
-    .compileComponents();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(BookmarkRowComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    harness = await setupTestModuleForComponent(BookmarkRowComponent);
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(harness.component).toBeTruthy();
+    expect(harness.component.bookmark).toBeUndefined();
   });
+
+  it('should not raise an event when checked but has no item', () => {
+    const emitSpy = jest.spyOn(harness.component.checked, 'emit');
+    const event = {} as MatCheckboxChange;
+    harness.component.toggleItem(event);
+    expect(emitSpy).not.toHaveBeenCalled();
+  });
+
+  it.each([true, false])(
+    'should raise an event when has an item and checked is %p',
+    (checked) => {
+      const emitSpy = jest.spyOn(harness.component.checked, 'emit');
+      const event = { checked } as MatCheckboxChange;
+      const item = { id: '1' } as Bookmark;
+
+      harness.component.bookmark = item;
+      harness.component.toggleItem(event);
+
+      expect(emitSpy).toHaveBeenCalled();
+    }
+  );
 });
