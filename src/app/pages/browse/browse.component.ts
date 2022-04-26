@@ -33,6 +33,7 @@ import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service
 import { DialogService } from 'src/app/data-explorer/dialog.service';
 import { SecurityService } from 'src/app/security/security.service';
 import { BroadcastService } from 'src/app/core/broadcast.service';
+import { Uuid } from '@maurodatamapper/mdm-resources';
 
 @Component({
   selector: 'mdm-browse',
@@ -40,6 +41,12 @@ import { BroadcastService } from 'src/app/core/broadcast.service';
   styleUrls: ['./browse.component.scss'],
 })
 export class BrowseComponent implements OnInit {
+  static readonly ParentDataClassInitialLabel: string = 'Please select a schema &hellip;';
+  static readonly ParentDataClassSelectedLabel: string = 'Schemas';
+  static readonly ChildDataClassInitialLabel: string = '&nbsp;';
+  static readonly ChildDataClassParentClassSelectedLabel: string =
+    'Please select a data class &hellip;';
+  static readonly ChildDataClassSelectedLabel: string = 'Data classes';
   parentDataClasses: DataClass[] = [];
   childDataClasses: DataClass[] = [];
   selected?: DataClass;
@@ -59,8 +66,26 @@ export class BrowseComponent implements OnInit {
     this.user = security.getSignedInUser();
   }
 
-  get isChildDataClassSelected() {
+  get isChildDataClassSelected(): Uuid | undefined {
     return this.selected && this.selected.parentDataClass;
+  }
+
+  get isParentDataClassSelected(): Uuid | undefined {
+    return this.selected && (this.selected.parentDataClass || this.selected.id);
+  }
+
+  get parentDataClassLabel(): string {
+    return this.isParentDataClassSelected
+      ? BrowseComponent.ParentDataClassSelectedLabel
+      : BrowseComponent.ParentDataClassInitialLabel;
+  }
+
+  get childDataClassLabel(): string {
+    return this.isChildDataClassSelected
+      ? BrowseComponent.ChildDataClassSelectedLabel
+      : this.isParentDataClassSelected
+      ? BrowseComponent.ChildDataClassParentClassSelectedLabel
+      : BrowseComponent.ChildDataClassInitialLabel;
   }
 
   ngOnInit(): void {
