@@ -24,6 +24,7 @@ SPDX-License-Identifier: Apache-2.0
     <mdm-bookmark-row
       *ngFor="let bookmark of allBookmarks"
       [bookmark]="bookmark"
+      [openRequests]="openDataRequests"
       (checked)="onChecked($event)"
       (remove)="onRemove($event)"
       (addToRequest)="onAddToRequest($event)"

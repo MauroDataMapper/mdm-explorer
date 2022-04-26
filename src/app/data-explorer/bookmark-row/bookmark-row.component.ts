@@ -11,6 +11,7 @@ import {
   BookMarkCheckedEvent,
   AddToRequestEvent,
   RemoveBookmarkEvent,
+  DataRequest,
 } from '../data-explorer.types';
 
 @Component({
@@ -21,6 +22,7 @@ import {
 })
 export class BookmarkRowComponent {
   @Input() bookmark?: Bookmark;
+  @Input() openRequests: DataRequest[] = [];
 
   @Output() checked = new EventEmitter<BookMarkCheckedEvent>();
   @Output() remove = new EventEmitter<RemoveBookmarkEvent>();
@@ -36,8 +38,8 @@ export class BookmarkRowComponent {
     this.remove.emit({ item: this.bookmark });
   }
 
-  handleAddToRequest() {
-    if (!this.bookmark) return;
-    // Wire up in later task.
+  handleAddToRequest(dataRequest: DataRequest) {
+    if (!this.bookmark || !dataRequest.id) return;
+    this.addToRequest.emit({ item: this.bookmark, requestId: dataRequest.id });
   }
 }

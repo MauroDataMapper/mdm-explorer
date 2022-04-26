@@ -22,8 +22,11 @@ import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.servic
 import {
   AddToRequestEvent,
   BookMarkCheckedEvent as BookmarkCheckedEvent,
+  DataRequest,
   RemoveBookmarkEvent,
 } from 'src/app/data-explorer/data-explorer.types';
+import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { SecurityService } from 'src/app/security/security.service';
 
 @Component({
   selector: 'mdm-my-bookmarks',
@@ -33,10 +36,23 @@ import {
 export class MyBookmarksComponent implements OnInit {
   allBookmarks: Set<Bookmark> = new Set();
   selectedBookmarks: Set<Bookmark> = new Set();
+  openDataRequests: DataRequest[] = [];
 
-  constructor(private bookmarks: BookmarkService, private toastr: ToastrService) {}
+  constructor(
+    private bookmarks: BookmarkService,
+    private security: SecurityService,
+    private dataRequests: DataRequestsService,
+    private toastr: ToastrService
+  ) {}
 
   ngOnInit(): void {
+    const user = this.security.getSignedInUser();
+    if (!!user) {
+      this.dataRequests.list(user.email).subscribe((requests: DataRequest[]) => {
+        this.openDataRequests = [...requests.filter((req) => req.status === 'unsent')];
+      });
+    }
+
     this.bookmarks.index().subscribe((result) => {
       this.allBookmarks = new Set(result);
     });
@@ -51,7 +67,7 @@ export class MyBookmarksComponent implements OnInit {
   }
 
   onAddToRequest(event: AddToRequestEvent) {
-    // Wait to hook up with incoming PR.
+    alert(`Add bookmark: ${event.item} to request with Id: ${event.requestId}`);
   }
 
   onRemove(event: RemoveBookmarkEvent): void {

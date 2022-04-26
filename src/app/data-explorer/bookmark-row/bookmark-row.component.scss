@@ -7,15 +7,19 @@ $row-padding: 0.75em 1.2em;
   justify-content: space-between;
   align-items: center;
 
-  h3 {
+  h3,
+  a,
+  mdm-breadcrumb {
     display: inline-block;
-    font-weight: 500;
-    margin: 0 1em;
     vertical-align: middle;
+    margin: 0 1em;
+  }
+
+  h3 {
+    font-weight: 500;
   }
 
   mdm-breadcrumb {
-    vertical-align: middle;
     font-size: 13px;
   }
 }

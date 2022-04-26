@@ -30,12 +30,18 @@ import {
   BookMarkCheckedEvent,
   RemoveBookmarkEvent,
 } from 'src/app/data-explorer/data-explorer.types';
+import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
+import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
+import { SecurityService } from 'src/app/security/security.service';
+import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 
 describe('MyBookmarkComponent', () => {
   let harness: ComponentHarness<MyBookmarksComponent>;
   const emptySet = new Set();
 
   const bookmarkStub = createBookmarkServiceStub();
+  const securityStub = createSecurityServiceStub();
+  const dataRequestStub = createDataRequestsServiceStub();
   const toastrStub = createToastrServiceStub();
 
   beforeEach(async () => {
@@ -44,6 +50,14 @@ describe('MyBookmarkComponent', () => {
         {
           provide: BookmarkService,
           useValue: bookmarkStub,
+        },
+        {
+          provide: SecurityService,
+          useValue: securityStub,
+        },
+        {
+          provide: DataRequestsService,
+          useValue: dataRequestStub,
         },
         {
           provide: ToastrService,
@@ -118,6 +132,8 @@ describe('MyBookmarkComponent', () => {
   });
 
   describe('add to existing request', () => {
-    it('should ask the dataRequest service to add element(s) to the selected request', () => {});
+    test.todo(
+      'should ask the dataRequest service to add element(s) to the selected request'
+    );
   });
 });

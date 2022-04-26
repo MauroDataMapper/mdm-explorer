@@ -11,10 +11,27 @@
       ]"
       >View Details</a
     >
+    <mdm-breadcrumb [item]="bookmark"></mdm-breadcrumb>
+  </span>
+  <span>
+    <button mat-stroked-button [mdmArrow]="'angle-down'" [matMenuTriggerFor]="menu">
+      Move element:
+    </button>
     <mdm-bookmark-toggle
       (toggle)="handleRemove()"
       [selected]="true"
     ></mdm-bookmark-toggle>
-    <mdm-breadcrumb [item]="bookmark"></mdm-breadcrumb>
   </span>
 </div>
+<!-- Lazily rendered dropdown menu.  -->
+<mat-menu #menu="matMenu" xPosition="before" yPosition="below">
+  <ng-template matMenuContent>
+    <button
+      *ngFor="let request of openRequests"
+      (click)="handleAddToRequest(request)"
+      mat-menu-item
+    >
+      {{ request.label }}
+    </button>
+  </ng-template>
+</mat-menu>
