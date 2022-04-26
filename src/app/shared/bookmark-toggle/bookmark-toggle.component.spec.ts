@@ -37,6 +37,7 @@ describe('BookmarkToggleComponent', () => {
   it('should create', () => {
     expect(harness.isComponentCreated).toBeTruthy();
     expect(harness.component.selected).toBeFalsy();
+    expect(harness.component.tooltipText).toBe('Add to bookmarks');
   });
 
   it.each([true, false])(
