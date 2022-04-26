@@ -65,7 +65,7 @@ describe('BookmarkToggleComponent', () => {
     );
 
     it.each([true, false])(
-      'should have the correct tooltipText set after toggling',
+      'should have the correct tooltipText set after toggling selected to be: %p',
       (initial) => {
         harness.component.selected = initial;
         const expectedText: TooltipHelpText = !initial
