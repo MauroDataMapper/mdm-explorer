@@ -44,9 +44,8 @@ SPDX-License-Identifier: Apache-2.0
               (click)="reselectDataClass(item)"
             >
               <span
-                >{{ item.label }}
-                <span [matMenuTriggerFor]="menu" [mdmArrow]="'angle-down'"> </span
-              ></span>
+                >{{ item.label }} <span [matMenuTriggerFor]="menu">&hellip;</span></span
+              >
             </mat-list-option>
           </mat-selection-list>
         </div>
@@ -67,8 +66,7 @@ SPDX-License-Identifier: Apache-2.0
               (click)="reselectDataClass(item)"
             >
               <span
-                >{{ item.label }}
-                <span [matMenuTriggerFor]="menu" [mdmArrow]="'angle-down'"></span>
+                >{{ item.label }} <span [matMenuTriggerFor]="menu">&hellip;</span>
               </span>
             </mat-list-option>
           </mat-selection-list>

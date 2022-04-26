@@ -54,6 +54,9 @@ export class ArrowDirective implements OnInit {
       case 'arrow-left':
         arrowClass = 'fa-arrow-left';
         break;
+      case 'ellipsis':
+        arrowClass = 'fa-ellipsis-h';
+        break;
       default:
         fontAwesomeClass = '';
     }
@@ -78,4 +81,5 @@ export type ArrowDirection =
   | 'angle-up'
   | 'angle-down'
   | 'angle-left'
-  | 'angle-right';
+  | 'angle-right'
+  | 'ellipsis';
