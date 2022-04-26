@@ -23,7 +23,10 @@ import {
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
 
-import { BookmarkToggleComponent, TooltipHelpText } from './bookmark-toggle.component';
+import {
+  BookmarkToggleComponent,
+  TooltipHelpTextOption,
+} from './bookmark-toggle.component';
 
 describe('BookmarkToggleComponent', () => {
   let harness: ComponentHarness<BookmarkToggleComponent>;
@@ -54,7 +57,7 @@ describe('BookmarkToggleComponent', () => {
     it.each([true, false])(
       'should return the correct tooltipText when selected is: %p',
       (selected) => {
-        const expectedText: TooltipHelpText = selected
+        const expectedText: TooltipHelpTextOption = selected
           ? 'Remove from bookmarks'
           : 'Add to bookmarks';
 
@@ -68,7 +71,7 @@ describe('BookmarkToggleComponent', () => {
       'should have the correct tooltipText set after toggling selected to be: %p',
       (initial) => {
         harness.component.selected = initial;
-        const expectedText: TooltipHelpText = !initial
+        const expectedText: TooltipHelpTextOption = !initial
           ? 'Remove from bookmarks'
           : 'Add to bookmarks';
 
