@@ -39,6 +39,10 @@ SPDX-License-Identifier: Apache-2.0
   flex-flow: row;
   justify-content: flex-start;
 
+  @include respond-to-tablet {
+    flex-flow: column;
+  }
+
   .card {
     background-color: $color-highlight-box-strong;
     border: 1px solid #e5e5e5;
@@ -46,6 +50,11 @@ SPDX-License-Identifier: Apache-2.0
     flex-basis: 100%;
     padding: 5em 1.5em;
     margin: 0 1em;
+
+    @include respond-to-tablet {
+      padding: 1.5em 5em;
+      margin: 0.5em 0;
+    }
 
     .div-link {
       position: absolute;
