@@ -228,6 +228,58 @@ describe('BrowseComponent', () => {
       expect(harness.component.childDataClasses).toBe(dataClasses);
       expect(toastrStub.error).not.toHaveBeenCalled();
     });
+
+    it('should display initial parent label before parent is selected', () => {
+      const parentLabel = harness.component.parentDataClassLabel;
+      expect(parentLabel).toBe(BrowseComponent.ParentDataClassInitialLabel);
+    });
+
+    it('should display initial child label before parent is selected', () => {
+      const childLabel = harness.component.childDataClassLabel;
+      expect(childLabel).toBe(BrowseComponent.ChildDataClassInitialLabel);
+    });
+
+    it('should display selected label after parent is selected', () => {
+      const dataClasses: DataClass[] = [
+        {
+          id: '2',
+          label: 'child 1',
+          domainType: CatalogueItemDomainType.DataClass,
+        },
+        {
+          id: '3',
+          label: 'child 2',
+          domainType: CatalogueItemDomainType.DataClass,
+        },
+      ];
+
+      dataModelStub.getDataClasses.mockImplementationOnce(() => of(dataClasses));
+
+      harness.component.selectParentDataClass(event);
+      const parentLabel = harness.component.parentDataClassLabel;
+      expect(parentLabel).toBe(BrowseComponent.ParentDataClassSelectedLabel);
+    });
+
+    it('should display first child label after parent is selected', () => {
+      const dataClasses: DataClass[] = [
+        {
+          id: '2',
+          label: 'child 1',
+          domainType: CatalogueItemDomainType.DataClass,
+        },
+        {
+          id: '3',
+          label: 'child 2',
+          domainType: CatalogueItemDomainType.DataClass,
+        },
+      ];
+
+      dataModelStub.getDataClasses.mockImplementationOnce(() => of(dataClasses));
+
+      harness.component.selectParentDataClass(event);
+      const childLabel = harness.component.childDataClassLabel;
+      expect(childLabel).toBe(BrowseComponent.ChildDataClassParentClassSelectedLabel);
+    });
   });
 
   describe('select child data class', () => {
@@ -240,6 +292,7 @@ describe('BrowseComponent', () => {
     const childDataClass: DataClass = {
       id: '2',
       label: 'class 2',
+      parentDataClass: '1',
       domainType: CatalogueItemDomainType.DataClass,
     };
 
@@ -260,6 +313,18 @@ describe('BrowseComponent', () => {
     it('should select the given child data class', () => {
       harness.component.selectChildDataClass(event);
       expect(harness.component.selected).toBe(childDataClass);
+    });
+
+    it('should display selected parent label', () => {
+      harness.component.selectChildDataClass(event);
+      const parentLabel = harness.component.parentDataClassLabel;
+      expect(parentLabel).toBe(BrowseComponent.ParentDataClassSelectedLabel);
+    });
+
+    it('should display selected child label', () => {
+      harness.component.selectChildDataClass(event);
+      const childLabel = harness.component.childDataClassLabel;
+      expect(childLabel).toBe(BrowseComponent.ChildDataClassSelectedLabel);
     });
   });
 

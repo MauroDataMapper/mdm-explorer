@@ -27,7 +27,13 @@ SPDX-License-Identifier: Apache-2.0
     <div class="highlight-box__content">
       <div class="mdm-browse__list-container">
         <div class="mdm-browse__list">
+          <label
+            class="mdm-browse__list-label"
+            id="parentListLabel"
+            [innerHtml]="parentDataClassLabel"
+          ></label>
           <mat-selection-list
+            aria-labelledby="parentListLabel"
             #parentList
             [multiple]="false"
             (selectionChange)="selectParentDataClass($event)"
@@ -45,7 +51,13 @@ SPDX-License-Identifier: Apache-2.0
           </mat-selection-list>
         </div>
         <div class="mdm-browse__list">
+          <label
+            class="mdm-browse__list-label"
+            id="childListLabel"
+            [innerHtml]="childDataClassLabel"
+          ></label>
           <mat-selection-list
+            aria-labelledby="childListLabel"
             [multiple]="false"
             (selectionChange)="selectChildDataClass($event)"
           >
