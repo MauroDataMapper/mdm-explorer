@@ -21,6 +21,7 @@ import { MatSelectionList, MatSelectionListChange } from '@angular/material/list
 import {
   CatalogueItemDomainType,
   DataClass,
+  DataElement,
   DataModelDetail,
 } from '@maurodatamapper/mdm-resources';
 import { MockComponent } from 'ng-mocks';
@@ -47,6 +48,7 @@ import { CreateRequestDialogResponse } from 'src/app/data-explorer/create-reques
 import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { SecurityService } from 'src/app/security/security.service';
 import { UserDetails } from 'src/app/security/user-details.service';
+import { DataElementBasic } from 'src/app/data-explorer/data-explorer.types';
 
 describe('BrowseComponent', () => {
   let harness: ComponentHarness<BrowseComponent>;
@@ -370,8 +372,26 @@ describe('BrowseComponent', () => {
       label: 'test class',
     } as DataClass;
 
+    const dataElements: DataElement[] = [
+      {
+        id: '1',
+        label: 'element 1',
+        domainType: CatalogueItemDomainType.DataElement,
+      },
+      {
+        id: '2',
+        label: 'element 2',
+        domainType: CatalogueItemDomainType.DataElement,
+      },
+    ];
+
     beforeEach(() => {
-      dataRequestsStub.createFromDataClass.mockClear();
+      dataRequestsStub.createFromDataElements.mockClear();
+
+      dataModelStub.getDataElementsForDataClass.mockImplementationOnce((dc) => {
+        expect(dc).toBe(selected);
+        return of(dataElements);
+      });
 
       harness.component.selected = selected;
     });
@@ -380,7 +400,7 @@ describe('BrowseComponent', () => {
       matDialogStub.usage.afterClosed.mockImplementationOnce(() => of());
 
       harness.component.createRequest();
-      expect(dataRequestsStub.createFromDataClass).not.toHaveBeenCalled();
+      expect(dataRequestsStub.createFromDataElements).not.toHaveBeenCalled();
     });
 
     it('should create a new request', () => {
@@ -391,13 +411,22 @@ describe('BrowseComponent', () => {
 
       matDialogStub.usage.afterClosed.mockImplementationOnce(() => of(requestCreation));
 
+      const expectedDataElements = dataElements.map<DataElementBasic>((de) => {
+        return {
+          id: de.id ?? '',
+          dataModelId: de.model ?? '',
+          dataClassId: de.dataClass ?? '',
+          label: de.label,
+        };
+      });
+
       harness.component.createRequest();
 
-      expect(dataRequestsStub.createFromDataClass).toHaveBeenCalledWith(
-        requestCreation.name,
-        requestCreation.description,
+      expect(dataRequestsStub.createFromDataElements).toHaveBeenCalledWith(
+        expectedDataElements,
         user,
-        selected
+        requestCreation.name,
+        requestCreation.description
       );
     });
   });

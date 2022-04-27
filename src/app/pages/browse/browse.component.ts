@@ -20,10 +20,11 @@ import { Component, OnInit } from '@angular/core';
 import { MatSelectionListChange } from '@angular/material/list';
 import { DataClass } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, filter, finalize, switchMap } from 'rxjs';
+import { catchError, EMPTY, filter, finalize, forkJoin, of, switchMap } from 'rxjs';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import {
+  DataElementBasic,
   DataElementSearchParameters,
   mapSearchParametersToParams,
 } from 'src/app/data-explorer/data-explorer.types';
@@ -99,27 +100,45 @@ export class BrowseComponent implements OnInit {
       .pipe(
         filter((response) => !!response),
         switchMap((response) => {
-          if (!response || !this.user || !this.selected) {
+          if (!response || !this.selected) {
             return EMPTY;
           }
 
           this.creatingRequest = true;
-          return this.dataRequests.createFromDataClass(
-            response.name,
-            response.description,
-            this.user,
-            this.selected
-          );
+          return forkJoin([
+            of(response),
+            this.dataModels.getDataElementsForDataClass(this.selected),
+          ]);
         }),
-        switchMap(([dataRequest, errors]) => {
-          if (errors.length > 0) {
-            this.toastr.error(
-              `There was a problem creating your request. ${errors[0]}`,
-              'Request creation error'
-            );
+        switchMap(([response, dataElements]) => {
+          if (!this.user) {
             return EMPTY;
           }
 
+          const items = dataElements.map<DataElementBasic>((de) => {
+            return {
+              id: de.id ?? '',
+              label: de.label,
+              dataModelId: de.model ?? '',
+              dataClassId: de.dataClass ?? '',
+            };
+          });
+
+          return this.dataRequests.createFromDataElements(
+            items,
+            this.user,
+            response.name,
+            response.description
+          );
+        }),
+        catchError((error) => {
+          this.toastr.error(
+            `There was a problem creating your request. ${error}`,
+            'Request creation error'
+          );
+          return EMPTY;
+        }),
+        switchMap((dataRequest) => {
           this.broadcast.dispatch('data-request-added');
 
           return this.dialogs
