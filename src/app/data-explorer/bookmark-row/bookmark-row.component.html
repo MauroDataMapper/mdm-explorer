@@ -1,6 +1,6 @@
 <div *ngIf="bookmark" class="highlight-box mdm-bookmark-row">
   <span>
-    <mat-checkbox></mat-checkbox>
+    <mat-checkbox (change)="handleChecked($event)" [checked]="isChecked"></mat-checkbox>
     <h3>{{ bookmark.label }}</h3>
     <a
       [routerLink]="[

@@ -23,6 +23,7 @@ import {
 export class BookmarkRowComponent {
   @Input() bookmark?: Bookmark;
   @Input() openRequests: DataRequest[] = [];
+  @Input() isChecked: boolean = false;
 
   @Output() checked = new EventEmitter<BookMarkCheckedEvent>();
   @Output() remove = new EventEmitter<RemoveBookmarkEvent>();

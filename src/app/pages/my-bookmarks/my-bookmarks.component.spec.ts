@@ -34,10 +34,14 @@ import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
 import { SecurityService } from 'src/app/security/security.service';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 
 describe('MyBookmarkComponent', () => {
   let harness: ComponentHarness<MyBookmarksComponent>;
+
   const emptySet = new Set();
+  const b1 = { label: 'b1' } as Bookmark;
+  const b2 = { label: 'b2' } as Bookmark;
 
   const bookmarkStub = createBookmarkServiceStub();
   const securityStub = createSecurityServiceStub();
@@ -46,6 +50,7 @@ describe('MyBookmarkComponent', () => {
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(MyBookmarksComponent, {
+      declarations: [MatCheckbox],
       providers: [
         {
           provide: BookmarkService,
@@ -75,8 +80,6 @@ describe('MyBookmarkComponent', () => {
 
   describe('on initialization', () => {
     it('should load bookmarks', () => {
-      const b1 = { label: 'b1' } as Bookmark;
-      const b2 = { label: 'b2' } as Bookmark;
       const bookmarks = new Set([b1, b2]);
 
       bookmarkStub.index.mockImplementationOnce(() => {
@@ -93,9 +96,7 @@ describe('MyBookmarkComponent', () => {
     it.each([true, false])(
       'should add/remove the bookmark to selectedBookmarks when checked is %p',
       (checked) => {
-        const b1 = { label: 'b1' } as Bookmark;
         const event = { checked, item: b1 } as BookMarkCheckedEvent;
-
         const expected = checked ? new Set([b1]) : emptySet;
 
         harness.component.onChecked(event);
@@ -106,8 +107,6 @@ describe('MyBookmarkComponent', () => {
   });
 
   describe('remove bookmark', () => {
-    const b1 = { label: 'b1' } as Bookmark;
-    const b2 = { label: 'b2' } as Bookmark;
     const all = new Set([b1, b2]);
     const selected = new Set([b1]);
     const event = { item: b1 } as RemoveBookmarkEvent;
@@ -131,9 +130,25 @@ describe('MyBookmarkComponent', () => {
     });
   });
 
-  describe('add to existing request', () => {
-    test.todo(
-      'should ask the dataRequest service to add element(s) to the selected request'
-    );
+  describe('onSelectAll method', () => {
+    it('should add all bookmarks to selectedBookmarks when checked is true', () => {
+      const expected = new Set([b1, b2]);
+      const event = { checked: true } as MatCheckboxChange;
+      harness.component.allBookmarks = new Set([b1, b2]);
+
+      harness.component.onSelectAll(event);
+
+      expect(harness.component.selectedBookmarks).toStrictEqual(expected);
+    });
+
+    it('should clear selectedBookmarks when checked is false', () => {
+      const expected = new Set();
+      const event = { checked: false } as MatCheckboxChange;
+      harness.component.selectedBookmarks = new Set([b1, b2]);
+
+      harness.component.onSelectAll(event);
+
+      expect(harness.component.selectedBookmarks).toStrictEqual(expected);
+    });
   });
 });

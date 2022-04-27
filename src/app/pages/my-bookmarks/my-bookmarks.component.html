@@ -24,11 +24,15 @@ SPDX-License-Identifier: Apache-2.0
     <mdm-bookmark-row
       *ngFor="let bookmark of allBookmarks"
       [bookmark]="bookmark"
+      [isChecked]="selectedBookmarks.has(bookmark)"
       [openRequests]="openDataRequests"
       (checked)="onChecked($event)"
       (remove)="onRemove($event)"
       (addToRequest)="onAddToRequest($event)"
     >
     </mdm-bookmark-row>
+  </div>
+  <div class="mdm-my-bookmarks__select-all">
+    <mat-checkbox (change)="onSelectAll($event)">Select all</mat-checkbox>
   </div>
 </div>

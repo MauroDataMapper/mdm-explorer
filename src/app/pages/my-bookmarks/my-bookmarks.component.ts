@@ -17,6 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 import { ToastrService } from 'ngx-toastr';
 import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
 import {
@@ -76,5 +77,13 @@ export class MyBookmarksComponent implements OnInit {
       this.selectedBookmarks.delete(event.item);
       this.toastr.success(`${event.item.label} removed from bookmarks`);
     });
+  }
+
+  onSelectAll(event: MatCheckboxChange) {
+    if (event.checked) {
+      this.allBookmarks.forEach((bookmark) => this.selectedBookmarks.add(bookmark));
+    } else {
+      this.selectedBookmarks.clear();
+    }
   }
 }

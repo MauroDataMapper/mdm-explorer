@@ -23,6 +23,7 @@ describe('BookmarkRowComponent', () => {
     expect(harness.component).toBeTruthy();
     expect(harness.component.bookmark).toBeUndefined();
     expect(harness.component.openRequests).toStrictEqual([]);
+    expect(harness.component.isChecked).toStrictEqual(false);
   });
 
   describe('handleChecked method', () => {
