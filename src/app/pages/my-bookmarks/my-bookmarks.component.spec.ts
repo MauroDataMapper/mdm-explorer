@@ -115,7 +115,7 @@ describe('MyBookmarkComponent', () => {
       const allAfterRemoval = new Set([b2]);
       const selectedAfterRemoval = emptySet;
 
-      bookmarkStub.remove.mockImplementationOnce((bookmark) => {
+      bookmarkStub.remove.mockImplementationOnce(() => {
         return of(allAfterRemoval);
       });
 

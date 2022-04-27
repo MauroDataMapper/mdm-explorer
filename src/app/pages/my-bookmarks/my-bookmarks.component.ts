@@ -48,7 +48,7 @@ export class MyBookmarksComponent implements OnInit {
 
   ngOnInit(): void {
     const user = this.security.getSignedInUser();
-    if (!!user) {
+    if (user) {
       this.dataRequests.list(user.email).subscribe((requests: DataRequest[]) => {
         this.openDataRequests = [...requests.filter((req) => req.status === 'unsent')];
       });
