@@ -32,4 +32,9 @@ SPDX-License-Identifier: Apache-2.0
   &__list {
     flex: 1 0 300px;
   }
+
+  &__list-label {
+    font-size: 125%;
+    padding-bottom: 5px;
+  }
 }
