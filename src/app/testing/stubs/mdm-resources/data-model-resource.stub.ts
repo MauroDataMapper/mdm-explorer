@@ -18,9 +18,12 @@ SPDX-License-Identifier: Apache-2.0
 */
 import {
   CatalogueItemSearchResponse,
+  DataModelCreatePayload,
+  DataModelDetail,
   DataModelDetailResponse,
   DataModelFullResponse,
   DataModelIndexResponse,
+  DataModelSubsetPayload,
   SearchQueryParameters,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
@@ -39,11 +42,24 @@ export type DataModelListInFolderFn = (
 
 export type DataModelHierarchyFn = (id: Uuid) => Observable<DataModelFullResponse>;
 
+export type DataModelAddToFolderFn = (
+  folderId: Uuid,
+  payload: DataModelCreatePayload
+) => Observable<DataModelDetailResponse>;
+
+export type DataModelCopySubsetFn = (
+  sourceId: Uuid,
+  targetId: Uuid,
+  payload: DataModelSubsetPayload
+) => Observable<DataModelDetail>;
+
 export interface MdmDataModelResourcesStub {
   get: jest.MockedFunction<DataModelGetFn>;
   search: jest.MockedFunction<DataModelSearchFn>;
   listInFolder: jest.MockedFunction<DataModelListInFolderFn>;
   hierarchy: jest.MockedFunction<DataModelHierarchyFn>;
+  addToFolder: jest.MockedFunction<DataModelAddToFolderFn>;
+  copySubset: jest.MockedFunction<DataModelCopySubsetFn>;
 }
 
 export const createDataModelStub = (): MdmDataModelResourcesStub => {
@@ -52,5 +68,7 @@ export const createDataModelStub = (): MdmDataModelResourcesStub => {
     search: jest.fn() as jest.MockedFunction<DataModelSearchFn>,
     listInFolder: jest.fn() as jest.MockedFunction<DataModelListInFolderFn>,
     hierarchy: jest.fn() as jest.MockedFunction<DataModelHierarchyFn>,
+    addToFolder: jest.fn() as jest.MockedFunction<DataModelAddToFolderFn>,
+    copySubset: jest.fn() as jest.MockedFunction<DataModelCopySubsetFn>,
   };
 };

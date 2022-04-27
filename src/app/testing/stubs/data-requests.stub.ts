@@ -18,14 +18,11 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { DataClass, DataElement, DataModel } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
-import {
-  DataElementSearchResultSet,
-  DataRequest,
-} from 'src/app/data-explorer/data-explorer.types';
+import { DataElementBasic, DataRequest } from 'src/app/data-explorer/data-explorer.types';
 import { UserDetails } from 'src/app/security/user-details.service';
 
 export type DataRequestsListFn = (username: string) => Observable<DataModel[]>;
-export type DataRequestsGetElementsFn = (
+export type DataRequestsListElementsFn = (
   request: DataRequest
 ) => Observable<DataElement[]>;
 export type DataRequestsCreateFromDataClassFn = (
@@ -34,27 +31,24 @@ export type DataRequestsCreateFromDataClassFn = (
   user: UserDetails,
   dataClass: DataClass
 ) => Observable<[DataModel, string[]]>;
-export type DataRequestsCreateFromSearchResultsFn = (
-  requestName: string,
-  requestDescription: string,
+export type DataRequestsCreateFromDataElementsFn = (
+  elements: DataElementBasic[],
   user: UserDetails,
-  searchResults: DataElementSearchResultSet
-) => Observable<[DataModel, string[]]>;
+  name: string,
+  description: string
+) => Observable<DataRequest>;
 
 export interface DataRequestsServiceStub {
   list: jest.MockedFunction<DataRequestsListFn>;
-  getRequestDataElements: jest.MockedFunction<DataRequestsGetElementsFn>;
-  createFromDataClass: jest.MockedFunction<DataRequestsCreateFromDataClassFn>;
-  createFromSearchResults: jest.MockedFunction<DataRequestsCreateFromSearchResultsFn>;
+  listDataElements: jest.MockedFunction<DataRequestsListElementsFn>;
+  createFromDataElements: jest.MockedFunction<DataRequestsCreateFromDataElementsFn>;
 }
 
 export const createDataRequestsServiceStub = (): DataRequestsServiceStub => {
   return {
     list: jest.fn() as jest.MockedFunction<DataRequestsListFn>,
-    getRequestDataElements: jest.fn() as jest.MockedFunction<DataRequestsGetElementsFn>,
-    createFromDataClass:
-      jest.fn() as jest.MockedFunction<DataRequestsCreateFromDataClassFn>,
-    createFromSearchResults:
-      jest.fn() as jest.MockedFunction<DataRequestsCreateFromSearchResultsFn>,
+    listDataElements: jest.fn() as jest.MockedFunction<DataRequestsListElementsFn>,
+    createFromDataElements:
+      jest.fn() as jest.MockedFunction<DataRequestsCreateFromDataElementsFn>,
   };
 };

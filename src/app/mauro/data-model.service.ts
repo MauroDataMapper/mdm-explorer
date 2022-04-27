@@ -40,8 +40,7 @@ import {
   SearchQueryParameters,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
-import { map, mergeMap, Observable, of, OperatorFunction } from 'rxjs';
-import { ExceptionService } from '../core/exception.service';
+import { forkJoin, map, Observable, of, switchMap } from 'rxjs';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { DataClassIdentifier, isDataClass } from './mauro.types';
 
@@ -52,10 +51,7 @@ import { DataClassIdentifier, isDataClass } from './mauro.types';
   providedIn: 'root',
 })
 export class DataModelService {
-  constructor(
-    private endpoints: MdmEndpointsService,
-    private exceptionService: ExceptionService
-  ) {}
+  constructor(private endpoints: MdmEndpointsService) {}
 
   /**
    * Gets a Data Model based on the full path to the model in the catalogue.
@@ -180,69 +176,32 @@ export class DataModelService {
    * @param folderId the parent folder of the dataModel you want to add.
    * @returns An observable of {@link DataModel} object just added.
    */
-  addToFolder(folder: Uuid, dataModelCreatePayload: DataModelCreatePayload) {
-    return this.endpoints.dataModel.addToFolder(folder, dataModelCreatePayload);
+  addToFolder(
+    folder: Uuid,
+    dataModelCreatePayload: DataModelCreatePayload
+  ): Observable<DataModelDetail> {
+    return this.endpoints.dataModel
+      .addToFolder(folder, dataModelCreatePayload)
+      .pipe(map((response: DataModelDetailResponse) => response.body));
   }
 
   /**
-   * returns pipe operator: source is DataElement[], result is DataModelDetail.
-   * Adds the source DataElements, which exist in the oldDataModel, to the newDataModel
+   * Copy a subset of a Data Model to another Data Model. Define which Data Elements to add/remove and the related
+   * schema will also be copied to the target as well.
    *
-   * @param oldDataModelId: Uuid of the source data model
-   * @param newDataModelId: Observable of DataModel Uuids to which the elements need to be added
-   * This was created to add to just 1 data model, but would work just as well with multiple data models
-   * @param errors: string[] to which exception messages can be added.
-   * @returns Observable<DataModelDetail> of the new data model
+   * @param sourceId The unique identifier of the source Data Model to copy from.
+   * @param targetId The unique identifier of the source Data Model to copy to.
+   * @param payload The unique identifier of the source Data Model to copy from.
+   * @returns An observable containing the target Data Model.
    */
-  addDataElements(
-    oldDataModelId: Uuid,
-    errors: string[]
-  ): OperatorFunction<[DataModel, DataElement[]], any> {
-    return (source) => {
-      return source.pipe(
-        mergeMap(([newDataModel, elements]: [DataModel, DataElement[]]) => {
-          const idArray = elements.map((element) => element.id);
-          return (
-            of([
-              newDataModel.id!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-              idArray,
-            ]) as Observable<[Uuid, Uuid[]]>
-          ).pipe(this.addDataElementsById(oldDataModelId, errors));
-        })
-      );
-    };
-  }
-
-  /**
-   * returns pipe operator: source is string[], result is DataModelDetail.
-   * Adds the source DataElement Uuids, which exist in the oldDataModel, to the newDataModel
-   *
-   * @param oldDataModelId: Uuid of the source data model
-   * @param newDataModelId: Observable of DataModel Uuids to which the elements need to be added
-   * This was created to add to just 1 data model, but would work just as well with multiple data models
-   * @param errors: string[] to which exception messages can be added.
-   * @returns Observable<DataModelDetail> of the new data model
-   */
-  addDataElementsById(
-    oldDataModelId: Uuid,
-    errors: string[]
-  ): OperatorFunction<[Uuid, Uuid[]], any> {
-    return (source: Observable<[Uuid, Uuid[]]>) => {
-      return source.pipe(
-        mergeMap(([newDataModelId, elements]: [Uuid, Uuid[]]) => {
-          const datamodelSubsetPayload: DataModelSubsetPayload = {
-            additions: elements,
-            deletions: [],
-          };
-          return this.endpoints.dataModel.copySubset(
-            oldDataModelId,
-            newDataModelId,
-            datamodelSubsetPayload
-          );
-        }),
-        this.exceptionService.catchAndReportPipeError(errors)
-      );
-    };
+  copySubset(
+    sourceId: Uuid,
+    targetId: Uuid,
+    payload: DataModelSubsetPayload
+  ): Observable<DataModelDetail> {
+    return this.endpoints.dataModel
+      .copySubset(sourceId, targetId, payload)
+      .pipe(map((response: DataModelDetailResponse) => response.body));
   }
 
   /**
@@ -255,5 +214,32 @@ export class DataModelService {
     return this.endpoints.dataModel
       .hierarchy(id)
       .pipe(map((response: DataModelFullResponse) => response.body));
+  }
+
+  /**
+   * Gets all Data Elements within a Data Class and all potential child Data Classes, flattened as one
+   * list.
+   *
+   * @param dataClass The Data Class to inspect.
+   * @returns A flattened array of {@link DataElement} objects.
+   */
+  getDataElementsForDataClass(dataClass: DataClass): Observable<DataElement[]> {
+    return this.getDataClasses(dataClass).pipe(
+      switchMap((childDataClasses: DataClass[]) => {
+        // If this is a parent DataClass then fetch all DataElements in that plus every child DataClass
+        // If this is a child DataClass, only the DataElements from that class will be fetched
+        const allClasses = [dataClass, ...childDataClasses];
+        const elements$ = allClasses.map((dc) =>
+          this.getDataElements({
+            dataClassId: dc.id ?? '',
+            dataModelId: dc.model ?? '',
+            parentDataClassId: dc.parentDataClass,
+          }).pipe(map((response) => response.items))
+        );
+
+        return forkJoin(elements$);
+      }),
+      map((dataElements) => dataElements.flatMap((de) => de))
+    );
   }
 }

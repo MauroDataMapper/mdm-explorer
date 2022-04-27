@@ -252,7 +252,7 @@ describe('MyRequestsComponent', () => {
 
       const request = { id: '1', status: 'unsent' } as DataRequest;
 
-      dataRequestsStub.getRequestDataElements.mockImplementationOnce((req) => {
+      dataRequestsStub.listDataElements.mockImplementationOnce((req) => {
         expect(req).toStrictEqual(request);
         expect(harness.component.state).toBe('loading');
         return of(elements);
@@ -275,7 +275,7 @@ describe('MyRequestsComponent', () => {
     it('should display an error if request elements cannot be found', () => {
       const request = { id: '1', status: 'unsent' } as DataRequest;
 
-      dataRequestsStub.getRequestDataElements.mockImplementationOnce(() =>
+      dataRequestsStub.listDataElements.mockImplementationOnce(() =>
         throwError(() => new Error())
       );
 

@@ -152,7 +152,7 @@ export class MyRequestsComponent implements OnInit {
     this.state = 'loading';
 
     this.dataRequests
-      .getRequestDataElements(this.request)
+      .listDataElements(this.request)
       .pipe(
         catchError(() => {
           this.toastr.error('There was a problem locating your request details.');

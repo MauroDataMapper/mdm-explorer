@@ -19,7 +19,6 @@ SPDX-License-Identifier: Apache-2.0
 import {
   DataModel,
   FolderDetail,
-  MdmResourcesConfiguration,
   CatalogueItemDomainType,
   DataElement,
   DataElementDetail,
@@ -27,24 +26,24 @@ import {
 } from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
 import { DataModelService } from '../mauro/data-model.service';
-import { DataRequest } from '../data-explorer/data-explorer.types';
+import { DataElementBasic, DataRequest } from '../data-explorer/data-explorer.types';
 import { createDataModelServiceStub } from '../testing/stubs/data-model.stub';
 import { createFolderServiceStub } from '../testing/stubs/folder.stub';
 import { setupTestModuleForService } from '../testing/testing.helpers';
-import { createDataElementSearchServiceStub } from '../testing/stubs/data-element-search.stub';
-import { createMdmEndpointsStub } from '../testing/stubs/mdm-endpoints.stub';
 import { FolderService } from '../mauro/folder.service';
 import { DataRequestsService } from './data-requests.service';
-import { DataElementSearchService } from './data-element-search.service';
-import { ExceptionService } from '../core/exception.service';
-import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
+import { UserDetails } from '../security/user-details.service';
+import { CatalogueUserService } from '../mauro/catalogue-user.service';
+import { createCatalogueUserServiceStub } from '../testing/stubs/catalogue-user.stub';
+import { createDataExplorerServiceStub } from '../testing/stubs/data-explorer.stub';
+import { DataExplorerService } from './data-explorer.service';
 
 describe('DataRequestsService', () => {
   let service: DataRequestsService;
   const dataModelsStub = createDataModelServiceStub();
   const folderServiceStub = createFolderServiceStub();
-  const dataElementSearchStub = createDataElementSearchServiceStub();
-  const endpointsStub = createMdmEndpointsStub();
+  const catalogueUserStub = createCatalogueUserServiceStub();
+  const dataExplorerStub = createDataExplorerServiceStub();
 
   beforeEach(() => {
     service = setupTestModuleForService(DataRequestsService, {
@@ -58,18 +57,12 @@ describe('DataRequestsService', () => {
           useValue: folderServiceStub,
         },
         {
-          provide: MdmResourcesConfiguration,
+          provide: CatalogueUserService,
+          useValue: catalogueUserStub,
         },
         {
-          provide: DataElementSearchService,
-          useValue: dataElementSearchStub,
-        },
-        {
-          provide: ExceptionService,
-        },
-        {
-          provide: MdmEndpointsService,
-          useValue: endpointsStub,
+          provide: DataExplorerService,
+          useValue: dataExplorerStub,
         },
       ],
     });
@@ -79,136 +72,227 @@ describe('DataRequestsService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should get the user folder with the expected name', () => {
-    // Arrange
-    const username = 'test@gmail.com';
-    const rootFolder = { label: 'root' } as FolderDetail;
-    const expectedFolder = { label: 'test[at]gmail.com' } as FolderDetail;
+  describe('get requests folder', () => {
+    it('should get the user folder with the expected name', () => {
+      // Arrange
+      const username = 'test@gmail.com';
+      const rootFolder = { label: 'root' } as FolderDetail;
+      const expectedFolder = { label: 'test[at]gmail.com' } as FolderDetail;
 
-    const expected$ = cold('----a|', {
-      a: expectedFolder,
-    });
-
-    folderServiceStub.getOrCreate.mockImplementationOnce(() => {
-      return cold('--a|', {
-        a: rootFolder,
+      const expected$ = cold('----a|', {
+        a: expectedFolder,
       });
-    });
 
-    folderServiceStub.getOrCreateChildOf.mockImplementationOnce(
-      (id: string, label: string) => {
+      folderServiceStub.getOrCreate.mockImplementationOnce(() => {
         return cold('--a|', {
-          a: { label },
+          a: rootFolder,
         });
-      }
-    );
+      });
 
-    // Act
-    const actual$ = service.getRequestsFolder(username);
+      folderServiceStub.getOrCreateChildOf.mockImplementationOnce(
+        (id: string, label: string) => {
+          return cold('--a|', {
+            a: { label },
+          });
+        }
+      );
 
-    // Assert
-    expect(actual$).toBeObservable(expected$);
+      // Act
+      const actual$ = service.getRequestsFolder(username);
+
+      // Assert
+      expect(actual$).toBeObservable(expected$);
+    });
   });
 
-  it('should return a list of dms under the user folder', () => {
-    // Arrange
-    const userEmail = 'test@gmail.com';
-    const dms = ['label-1', 'label-2', 'label-3'].map((label: string) => {
-      return { label } as DataModel;
-    });
-
-    folderServiceStub.getOrCreate.mockImplementationOnce(() => {
-      return cold('-a|', {
-        a: { label: 'root' },
+  describe('list', () => {
+    it('should return a list of dms under the user folder', () => {
+      // Arrange
+      const userEmail = 'test@gmail.com';
+      const dms = ['label-1', 'label-2', 'label-3'].map((label: string) => {
+        return { label } as DataModel;
       });
-    });
 
-    folderServiceStub.getOrCreateChildOf.mockImplementationOnce(
-      (id: string, label: string) => {
+      folderServiceStub.getOrCreate.mockImplementationOnce(() => {
         return cold('-a|', {
-          a: { label },
+          a: { label: 'root' },
         });
-      }
-    );
-
-    dataModelsStub.listInFolder.mockImplementationOnce(() => {
-      return cold('-a|', {
-        a: dms,
       });
+
+      folderServiceStub.getOrCreateChildOf.mockImplementationOnce(
+        (id: string, label: string) => {
+          return cold('-a|', {
+            a: { label },
+          });
+        }
+      );
+
+      dataModelsStub.listInFolder.mockImplementationOnce(() => {
+        return cold('-a|', {
+          a: dms,
+        });
+      });
+
+      const expected$ = cold('---a|', {
+        a: dms.map((dm) => {
+          return { ...dm, status: 'unsent' };
+        }),
+      });
+
+      // Act
+      const actual$ = service.list(userEmail);
+
+      // Assert
+      expect(actual$).toBeObservable(expected$);
     });
-
-    const expected$ = cold('---a|', {
-      a: dms.map((dm) => {
-        return { ...dm, status: 'unsent' };
-      }),
-    });
-
-    // Act
-    const actual$ = service.list(userEmail);
-
-    // Assert
-    expect(actual$).toBeObservable(expected$);
   });
 
-  it('should return a flattened list of data elements from a data model', () => {
-    const request = { id: '123' } as DataRequest;
-    const dataElements = [
-      { id: '1' },
-      { id: '2' },
-      { id: '3' },
-      { id: '4' },
-      { id: '5' },
-      { id: '6' },
-    ] as DataElement[];
+  describe('list data elements', () => {
+    it('should return a flattened list of data elements from a data model', () => {
+      const request = { id: '123' } as DataRequest;
+      const dataElements = [
+        { id: '1' },
+        { id: '2' },
+        { id: '3' },
+        { id: '4' },
+        { id: '5' },
+        { id: '6' },
+      ] as DataElement[];
 
-    const expectedDataElements: DataElementDetail[] = dataElements.map((de) => {
-      return {
-        id: de.id,
-        label: `element ${de.id}`,
-        domainType: CatalogueItemDomainType.DataElement,
+      const expectedDataElements: DataElementDetail[] = dataElements.map((de) => {
+        return {
+          id: de.id,
+          label: `element ${de.id}`,
+          domainType: CatalogueItemDomainType.DataElement,
+          availableActions: ['show'],
+        };
+      });
+
+      // Test with a hierarchy that includes Data Elements in single and parent/child Data Classes
+      const hierarchy: DataModelFull = {
+        label: 'test model',
+        domainType: CatalogueItemDomainType.DataModel,
         availableActions: ['show'],
+        finalised: false,
+        childDataClasses: [
+          {
+            label: 'class 1',
+            domainType: CatalogueItemDomainType.DataClass,
+            availableActions: ['show'],
+            dataElements: expectedDataElements.slice(0, 2),
+          },
+          {
+            label: 'class 2',
+            domainType: CatalogueItemDomainType.DataClass,
+            availableActions: ['show'],
+            dataElements: expectedDataElements.slice(2, 4),
+            dataClasses: [
+              {
+                label: 'class 3',
+                domainType: CatalogueItemDomainType.DataClass,
+                availableActions: ['show'],
+                dataElements: expectedDataElements.slice(4, 6),
+              },
+            ],
+          },
+        ],
       };
-    });
 
-    // Test with a hierarchy that includes Data Elements in single and parent/child Data Classes
-    const hierarchy: DataModelFull = {
-      label: 'test model',
-      domainType: CatalogueItemDomainType.DataModel,
-      availableActions: ['show'],
-      finalised: false,
-      childDataClasses: [
-        {
-          label: 'class 1',
-          domainType: CatalogueItemDomainType.DataClass,
-          availableActions: ['show'],
-          dataElements: expectedDataElements.slice(0, 2),
-        },
-        {
-          label: 'class 2',
-          domainType: CatalogueItemDomainType.DataClass,
-          availableActions: ['show'],
-          dataElements: expectedDataElements.slice(2, 4),
-          dataClasses: [
-            {
-              label: 'class 3',
-              domainType: CatalogueItemDomainType.DataClass,
-              availableActions: ['show'],
-              dataElements: expectedDataElements.slice(4, 6),
-            },
-          ],
-        },
-      ],
+      dataModelsStub.getDataModelHierarchy.mockImplementationOnce((req) => {
+        expect(req).toBe(request.id);
+        return cold('--a|', {
+          a: hierarchy,
+        });
+      });
+
+      const expected$ = cold('--a|', { a: expectedDataElements });
+      const actual$ = service.listDataElements(request);
+      expect(actual$).toBeObservable(expected$);
+    });
+  });
+
+  describe('create requests', () => {
+    const user: UserDetails = {
+      id: '123',
+      firstName: 'test',
+      lastName: 'user',
+      email: 'test@test.com',
     };
 
-    dataModelsStub.getDataModelHierarchy.mockImplementationOnce((req) => {
-      expect(req).toBe(request.id);
-      return cold('--a|', {
-        a: hierarchy,
+    const name = 'test request';
+    const description = 'test description';
+
+    const dataRequest: DataRequest = {
+      id: '456',
+      label: name,
+      description,
+      domainType: CatalogueItemDomainType.DataModel,
+      status: 'unsent',
+    };
+
+    beforeEach(() => {
+      folderServiceStub.getOrCreate.mockImplementationOnce(() => {
+        return cold('-a|', { a: {} });
+      });
+
+      folderServiceStub.getOrCreateChildOf.mockImplementationOnce(() => {
+        return cold('-a|', { a: { id: '987' } });
+      });
+
+      catalogueUserStub.get.mockImplementationOnce(() => {
+        return cold('-a|', {
+          a: {
+            organisation: 'test org',
+          },
+        });
+      });
+
+      dataModelsStub.addToFolder.mockImplementationOnce(() => {
+        return cold('-a|', { a: dataRequest });
       });
     });
 
-    const expected$ = cold('--a|', { a: expectedDataElements });
-    const actual$ = service.getRequestDataElements(request);
-    expect(actual$).toBeObservable(expected$);
+    it('should create a new data request', () => {
+      const expected$ = cold('----a|', {
+        a: dataRequest,
+      });
+      const actual$ = service.create(user, name, description);
+      expect(actual$).toBeObservable(expected$);
+    });
+
+    it('should create a new request and copy elements to it', () => {
+      const rootDataModelId = '789';
+      const elements: DataElementBasic[] = [
+        {
+          id: '1',
+          dataModelId: '999',
+          dataClassId: '888',
+          label: 'element 1',
+        },
+        {
+          id: '2',
+          dataModelId: '999',
+          dataClassId: '888',
+          label: 'element 2',
+        },
+      ];
+
+      dataExplorerStub.getRootDataModel.mockImplementationOnce(() => {
+        return cold('-a|', { a: { id: rootDataModelId } });
+      });
+
+      dataModelsStub.copySubset.mockImplementationOnce((sourceId, targetId, payload) => {
+        expect(sourceId).toBe(rootDataModelId);
+        expect(targetId).toBe(dataRequest.id);
+        expect(payload.additions).toStrictEqual(elements.map((e) => e.id));
+        return cold('-a|', { a: dataRequest });
+      });
+
+      const expected$ = cold('------a|', {
+        a: dataRequest,
+      });
+      const actual$ = service.createFromDataElements(elements, user, name, description);
+      expect(actual$).toBeObservable(expected$);
+    });
   });
 });

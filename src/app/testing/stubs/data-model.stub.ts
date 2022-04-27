@@ -22,7 +22,9 @@ import {
   DataClassDetail,
   DataElement,
   DataModel,
+  DataModelCreatePayload,
   DataModelDetail,
+  DataModelSubsetPayload,
   MdmIndexBody,
   SearchQueryParameters,
   Uuid,
@@ -47,6 +49,18 @@ export type DataModelSearchDataModelFn = (
 ) => Observable<MdmIndexBody<CatalogueItemSearchResult>>;
 export type DataModelListInFolderFn = (folderId: Uuid) => Observable<DataModel[]>;
 export type DataModelGetHierarchyFn = (request: DataRequest) => Observable<DataElement[]>;
+export type DataModelAddToFolderFn = (
+  folderId: Uuid,
+  payload: DataModelCreatePayload
+) => Observable<DataModelDetail>;
+export type DataModelCopySubsetFn = (
+  sourceId: Uuid,
+  targetId: Uuid,
+  payload: DataModelSubsetPayload
+) => Observable<DataModelDetail>;
+export type DataModelElementsForClassFn = (
+  dataClass: DataClass
+) => Observable<DataElement[]>;
 
 export interface DataModelServiceStub {
   getDataModel: jest.MockedFunction<DataModelGetDataModelFn>;
@@ -56,6 +70,9 @@ export interface DataModelServiceStub {
   searchDataModel: jest.MockedFunction<DataModelSearchDataModelFn>;
   listInFolder: jest.MockedFunction<DataModelListInFolderFn>;
   getDataModelHierarchy: jest.MockedFunction<DataModelGetHierarchyFn>;
+  addToFolder: jest.MockedFunction<DataModelAddToFolderFn>;
+  copySubset: jest.MockedFunction<DataModelCopySubsetFn>;
+  getDataElementsForDataClass: jest.MockedFunction<DataModelElementsForClassFn>;
 }
 
 export const createDataModelServiceStub = (): DataModelServiceStub => {
@@ -67,5 +84,9 @@ export const createDataModelServiceStub = (): DataModelServiceStub => {
     searchDataModel: jest.fn() as jest.MockedFunction<DataModelSearchDataModelFn>,
     listInFolder: jest.fn() as jest.MockedFunction<DataModelListInFolderFn>,
     getDataModelHierarchy: jest.fn() as jest.MockedFunction<DataModelGetHierarchyFn>,
+    addToFolder: jest.fn() as jest.MockedFunction<DataModelAddToFolderFn>,
+    copySubset: jest.fn() as jest.MockedFunction<DataModelCopySubsetFn>,
+    getDataElementsForDataClass:
+      jest.fn() as jest.MockedFunction<DataModelElementsForClassFn>,
   };
 };

@@ -9,6 +9,7 @@
     "test-report.*",
     "test-report/**/*.*",
     ".browserslistrc",
+    ".prettierignore",
     ".scannerwork",
     ".DS_Store",
     ".editorconfig",
