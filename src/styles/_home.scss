@@ -20,8 +20,6 @@ SPDX-License-Identifier: Apache-2.0
 @import "./base/all";
 
 .container {
-  text-align: center;
-
   h1,
   h2 {
     font-family: "Segoe UI", sans-serif;
@@ -38,6 +36,7 @@ SPDX-License-Identifier: Apache-2.0
   display: flex;
   flex-flow: row;
   justify-content: flex-start;
+  text-align: center;
 
   @include respond-to-tablet {
     flex-flow: column;
@@ -77,6 +76,7 @@ SPDX-License-Identifier: Apache-2.0
 }
 
 .main-row {
+  text-align: center;
   padding-bottom: 2.5em;
 
   h1 {
