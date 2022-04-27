@@ -19,6 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 export const environment = {
   production: true,
   apiEndpoint: 'api',
+  rootRequestFolder: 'Mauro Data Explorer Requests',
   checkSessionExpiryTimeout: 300000,
   features: {
     useOpenIdConnect: true,
