@@ -37,4 +37,23 @@ SPDX-License-Identifier: Apache-2.0
     font-size: 125%;
     padding-bottom: 5px;
   }
+
+  &__item-label {
+    float: left;
+  }
+
+  &__item-ellipsis {
+    float: right;
+  }
+
+  &__menu-add {
+    border: none;
+    border-top: 2px solid black;
+    border-bottom: 2px solid black;
+  }
+
+  &__menu-existing {
+    border: none;
+    border-top: 1px solid black;
+  }
 }
