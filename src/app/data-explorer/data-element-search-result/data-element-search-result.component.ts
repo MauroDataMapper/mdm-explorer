@@ -16,7 +16,13 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+} from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { Bookmark } from 'src/app/data-explorer/bookmark.service';
 import {
@@ -30,6 +36,7 @@ import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.se
   selector: 'mdm-data-element-search-result',
   templateUrl: './data-element-search-result.component.html',
   styleUrls: ['./data-element-search-result.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DataElementSearchResultComponent {
   @Input() item?: SelectableDataElementSearchResult;
@@ -43,6 +50,10 @@ export class DataElementSearchResultComponent {
   @Output() checked = new EventEmitter<SelectableDataElementSearchResultCheckedEvent>();
 
   @Output() bookmark = new EventEmitter<DataElementBookmarkEvent>();
+
+  @Output() createRequestClicked = new EventEmitter<CreateRequestEvent>();
+
+  bookmarked: boolean = false;
 
   constructor() {
     this.sourceTargetIntersections = {
@@ -75,6 +86,7 @@ export class DataElementSearchResultComponent {
   isBookmarked(): boolean {
     let found: boolean;
     found = false;
+    console.log('I sent a message!');
 
     this.bookmarks.forEach((bookmark: Bookmark) => {
       if (this.item && this.item.id === bookmark.id) found = true;
