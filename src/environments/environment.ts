@@ -29,6 +29,8 @@ export const environment = {
     useOpenIdConnect: true,
   },
   rootDataModelPath: 'fo:OUH Data Warehouse|dm:modules',
+  profileNamespace: 'uk.ac.ox.softeng.maurodatamapper.plugins.research',
+  profileServiceName: 'ResearchDataElementProfileProviderService',
 };
 
 /*

@@ -21,6 +21,7 @@ import {
   DataClass,
   DataClassDetail,
   DataElement,
+  DataElementDetail,
   DataModel,
   DataModelCreatePayload,
   DataModelDetail,
@@ -43,6 +44,9 @@ export type DataModelGetDataClassFn = (
 export type DataModelGetDataElementsFn = (
   id: DataClassIdentifier
 ) => Observable<MdmIndexBody<DataElement>>;
+export type DataModelGetDataElementFn = (
+  id: DataClassIdentifier
+) => Observable<DataElementDetail>;
 export type DataModelSearchDataModelFn = (
   id: Uuid,
   params: SearchQueryParameters
@@ -67,6 +71,7 @@ export interface DataModelServiceStub {
   getDataClasses: jest.MockedFunction<DataModelGetDataClassesFn>;
   getDataClass: jest.MockedFunction<DataModelGetDataClassFn>;
   getDataElements: jest.MockedFunction<DataModelGetDataElementsFn>;
+  getDataElement: jest.MockedFunction<DataModelGetDataElementFn>;
   searchDataModel: jest.MockedFunction<DataModelSearchDataModelFn>;
   listInFolder: jest.MockedFunction<DataModelListInFolderFn>;
   getDataModelHierarchy: jest.MockedFunction<DataModelGetHierarchyFn>;
@@ -81,6 +86,7 @@ export const createDataModelServiceStub = (): DataModelServiceStub => {
     getDataClasses: jest.fn() as jest.MockedFunction<DataModelGetDataClassesFn>,
     getDataClass: jest.fn() as jest.MockedFunction<DataModelGetDataClassFn>,
     getDataElements: jest.fn() as jest.MockedFunction<DataModelGetDataElementsFn>,
+    getDataElement: jest.fn() as jest.MockedFunction<DataModelGetDataElementFn>,
     searchDataModel: jest.fn() as jest.MockedFunction<DataModelSearchDataModelFn>,
     listInFolder: jest.fn() as jest.MockedFunction<DataModelListInFolderFn>,
     getDataModelHierarchy: jest.fn() as jest.MockedFunction<DataModelGetHierarchyFn>,

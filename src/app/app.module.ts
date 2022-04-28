@@ -99,6 +99,8 @@ const getOpenIdAuthorizeUrl = () => {
       provide: DATA_EXPLORER_CONFIGURATION,
       useValue: {
         rootDataModelPath: environment.rootDataModelPath,
+        profileNamespace: environment.profileNamespace,
+        profileServiceName: environment.profileServiceName,
       },
     },
   ],
