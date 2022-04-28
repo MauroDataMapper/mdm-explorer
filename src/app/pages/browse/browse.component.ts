@@ -79,7 +79,6 @@ export class BrowseComponent implements OnInit {
     private broadcast: BroadcastService
   ) {
     this.user = security.getSignedInUser();
-    this.refreshUserRequests();
   }
 
   get isChildDataClassSelected(): Uuid | undefined {
@@ -106,13 +105,17 @@ export class BrowseComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadParentDataClasses();
+    this.refreshUserRequests();
   }
 
   refreshUserRequests() {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    this.dataRequests.list(this.user!.email).subscribe((list) => {
-      this.userRequests = list;
-    });
+    let requestsObservable = this.dataRequests.list(this.user!.email);
+    if (requestsObservable) {
+      requestsObservable.subscribe((list) => {
+        this.userRequests = list;
+      });
+    }
   }
 
   addToRequest() {
