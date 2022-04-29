@@ -21,11 +21,15 @@ import {
   setupTestModuleForComponent,
 } from '../../testing/testing.helpers';
 import { MyBookmarksComponent } from './my-bookmarks.component';
-import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
+import {
+  Bookmark,
+  BookmarkService,
+  SelectableBookmark,
+} from 'src/app/data-explorer/bookmark.service';
 import { createBookmarkServiceStub } from 'src/app/testing/stubs/bookmark.stub';
 import { createToastrServiceStub } from 'src/app/testing/stubs/toastr.stub';
 import { ToastrService } from 'ngx-toastr';
-import { of } from 'rxjs';
+import { EMPTY, of } from 'rxjs';
 import {
   BookMarkCheckedEvent,
   RemoveBookmarkEvent,
@@ -39,9 +43,12 @@ import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 describe('MyBookmarkComponent', () => {
   let harness: ComponentHarness<MyBookmarksComponent>;
 
-  const emptySet = new Set();
-  const b1 = { label: 'b1' } as Bookmark;
-  const b2 = { label: 'b2' } as Bookmark;
+  const b1 = { id: 'id-1', label: 'b1' } as Bookmark;
+  const b2 = { id: 'id-2', label: 'b2' } as Bookmark;
+  const bookmarks: Bookmark[] = [b1, b2];
+  const selectableBookmarks: SelectableBookmark[] = bookmarks.map((bm) => {
+    return { ...bm, isSelected: false };
+  });
 
   const bookmarkStub = createBookmarkServiceStub();
   const securityStub = createSecurityServiceStub();
@@ -74,81 +81,85 @@ describe('MyBookmarkComponent', () => {
 
   it('should create', () => {
     expect(harness.isComponentCreated).toBeTruthy();
-    expect(harness.component.bookmarksTracker).toStrictEqual(emptySet);
+    expect(harness.component.userBookmarks).toStrictEqual([]);
   });
 
   describe('on initialization', () => {
     it('should load bookmarks', () => {
-      const bookmarks = [b1, b2];
-      const expected = new Map<Bookmark, boolean>();
-
       bookmarkStub.index.mockImplementationOnce(() => {
         return of(bookmarks);
       });
 
       harness.component.ngOnInit();
 
-      expect(harness.component.bookmarksTracker.keys).toStrictEqual(bookmarks);
+      expect(harness.component.userBookmarks).toStrictEqual(selectableBookmarks);
     });
   });
 
   describe('select bookmark', () => {
     it.each([true, false])(
-      'should add/remove the bookmark to selectedBookmarks when checked is %p',
+      'should flip the isSelected property to %p when checked is %p',
       (checked) => {
+        harness.component.userBookmarks = selectableBookmarks;
         const event = { checked, item: b1 } as BookMarkCheckedEvent;
-        const expected = checked ? new Set([b1]) : emptySet;
+
+        const expected = [
+          { ...b1, isSelected: checked },
+          { ...b2, isSelected: false },
+        ] as SelectableBookmark[];
 
         harness.component.onChecked(event);
 
-        expect(harness.component.selectedBookmarks).toStrictEqual(expected);
+        expect(harness.component.userBookmarks).toStrictEqual(expected);
       }
     );
   });
 
   describe('remove bookmark', () => {
-    const all = new Set([b1, b2]);
-    const selected = new Set([b1]);
-    const event = { item: b1 } as RemoveBookmarkEvent;
-
-    it('should remove bookmark from allBookmarks, selectedBookmarks, and fire a toastr success message', () => {
-      const allAfterRemoval = new Set([b2]);
-      const selectedAfterRemoval = emptySet;
+    it('should remove the bookmark from userBookmarks', () => {
+      const event = { item: b1 } as RemoveBookmarkEvent;
+      const expected = [{ ...b2, isSelected: false }] as SelectableBookmark[];
 
       bookmarkStub.remove.mockImplementationOnce(() => {
-        return of(allAfterRemoval);
+        return of([]);
       });
 
-      harness.component.allBookmarks = all;
-      harness.component.selectedBookmarks = selected;
+      harness.component.userBookmarks = selectableBookmarks;
       harness.component.onRemove(event);
 
-      expect(harness.component.allBookmarks).toStrictEqual(allAfterRemoval);
-      expect(harness.component.selectedBookmarks).toStrictEqual(selectedAfterRemoval);
+      expect(harness.component.userBookmarks).toStrictEqual(expected);
       expect(bookmarkStub.remove).toHaveBeenCalledWith(event.item);
       expect(toastrStub.success).toHaveBeenCalled();
     });
   });
 
   describe('onSelectAll method', () => {
-    it('should add all bookmarks to selectedBookmarks when checked is true', () => {
-      const expected = new Set([b1, b2]);
-      const event = { checked: true } as MatCheckboxChange;
-      harness.component.allBookmarks = new Set([b1, b2]);
+    it('should set isSelected to true for every element in userBookmarks', () => {
+      const expected = [
+        { ...b1, isSelected: true },
+        { ...b2, isSelected: true },
+      ] as SelectableBookmark[];
 
+      const event = { checked: true } as MatCheckboxChange;
+
+      harness.component.userBookmarks = selectableBookmarks;
       harness.component.onSelectAll(event);
 
-      expect(harness.component.selectedBookmarks).toStrictEqual(expected);
+      expect(harness.component.userBookmarks).toStrictEqual(expected);
     });
 
-    it('should clear selectedBookmarks when checked is false', () => {
-      const expected = new Set();
-      const event = { checked: false } as MatCheckboxChange;
-      harness.component.selectedBookmarks = new Set([b1, b2]);
+    it('should set isSelected to false for every element in userBookmarks', () => {
+      const expected = [
+        { ...b1, isSelected: false },
+        { ...b2, isSelected: false },
+      ] as SelectableBookmark[];
 
+      const event = { checked: false } as MatCheckboxChange;
+
+      harness.component.userBookmarks = selectableBookmarks;
       harness.component.onSelectAll(event);
 
-      expect(harness.component.selectedBookmarks).toStrictEqual(expected);
+      expect(harness.component.userBookmarks).toStrictEqual(expected);
     });
   });
 });

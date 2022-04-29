@@ -19,7 +19,10 @@ SPDX-License-Identifier: Apache-2.0
 import { Component, OnInit } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { ToastrService } from 'ngx-toastr';
-import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
+import {
+  BookmarkService,
+  SelectableBookmark,
+} from 'src/app/data-explorer/bookmark.service';
 import {
   AddToRequestEvent,
   BookMarkCheckedEvent as BookmarkCheckedEvent,
@@ -28,10 +31,6 @@ import {
 } from 'src/app/data-explorer/data-explorer.types';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import { SecurityService } from 'src/app/security/security.service';
-
-interface SelectableBookmark extends Bookmark {
-  isSelected: boolean;
-}
 
 @Component({
   selector: 'mdm-my-bookmarks',
@@ -75,11 +74,12 @@ export class MyBookmarksComponent implements OnInit {
 
   onRemove(event: RemoveBookmarkEvent): void {
     this.bookmarks.remove(event.item).subscribe(() => {
-      this.userBookmarks = this.userBookmarks.filter(
-        (bookmark) => bookmark.id !== event.item.id
-      );
       this.toastr.success(`${event.item.label} removed from bookmarks`);
     });
+
+    this.userBookmarks = this.userBookmarks.filter(
+      (bookmark) => bookmark.id !== event.item.id
+    );
   }
 
   onSelectAll(event: MatCheckboxChange) {
