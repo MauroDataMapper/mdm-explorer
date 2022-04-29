@@ -65,11 +65,8 @@ export class MyBookmarksComponent implements OnInit {
   }
 
   onChecked(event: BookmarkCheckedEvent) {
-    this.userBookmarks = this.userBookmarks.map((bookmark: SelectableBookmark) => {
-      return bookmark.id === event.item.id
-        ? { ...bookmark, isSelected: event.checked }
-        : bookmark;
-    });
+    const toUpdate = this.userBookmarks.find((bm) => bm.id === event.item.id);
+    if (toUpdate) toUpdate.isSelected = event.checked;
   }
 
   onAddToRequest(event: AddToRequestEvent) {

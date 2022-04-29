@@ -16,13 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import {
-  Component,
-  ChangeDetectionStrategy,
-  Input,
-  EventEmitter,
-  Output,
-} from '@angular/core';
+import { Component, Input, EventEmitter, Output } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox/checkbox';
 import { Bookmark } from '../bookmark.service';
 import {
@@ -36,7 +30,6 @@ import {
   selector: 'mdm-bookmark-row',
   templateUrl: './bookmark-row.component.html',
   styleUrls: ['./bookmark-row.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BookmarkRowComponent {
   @Input() bookmark?: Bookmark;
