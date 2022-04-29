@@ -74,13 +74,13 @@ describe('MyBookmarkComponent', () => {
 
   it('should create', () => {
     expect(harness.isComponentCreated).toBeTruthy();
-    expect(harness.component.allBookmarks).toStrictEqual(emptySet);
-    expect(harness.component.selectedBookmarks).toStrictEqual(emptySet);
+    expect(harness.component.bookmarksTracker).toStrictEqual(emptySet);
   });
 
   describe('on initialization', () => {
     it('should load bookmarks', () => {
-      const bookmarks = new Set([b1, b2]);
+      const bookmarks = [b1, b2];
+      const expected = new Map<Bookmark, boolean>();
 
       bookmarkStub.index.mockImplementationOnce(() => {
         return of(bookmarks);
@@ -88,7 +88,7 @@ describe('MyBookmarkComponent', () => {
 
       harness.component.ngOnInit();
 
-      expect(harness.component.allBookmarks).toStrictEqual(bookmarks);
+      expect(harness.component.bookmarksTracker.keys).toStrictEqual(bookmarks);
     });
   });
 

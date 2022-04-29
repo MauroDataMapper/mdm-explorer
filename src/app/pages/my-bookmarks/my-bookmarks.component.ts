@@ -35,8 +35,8 @@ import { SecurityService } from 'src/app/security/security.service';
   styleUrls: ['./my-bookmarks.component.scss'],
 })
 export class MyBookmarksComponent implements OnInit {
-  allBookmarks: Set<Bookmark> = new Set();
-  selectedBookmarks: Set<Bookmark> = new Set();
+  // A list of the users bookmarks and whether they're selected.
+  bookmarksTracker: Map<Bookmark, boolean> = new Map();
   openDataRequests: DataRequest[] = [];
 
   constructor(
@@ -55,16 +55,14 @@ export class MyBookmarksComponent implements OnInit {
     }
 
     this.bookmarks.index().subscribe((result) => {
-      this.allBookmarks = new Set(result);
+      result.forEach((bookmark) => {
+        this.bookmarksTracker.set(bookmark, false);
+      });
     });
   }
 
   onChecked(event: BookmarkCheckedEvent) {
-    if (event.checked) {
-      this.selectedBookmarks.add(event.item);
-    } else {
-      this.selectedBookmarks.delete(event.item);
-    }
+    this.bookmarksTracker.set(event.item, event.checked);
   }
 
   onAddToRequest(event: AddToRequestEvent) {
@@ -72,18 +70,15 @@ export class MyBookmarksComponent implements OnInit {
   }
 
   onRemove(event: RemoveBookmarkEvent): void {
-    this.bookmarks.remove(event.item).subscribe((results) => {
-      this.allBookmarks = new Set(results);
-      this.selectedBookmarks.delete(event.item);
+    this.bookmarks.remove(event.item).subscribe(() => {
+      this.bookmarksTracker.delete(event.item);
       this.toastr.success(`${event.item.label} removed from bookmarks`);
     });
   }
 
   onSelectAll(event: MatCheckboxChange) {
-    if (event.checked) {
-      this.allBookmarks.forEach((bookmark) => this.selectedBookmarks.add(bookmark));
-    } else {
-      this.selectedBookmarks.clear();
-    }
+    this.bookmarksTracker.forEach((val, key) => {
+      this.bookmarksTracker.set(key, event.checked);
+    });
   }
 }
