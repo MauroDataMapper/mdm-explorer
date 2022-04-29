@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
   CatalogueItemDomainType,
@@ -29,6 +29,10 @@ import { ToastrService } from 'ngx-toastr';
 import { switchMap, forkJoin, catchError, EMPTY } from 'rxjs';
 import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
 import { DataModelService } from 'src/app/mauro/data-model.service';
+import {
+  DataExplorerConfiguration,
+  DATA_EXPLORER_CONFIGURATION,
+} from 'src/app/data-explorer/data-explorer.types';
 
 @Component({
   selector: 'mdm-data-element',
@@ -50,7 +54,8 @@ export class DataElementComponent implements OnInit {
     private dataModels: DataModelService,
     private bookmarkService: BookmarkService,
     private profileService: ProfileService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    @Inject(DATA_EXPLORER_CONFIGURATION) private config: DataExplorerConfiguration
   ) {}
 
   ngOnInit(): void {
@@ -145,8 +150,8 @@ export class DataElementComponent implements OnInit {
       .get(
         CatalogueItemDomainType.DataElement,
         this.dataElementId,
-        'uk.ac.ox.softeng.maurodatamapper.plugins.research',
-        'ResearchDataElementProfileProviderService'
+        this.config.profileNamespace,
+        this.config.profileServiceName
       )
       .pipe(
         catchError(() => {

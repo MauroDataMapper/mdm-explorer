@@ -34,6 +34,8 @@ describe('DataExplorerService', () => {
 
   const config: DataExplorerConfiguration = {
     rootDataModelPath: 'my test model',
+    profileServiceName: 'Profile Service',
+    profileNamespace: 'Profile Namespace',
   };
 
   beforeEach(() => {
