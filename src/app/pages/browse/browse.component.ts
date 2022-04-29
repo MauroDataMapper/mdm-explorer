@@ -20,22 +20,12 @@ import { Component, OnInit } from '@angular/core';
 import { MatSelectionListChange } from '@angular/material/list';
 import { DataClass } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import {
-  catchError,
-  delay,
-  EMPTY,
-  filter,
-  finalize,
-  forkJoin,
-  of,
-  switchMap,
-} from 'rxjs';
+import { catchError, EMPTY, filter, finalize, forkJoin, of, switchMap } from 'rxjs';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import {
   DataElementBasic,
   DataElementSearchParameters,
-  DataRequest,
   mapSearchParametersToParams,
 } from 'src/app/data-explorer/data-explorer.types';
 import { UserDetails } from 'src/app/security/user-details.service';
@@ -62,9 +52,6 @@ export class BrowseComponent implements OnInit {
   childDataClasses: DataClass[] = [];
   selected?: DataClass;
   creatingRequest = false;
-  parentHoverIndex = -1;
-  childHoverIndex = -1;
-  userRequests: DataRequest[] = [];
   loadingSpinnerCaption = '';
   private user: UserDetails | null;
 
@@ -105,27 +92,6 @@ export class BrowseComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadParentDataClasses();
-    this.refreshUserRequests();
-  }
-
-  refreshUserRequests() {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    let requestsObservable = this.dataRequests.list(this.user!.email);
-    if (requestsObservable) {
-      requestsObservable.subscribe((list) => {
-        this.userRequests = list;
-      });
-    }
-  }
-
-  addToRequest() {
-    this.creatingRequest = true;
-    this.loadingSpinnerCaption = 'Updating existing request not implemented';
-    of(true)
-      .pipe(delay(5000))
-      .subscribe(() => {
-        this.creatingRequest = false;
-      });
   }
 
   createRequest() {
@@ -186,7 +152,6 @@ export class BrowseComponent implements OnInit {
         }),
         finalize(() => {
           this.creatingRequest = false;
-          this.refreshUserRequests();
         })
       )
       .subscribe((action) => {
@@ -230,14 +195,6 @@ export class BrowseComponent implements OnInit {
 
     const params = mapSearchParametersToParams(searchParameters);
     this.stateRouter.navigateToKnownPath('/search/listing', params);
-  }
-
-  onParentHover(index: number) {
-    this.parentHoverIndex = index;
-  }
-
-  onChildHover(index: number) {
-    this.childHoverIndex = index;
   }
 
   private loadParentDataClasses() {

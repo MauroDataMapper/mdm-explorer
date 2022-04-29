@@ -42,18 +42,17 @@ SPDX-License-Identifier: Apache-2.0
               *ngFor="let item of parentDataClasses; let i = index"
               [value]="item"
               (click)="reselectDataClass(item)"
-              (mouseenter)="onParentHover(i)"
-              (mouseleave)="onParentHover(-1)"
             >
               <span class="mdm-browse__item-label"
                 >{{ item.label }}
-                <span
-                  class="mdm-browse__item-ellipsis"
+                <button
+                  mat-stroked-button
                   [matMenuTriggerFor]="menu"
-                  [hidden]="i !== parentHoverIndex"
-                  >&hellip;</span
-                ></span
-              >
+                  class="mdm-browse__item-context-options"
+                >
+                  &hellip;
+                </button>
+              </span>
             </mat-list-option>
           </mat-selection-list>
         </div>
@@ -72,17 +71,16 @@ SPDX-License-Identifier: Apache-2.0
               *ngFor="let item of childDataClasses; let i = index"
               [value]="item"
               (click)="reselectDataClass(item)"
-              (mouseenter)="onChildHover(i)"
-              (mouseleave)="onChildHover(-1)"
             >
               <span class="mdm-browse__item-label"
                 >{{ item.label }}
-                <span
-                  class="mdm-browse__item-ellipsis"
+                <button
+                  mat-stroked-button
                   [matMenuTriggerFor]="menu"
-                  [hidden]="i !== childHoverIndex"
-                  >&hellip;</span
+                  class="mdm-browse__item-context-options"
                 >
+                  &hellip;
+                </button>
               </span>
             </mat-list-option>
           </mat-selection-list>
@@ -103,20 +101,8 @@ SPDX-License-Identifier: Apache-2.0
 </div>
 <!-- Dropdown Menu -->
 <mat-menu #menu="matMenu" xPosition="after" yPosition="below">
-  <button
-    class="mdm-browse__menu-existing"
-    mat-menu-item
-    [matTooltip]="request.description ?? ''"
-    matTooltipPosition="after"
-    matTooltipShowDelay="500"
-    (click)="addToRequest()"
-    clickable
-    *ngFor="let request of userRequests"
-  >
-    <span>{{ request.label }}</span>
-  </button>
   <button mat-menu-item (click)="createRequest()" clickable class="mdm-browse__menu-add">
-    <span><span [mdmArrow]="'plus'"></span> Create new request</span>
+    <span><span [mdmArrow]="'plus'"></span> Copy to new request</span>
   </button>
 </mat-menu>
 <div *ngIf="selected && selected.label && selected.description" class="highlight-box">

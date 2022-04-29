@@ -16,6 +16,8 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+@import "../../../styles/base/all";
+
 .mdm-browse {
   .mat-selection-list {
     height: 350px;
@@ -40,20 +42,16 @@ SPDX-License-Identifier: Apache-2.0
 
   &__item-label {
     float: left;
+    line-height: 36px; // To match height of mat-button
   }
 
-  &__item-ellipsis {
+  &__item-context-options {
     float: right;
+    display: none;
   }
 
-  &__menu-add {
-    border: none;
-    border-top: 2px solid black;
-    border-bottom: 2px solid black;
-  }
-
-  &__menu-existing {
-    border: none;
-    border-top: 1px solid black;
+  &__item-label:hover > &__item-context-options {
+    display: inline;
+    color: $color-black;
   }
 }
