@@ -28,6 +28,8 @@ import {
 import { DataClassIdentifier } from '../mauro/mauro.types';
 
 export interface DataExplorerConfiguration {
+  profileNamespace: string;
+  profileServiceName: string;
   rootDataModelPath: string;
 }
 
