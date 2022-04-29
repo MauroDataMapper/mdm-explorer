@@ -29,14 +29,17 @@ import {
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import { SecurityService } from 'src/app/security/security.service';
 
+interface SelectableBookmark extends Bookmark {
+  isSelected: boolean;
+}
+
 @Component({
   selector: 'mdm-my-bookmarks',
   templateUrl: './my-bookmarks.component.html',
   styleUrls: ['./my-bookmarks.component.scss'],
 })
 export class MyBookmarksComponent implements OnInit {
-  // A list of the users bookmarks and whether they're selected.
-  bookmarksTracker: Map<Bookmark, boolean> = new Map();
+  userBookmarks: SelectableBookmark[] = [];
   openDataRequests: DataRequest[] = [];
 
   constructor(
@@ -56,13 +59,17 @@ export class MyBookmarksComponent implements OnInit {
 
     this.bookmarks.index().subscribe((result) => {
       result.forEach((bookmark) => {
-        this.bookmarksTracker.set(bookmark, false);
+        this.userBookmarks.push({ ...bookmark, isSelected: false });
       });
     });
   }
 
   onChecked(event: BookmarkCheckedEvent) {
-    this.bookmarksTracker.set(event.item, event.checked);
+    this.userBookmarks = this.userBookmarks.map((bookmark: SelectableBookmark) => {
+      return bookmark.id === event.item.id
+        ? { ...bookmark, isSelected: event.checked }
+        : bookmark;
+    });
   }
 
   onAddToRequest(event: AddToRequestEvent) {
@@ -71,14 +78,16 @@ export class MyBookmarksComponent implements OnInit {
 
   onRemove(event: RemoveBookmarkEvent): void {
     this.bookmarks.remove(event.item).subscribe(() => {
-      this.bookmarksTracker.delete(event.item);
+      this.userBookmarks = this.userBookmarks.filter(
+        (bookmark) => bookmark.id !== event.item.id
+      );
       this.toastr.success(`${event.item.label} removed from bookmarks`);
     });
   }
 
   onSelectAll(event: MatCheckboxChange) {
-    this.bookmarksTracker.forEach((val, key) => {
-      this.bookmarksTracker.set(key, event.checked);
+    this.userBookmarks = this.userBookmarks.map((bookmark) => {
+      return { ...bookmark, isSelected: event.checked };
     });
   }
 }
