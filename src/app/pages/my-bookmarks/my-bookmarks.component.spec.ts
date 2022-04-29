@@ -29,7 +29,7 @@ import {
 import { createBookmarkServiceStub } from 'src/app/testing/stubs/bookmark.stub';
 import { createToastrServiceStub } from 'src/app/testing/stubs/toastr.stub';
 import { ToastrService } from 'ngx-toastr';
-import { EMPTY, of } from 'rxjs';
+import { of } from 'rxjs';
 import {
   BookMarkCheckedEvent,
   RemoveBookmarkEvent,
