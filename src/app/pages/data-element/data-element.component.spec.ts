@@ -32,6 +32,7 @@ import { ToastrService } from 'ngx-toastr';
 import { createBookmarkServiceStub } from 'src/app/testing/stubs/bookmark.stub';
 import { ProfileService } from 'src/app/mauro/profile.service';
 import { BreadcrumbComponent } from 'src/app/data-explorer/breadcrumb/breadcrumb.component';
+import { BookmarkToggleComponent } from 'src/app/shared/bookmark-toggle/bookmark-toggle.component';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { BookmarkService, Bookmark } from 'src/app/data-explorer/bookmark.service';
 import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
@@ -49,6 +50,8 @@ import {
 } from '@maurodatamapper/mdm-resources';
 import { createProfileServiceStub } from 'src/app/testing/stubs/profile.stub';
 import { DataElementProfileComponent } from './data-element-profile/data-element-profile.component';
+import { MatIcon } from '@angular/material/icon';
+import { MatCard } from '@angular/material/card';
 
 describe('DataElementComponent', () => {
   let harness: ComponentHarness<DataElementComponent>;
@@ -90,10 +93,13 @@ describe('DataElementComponent', () => {
       declarations: [
         MockComponent(MatTabGroup),
         MockComponent(MatTab),
+        MockComponent(MatIcon),
+        MockComponent(MatCard),
         BreadcrumbComponent,
         MockComponent(ClassifiersComponent),
         MockComponent(SummaryMetadataComponent),
         DataElementProfileComponent,
+        BookmarkToggleComponent,
       ],
       providers: [
         {
