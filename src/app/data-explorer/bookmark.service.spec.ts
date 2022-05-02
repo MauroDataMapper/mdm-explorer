@@ -21,10 +21,13 @@ import { BookmarkService } from './bookmark.service';
 import { of } from 'rxjs';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { createMdmEndpointsStub } from '../testing/stubs/mdm-endpoints.stub';
+import { createSecurityServiceStub } from '../testing/stubs/security.stub';
+import { SecurityService } from '../security/security.service';
 
 describe('BookmarkService', () => {
   let service: BookmarkService;
   const endpointsStub = createMdmEndpointsStub();
+  const securityServiceStub = createSecurityServiceStub();
 
   beforeEach(() => {
     // Default endpoint call
@@ -35,6 +38,10 @@ describe('BookmarkService', () => {
         {
           provide: MdmEndpointsService,
           useValue: endpointsStub,
+        },
+        {
+          provide: SecurityService,
+          useValue: securityServiceStub,
         },
       ],
     });
