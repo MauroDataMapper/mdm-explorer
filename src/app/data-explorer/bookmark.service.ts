@@ -19,8 +19,8 @@ SPDX-License-Identifier: Apache-2.0
 import { Injectable } from '@angular/core';
 import { map, switchMap, Observable, throwError } from 'rxjs';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
-import { UserDetailsService } from '../security/user-details.service';
 import { Uuid } from '@maurodatamapper/mdm-resources';
+import { SecurityService } from '../security/security.service';
 
 @Injectable({
   providedIn: 'root',
@@ -32,7 +32,7 @@ import { Uuid } from '@maurodatamapper/mdm-resources';
 export class BookmarkService {
   constructor(
     private endpoints: MdmEndpointsService,
-    private userDetailsService: UserDetailsService
+    private security: SecurityService
   ) {}
 
   /**
@@ -111,7 +111,7 @@ export class BookmarkService {
    * @returns - an observable containing a list of bookmarks
    */
   public index(): Observable<Bookmark[]> {
-    const userDetails = this.userDetailsService.get();
+    const userDetails = this.security.getSignedInUser();
     if (userDetails) {
       return this.endpoints.catalogueUser
         .userPreferences(userDetails.id)
@@ -126,7 +126,7 @@ export class BookmarkService {
   }
 
   private getPreferences(): Observable<any> {
-    const userDetails = this.userDetailsService.get();
+    const userDetails = this.security.getSignedInUser();
     if (userDetails) {
       return this.endpoints.catalogueUser
         .userPreferences(userDetails.id)
@@ -137,7 +137,7 @@ export class BookmarkService {
   }
 
   private savePreferences(data: any): Observable<any> {
-    const userDetails = this.userDetailsService.get();
+    const userDetails = this.security.getSignedInUser();
     if (userDetails) {
       return this.endpoints.catalogueUser
         .updateUserPreferences(userDetails.id, data)
