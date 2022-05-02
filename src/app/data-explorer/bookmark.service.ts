@@ -19,8 +19,9 @@ SPDX-License-Identifier: Apache-2.0
 import { Injectable } from '@angular/core';
 import { map, switchMap, Observable, throwError } from 'rxjs';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
-import { Uuid } from '@maurodatamapper/mdm-resources';
 import { SecurityService } from '../security/security.service';
+import { DataElement, DataElementDetail, Uuid } from '@maurodatamapper/mdm-resources';
+import { DataElementBasic } from './data-explorer.types';
 
 @Injectable({
   providedIn: 'root',
@@ -123,6 +124,16 @@ export class BookmarkService {
     } else {
       return throwError(() => new Error('Must be logged in to use User Preferences'));
     }
+  }
+
+  public isBookmarked(
+    dataElement: DataElementBasic | DataElement | DataElementDetail
+  ): boolean {
+    let isBookmarked = false;
+    this.index().subscribe((userBookmarks) => {
+      isBookmarked = userBookmarks.some((bookmark) => bookmark.id === dataElement.id);
+    });
+    return isBookmarked;
   }
 
   private getPreferences(): Observable<any> {

@@ -17,17 +17,22 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { setupTestModuleForService } from '../testing/testing.helpers';
-import { BookmarkService } from './bookmark.service';
+import { Bookmark, BookmarkService } from './bookmark.service';
 import { of } from 'rxjs';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { createMdmEndpointsStub } from '../testing/stubs/mdm-endpoints.stub';
 import { createSecurityServiceStub } from '../testing/stubs/security.stub';
 import { SecurityService } from '../security/security.service';
+import { DataElementBasic } from './data-explorer.types';
+import { UserDetails } from '../security/user-details.service';
 
 describe('BookmarkService', () => {
   let service: BookmarkService;
   const endpointsStub = createMdmEndpointsStub();
   const securityServiceStub = createSecurityServiceStub();
+
+  const b1 = { id: '1', label: 'label-1' } as Bookmark;
+  const b2 = { id: '2', label: 'label-2' } as Bookmark;
 
   beforeEach(() => {
     // Default endpoint call
@@ -49,5 +54,53 @@ describe('BookmarkService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+
+  describe('add', () => {
+    test.todo(
+      'should create a userPrefs object with a bookmarks property and add the bookmark to it if either of the former do not exist'
+    );
+    test.todo('should not add the bookmark if element is already bookmarked');
+    test.todo('should add the bookmark if element is not already bookmarked');
+  });
+
+  describe('remove', () => {
+    test.todo(
+      'should not do anything if the supplied item is already in the users bookmarks'
+    );
+    test.todo('should remove the supplied item if it exists in the users bookmarks');
+  });
+
+  describe('index', () => {
+    test.todo('should throw an error if the user is not logged in');
+    test.todo('should return an empty array if there is no response body');
+    test.todo(
+      'should return an empty array if there is bookmarks property in the response body'
+    );
+  });
+
+  describe('isBookmarked', () => {
+    it.each([true, false])(
+      'should return %p if the user has bookmarked the supplied data element',
+      (isBookmarked) => {
+        const dataElementToCheck = b2 as DataElementBasic;
+        const bookmarksDoesContain = [b1, b2];
+        const bookmarksDoesNotContain = [b1];
+
+        securityServiceStub.getSignedInUser.mockImplementationOnce(() => {
+          return { id: 'user-id' } as UserDetails;
+        });
+
+        endpointsStub.catalogueUser.userPreferences.mockImplementationOnce(() => {
+          return isBookmarked
+            ? of({ body: { bookmarks: bookmarksDoesContain } })
+            : of({ body: { bookmarks: bookmarksDoesNotContain } });
+        });
+
+        const actual = service.isBookmarked(dataElementToCheck);
+
+        expect(actual).toEqual(isBookmarked);
+      }
+    );
   });
 });

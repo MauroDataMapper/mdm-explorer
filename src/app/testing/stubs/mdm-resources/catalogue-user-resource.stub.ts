@@ -36,10 +36,15 @@ export type CatalogueUserResetPasswordLinkFn = (email: string) => any;
 export type CatalogueUserResetPasswordLinkMockedFn =
   jest.MockedFunction<CatalogueUserResetPasswordLinkFn>;
 
+export type CatalogueUserPreferencesFn = (id: string) => any;
+export type CatalogueUserPreferencesMockedFn =
+  jest.MockedFunction<CatalogueUserPreferencesFn>;
+
 export interface MdmCatalogueUserResourceStub {
   get: CatalogueUserGetMockedFn;
   update: CatalogueUserUpdateMockedFn;
   resetPasswordLink: CatalogueUserResetPasswordLinkMockedFn;
+  userPreferences: CatalogueUserPreferencesMockedFn;
 }
 
 export const createCatalogueUserStub = (): MdmCatalogueUserResourceStub => {
@@ -47,5 +52,6 @@ export const createCatalogueUserStub = (): MdmCatalogueUserResourceStub => {
     get: jest.fn() as CatalogueUserGetMockedFn,
     update: jest.fn() as CatalogueUserUpdateMockedFn,
     resetPasswordLink: jest.fn() as CatalogueUserResetPasswordLinkMockedFn,
+    userPreferences: jest.fn() as CatalogueUserPreferencesMockedFn,
   };
 };
