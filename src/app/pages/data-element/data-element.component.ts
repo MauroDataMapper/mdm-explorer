@@ -57,7 +57,7 @@ export class DataElementComponent implements OnInit, OnDestroy {
   researchProfile?: Profile;
   identifiableData?: string;
 
-  bookmarks: Bookmark[] = [];
+  isBookmarked: boolean = false;
 
   sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 
@@ -70,7 +70,7 @@ export class DataElementComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private dataModels: DataModelService,
     private dataRequests: DataRequestsService,
-    private bookmarkService: BookmarkService,
+    private bookmarks: BookmarkService,
     private profileService: ProfileService,
     private toastr: ToastrService,
     private broadcast: BroadcastService,
@@ -83,10 +83,6 @@ export class DataElementComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.bookmarkService.index().subscribe((result) => {
-      this.bookmarks = result;
-    });
-
     this.route.params
       .pipe(
         switchMap((params) => {
@@ -109,6 +105,7 @@ export class DataElementComponent implements OnInit, OnDestroy {
           dataModelId: dataElementDetail.model ?? '',
           label: dataElementDetail.label,
           breadcrumbs: dataElementDetail.breadcrumbs,
+          isBookmarked: false,
         };
         this.researchProfile = profile;
         this.sourceTargetIntersections = sourceTargetIntersections;
@@ -131,6 +128,8 @@ export class DataElementComponent implements OnInit, OnDestroy {
           }
         }
       });
+
+    this.isBookmarked = this.bookmarks.isBookmarked(this.dataElement);
   }
 
   ngOnDestroy(): void {
@@ -151,30 +150,14 @@ export class DataElementComponent implements OnInit, OnDestroy {
     };
 
     if (selected) {
-      this.bookmarkService.add(item).subscribe(() => {
+      this.bookmarks.add(item).subscribe(() => {
         this.toastr.success(`${item.label} added to bookmarks`);
       });
     } else {
-      this.bookmarkService.remove([item]).subscribe(() => {
+      this.bookmarks.remove([item]).subscribe(() => {
         this.toastr.success(`${item.label} removed from bookmarks`);
       });
     }
-  }
-
-  /**
-   * Is this.item bookmarked?
-   *
-   * @returns boolean true if this.item is stored in this.bookmarks
-   */
-  isBookmarked(): boolean {
-    let found: boolean;
-    found = false;
-
-    this.bookmarks.forEach((bookmark: Bookmark) => {
-      if (this.dataElement && this.dataElement.id === bookmark.id) found = true;
-    });
-
-    return found;
   }
 
   private loadDataElement() {
