@@ -17,6 +17,8 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { MockComponent } from 'ng-mocks';
+import { MatFormField } from '@angular/material/form-field';
+import { MatIcon } from '@angular/material/icon';
 import { ToastrService } from 'ngx-toastr';
 import { Carousel } from 'primeng/carousel';
 import { of, throwError } from 'rxjs';
@@ -45,7 +47,11 @@ describe('DashboardComponent', () => {
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(DashboardComponent, {
-      declarations: [MockComponent(Carousel)],
+      declarations: [
+        MockComponent(Carousel),
+        MockComponent(MatFormField),
+        MockComponent(MatIcon),
+      ],
       providers: [
         {
           provide: SecurityService,

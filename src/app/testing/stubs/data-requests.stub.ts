@@ -16,9 +16,10 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { DataClass, DataElement, DataModel } from '@maurodatamapper/mdm-resources';
+import { DataClass, DataElement, DataModel, Uuid } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
 import { DataElementBasic, DataRequest } from 'src/app/data-explorer/data-explorer.types';
+import { SourceTargetIntersections } from 'src/app/data-explorer/data-requests.service';
 import { UserDetails } from 'src/app/security/user-details.service';
 
 export type DataRequestsListFn = (username: string) => Observable<DataModel[]>;
@@ -37,11 +38,15 @@ export type DataRequestsCreateFromDataElementsFn = (
   name: string,
   description: string
 ) => Observable<DataRequest>;
+export type SourceTargetIntersectionsFn = (
+  sourceDataModelId: Uuid
+) => Observable<[SourceTargetIntersections[]]>;
 
 export interface DataRequestsServiceStub {
   list: jest.MockedFunction<DataRequestsListFn>;
   listDataElements: jest.MockedFunction<DataRequestsListElementsFn>;
   createFromDataElements: jest.MockedFunction<DataRequestsCreateFromDataElementsFn>;
+  getRequestsIntersections: jest.MockedFunction<SourceTargetIntersectionsFn>;
 }
 
 export const createDataRequestsServiceStub = (): DataRequestsServiceStub => {
@@ -50,5 +55,7 @@ export const createDataRequestsServiceStub = (): DataRequestsServiceStub => {
     listDataElements: jest.fn() as jest.MockedFunction<DataRequestsListElementsFn>,
     createFromDataElements:
       jest.fn() as jest.MockedFunction<DataRequestsCreateFromDataElementsFn>,
+    getRequestsIntersections:
+      jest.fn() as jest.MockedFunction<SourceTargetIntersectionsFn>,
   };
 };

@@ -33,6 +33,11 @@ import {
   DataExplorerConfiguration,
   DATA_EXPLORER_CONFIGURATION,
 } from 'src/app/data-explorer/data-explorer.types';
+import { DataElementSearchResult } from 'src/app/data-explorer/data-explorer.types';
+import {
+  DataRequestsService,
+  SourceTargetIntersections,
+} from 'src/app/data-explorer/data-requests.service';
 
 @Component({
   selector: 'mdm-data-element',
@@ -44,14 +49,21 @@ export class DataElementComponent implements OnInit {
   dataClassId: Uuid = '';
   dataElementId: Uuid = '';
   dataElement?: DataElementDetail;
+
+  // A workaround
+  dataElementSearchResult?: DataElementSearchResult;
+
   researchProfile?: Profile;
   identifiableData?: string;
 
   bookmarks: Bookmark[] = [];
 
+  sourceTargetIntersections: SourceTargetIntersections[] = [];
+
   constructor(
     private route: ActivatedRoute,
     private dataModels: DataModelService,
+    private dataRequests: DataRequestsService,
     private bookmarkService: BookmarkService,
     private profileService: ProfileService,
     private toastr: ToastrService,
@@ -70,12 +82,24 @@ export class DataElementComponent implements OnInit {
           this.dataClassId = params.dataClassId;
           this.dataElementId = params.dataElementId;
 
-          return forkJoin([this.loadDataElement(), this.loadProfile()]);
+          return forkJoin([
+            this.loadDataElement(),
+            this.loadProfile(),
+            this.loadIntersections(this.dataModelId),
+          ]);
         })
       )
-      .subscribe(([dataElementDetail, profile]) => {
+      .subscribe(([dataElementDetail, profile, sourceTargetIntersections]) => {
         this.dataElement = dataElementDetail;
+        this.dataElementSearchResult = {
+          id: dataElementDetail.id ?? '',
+          dataClassId: dataElementDetail.dataClass ?? '',
+          dataModelId: dataElementDetail.model ?? '',
+          label: dataElementDetail.label,
+          breadcrumbs: dataElementDetail.breadcrumbs,
+        };
         this.researchProfile = profile;
+        this.sourceTargetIntersections = sourceTargetIntersections;
 
         // Check for the Identifiable Data value
         if (this.researchProfile && this.researchProfile.sections.length > 0) {
@@ -159,5 +183,15 @@ export class DataElementComponent implements OnInit {
           return EMPTY;
         })
       );
+  }
+
+  private loadIntersections(dataModelId: Uuid) {
+    return this.dataRequests.getRequestsIntersections(dataModelId).pipe(
+      catchError((error) => {
+        console.log(error);
+        this.toastr.error('Unable to retrieve requests.');
+        return EMPTY;
+      })
+    );
   }
 }
