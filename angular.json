@@ -6,7 +6,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "mdm-research-browser": {
+    "mdm-explorer": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -23,7 +23,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/mdm-research-browser",
+            "outputPath": "dist/mdm-explorer",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -83,10 +83,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "mdm-research-browser:build:production"
+              "browserTarget": "mdm-explorer:build:production"
             },
             "development": {
-              "browserTarget": "mdm-research-browser:build:development"
+              "browserTarget": "mdm-explorer:build:development"
             }
           },
           "defaultConfiguration": "development",
@@ -97,7 +97,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "mdm-research-browser:build"
+            "browserTarget": "mdm-explorer:build"
           }
         },
         "test": {
@@ -106,5 +106,5 @@
       }
     }
   },
-  "defaultProject": "mdm-research-browser"
+  "defaultProject": "mdm-explorer"
 }

@@ -145,8 +145,8 @@ pipeline {
           spec: '''{
           "files": [
             {
-              "pattern": "dist/mdm-research-portal-*.tgz",
-              "target": "artifacts-snapshots/mauroDataMapper/mdm-research-portal/"
+              "pattern": "dist/mdm-explorer-*.tgz",
+              "target": "artifacts-snapshots/mauroDataMapper/mdm-explorer/"
             }
          ]
     }''',
@@ -173,8 +173,8 @@ pipeline {
           spec: '''{
           "files": [
             {
-              "pattern": "dist/mdm-research-portal-*.tgz",
-              "target": "artifacts/mauroDataMapper/mdm-research-portal/"
+              "pattern": "dist/mdm-explorer-*.tgz",
+              "target": "artifacts/mauroDataMapper/mdm-explorer/"
             }
          ]
     }''',
@@ -225,7 +225,7 @@ pipeline {
   post {
     always {
       outputTestResults()
-      zulipNotification(topic: 'mdm-research-portal')
+      zulipNotification(topic: 'mdm-explorer')
     }
   }
 }

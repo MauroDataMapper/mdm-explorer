@@ -1,4 +1,4 @@
-# Mauro Research Browser
+# Mauro Data Explorer
 
 A web application to browse a Mauro metadata catalogue and request access to particular data via the organisation.
 
