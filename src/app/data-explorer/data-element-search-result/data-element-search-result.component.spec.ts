@@ -79,7 +79,11 @@ describe('DataElementSearchResultComponent', () => {
       breadcrumbs: [],
       dataClassId: '2',
       dataModelId: '3',
+<<<<<<< HEAD
       isSelected: false,
+=======
+      isBookmarked: false,
+>>>>>>> mc-9870 - extend DataElementBasic to include an isBookmarked property, update broken tests.
     };
 
     harness.component.item = item;
@@ -104,7 +108,11 @@ describe('DataElementSearchResultComponent', () => {
         breadcrumbs: [],
         dataClassId: '2',
         dataModelId: '3',
+<<<<<<< HEAD
         isSelected: false,
+=======
+        isBookmarked: false,
+>>>>>>> mc-9870 - extend DataElementBasic to include an isBookmarked property, update broken tests.
       };
 
       harness.component.item = item;
