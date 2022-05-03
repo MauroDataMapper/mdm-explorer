@@ -17,11 +17,11 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { map, switchMap, Observable, throwError, ObjectUnsubscribedError } from 'rxjs';
+import { map, switchMap, Observable, throwError, of } from 'rxjs';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
-import { SecurityService } from '../security/security.service';
-import { DataElement, DataElementDetail, Uuid } from '@maurodatamapper/mdm-resources';
+import { DataElementDetail, Uuid } from '@maurodatamapper/mdm-resources';
 import { DataElementBasic } from './data-explorer.types';
+import { SecurityService } from '../security/security.service';
 
 @Injectable({
   providedIn: 'root',
@@ -128,19 +128,15 @@ export class BookmarkService {
 
   /**
    *
-   * @param dataElement the dataElement to check
+   * @param dataElementId the dataElementId to check against
    * @returns a boolean indicating whether or not the element is bookmarked by the signed in user
    */
-  public isBookmarked(
-    dataElement: DataElementBasic | DataElementDetail | undefined
-  ): boolean {
-    if (!dataElement) return false;
-
-    let isBookmarked = false;
-    this.index().subscribe((userBookmarks) => {
-      isBookmarked = userBookmarks.some((bookmark) => bookmark.id === dataElement.id);
-    });
-    return isBookmarked;
+  public isBookmarked(dataElementId: string): Observable<boolean> {
+    return this.index().pipe(
+      switchMap((userBookmarks: Bookmark[]) => {
+        return of(userBookmarks.some((bookmark) => bookmark.id === dataElementId));
+      })
+    );
   }
 
   private getPreferences(): Observable<any> {

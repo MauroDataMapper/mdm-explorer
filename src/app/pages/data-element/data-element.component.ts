@@ -92,44 +92,43 @@ export class DataElementComponent implements OnInit, OnDestroy {
 
           return forkJoin([
             this.loadDataElement(),
+            this.bookmarks.isBookmarked(params.dataElementId),
             this.loadProfile(),
             this.loadIntersections(),
           ]);
         })
       )
-      .subscribe(([dataElementDetail, profile, sourceTargetIntersections]) => {
-        this.dataElement = dataElementDetail;
-        this.dataElementSearchResult = {
-          id: dataElementDetail.id ?? '',
-          dataClassId: dataElementDetail.dataClass ?? '',
-          dataModelId: dataElementDetail.model ?? '',
-          label: dataElementDetail.label,
-          breadcrumbs: dataElementDetail.breadcrumbs,
-          isBookmarked: false,
-        };
-        this.researchProfile = profile;
-        this.sourceTargetIntersections = sourceTargetIntersections;
+      .subscribe(
+        ([dataElementDetail, isBookmarked, profile, sourceTargetIntersections]) => {
+          this.dataElement = dataElementDetail;
+          this.isBookmarked = isBookmarked;
+          this.dataElementSearchResult = {
+            id: dataElementDetail.id ?? '',
+            dataClassId: dataElementDetail.dataClass ?? '',
+            dataModelId: dataElementDetail.model ?? '',
+            label: dataElementDetail.label,
+            breadcrumbs: dataElementDetail.breadcrumbs,
+          };
+          this.researchProfile = profile;
+          this.sourceTargetIntersections = sourceTargetIntersections;
 
-        this.subscribeDataRequestChanges();
-
-        // Check for the Identifiable Data value
-        if (this.researchProfile && this.researchProfile.sections.length > 0) {
-          const identifiableInformation = this.researchProfile.sections.find(
-            (section) => section.name === 'Identifiable Information'
-          );
-
-          if (identifiableInformation && identifiableInformation.fields.length > 0) {
-            const identifiableDataField = identifiableInformation.fields.find(
-              (field) => field.fieldName === 'Identifiable Data'
+          // Check for the Identifiable Data value
+          if (this.researchProfile && this.researchProfile.sections.length > 0) {
+            const identifiableInformation = this.researchProfile.sections.find(
+              (section) => section.name === 'Identifiable Information'
             );
-            if (identifiableDataField) {
-              this.identifiableData = identifiableDataField.currentValue;
+
+            if (identifiableInformation && identifiableInformation.fields.length > 0) {
+              const identifiableDataField = identifiableInformation.fields.find(
+                (field) => field.fieldName === 'Identifiable Data'
+              );
+              if (identifiableDataField) {
+                this.identifiableData = identifiableDataField.currentValue;
+              }
             }
           }
         }
-      });
-
-    this.isBookmarked = this.bookmarks.isBookmarked(this.dataElement);
+      );
   }
 
   ngOnDestroy(): void {
