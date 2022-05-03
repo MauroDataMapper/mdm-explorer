@@ -28,6 +28,10 @@ SPDX-License-Identifier: Apache-2.0
   &__search-advanced {
     float: right;
   }
+  &__search-browse {
+    clear: both;
+    margin-top: 2em;
+  }
 }
 
 .mdm-dashboard {
