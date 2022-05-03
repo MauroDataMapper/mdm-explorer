@@ -132,7 +132,13 @@ export class DataElementInRequestComponent implements OnInit {
           targetDataModelId,
           datamodelSubsetPayload
         )
-        .subscribe(() => {}); // eslint-disable-line @typescript-eslint/no-unsafe-argument
+        .subscribe(() => {
+          this.toastr.success(
+            `${this.dataElement?.label} ${
+              event.checked ? 'added to' : 'removed from'
+            } request`
+          );
+        }); // eslint-disable-line @typescript-eslint/no-unsafe-argument
     }
   }
 
