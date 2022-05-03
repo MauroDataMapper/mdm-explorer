@@ -29,6 +29,7 @@ import { DataModelService } from '../mauro/data-model.service';
 import { DataElementBasic, DataRequest } from '../data-explorer/data-explorer.types';
 import { createDataModelServiceStub } from '../testing/stubs/data-model.stub';
 import { createFolderServiceStub } from '../testing/stubs/folder.stub';
+import { createSecurityServiceStub } from '../testing/stubs/security.stub';
 import { setupTestModuleForService } from '../testing/testing.helpers';
 import { FolderService } from '../mauro/folder.service';
 import { DataRequestsService } from './data-requests.service';
@@ -37,6 +38,7 @@ import { CatalogueUserService } from '../mauro/catalogue-user.service';
 import { createCatalogueUserServiceStub } from '../testing/stubs/catalogue-user.stub';
 import { createDataExplorerServiceStub } from '../testing/stubs/data-explorer.stub';
 import { DataExplorerService } from './data-explorer.service';
+import { SecurityService } from '../security/security.service';
 
 describe('DataRequestsService', () => {
   let service: DataRequestsService;
@@ -44,6 +46,7 @@ describe('DataRequestsService', () => {
   const folderServiceStub = createFolderServiceStub();
   const catalogueUserStub = createCatalogueUserServiceStub();
   const dataExplorerStub = createDataExplorerServiceStub();
+  const securityStub = createSecurityServiceStub();
 
   beforeEach(() => {
     service = setupTestModuleForService(DataRequestsService, {
@@ -63,6 +66,10 @@ describe('DataRequestsService', () => {
         {
           provide: DataExplorerService,
           useValue: dataExplorerStub,
+        },
+        {
+          provide: SecurityService,
+          useValue: securityStub,
         },
       ],
     });

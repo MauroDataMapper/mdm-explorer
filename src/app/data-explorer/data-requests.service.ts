@@ -24,16 +24,7 @@ import {
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { FolderDetail } from '@maurodatamapper/mdm-resources';
-import {
-  defaultIfEmpty,
-  forkJoin,
-  map,
-  mergeMap,
-  Observable,
-  of,
-  switchMap,
-  throwError,
-} from 'rxjs';
+import { forkJoin, map, Observable, switchMap, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { UserDetails } from '../security/user-details.service';
 import { DataModelService } from '../mauro/data-model.service';

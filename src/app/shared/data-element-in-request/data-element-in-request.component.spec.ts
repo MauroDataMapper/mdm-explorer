@@ -114,15 +114,16 @@ describe('DataElementInRequestComponent', () => {
     };
 
     beforeEach(() => {
-      dataRequestsStub.createFromSearchResults.mockClear();
+      // dataRequestsStub.createFromSearchResults.mockClear();
+      dataRequestsStub.createFromDataElements.mockClear();
     });
 
-    it('should not continue if cancelling the Create Request dialog', () => {
+    /* it('should not continue if cancelling the Create Request dialog', () => {
       matDialogStub.usage.afterClosed.mockImplementationOnce(() => of());
 
       harness.component.createRequest(event);
       expect(dataRequestsStub.createFromDataClass).not.toHaveBeenCalled();
-    });
+    });*/
 
     it('should create a new request', () => {
       const requestCreation: CreateRequestDialogResponse = {
@@ -134,11 +135,11 @@ describe('DataElementInRequestComponent', () => {
 
       harness.component.createRequest(event);
 
-      expect(dataRequestsStub.createFromSearchResults).toHaveBeenCalledWith(
-        requestCreation.name,
-        requestCreation.description,
+      expect(dataRequestsStub.createFromDataElements).toHaveBeenCalledWith(
+        [dataElement],
         user,
-        [dataElement]
+        requestCreation.name,
+        requestCreation.description
       );
     });
   });

@@ -197,17 +197,40 @@ describe('DataElementComponent', () => {
     profileStub.get.mockReturnValue(of(profile));
   };
 
+  const setupDataRequestsService = () => {
+    dataRequestsStub.getRequestsIntersections.mockReturnValue(of([[]]));
+  };
+
   beforeEach(async () => {
     harness = await setupComponentTest();
     setupBookmarks();
     setupDataModelService();
     setupProfileService();
+    setupDataRequestsService();
   });
 
   it('should display profile', () => {
     // find the profile html
     const dom = harness.fixture.nativeElement;
-    harness.component.researchProfile = undefined;
+    const profile: Profile = {
+      id: 'ProfileId',
+      domainType: CatalogueItemDomainType.DataElement,
+      label: 'ProfileLabel',
+      sections: [
+        {
+          name: 'Identifiable Information',
+          fields: [
+            {
+              fieldName: 'Identifiable Data',
+              currentValue: 'Identifiable Data Value',
+              dataType: 'string',
+              metadataPropertyName: 'Metadata Property Name',
+            },
+          ],
+        },
+      ],
+    };
+    harness.component.researchProfile = profile;
     harness.detectChanges();
     const headingContainers = Array.from(
       dom.querySelectorAll('h2') as NodeList
