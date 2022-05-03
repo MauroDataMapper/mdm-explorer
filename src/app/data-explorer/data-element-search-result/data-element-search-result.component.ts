@@ -24,7 +24,6 @@ import {
   Output,
 } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
-import { Bookmark } from 'src/app/data-explorer/bookmark.service';
 import {
   DataElementBookmarkEvent,
   SelectableDataElementSearchResultCheckedEvent,
@@ -43,7 +42,7 @@ export class DataElementSearchResultComponent {
 
   @Input() showBreadcrumb = false;
 
-  @Input() bookmarks: Bookmark[] = [];
+  @Input() isBookmarked: boolean = false;
 
   @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 
@@ -78,20 +77,10 @@ export class DataElementSearchResultComponent {
     this.bookmark.emit({ item: this.item, selected });
   }
 
-  /**
-   * Is this.item bookmarked?
-   *
-   * @returns boolean true if this.item is stored in this.bookmarks
-   */
-  isBookmarked(): boolean {
-    let found: boolean;
-    found = false;
-    console.log('I sent a message!');
-
-    this.bookmarks.forEach((bookmark: Bookmark) => {
-      if (this.item && this.item.id === bookmark.id) found = true;
-    });
-
-    return found;
+  createRequest() {
+    const event: CreateRequestEvent = {
+      item: this.item!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+    };
+    this.createRequestClicked.emit(event);
   }
 }
