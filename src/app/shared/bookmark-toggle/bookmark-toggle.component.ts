@@ -16,20 +16,32 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+
+export type TooltipHelpTextOption = 'Add to bookmarks' | 'Remove from bookmarks';
 
 @Component({
   selector: 'mdm-bookmark-toggle',
   templateUrl: './bookmark-toggle.component.html',
   styleUrls: ['./bookmark-toggle.component.scss'],
 })
-export class BookmarkToggleComponent {
+export class BookmarkToggleComponent implements OnInit {
   @Input() selected = false;
-
   @Output() toggle = new EventEmitter<boolean>();
+
+  tooltipText: TooltipHelpTextOption = 'Add to bookmarks';
+
+  ngOnInit(): void {
+    this.tooltipText = this.getTooltipText();
+  }
 
   toggleState() {
     this.selected = !this.selected;
+    this.tooltipText = this.getTooltipText();
     this.toggle.emit(this.selected);
+  }
+
+  getTooltipText() {
+    return this.selected ? 'Remove from bookmarks' : 'Add to bookmarks';
   }
 }

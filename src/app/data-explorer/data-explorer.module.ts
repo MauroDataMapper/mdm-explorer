@@ -31,6 +31,7 @@ import { DataElementRowComponent } from './data-element-row/data-element-row.com
 import { CreateRequestDialogComponent } from './create-request-dialog/create-request-dialog.component';
 import { RequestCreatedDialogComponent } from './request-created-dialog/request-created-dialog.component';
 import { SuccessDialogComponent } from './success-dialog/success-dialog.component';
+import { BookmarkRowComponent } from './bookmark-row/bookmark-row.component';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { SuccessDialogComponent } from './success-dialog/success-dialog.componen
     CreateRequestDialogComponent,
     RequestCreatedDialogComponent,
     SuccessDialogComponent,
+    BookmarkRowComponent,
   ],
   imports: [CoreModule, SharedModule],
   exports: [
@@ -56,6 +58,7 @@ import { SuccessDialogComponent } from './success-dialog/success-dialog.componen
     FeedbackDialogComponent,
     RequestStatusChipComponent,
     BreadcrumbComponent,
+    BookmarkRowComponent,
   ],
   providers: [
     {

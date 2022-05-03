@@ -149,3 +149,7 @@ export interface Bookmark {
   dataClassId: Uuid;
   label: string;
 }
+
+export interface SelectableBookmark extends Bookmark {
+  isSelected: boolean;
+}

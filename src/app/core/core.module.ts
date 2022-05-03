@@ -36,6 +36,7 @@ import { RouterModule } from '@angular/router';
 import { CarouselModule } from 'primeng/carousel';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 const angularModules = [CommonModule, FormsModule, ReactiveFormsModule, RouterModule];
 const primeNgModules = [CarouselModule];
@@ -56,6 +57,7 @@ const materialModules = [
   MatTabsModule,
   MatSelectModule,
   MatDialogModule,
+  MatTooltipModule,
 ];
 
 @NgModule({
