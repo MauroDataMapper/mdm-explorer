@@ -183,6 +183,22 @@ describe('DataElementComponent', () => {
     setupDataModelService();
     setupProfileService();
     setupDataRequestsService();
+    bookmarkStub.isBookmarked.mockReturnValue(of(false));
+  });
+
+  it('should initialise', () => {
+    const component = harness.component;
+    component.ngOnInit();
+    expect(component.isBookmarked).toBe(false);
+    expect(component.dataClassId).toBe('RouteDataClassId');
+    expect(component.dataElementId).toBe('RouteDataElementId');
+    expect(component.dataElement?.id).toBe('DataElementId');
+    expect(component.identifiableData).toBe('Identifiable Data Value');
+    expect(component.researchProfile?.id).toBe('ProfileId');
+  });
+
+  it('should create', () => {
+    expect(harness.isComponentCreated).toBeTruthy();
   });
 
   it('should display profile', () => {

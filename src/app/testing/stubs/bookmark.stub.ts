@@ -25,7 +25,7 @@ export type BookmarkAddFn = (bookmark: Bookmark) => Observable<any>;
 export type BookmarkAddMockedFn = jest.MockedFunction<BookmarkAddFn>;
 export type BookmarkRemoveFn = (bookmarks: Bookmark[]) => Observable<any>;
 export type BookmarkRemoveMockedFn = jest.MockedFunction<BookmarkRemoveFn>;
-export type IsBookmarkedFn = (bookmark: Bookmark) => boolean;
+export type IsBookmarkedFn = (dataElementId: string) => Observable<boolean>;
 export type IsBookmarkedMockedFn = jest.MockedFunction<IsBookmarkedFn>;
 
 export interface BookmarkServiceStub {
