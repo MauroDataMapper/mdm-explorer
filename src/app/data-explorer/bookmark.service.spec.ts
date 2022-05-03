@@ -25,6 +25,7 @@ import { createSecurityServiceStub } from '../testing/stubs/security.stub';
 import { SecurityService } from '../security/security.service';
 import { DataElementBasic } from './data-explorer.types';
 import { UserDetails } from '../security/user-details.service';
+import { cold } from 'jest-marbles';
 
 describe('BookmarkService', () => {
   let service: BookmarkService;
@@ -84,8 +85,10 @@ describe('BookmarkService', () => {
       'should return %p if the user has bookmarked the supplied data element',
       (isBookmarked) => {
         const dataElementToCheck = b2 as DataElementBasic;
+        const dataElementToCheckId = dataElementToCheck.id;
         const bookmarksDoesContain = [b1, b2];
         const bookmarksDoesNotContain = [b1];
+        const expected$ = cold('--a', { a: isBookmarked ? true : false });
 
         securityServiceStub.getSignedInUser.mockImplementationOnce(() => {
           return { id: 'user-id' } as UserDetails;
@@ -93,13 +96,13 @@ describe('BookmarkService', () => {
 
         endpointsStub.catalogueUser.userPreferences.mockImplementationOnce(() => {
           return isBookmarked
-            ? of({ body: { bookmarks: bookmarksDoesContain } })
-            : of({ body: { bookmarks: bookmarksDoesNotContain } });
+            ? cold('--a', { a: { body: { bookmarks: bookmarksDoesContain } } })
+            : cold('--a', { a: { body: { bookmarks: bookmarksDoesNotContain } } });
         });
 
-        const actual = service.isBookmarked(dataElementToCheck);
+        const actual$ = service.isBookmarked(dataElementToCheckId);
 
-        expect(actual).toEqual(isBookmarked);
+        expect(actual$).toBeObservable(expected$);
       }
     );
   });
