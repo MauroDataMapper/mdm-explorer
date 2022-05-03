@@ -25,6 +25,7 @@ pipeline {
         sh 'rm -f junit.xml'
         sh 'rm -rf test-report'
         sh 'rm -rf coverage'
+        sh 'rm -rf dist'
         sh 'rm -f eslint_report.json'
       }
     }
@@ -112,77 +113,77 @@ pipeline {
       }
       post {
         always {
-         recordIssues qualityGates: [[threshold: 1, type: 'TOTAL_ERROR', unstable: true], [threshold: 1, type: 'TOTAL_HIGH', unstable: true]], tools: [esLint(pattern: '**/eslint_report.xml')]
+          recordIssues qualityGates: [[threshold: 1, type: 'TOTAL_ERROR', unstable: true], [threshold: 1, type: 'TOTAL_HIGH', unstable: true]], tools: [esLint(pattern: '**/eslint_report.xml')]
         }
       }
     }
 
-//    stage('Distribution Build') {
-//      when{
-//        anyOf{
-//          branch 'develop'
-//          branch 'main'
-//        }
-//      }
-//      steps {
-//        nvm('') {
-//          catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
-//            sh 'npm run dist'
-//          }
-//        }
-//      }
-//    }
+    stage('Distribution Build') {
+      when{
+        anyOf{
+          branch 'develop'
+          branch 'main'
+        }
+      }
+      steps {
+        nvm('') {
+          catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+            sh 'npm run dist'
+          }
+        }
+      }
+    }
 
-//    // Deploy develop branch even if tests fail if the code builds, as it'll be an unstable snapshot but we should still deploy
-//    stage('Deploy develop to Artifactory') {
-//      when {
-//        branch 'develop'
-//      }
-//      steps {
-//        rtUpload(
-//          serverId: 'cs-artifactory',
-//          spec: '''{
-//          "files": [
-//            {
-//              "pattern": "dist/mdm-ui-*.tgz",
-//              "target": "artifacts-snapshots/mauroDataMapper/mdm-ui/"
-//            }
-//         ]
-//    }''',
-//          )
-//        rtPublishBuildInfo(
-//          serverId: 'cs-artifactory',
-//          )
-//      }
-//    }
+    // Deploy develop branch even if tests fail if the code builds, as it'll be an unstable snapshot but we should still deploy
+    stage('Deploy develop to Artifactory') {
+      when {
+        branch 'develop'
+      }
+      steps {
+        rtUpload(
+          serverId: 'cs-artifactory',
+          spec: '''{
+          "files": [
+            {
+              "pattern": "dist/mdm-research-portal-*.tgz",
+              "target": "artifacts-snapshots/mauroDataMapper/mdm-research-portal/"
+            }
+         ]
+    }''',
+          )
+        rtPublishBuildInfo(
+          serverId: 'cs-artifactory',
+          )
+      }
+    }
 
-//    stage('Deploy main to Artifactory') {
-//      when {
-//        allOf {
-//          branch 'main'
-//          expression {
-//            currentBuild.currentResult == 'SUCCESS'
-//          }
-//        }
-//
-//      }
-//      steps {
-//        rtUpload(
-//          serverId: 'cs-artifactory',
-//          spec: '''{
-//          "files": [
-//            {
-//              "pattern": "dist/mdm-ui-*.tgz",
-//              "target": "artifacts/mauroDataMapper/mdm-ui/"
-//            }
-//         ]
-//    }''',
-//          )
-//        rtPublishBuildInfo(
-//          serverId: 'cs-artifactory',
-//          )
-//      }
-//    }
+    stage('Deploy main to Artifactory') {
+      when {
+        allOf {
+          branch 'main'
+          expression {
+            currentBuild.currentResult == 'SUCCESS'
+          }
+        }
+
+      }
+      steps {
+        rtUpload(
+          serverId: 'cs-artifactory',
+          spec: '''{
+          "files": [
+            {
+              "pattern": "dist/mdm-research-portal-*.tgz",
+              "target": "artifacts/mauroDataMapper/mdm-research-portal/"
+            }
+         ]
+    }''',
+          )
+        rtPublishBuildInfo(
+          serverId: 'cs-artifactory',
+          )
+      }
+    }
 
     stage('Sonarqube') {
       when {
@@ -224,7 +225,7 @@ pipeline {
   post {
     always {
       outputTestResults()
-      zulipNotification(topic: 'mdm-research-browser')
+      zulipNotification(topic: 'mdm-research-portal')
     }
   }
 }
