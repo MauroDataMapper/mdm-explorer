@@ -23,11 +23,19 @@ SPDX-License-Identifier: Apache-2.0
   <tbody>
     <ng-container *ngFor="let profileSection of profile.sections">
       <tr class="mdm-data-element-profile-section-name">
-        <td colspan="2">{{ profileSection.name }} ({{ profileSection.description }})</td>
+        <td colspan="2">{{ profileSection.name }}</td>
+      </tr>
+      <tr
+        *ngIf="profileSection.description"
+        class="mdm-data-element-profile-section-description"
+      >
+        <td colspan="2">
+          <em>{{ profileSection.description }}</em>
+        </td>
       </tr>
       <ng-container *ngFor="let profileField of profileSection.fields">
         <tr>
-          <td>{{ profileField.fieldName }}</td>
+          <td class="w-25">{{ profileField.fieldName }}</td>
           <td>{{ profileField.currentValue }}</td>
         </tr>
       </ng-container>

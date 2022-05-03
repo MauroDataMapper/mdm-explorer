@@ -31,6 +31,7 @@ import { SummaryMetadataReportComponent } from './summary-metadata/summary-metad
 import { SummaryMetadataChartComponent } from './summary-metadata/summary-metadata-chart/summary-metadata-chart.component';
 import { NgChartsModule } from 'ng2-charts';
 import { CallToActionComponent } from './call-to-action/call-to-action.component';
+import { DataElementInRequestComponent } from './data-element-in-request/data-element-in-request.component';
 
 @NgModule({
   declarations: [
@@ -46,6 +47,7 @@ import { CallToActionComponent } from './call-to-action/call-to-action.component
     SummaryMetadataReportComponent,
     LoadingSpinnerComponent,
     CallToActionComponent,
+    DataElementInRequestComponent,
   ],
   imports: [CoreModule, NgChartsModule],
   exports: [
@@ -60,6 +62,7 @@ import { CallToActionComponent } from './call-to-action/call-to-action.component
     SummaryMetadataComponent,
     SummaryMetadataReportComponent,
     CallToActionComponent,
+    DataElementInRequestComponent,
   ],
 })
 export class SharedModule {}

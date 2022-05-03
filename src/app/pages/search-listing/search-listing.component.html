@@ -69,7 +69,7 @@ SPDX-License-Identifier: Apache-2.0
         [bookmarks]="userBookmarks"
         (checked)="selectElement($event)"
         (bookmark)="bookmarkElement($event)"
-        (createRequestClicked)="createRequest($event)"
+        [sourceTargetIntersections]="sourceTargetIntersections"
       ></mdm-data-element-search-result>
       <mdm-pagination
         [currentPage]="resultSet.page"

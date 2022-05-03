@@ -16,13 +16,20 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-@import "../../../../styles/base/all";
+@import "../../../styles/base/all";
 
-tr.mdm-data-element-profile-section-name {
-  background-color: $color-mauro-dark-green;
-  color: $color-white;
+ul {
+  list-style-type: none;
+  margin-top: 4px;
+  padding-left: 0;
+  padding-right: 0;
 }
 
-tr.mdm-data-element-profile-section-description {
-  background-color: $color-mauro-light-gold;
+section {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.mat-divider {
+  margin-bottom: 0.5rem;
 }
