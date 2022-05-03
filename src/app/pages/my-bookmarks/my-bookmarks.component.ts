@@ -17,8 +17,20 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 import { ToastrService } from 'ngx-toastr';
-import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
+import {
+  BookmarkService,
+  SelectableBookmark,
+} from 'src/app/data-explorer/bookmark.service';
+import {
+  AddToRequestEvent,
+  BookMarkCheckedEvent as BookmarkCheckedEvent,
+  DataRequest,
+  RemoveBookmarkEvent,
+} from 'src/app/data-explorer/data-explorer.types';
+import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { SecurityService } from 'src/app/security/security.service';
 
 @Component({
   selector: 'mdm-my-bookmarks',
@@ -26,20 +38,53 @@ import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.servic
   styleUrls: ['./my-bookmarks.component.scss'],
 })
 export class MyBookmarksComponent implements OnInit {
-  bookmarks: Bookmark[] = [];
+  userBookmarks: SelectableBookmark[] = [];
+  openDataRequests: DataRequest[] = [];
 
-  constructor(private bookmarkService: BookmarkService, private toastr: ToastrService) {}
+  constructor(
+    private bookmarks: BookmarkService,
+    private security: SecurityService,
+    private dataRequests: DataRequestsService,
+    private toastr: ToastrService
+  ) {}
 
   ngOnInit(): void {
-    this.bookmarkService.index().subscribe((result) => {
-      this.bookmarks = result;
+    const user = this.security.getSignedInUser();
+    if (user) {
+      this.dataRequests.list(user.email).subscribe((requests: DataRequest[]) => {
+        this.openDataRequests = [...requests.filter((req) => req.status === 'unsent')];
+      });
+    }
+
+    this.bookmarks.index().subscribe((result) => {
+      result.forEach((bookmark) => {
+        this.userBookmarks.push({ ...bookmark, isSelected: false });
+      });
     });
   }
 
-  remove(bookmark: Bookmark): void {
-    this.bookmarkService.remove(bookmark).subscribe((result) => {
-      this.bookmarks = result;
-      this.toastr.success(`${bookmark.label} removed from bookmarks`);
+  onChecked(event: BookmarkCheckedEvent) {
+    const toUpdate = this.userBookmarks.find((bm) => bm.id === event.item.id);
+    if (toUpdate) toUpdate.isSelected = event.checked;
+  }
+
+  onAddToRequest(event: AddToRequestEvent) {
+    alert(`Add bookmark: ${event.item} to request with Id: ${event.requestId}`);
+  }
+
+  onRemove(event: RemoveBookmarkEvent): void {
+    this.bookmarks.remove(event.item).subscribe(() => {
+      this.toastr.success(`${event.item.label} removed from bookmarks`);
+    });
+
+    this.userBookmarks = this.userBookmarks.filter(
+      (bookmark) => bookmark.id !== event.item.id
+    );
+  }
+
+  onSelectAll(event: MatCheckboxChange) {
+    this.userBookmarks = this.userBookmarks.map((bookmark) => {
+      return { ...bookmark, isSelected: event.checked };
     });
   }
 }

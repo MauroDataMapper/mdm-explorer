@@ -16,23 +16,31 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { MatTooltip } from '@angular/material/tooltip';
+import { MockComponent } from 'ng-mocks';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
 
-import { BookmarkToggleComponent } from './bookmark-toggle.component';
+import {
+  BookmarkToggleComponent,
+  TooltipHelpTextOption,
+} from './bookmark-toggle.component';
 
 describe('BookmarkToggleComponent', () => {
   let harness: ComponentHarness<BookmarkToggleComponent>;
 
   beforeEach(async () => {
-    harness = await setupTestModuleForComponent(BookmarkToggleComponent);
+    harness = await setupTestModuleForComponent(BookmarkToggleComponent, {
+      declarations: [MockComponent(MatTooltip)],
+    });
   });
 
   it('should create', () => {
     expect(harness.isComponentCreated).toBeTruthy();
     expect(harness.component.selected).toBeFalsy();
+    expect(harness.component.tooltipText).toBe('Add to bookmarks');
   });
 
   it.each([true, false])(
@@ -44,4 +52,33 @@ describe('BookmarkToggleComponent', () => {
       expect(emitSpy).toHaveBeenCalledWith(!initial);
     }
   );
+
+  describe('getting tooltip text', () => {
+    it.each([true, false])(
+      'should return the correct tooltipText when selected is: %p',
+      (selected) => {
+        const expectedText: TooltipHelpTextOption = selected
+          ? 'Remove from bookmarks'
+          : 'Add to bookmarks';
+
+        harness.component.selected = selected;
+
+        expect(harness.component.getTooltipText()).toEqual(expectedText);
+      }
+    );
+
+    it.each([true, false])(
+      'should have the correct tooltipText set after toggling selected to be: %p',
+      (initial) => {
+        harness.component.selected = initial;
+        const expectedText: TooltipHelpTextOption = !initial
+          ? 'Remove from bookmarks'
+          : 'Add to bookmarks';
+
+        harness.component.toggleState();
+
+        expect(harness.component.tooltipText).toEqual(expectedText);
+      }
+    );
+  });
 });

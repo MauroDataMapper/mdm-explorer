@@ -16,6 +16,41 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+@import "../../../styles/base/colours";
+
+$triangle-center: 77.5%;
+$vertical-offset: 6px;
+$horizontal-offset: 8px;
+
 .bookmark-icon {
   font-size: 20px;
+}
+
+::ng-deep div.mat-tooltip.mdm-bookmark-toggle-tooltip {
+  color: black;
+  font-size: small;
+  font-weight: normal;
+  text-align: center;
+  background: $color-mauro-gold;
+  padding-top: 1.1em;
+  margin-top: -1.2em;
+  margin-right: 8.1em;
+  width: 165px;
+
+  clip-path: polygon(
+    // Top left point
+    0% calc(0% + $vertical-offset),
+    // center left of triangle
+    calc($triangle-center - $horizontal-offset) calc(0% + $vertical-offset),
+    // tip of triangle
+    $triangle-center 0%,
+    // center right of triangle
+    calc($triangle-center + $horizontal-offset) calc(0% + $vertical-offset),
+    // Top right point
+    100% calc(0% + $vertical-offset),
+    // Bottom right point
+    100% 100%,
+    // Bottom left point
+    0% 100%
+  );
 }

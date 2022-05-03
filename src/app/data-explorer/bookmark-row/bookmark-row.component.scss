@@ -16,23 +16,28 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+$row-padding: 0.75em 1.2em;
 
-@import "../../../styles/base/all";
+.mdm-bookmark-row {
+  margin-bottom: 0.2em;
+  padding: $row-padding;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
-$header-border: 1px solid $color-mauro-dark-green;
-$header-border-radius: 4px;
+  h3,
+  a,
+  mdm-breadcrumb {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0 1em;
+  }
 
-$request-elements-max-height: 500px;
+  h3 {
+    font-weight: 500;
+  }
 
-.mdm-my-bookmarks {
-  border: $header-border;
-  border-radius: $header-border-radius;
-
-  overflow-y: scroll;
-  max-height: $request-elements-max-height;
-
-  &__select-all {
-    margin-left: 1.3em;
-    margin-top: 1em;
+  mdm-breadcrumb {
+    font-size: 13px;
   }
 }
