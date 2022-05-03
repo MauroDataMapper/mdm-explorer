@@ -184,14 +184,11 @@ export class DataRequestsService {
     };
 
     return this.list(user.email).pipe(
-      switchMap((dataModels: DataModel[]) => {
-        // Only list data access requests that have not been submitted
-        // i.e. do not have a modelVersion
-        dataModels.forEach((dataModel: DataModel) => {
-          if (!dataModel.modelVersion) {
-            sourceTargetIntersections.dataAccessRequests.push(dataModel);
-          }
-        });
+      map((dataRequests: DataRequest[]) =>
+        dataRequests.filter((dr) => dr.status === 'unsent')
+      ),
+      switchMap((dataRequests: DataRequest[]) => {
+        sourceTargetIntersections.dataAccessRequests = dataRequests;
 
         const gets: Observable<SourceTargetIntersections>[] = [];
 
@@ -224,14 +221,16 @@ export class DataRequestsService {
     sourceTargetIntersections: SourceTargetIntersections
   ): Observable<SourceTargetIntersections> {
     return this.dataModels.getIntersection(sourceDataModelId, targetDataModelId).pipe(
-      map((x) => {
-        const z: SourceTargetIntersection = {
+      map((result) => {
+        const sourceTargetIntersection: SourceTargetIntersection = {
           sourceDataModelId,
           targetDataModelId,
-          intersects: x.intersects,
+          intersects: result.intersects,
         };
 
-        sourceTargetIntersections.sourceTargetIntersections.push(z);
+        sourceTargetIntersections.sourceTargetIntersections.push(
+          sourceTargetIntersection
+        );
         return sourceTargetIntersections;
       })
     );

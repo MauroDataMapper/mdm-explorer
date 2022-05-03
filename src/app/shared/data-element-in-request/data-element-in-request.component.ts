@@ -76,7 +76,6 @@ export class DataElementInRequestComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // const user = this.security.getSignedInUser();
     if (this.user === null) {
       this.stateRouter.navigateToKnownPath('/home');
       return;
