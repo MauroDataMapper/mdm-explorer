@@ -124,7 +124,11 @@ describe('DashboardComponent', () => {
     });
   });
 
-  describe('search', () => {
+  describe('navigation', () => {
+    beforeEach(() => {
+      stateRouterStub.navigateToKnownPath.mockClear();
+    });
+
     it('should transition to the search-listing page with the appropriate search payload', () => {
       const searchTerms = 'test search terms';
       const expectedPayload = { search: searchTerms };
@@ -136,6 +140,12 @@ describe('DashboardComponent', () => {
         '/search/listing',
         expectedPayload
       );
+    });
+
+    it('should transition to the "my requests" page', () => {
+      harness.component.viewAllRequests();
+
+      expect(stateRouterStub.navigateToKnownPath).toHaveBeenCalledWith('/requests');
     });
   });
 });

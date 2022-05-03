@@ -19,6 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 <div class="container hero-top-spacer">
   <div class="flex-container">
     <div class="flex-container__card">
+      <h2>Search our catalogue</h2>
       <div class="mdm-dashboard__search-form">
         <form role="form" name="search" (submit)="search()">
           <mat-form-field appearance="outline" class="mdm-dashboard__search-input">
@@ -36,20 +37,50 @@ SPDX-License-Identifier: Apache-2.0
         <a class="mdm-dashboard__search-advanced" routerLink="/search">
           Advanced Search...</a
         >
+        <div class="mdm-dashboard__search-browse">
+          <p class="text-center">
+            Not sure what you are looking for? Try
+            <a routerLink="/browse">browsing our catalogue</a> instead.
+          </p>
+          <p class="text-center">
+            Or read our <a routerLink="/help">help guides</a> to understand what the Mauro
+            Data Explorer is for and how it can help you.
+          </p>
+        </div>
       </div>
     </div>
     <div class="flex-container__card">
-      <p-carousel [value]="currentUserRequests" [numVisible]="3" [numScroll]="3">
-        <ng-template pTemplate="header">
-          <h2>Requests you are currently working on:</h2>
-        </ng-template>
-        <ng-template let-request pTemplate="item">
-          <div class="mdm-dashboard__request-card">
-            <h3>{{ request.label }}</h3>
-            <p>{{ request.description }}</p>
-          </div>
-        </ng-template>
-      </p-carousel>
+      <div class="sub-heading-with-actions clearfix">
+        <h2>Your current data requests</h2>
+        <a href="#" class="float-right"
+          ><span class="fa-solid fa-circle-info"></span> What are requests?</a
+        >
+      </div>
+      <p>
+        You will find your active projects here, which organises our data points you are
+        interested in for your own research. You can then submit these to us to request
+        permission for our data. <a routerLink="/search">Search</a> or
+        <a routerLink="/browse">browse</a> our catalogue to identify further data points
+        of interest.
+      </p>
+      <p *ngIf="currentUserRequests.length === 0" class="text-center">
+        No active requests yet? Search the catalogue to start...
+      </p>
+      <div *ngIf="currentUserRequests.length > 0">
+        <p-carousel [value]="currentUserRequests" [numVisible]="3" [numScroll]="3">
+          <ng-template let-request pTemplate="item">
+            <div class="mdm-dashboard__request-card">
+              <h3>{{ request.label }}</h3>
+              <p>{{ request.description }}</p>
+            </div>
+          </ng-template>
+        </p-carousel>
+        <div class="highlight-box__actions">
+          <button mat-flat-button color="primary" (click)="viewAllRequests()">
+            Manage my requests
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
