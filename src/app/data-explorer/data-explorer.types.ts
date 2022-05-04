@@ -20,9 +20,9 @@ import { InjectionToken } from '@angular/core';
 import { ParamMap, Params } from '@angular/router';
 import {
   Breadcrumb,
-  CatalogueItemSearchResult,
-  DataElement,
   DataModel,
+  ProfileField,
+  ProfileSearchResult,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { DataClassIdentifier } from '../mauro/mauro.types';
@@ -40,16 +40,9 @@ export const DATA_EXPLORER_CONFIGURATION = new InjectionToken<DataExplorerConfig
 
 export type SortOrder = 'asc' | 'desc';
 
-export interface CatalogueSearchPayload {
-  searchTerms: string;
-  publication: string;
-  years: string;
-  authors: string;
-  authorAffiliation: string;
-  volumes: string;
-  issues: string;
-  pages: string;
-}
+export type DataElementSearchFilters = {
+  [key: string]: string | undefined;
+};
 
 /**
  * Represents the parameters to drive a Data Element search.
@@ -92,7 +85,10 @@ export interface DataElementSearchParameters {
    */
   order?: SortOrder;
 
-  // TODO: more parameters will go here - filters, sorting, pagination etc
+  /**
+   * Optionally provide filter values to control what search results are returned.
+   */
+  filters?: DataElementSearchFilters;
 }
 
 /**
@@ -114,7 +110,23 @@ export const mapSearchParametersToParams = (
     ...(parameters.page && { page: parameters.page }),
     ...(parameters.sort && { sort: parameters.sort }),
     ...(parameters.order && { order: parameters.order }),
+    ...parameters.filters,
   };
+};
+
+export const mapParamMapToFilters = (
+  query: ParamMap,
+  profileFields?: ProfileField[]
+): DataElementSearchFilters => {
+  if (!profileFields) {
+    return {};
+  }
+
+  return profileFields.reduce((filters, field) => {
+    const key = field.metadataPropertyName;
+    filters[key] = query.has(key) ? query.get(key)! : undefined; // eslint-disable-line @typescript-eslint/no-non-null-assertion
+    return filters;
+  }, {} as DataElementSearchFilters);
 };
 
 /**
@@ -124,7 +136,8 @@ export const mapSearchParametersToParams = (
  * @returns A {@link DataElementSearchParameters} containing the mapped parameters.
  */
 export const mapParamMapToSearchParameters = (
-  query: ParamMap
+  query: ParamMap,
+  profileFields?: ProfileField[]
 ): DataElementSearchParameters => {
   return {
     dataClass: {
@@ -136,6 +149,7 @@ export const mapParamMapToSearchParameters = (
     page: query.has('page') ? Number(query.get('page')) : undefined,
     sort: query.get('sort') ?? '',
     order: query.has('order') ? (query.get('order') as SortOrder) : undefined,
+    filters: mapParamMapToFilters(query, profileFields),
   };
 };
 
@@ -160,6 +174,7 @@ export const PAGINATION_CONFIG = new InjectionToken<PaginationConfiguration>(
 
 export interface DataElementSearchResult extends DataElementBasic {
   description?: string;
+  identifiableData?: string;
 }
 
 export interface DataElementSearchResultSet {
@@ -169,15 +184,20 @@ export interface DataElementSearchResultSet {
   items: DataElementSearchResult[];
 }
 
-// Note: Assumption that the the last breadcrumb is the data class containing the data element
-export const mapSearchResult = (
-  item: DataElement | CatalogueItemSearchResult
+export const mapProfileSearchResult = (
+  item: ProfileSearchResult
 ): DataElementSearchResult => {
-  let dataClassId = '';
+  // Note: Assumption that the the last breadcrumb is the data class containing the data element
+  const dataClassId =
+    item.breadcrumbs && item.breadcrumbs.length > 0
+      ? item.breadcrumbs[item.breadcrumbs.length - 1].id
+      : '';
 
-  if (item.breadcrumbs && item.breadcrumbs.length > 0) {
-    dataClassId = item.breadcrumbs[item.breadcrumbs.length - 1].id;
-  }
+  // Map profile fields directly to the returned object for ease of access
+  const idenfifableDataField = item.profileFields.find(
+    (field) => field.metadataPropertyName === 'identifiableData'
+  );
+
   return {
     id: item.id ?? '',
     dataModelId: item.model ?? '',
@@ -185,6 +205,7 @@ export const mapSearchResult = (
     label: item.label,
     description: item.description,
     breadcrumbs: item.breadcrumbs ?? [],
+    identifiableData: idenfifableDataField?.currentValue,
   };
 };
 

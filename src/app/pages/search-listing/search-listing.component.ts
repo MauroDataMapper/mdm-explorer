@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { DataClassDetail, Uuid } from '@maurodatamapper/mdm-resources';
+import { DataClassDetail, ProfileField, Uuid } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import {
   catchError,
@@ -28,12 +28,14 @@ import {
   Subject,
   switchMap,
   takeUntil,
+  combineLatest,
   throwError,
 } from 'rxjs';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { KnownRouterPath, StateRouterService } from 'src/app/core/state-router.service';
 import { DataElementSearchService } from 'src/app/data-explorer/data-element-search.service';
 import {
+  DataElementSearchFilters,
   DataElementSearchParameters,
   DataElementSearchResult,
   DataElementSearchResultSet,
@@ -45,16 +47,18 @@ import {
   DataElementBookmarkEvent,
   DataElementCheckedEvent,
 } from 'src/app/data-explorer/data-explorer.types';
-import { UserDetails } from 'src/app/security/user-details.service';
 import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
 import { SortByOption } from 'src/app/data-explorer/sort-by/sort-by.component';
-import { SecurityService } from 'src/app/security/security.service';
 import {
   DataRequestsService,
   DataAccessRequestsSourceTargetIntersections,
 } from 'src/app/data-explorer/data-requests.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import { BroadcastService } from 'src/app/core/broadcast.service';
+import {
+  SearchFilterChange,
+  SearchFilterField,
+} from 'src/app/data-explorer/search-filters/search-filters.component';
 
 export type SearchListingSource = 'unknown' | 'browse' | 'search';
 export type SearchListingStatus = 'init' | 'loading' | 'ready' | 'error';
@@ -91,7 +95,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
     { value: 'label-desc', displayName: 'Label (z-a)' },
   ];
   sortByDefaultOption: SortByOption = this.searchListingSortByOptions[0];
-  private user: UserDetails | null;
+  filters: SearchFilterField[] = [];
 
   /**
    * Signal to attach to subscriptions to trigger when they should be unsubscribed.
@@ -107,10 +111,8 @@ export class SearchListingComponent implements OnInit, OnDestroy {
     private toastr: ToastrService,
     private stateRouter: StateRouterService,
     private bookmarks: BookmarkService,
-    private broadcast: BroadcastService,
-    security: SecurityService
+    private broadcast: BroadcastService
   ) {
-    this.user = security.getSignedInUser();
     this.sourceTargetIntersections = {
       dataAccessRequests: [],
       sourceTargetIntersections: [],
@@ -128,11 +130,18 @@ export class SearchListingComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.route.queryParamMap
+    // Important to use combineLatest() instead of forkJoin() - route.queryParamMap does not complete, so need to continue
+    // on next value in route.queryParamMap stream instead
+    combineLatest([this.route.queryParamMap, this.explorer.getProfileFieldsForFilters()])
       .pipe(
-        switchMap((query) => {
-          this.parameters = mapParamMapToSearchParameters(query);
+        switchMap(([query, profileFields]) => {
+          this.parameters = mapParamMapToSearchParameters(query, profileFields);
           this.searchTerms = this.parameters.search;
+
+          this.filters = this.createSearchFiltersFromProfileFields(
+            profileFields,
+            this.parameters.filters
+          );
 
           // Set sortBy from route val, or set to default value.
           this.sortBy = this.setSortByFromRouteOrAsDefault(
@@ -220,6 +229,33 @@ export class SearchListingComponent implements OnInit, OnDestroy {
     this.stateRouter.navigateToKnownPath('/search/listing', params);
   }
 
+  filterChanged(event: SearchFilterChange) {
+    const next: DataElementSearchParameters = {
+      ...this.parameters,
+      page: 1, // Always force to start at first page of results again
+    };
+
+    if (!next.filters) {
+      next.filters = {};
+    }
+
+    next.filters[event.name] = event.value;
+
+    const params = mapSearchParametersToParams(next);
+    this.stateRouter.navigateToKnownPath('/search/listing', params);
+  }
+
+  filterReset() {
+    const next: DataElementSearchParameters = {
+      ...this.parameters,
+      page: 1, // Always force to start at first page of results again
+      filters: {},
+    };
+
+    const params = mapSearchParametersToParams(next);
+    this.stateRouter.navigateToKnownPath('/search/listing', params);
+  }
+
   private loadDataClass() {
     if (this.source !== 'browse') {
       return of(undefined);
@@ -273,6 +309,23 @@ export class SearchListingComponent implements OnInit, OnDestroy {
         return this.dataRequests.getRequestsIntersections(dataModel.id, dataElementIds);
       })
     );
+  }
+
+  private createSearchFiltersFromProfileFields(
+    profileFields: ProfileField[],
+    filters?: DataElementSearchFilters
+  ): SearchFilterField[] {
+    return profileFields
+      .filter((field) => field.dataType === 'enumeration')
+      .map((field) => {
+        return {
+          name: field.metadataPropertyName,
+          label: field.fieldName,
+          dataType: 'enumeration',
+          allowedValues: field.allowedValues,
+          currentValue: filters?.[field.metadataPropertyName],
+        };
+      });
   }
 
   /**

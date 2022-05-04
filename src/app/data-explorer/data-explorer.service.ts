@@ -17,9 +17,10 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Inject, Injectable } from '@angular/core';
-import { DataModelDetail } from '@maurodatamapper/mdm-resources';
-import { Observable } from 'rxjs';
+import { DataModelDetail, ProfileField } from '@maurodatamapper/mdm-resources';
+import { map, Observable } from 'rxjs';
 import { DataModelService } from '../mauro/data-model.service';
+import { ProfileService } from '../mauro/profile.service';
 import {
   DataExplorerConfiguration,
   DATA_EXPLORER_CONFIGURATION,
@@ -31,10 +32,24 @@ import {
 export class DataExplorerService {
   constructor(
     private dataModels: DataModelService,
+    private profiles: ProfileService,
     @Inject(DATA_EXPLORER_CONFIGURATION) private config: DataExplorerConfiguration
   ) {}
 
   getRootDataModel(): Observable<DataModelDetail> {
     return this.dataModels.getDataModel(this.config.rootDataModelPath);
+  }
+
+  getProfileFieldsForFilters(): Observable<ProfileField[]> {
+    return this.profiles
+      .definition(this.config.profileNamespace, this.config.profileServiceName)
+      .pipe(
+        map((definition) => {
+          // Filters only support "enumeration" data types for now, this could change later though
+          return definition.sections
+            .flatMap((section) => section.fields)
+            .filter((field) => field.dataType === 'enumeration');
+        })
+      );
   }
 }

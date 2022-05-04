@@ -42,48 +42,71 @@ SPDX-License-Identifier: Apache-2.0
     again.
   </div>
   <div *ngIf="status === 'ready'">
-    <div class="mdm-search-listing__sort-row">
-      <div class="vertically-aligned">
-        <ng-container *ngIf="source === 'browse'">
-          {{ resultSet?.totalResults }} results for '
-          <mdm-breadcrumb [item]="root"></mdm-breadcrumb>
-          '
-        </ng-container>
-        <ng-container *ngIf="source === 'search'">
-          {{ resultSet?.totalResults }} results found
-        </ng-container>
+    <div class="row">
+      <div class="col-md-3">
+        <!-- Blank space -->
       </div>
-      <div class="vertically-aligned">
-        <mdm-sort-by
-          [value]="sortBy"
-          [options]="searchListingSortByOptions"
-          (valueChange)="selectSortBy($event)"
-        ></mdm-sort-by>
+      <div class="col-md-9">
+        <div class="mdm-search-listing__sort-row">
+          <div class="vertically-aligned">
+            <ng-container *ngIf="source === 'browse'">
+              {{ resultSet?.totalResults }} results for '
+              <mdm-breadcrumb [item]="root"></mdm-breadcrumb>
+              '
+            </ng-container>
+            <ng-container *ngIf="source === 'search'">
+              {{ resultSet?.totalResults }} results found
+            </ng-container>
+          </div>
+          <div class="vertically-aligned">
+            <mdm-sort-by
+              [value]="sortBy"
+              [options]="searchListingSortByOptions"
+              (valueChange)="selectSortBy($event)"
+            ></mdm-sort-by>
+          </div>
+        </div>
       </div>
     </div>
     <div *ngIf="resultSet" class="row">
-      <mdm-data-element-search-result
-        *ngFor="let dataElement of resultSet.items"
-        [item]="dataElement"
-        [showBreadcrumb]="source === 'search'"
-        [bookmarks]="userBookmarks"
-        (checked)="selectElement($event)"
-        (bookmark)="bookmarkElement($event)"
-        [sourceTargetIntersections]="sourceTargetIntersections"
-      ></mdm-data-element-search-result>
-      <mdm-pagination
-        [currentPage]="resultSet.page"
-        [pageSize]="resultSet.pageSize"
-        [totalResults]="resultSet.totalResults"
-        (selected)="selectPage($event)"
-      ></mdm-pagination>
+      <div class="col-md-3">
+        <mdm-search-filters
+          [fields]="filters"
+          (filterChange)="filterChanged($event)"
+          (filterReset)="filterReset()"
+        ></mdm-search-filters>
+      </div>
+      <div class="col-md-9">
+        <mdm-data-element-search-result
+          *ngFor="let dataElement of resultSet.items"
+          [item]="dataElement"
+          [showBreadcrumb]="source === 'search'"
+          [bookmarks]="userBookmarks"
+          (checked)="selectElement($event)"
+          (bookmark)="bookmarkElement($event)"
+          [sourceTargetIntersections]="sourceTargetIntersections"
+        ></mdm-data-element-search-result>
+        <mdm-pagination
+          [currentPage]="resultSet.page"
+          [pageSize]="resultSet.pageSize"
+          [totalResults]="resultSet.totalResults"
+          (selected)="selectPage($event)"
+        ></mdm-pagination>
+        <div *ngIf="resultSet.totalResults === 0" class="mdm-search-listing__no-results">
+          <p>Unfortunately we could not find any matches based on this criteria. Try:</p>
+          <ul>
+            <li>Changing your search term to be less specific.</li>
+            <li>Removing some, or all, of the search filters.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <!-- Loading wheel -->
+    <div *ngIf="creatingRequest">
+      <mdm-loading-spinner
+        caption="Creating new request ..."
+        color="primary"
+      ></mdm-loading-spinner>
     </div>
   </div>
-</div>
-<!-- Loading wheel -->
-<div *ngIf="creatingRequest">
-  <mdm-loading-spinner
-    caption="Creating new request ..."
-    color="primary"
-  ></mdm-loading-spinner>
 </div>

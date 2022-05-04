@@ -1,4 +1,4 @@
-<!--
+/*
 Copyright 2022 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -15,25 +15,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
--->
-<div class="container">
-  <div class="main-row hero">
-    <h1>Search the catalogue</h1>
-  </div>
-  <div class="highlight-box">
-    <div class="highlight-box__header">
-      <div class="sub-heading-with-actions">
-        <h2>Search specific terms:</h2>
-        <a class="float-right" href="#"
-          ><i class="fa-solid fa-circle-info"></i>Search tips</a
-        >
-      </div>
-      <div class="highlight-box__content--slim">
-        <mdm-catalogue-search-form
-          [profileFields]="profileFields"
-          (searchClicked)="search($event)"
-        ></mdm-catalogue-search-form>
-      </div>
-    </div>
-  </div>
-</div>
+*/
+import { Component, Input } from '@angular/core';
+
+@Component({
+  selector: 'mdm-identifiable-data-icon',
+  templateUrl: './identifiable-data-icon.component.html',
+  styleUrls: ['./identifiable-data-icon.component.scss'],
+})
+export class IdentifiableDataIconComponent {
+  @Input() state?: string;
+}

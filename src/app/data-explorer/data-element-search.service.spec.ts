@@ -16,34 +16,50 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { CatalogueItemDomainType, DataModelDetail } from '@maurodatamapper/mdm-resources';
+import {
+  CatalogueItemDomainType,
+  DataModelDetail,
+  MultiFacetAwareDomainType,
+} from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
-import { DataModelService } from 'src/app/mauro/data-model.service';
 import { createDataExplorerServiceStub } from 'src/app/testing/stubs/data-explorer.stub';
-import { createDataModelServiceStub } from 'src/app/testing/stubs/data-model.stub';
 import { setupTestModuleForService } from 'src/app/testing/testing.helpers';
 import { DataExplorerService } from './data-explorer.service';
 import { DataElementSearchService } from './data-element-search.service';
 import {
   DataElementSearchParameters,
   DataElementSearchResultSet,
+  DataExplorerConfiguration,
+  DATA_EXPLORER_CONFIGURATION,
 } from './data-explorer.types';
+import { createProfileServiceStub } from '../testing/stubs/profile.stub';
+import { ProfileService } from '../mauro/profile.service';
 
 describe('DataElementSearchService', () => {
   let service: DataElementSearchService;
-  const dataModelsStub = createDataModelServiceStub();
+  const profilesStub = createProfileServiceStub();
   const dataExplorerStub = createDataExplorerServiceStub();
+
+  const explorerConfig: DataExplorerConfiguration = {
+    rootDataModelPath: 'root',
+    profileNamespace: 'test.namespace',
+    profileServiceName: 'testProfile',
+  };
 
   beforeEach(() => {
     service = setupTestModuleForService(DataElementSearchService, {
       providers: [
         {
-          provide: DataModelService,
-          useValue: dataModelsStub,
+          provide: ProfileService,
+          useValue: profilesStub,
         },
         {
           provide: DataExplorerService,
           useValue: dataExplorerStub,
+        },
+        {
+          provide: DATA_EXPLORER_CONFIGURATION,
+          useValue: explorerConfig,
         },
       ],
     });
@@ -90,15 +106,25 @@ describe('DataElementSearchService', () => {
         ],
       };
 
-      dataModelsStub.getDataElements.mockImplementationOnce((id) => {
-        expect(id).toBe(params.dataClass);
-        return cold('--a|', {
-          a: {
-            count: expectedResultSet.items.length,
-            items: expectedResultSet.items,
-          },
-        });
-      });
+      profilesStub.searchCatalogueItem.mockImplementationOnce(
+        (domainType, id, profileNamespace, profileName) => {
+          expect(domainType).toBe(MultiFacetAwareDomainType.DataClasses);
+          expect(id).toBe(params.dataClass?.dataClassId);
+          expect(profileNamespace).toBe(explorerConfig.profileNamespace);
+          expect(profileName).toBe(explorerConfig.profileServiceName);
+          return cold('--a|', {
+            a: {
+              count: expectedResultSet.items.length,
+              items: expectedResultSet.items.map((res) => {
+                return {
+                  ...res,
+                  profileFields: [],
+                };
+              }),
+            },
+          });
+        }
+      );
 
       const expected$ = cold('--a|', { a: expectedResultSet });
       const actual$ = service.listing(params);
@@ -159,16 +185,26 @@ describe('DataElementSearchService', () => {
         });
       });
 
-      dataModelsStub.searchDataModel.mockImplementationOnce((id, params) => {
-        expect(id).toBe(expectedRootModel.id);
-        expect(params.searchTerm).toBe(parameters.search);
-        return cold('--a|', {
-          a: {
-            count: expectedResultSet.items.length,
-            items: expectedResultSet.items,
-          },
-        });
-      });
+      profilesStub.searchCatalogueItem.mockImplementationOnce(
+        (domainType, id, profileNamespace, profileName, params) => {
+          expect(domainType).toBe(MultiFacetAwareDomainType.DataModels);
+          expect(id).toBe(expectedRootModel.id);
+          expect(profileNamespace).toBe(explorerConfig.profileNamespace);
+          expect(profileName).toBe(explorerConfig.profileServiceName);
+          expect(params.searchTerm).toBe(parameters.search);
+          return cold('--a|', {
+            a: {
+              count: expectedResultSet.items.length,
+              items: expectedResultSet.items.map((res) => {
+                return {
+                  ...res,
+                  profileFields: [],
+                };
+              }),
+            },
+          });
+        }
+      );
 
       const expected$ = cold('----a|', { a: expectedResultSet });
       const actual$ = service.search(parameters);
