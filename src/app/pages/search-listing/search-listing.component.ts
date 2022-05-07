@@ -228,7 +228,6 @@ export class SearchListingComponent implements OnInit {
     return request$.pipe(
       catchError(() => {
         this.status = 'error';
-        console.log('X this.status', this.status);
         return EMPTY;
       })
     );

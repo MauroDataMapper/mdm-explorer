@@ -28,6 +28,8 @@ import {
   DataModelSubsetPayload,
   MdmIndexBody,
   SearchQueryParameters,
+  SourceTargetIntersection,
+  SourceTargetIntersectionPayload,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
@@ -65,6 +67,10 @@ export type DataModelCopySubsetFn = (
 export type DataModelElementsForClassFn = (
   dataClass: DataClass
 ) => Observable<DataElement[]>;
+export type DataModelGetIntersectionManyFn = (
+  sourceId: Uuid,
+  data: SourceTargetIntersectionPayload
+) => Observable<MdmIndexBody<SourceTargetIntersection>>;
 
 export interface DataModelServiceStub {
   getDataModel: jest.MockedFunction<DataModelGetDataModelFn>;
@@ -78,6 +84,7 @@ export interface DataModelServiceStub {
   addToFolder: jest.MockedFunction<DataModelAddToFolderFn>;
   copySubset: jest.MockedFunction<DataModelCopySubsetFn>;
   getDataElementsForDataClass: jest.MockedFunction<DataModelElementsForClassFn>;
+  getIntersectionMany: jest.MockedFunction<DataModelGetIntersectionManyFn>;
 }
 
 export const createDataModelServiceStub = (): DataModelServiceStub => {
@@ -94,5 +101,6 @@ export const createDataModelServiceStub = (): DataModelServiceStub => {
     copySubset: jest.fn() as jest.MockedFunction<DataModelCopySubsetFn>,
     getDataElementsForDataClass:
       jest.fn() as jest.MockedFunction<DataModelElementsForClassFn>,
+    getIntersectionMany: jest.fn() as jest.MockedFunction<DataModelGetIntersectionManyFn>,
   };
 };
