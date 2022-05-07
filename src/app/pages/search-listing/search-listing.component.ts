@@ -20,7 +20,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DataClassDetail, Uuid } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, filter, of, switchMap, throwError } from 'rxjs';
+import { catchError, EMPTY, forkJoin, of, switchMap, throwError } from 'rxjs';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { KnownRouterPath, StateRouterService } from 'src/app/core/state-router.service';
 import { DataElementSearchService } from 'src/app/data-explorer/data-element-search.service';
@@ -112,10 +112,6 @@ export class SearchListingComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.bookmarks.index().subscribe((result) => {
-      this.userBookmarks = result;
-    });
-
     this.route.queryParamMap
       .pipe(
         switchMap((query) => {
@@ -134,14 +130,16 @@ export class SearchListingComponent implements OnInit {
 
           this.status = 'loading';
 
-          return this.loadDataClass();
+          return forkJoin([
+            this.loadDataClass(),
+            this.loadSearchResults(),
+            this.bookmarks.index(),
+          ]);
         }),
-        switchMap((dataClass) => {
+        switchMap(([dataClass, resultSet, userBookmarks]) => {
           this.root = dataClass;
-          return this.loadSearchResults();
-        }),
-        switchMap((resultSet) => {
           this.resultSet = resultSet;
+          this.userBookmarks = userBookmarks;
           return this.loadIntersections(resultSet);
         })
       )
