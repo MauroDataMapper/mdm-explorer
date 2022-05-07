@@ -19,7 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 import { DataClass, DataElement, DataModel, Uuid } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
 import { DataElementBasic, DataRequest } from 'src/app/data-explorer/data-explorer.types';
-import { SourceTargetIntersections } from 'src/app/data-explorer/data-requests.service';
+import { DataAccessRequestsSourceTargetIntersections } from 'src/app/data-explorer/data-requests.service';
 import { UserDetails } from 'src/app/security/user-details.service';
 
 export type DataRequestsListFn = (username: string) => Observable<DataModel[]>;
@@ -38,15 +38,15 @@ export type DataRequestsCreateFromDataElementsFn = (
   name: string,
   description: string
 ) => Observable<DataRequest>;
-export type SourceTargetIntersectionsFn = (
+export type DataAccessRequestsSourceTargetIntersectionsFn = (
   sourceDataModelId: Uuid
-) => Observable<[SourceTargetIntersections[]]>;
+) => Observable<[DataAccessRequestsSourceTargetIntersections[]]>;
 
 export interface DataRequestsServiceStub {
   list: jest.MockedFunction<DataRequestsListFn>;
   listDataElements: jest.MockedFunction<DataRequestsListElementsFn>;
   createFromDataElements: jest.MockedFunction<DataRequestsCreateFromDataElementsFn>;
-  getRequestsIntersections: jest.MockedFunction<SourceTargetIntersectionsFn>;
+  getRequestsIntersections: jest.MockedFunction<DataAccessRequestsSourceTargetIntersectionsFn>;
 }
 
 export const createDataRequestsServiceStub = (): DataRequestsServiceStub => {
@@ -56,6 +56,6 @@ export const createDataRequestsServiceStub = (): DataRequestsServiceStub => {
     createFromDataElements:
       jest.fn() as jest.MockedFunction<DataRequestsCreateFromDataElementsFn>,
     getRequestsIntersections:
-      jest.fn() as jest.MockedFunction<SourceTargetIntersectionsFn>,
+      jest.fn() as jest.MockedFunction<DataAccessRequestsSourceTargetIntersectionsFn>,
   };
 };

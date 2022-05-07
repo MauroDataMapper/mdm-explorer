@@ -23,7 +23,11 @@ import {
   DataModelCreatePayload,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
-import { FolderDetail } from '@maurodatamapper/mdm-resources';
+import {
+  FolderDetail,
+  SourceTargetIntersection,
+  SourceTargetIntersectionPayload,
+} from '@maurodatamapper/mdm-resources';
 import { forkJoin, map, Observable, switchMap, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { UserDetails } from '../security/user-details.service';
@@ -36,21 +40,9 @@ import { DataExplorerService } from './data-explorer.service';
 import { SecurityService } from '../security/security.service';
 
 /**
- * Work in progress replacement for DataModelIntersection, in which the source and target model
- * IDs are also present.
+ * A collection data access requests and their intersections with target models.
  */
-export interface SourceTargetIntersection {
-  sourceDataModelId: Uuid;
-
-  targetDataModelId: Uuid;
-
-  intersects: Uuid[];
-}
-
-/**
- * A collection of the above, plus data access requests.
- */
-export interface SourceTargetIntersections {
+export interface DataAccessRequestsSourceTargetIntersections {
   dataAccessRequests: DataModel[];
 
   sourceTargetIntersections: SourceTargetIntersection[];
@@ -171,18 +163,18 @@ export class DataRequestsService {
    * @returns
    */
   getRequestsIntersections(
-    sourceDataModelId: Uuid
-  ): Observable<SourceTargetIntersections[]> {
+    sourceDataModelId: Uuid,
+    dataElementIds: Uuid[]
+  ): Observable<DataAccessRequestsSourceTargetIntersections> {
     const user = this.security.getSignedInUser();
 
     if (user === null) {
       return throwError(() => new Error('Must be logged in to use User Preferences'));
     }
-    const sourceTargetIntersections: SourceTargetIntersections = {
+    const sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections = {
       dataAccessRequests: [],
       sourceTargetIntersections: [],
     };
-
     return this.list(user.email).pipe(
       map((dataRequests: DataRequest[]) =>
         dataRequests.filter((dr) => dr.status === 'unsent')
@@ -190,17 +182,28 @@ export class DataRequestsService {
       switchMap((dataRequests: DataRequest[]) => {
         sourceTargetIntersections.dataAccessRequests = dataRequests;
 
-        const gets: Observable<SourceTargetIntersections>[] = [];
+        const payload: SourceTargetIntersectionPayload = {
+          targetDataModelIds: [],
+          dataElementIds,
+        };
 
-        sourceTargetIntersections.dataAccessRequests.forEach((item: DataModel) => {
-          if (item.id) {
-            gets.push(
-              this.getIntersection(sourceDataModelId, item.id, sourceTargetIntersections)
-            );
+        dataRequests.forEach((dataRequest: DataRequest) => {
+          if (dataRequest.id) {
+            payload.targetDataModelIds.push(dataRequest.id);
           }
         });
 
-        return forkJoin(gets);
+        const gets: Observable<DataAccessRequestsSourceTargetIntersections>[] = [];
+
+        gets.push(
+          this.getIntersection(sourceDataModelId, payload, sourceTargetIntersections)
+        );
+
+        return this.getIntersection(
+          sourceDataModelId,
+          payload,
+          sourceTargetIntersections
+        );
       })
     );
   }
@@ -217,20 +220,12 @@ export class DataRequestsService {
    */
   getIntersection(
     sourceDataModelId: Uuid,
-    targetDataModelId: Uuid,
-    sourceTargetIntersections: SourceTargetIntersections
-  ): Observable<SourceTargetIntersections> {
-    return this.dataModels.getIntersection(sourceDataModelId, targetDataModelId).pipe(
+    payload: SourceTargetIntersectionPayload,
+    sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections
+  ): Observable<DataAccessRequestsSourceTargetIntersections> {
+    return this.dataModels.getIntersectionMany(sourceDataModelId, payload).pipe(
       map((result) => {
-        const sourceTargetIntersection: SourceTargetIntersection = {
-          sourceDataModelId,
-          targetDataModelId,
-          intersects: result.intersects,
-        };
-
-        sourceTargetIntersections.sourceTargetIntersections.push(
-          sourceTargetIntersection
-        );
+        sourceTargetIntersections.sourceTargetIntersections = result.items;
         return sourceTargetIntersections;
       })
     );

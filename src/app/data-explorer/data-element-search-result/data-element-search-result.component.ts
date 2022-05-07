@@ -24,7 +24,7 @@ import {
   DataElementCheckedEvent,
   DataElementSearchResult,
 } from '../data-explorer.types';
-import { SourceTargetIntersections } from '../data-requests.service';
+import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.service';
 
 @Component({
   selector: 'mdm-data-element-search-result',
@@ -38,13 +38,18 @@ export class DataElementSearchResultComponent {
 
   @Input() bookmarks: Bookmark[] = [];
 
-  @Input() sourceTargetIntersections: SourceTargetIntersections[] = [];
+  @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 
   @Output() checked = new EventEmitter<DataElementCheckedEvent>();
 
   @Output() bookmark = new EventEmitter<DataElementBookmarkEvent>();
 
-  constructor() {}
+  constructor() {
+    this.sourceTargetIntersections = {
+      dataAccessRequests: [],
+      sourceTargetIntersections: [],
+    };
+  }
 
   itemChecked(event: MatCheckboxChange) {
     if (!this.item) {

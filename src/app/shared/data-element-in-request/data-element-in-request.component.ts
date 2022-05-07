@@ -21,8 +21,8 @@ import { DataModel, DataModelSubsetPayload } from '@maurodatamapper/mdm-resource
 import { catchError, EMPTY, filter, finalize, switchMap } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import {
+  DataAccessRequestsSourceTargetIntersections,
   DataRequestsService,
-  SourceTargetIntersections,
 } from 'src/app/data-explorer/data-requests.service';
 import { Uuid } from '@maurodatamapper/mdm-resources';
 import { SecurityService } from 'src/app/security/security.service';
@@ -47,7 +47,7 @@ export interface CreateRequestEvent {
 export class DataElementInRequestComponent implements OnInit {
   @Input() dataElement?: DataElementSearchResult;
 
-  @Input() sourceTargetIntersections: SourceTargetIntersections[] = [];
+  @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 
   @Output() createRequestClicked = new EventEmitter<CreateRequestEvent>();
 
@@ -73,6 +73,10 @@ export class DataElementInRequestComponent implements OnInit {
     private broadcast: BroadcastService
   ) {
     this.user = security.getSignedInUser();
+    this.sourceTargetIntersections = {
+      dataAccessRequests: [],
+      sourceTargetIntersections: [],
+    };
   }
 
   ngOnInit(): void {
@@ -81,16 +85,16 @@ export class DataElementInRequestComponent implements OnInit {
       return;
     }
 
-    if (this.sourceTargetIntersections.length > 0) {
-      this.dataAccessRequests = this.sourceTargetIntersections[0].dataAccessRequests;
+    if (this.sourceTargetIntersections.sourceTargetIntersections.length > 0) {
+      this.dataAccessRequests = this.sourceTargetIntersections.dataAccessRequests;
 
       for (
         let i = 0;
-        i < this.sourceTargetIntersections[0].sourceTargetIntersections.length;
+        i < this.sourceTargetIntersections.sourceTargetIntersections.length;
         i++
       ) {
         const sourceTargetIntersection =
-          this.sourceTargetIntersections[0].sourceTargetIntersections[i];
+          this.sourceTargetIntersections.sourceTargetIntersections[i];
 
         const targetDataModelId = sourceTargetIntersection.targetDataModelId;
 
