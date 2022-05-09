@@ -52,6 +52,7 @@ export class BrowseComponent implements OnInit {
   childDataClasses: DataClass[] = [];
   selected?: DataClass;
   creatingRequest = false;
+  loadingSpinnerCaption = '';
   private user: UserDetails | null;
 
   constructor(
@@ -105,6 +106,7 @@ export class BrowseComponent implements OnInit {
           }
 
           this.creatingRequest = true;
+          this.loadingSpinnerCaption = 'Creating new request ...';
           return forkJoin([
             of(response),
             this.dataModels.getDataElementsForDataClass(this.selected),
@@ -148,7 +150,9 @@ export class BrowseComponent implements OnInit {
             })
             .afterClosed();
         }),
-        finalize(() => (this.creatingRequest = false))
+        finalize(() => {
+          this.creatingRequest = false;
+        })
       )
       .subscribe((action) => {
         if (action === 'view-requests') {

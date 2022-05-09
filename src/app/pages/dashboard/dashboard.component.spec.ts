@@ -17,6 +17,8 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { MockComponent } from 'ng-mocks';
+import { MatFormField } from '@angular/material/form-field';
+import { MatIcon } from '@angular/material/icon';
 import { ToastrService } from 'ngx-toastr';
 import { Carousel } from 'primeng/carousel';
 import { of, throwError } from 'rxjs';
@@ -45,7 +47,11 @@ describe('DashboardComponent', () => {
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(DashboardComponent, {
-      declarations: [MockComponent(Carousel)],
+      declarations: [
+        MockComponent(Carousel),
+        MockComponent(MatFormField),
+        MockComponent(MatIcon),
+      ],
       providers: [
         {
           provide: SecurityService,
@@ -124,7 +130,11 @@ describe('DashboardComponent', () => {
     });
   });
 
-  describe('search', () => {
+  describe('navigation', () => {
+    beforeEach(() => {
+      stateRouterStub.navigateToKnownPath.mockClear();
+    });
+
     it('should transition to the search-listing page with the appropriate search payload', () => {
       const searchTerms = 'test search terms';
       const expectedPayload = { search: searchTerms };
@@ -136,6 +146,12 @@ describe('DashboardComponent', () => {
         '/search/listing',
         expectedPayload
       );
+    });
+
+    it('should transition to the "my requests" page', () => {
+      harness.component.viewAllRequests();
+
+      expect(stateRouterStub.navigateToKnownPath).toHaveBeenCalledWith('/requests');
     });
   });
 });

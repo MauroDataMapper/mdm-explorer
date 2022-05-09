@@ -35,9 +35,14 @@ import {
   DataModelFull,
   DataModelFullResponse,
   DataModelIndexResponse,
+  DataModelIntersection,
+  DataModelIntersectionResponse,
   DataModelSubsetPayload,
   MdmIndexBody,
   SearchQueryParameters,
+  SourceTargetIntersection,
+  SourceTargetIntersectionPayload,
+  SourceTargetIntersectionResponse,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { forkJoin, map, Observable, of, switchMap } from 'rxjs';
@@ -241,5 +246,37 @@ export class DataModelService {
       }),
       map((dataElements) => dataElements.flatMap((de) => de))
     );
+  }
+
+  /**
+   * Gets the list of Data Elements which are selected in the request model
+   *
+   * @param sourceDataModelId
+   * @param targetDataModelId
+   * @returns An observable of {@link DataModelIntersection}.
+   */
+  getIntersection(
+    sourceDataModelId: Uuid,
+    targetDataModelId: Uuid
+  ): Observable<DataModelIntersection> {
+    return this.endpoints.dataModel
+      .intersects(sourceDataModelId, targetDataModelId)
+      .pipe(map((response: DataModelIntersectionResponse) => response.body));
+  }
+
+  /**
+   * Gets the list of Data Elements which are selected in the request model
+   *
+   * @param sourceDataModelId
+   * @param data
+   * @returns An observable of {@link DataModelIntersection}.
+   */
+  getIntersectionMany(
+    sourceDataModelId: Uuid,
+    data: SourceTargetIntersectionPayload
+  ): Observable<MdmIndexBody<SourceTargetIntersection>> {
+    return this.endpoints.dataModel
+      .intersectsMany(sourceDataModelId, data)
+      .pipe(map((response: SourceTargetIntersectionResponse) => response.body));
   }
 }

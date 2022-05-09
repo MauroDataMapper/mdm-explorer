@@ -23,20 +23,27 @@ import {
   DataElement,
   DataElementDetail,
   DataModelFull,
+  SourceTargetIntersection,
+  MdmIndexBody,
 } from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
 import { DataModelService } from '../mauro/data-model.service';
 import { DataElementBasic, DataRequest } from '../data-explorer/data-explorer.types';
 import { createDataModelServiceStub } from '../testing/stubs/data-model.stub';
 import { createFolderServiceStub } from '../testing/stubs/folder.stub';
+import { createSecurityServiceStub } from '../testing/stubs/security.stub';
 import { setupTestModuleForService } from '../testing/testing.helpers';
 import { FolderService } from '../mauro/folder.service';
-import { DataRequestsService } from './data-requests.service';
+import {
+  DataAccessRequestsSourceTargetIntersections,
+  DataRequestsService,
+} from './data-requests.service';
 import { UserDetails } from '../security/user-details.service';
 import { CatalogueUserService } from '../mauro/catalogue-user.service';
 import { createCatalogueUserServiceStub } from '../testing/stubs/catalogue-user.stub';
 import { createDataExplorerServiceStub } from '../testing/stubs/data-explorer.stub';
 import { DataExplorerService } from './data-explorer.service';
+import { SecurityService } from '../security/security.service';
 
 describe('DataRequestsService', () => {
   let service: DataRequestsService;
@@ -44,6 +51,7 @@ describe('DataRequestsService', () => {
   const folderServiceStub = createFolderServiceStub();
   const catalogueUserStub = createCatalogueUserServiceStub();
   const dataExplorerStub = createDataExplorerServiceStub();
+  const securityStub = createSecurityServiceStub();
 
   beforeEach(() => {
     service = setupTestModuleForService(DataRequestsService, {
@@ -63,6 +71,10 @@ describe('DataRequestsService', () => {
         {
           provide: DataExplorerService,
           useValue: dataExplorerStub,
+        },
+        {
+          provide: SecurityService,
+          useValue: securityStub,
         },
       ],
     });
@@ -292,6 +304,91 @@ describe('DataRequestsService', () => {
         a: dataRequest,
       });
       const actual$ = service.createFromDataElements(elements, user, name, description);
+      expect(actual$).toBeObservable(expected$);
+    });
+  });
+
+  describe('getRequestsIntersections', () => {
+    it('should get some results', () => {
+      // Arrange
+      const sourceDataModelId = 'sourceId';
+      const dataElementIds = ['element1Id', 'element2Id', 'element3Id'];
+
+      const expectedDataAccessRequest: DataRequest = {
+        id: 'targetId',
+        label: 'Request 1',
+        status: 'unsent',
+        domainType: CatalogueItemDomainType.DataModel,
+      };
+
+      // Expected results
+      const expectedSourceTargetIntersection: SourceTargetIntersection = {
+        sourceDataModelId: 'sourceId',
+        targetDataModelId: 'targetId',
+        intersects: ['element1Id', 'element3Id'],
+      };
+
+      const expectedDataAccessRequestSourceTargetIntersection: DataAccessRequestsSourceTargetIntersections =
+        {
+          dataAccessRequests: [expectedDataAccessRequest],
+          sourceTargetIntersections: [expectedSourceTargetIntersection],
+        };
+
+      const expected$ = cold('------a|', {
+        a: expectedDataAccessRequestSourceTargetIntersection,
+      });
+
+      // Mock a signed in user
+      securityStub.getSignedInUser.mockImplementationOnce(() => {
+        return { email: 'test@gmail.com' } as UserDetails;
+      });
+
+      // Mock a folder for the user's requests
+      const rootFolder = { label: 'root' } as FolderDetail;
+
+      folderServiceStub.getOrCreate.mockImplementationOnce(() => {
+        return cold('--a|', {
+          a: rootFolder,
+        });
+      });
+
+      folderServiceStub.getOrCreateChildOf.mockImplementationOnce(
+        (id: string, label: string) => {
+          return cold('-a|', {
+            a: { label },
+          });
+        }
+      );
+
+      // Mock one target model
+      const target: DataModel = {
+        id: 'targetId',
+        label: 'Request 1',
+        domainType: CatalogueItemDomainType.DataModel,
+      };
+
+      dataModelsStub.listInFolder.mockImplementationOnce(() => {
+        return cold('-a|', {
+          a: [target],
+        });
+      });
+
+      // Mock a return from getIntersectionMany
+      const many: MdmIndexBody<SourceTargetIntersection> = {
+        count: 1,
+        items: [expectedSourceTargetIntersection],
+      };
+
+      dataModelsStub.getIntersectionMany.mockImplementationOnce(() => {
+        return cold('--a|', {
+          a: many,
+        });
+      });
+
+      // Actual
+      const actual$ = service.getRequestsIntersections(sourceDataModelId, dataElementIds);
+
+      // Assert
       expect(actual$).toBeObservable(expected$);
     });
   });

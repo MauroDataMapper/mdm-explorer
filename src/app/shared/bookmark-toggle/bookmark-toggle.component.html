@@ -16,7 +16,14 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<button mat-icon-button (click)="toggleState()">
+<button
+  mat-icon-button
+  #toolTip="matTooltip"
+  [matTooltip]="tooltipText"
+  matTooltipClass="mdm-bookmark-toggle-tooltip"
+  aria-label="Button that toggles the addition or removal of a bookmark"
+  (click)="toggleState()"
+>
   <mat-icon
     *ngIf="!selected"
     fontSet="fa-regular"

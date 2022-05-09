@@ -41,6 +41,7 @@ import { NotAuthorizedComponent } from './error/not-authorized/not-authorized.co
 import { NotFoundComponent } from './error/not-found/not-found.component';
 import { ServerErrorComponent } from './error/server-error/server-error.component';
 import { DataElementProfileComponent } from './data-element/data-element-profile/data-element-profile.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -70,6 +71,7 @@ import { DataElementProfileComponent } from './data-element/data-element-profile
     SecurityModule,
     DataExplorerModule,
     NgxJsonViewerModule,
+    MatTooltipModule,
   ],
 })
 export class PagesModule {}

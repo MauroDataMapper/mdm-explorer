@@ -20,13 +20,17 @@ import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
+import { MatSpinner } from '@angular/material/progress-spinner';
 import { LoadingSpinnerComponent } from './loading-spinner.component';
+import { MockComponent } from 'ng-mocks';
 
 describe('LoadingSpinnerComponent', () => {
   let harness: ComponentHarness<LoadingSpinnerComponent>;
 
   beforeEach(async () => {
-    harness = await setupTestModuleForComponent(LoadingSpinnerComponent);
+    harness = await setupTestModuleForComponent(LoadingSpinnerComponent, {
+      declarations: [MockComponent(MatSpinner)],
+    });
   });
 
   it('should create', () => {

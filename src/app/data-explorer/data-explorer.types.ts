@@ -26,6 +26,7 @@ import {
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { DataClassIdentifier } from '../mauro/mauro.types';
+import { Bookmark } from './bookmark.service';
 
 export interface DataExplorerConfiguration {
   profileNamespace: string;
@@ -229,6 +230,20 @@ export interface DataElementBasic {
 export interface DataElementCheckedEvent {
   item: DataElementBasic;
   checked: boolean;
+}
+
+export interface BookMarkCheckedEvent {
+  item: Bookmark;
+  checked: boolean;
+}
+
+export interface AddToRequestEvent {
+  item: Bookmark;
+  requestId: Uuid;
+}
+
+export interface RemoveBookmarkEvent {
+  item: Bookmark;
 }
 
 export interface DataElementBookmarkEvent {

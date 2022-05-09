@@ -24,10 +24,7 @@ import {
   DataElementCheckedEvent,
   DataElementSearchResult,
 } from '../data-explorer.types';
-
-export interface CreateRequestEvent {
-  item: DataElementSearchResult;
-}
+import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.service';
 
 @Component({
   selector: 'mdm-data-element-search-result',
@@ -41,13 +38,18 @@ export class DataElementSearchResultComponent {
 
   @Input() bookmarks: Bookmark[] = [];
 
+  @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
+
   @Output() checked = new EventEmitter<DataElementCheckedEvent>();
 
   @Output() bookmark = new EventEmitter<DataElementBookmarkEvent>();
 
-  @Output() createRequestClicked = new EventEmitter<CreateRequestEvent>();
-
-  constructor() {}
+  constructor() {
+    this.sourceTargetIntersections = {
+      dataAccessRequests: [],
+      sourceTargetIntersections: [],
+    };
+  }
 
   itemChecked(event: MatCheckboxChange) {
     if (!this.item) {
@@ -63,13 +65,6 @@ export class DataElementSearchResultComponent {
     }
 
     this.bookmark.emit({ item: this.item, selected });
-  }
-
-  createRequest() {
-    const event: CreateRequestEvent = {
-      item: this.item!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-    };
-    this.createRequestClicked.emit(event);
   }
 
   /**
