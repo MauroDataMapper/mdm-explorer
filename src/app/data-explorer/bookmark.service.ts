@@ -110,8 +110,8 @@ export class BookmarkService {
           data.bookmarks = bookmarks;
           return this.savePreferences(userDetails.id, data);
         }),
-        switchMap(() => {
-          return this.index();
+        switchMap((userPrefs: UserPreferences) => {
+          return of(userPrefs.bookmarks ?? []);
         })
       );
     } else {
@@ -126,9 +126,7 @@ export class BookmarkService {
    */
   private getBookmarksFromUserPreferences(userId: string): Observable<Bookmark[]> {
     return this.getPreferences(userId).pipe(
-      map((response: any) =>
-        response.body && response.body.bookmarks ? response.body.bookmarks : []
-      )
+      map((data: UserPreferences) => (data && data.bookmarks ? data.bookmarks : []))
     );
   }
 
@@ -137,7 +135,7 @@ export class BookmarkService {
    * @param userId
    * @returns the full userPrefs object associated with the given userId
    */
-  private getPreferences(userId: string): Observable<any> {
+  private getPreferences(userId: string): Observable<UserPreferences> {
     return this.endpoints.catalogueUser
       .userPreferences(userId)
       .pipe(map((response: any) => response.body));
@@ -149,7 +147,7 @@ export class BookmarkService {
    * @param data the new userPreferences object
    * @returns the newly saved userPreferences object
    */
-  private savePreferences(userId: string, data: any): Observable<any> {
+  private savePreferences(userId: string, data: any): Observable<UserPreferences> {
     return this.endpoints.catalogueUser
       .updateUserPreferences(userId, data)
       .pipe(map((response: any) => response.body));
@@ -165,4 +163,8 @@ export interface Bookmark {
 
 export interface SelectableBookmark extends Bookmark {
   isSelected: boolean;
+}
+export interface UserPreferences {
+  [key: string]: any;
+  bookmarks?: Bookmark[];
 }

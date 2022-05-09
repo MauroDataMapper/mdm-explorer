@@ -17,8 +17,8 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { setupTestModuleForService } from '../testing/testing.helpers';
-import { Bookmark, BookmarkService } from './bookmark.service';
-import { of } from 'rxjs';
+import { Bookmark, BookmarkService, UserPreferences } from './bookmark.service';
+import { Observable, of } from 'rxjs';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { createMdmEndpointsStub } from '../testing/stubs/mdm-endpoints.stub';
 import { createSecurityServiceStub } from '../testing/stubs/security.stub';
@@ -32,8 +32,12 @@ describe('BookmarkService', () => {
   const endpointsStub = createMdmEndpointsStub();
   const securityServiceStub = createSecurityServiceStub();
 
+  const userDetails = { id: 'userId' } as UserDetails;
+  securityServiceStub.getSignedInUser.mockReturnValue(userDetails);
+
   const b1 = { id: '1', label: 'label-1' } as Bookmark;
   const b2 = { id: '2', label: 'label-2' } as Bookmark;
+  const userBookmarks: Bookmark[] = [b1, b2];
 
   beforeEach(() => {
     // Default endpoint call
@@ -57,30 +61,188 @@ describe('BookmarkService', () => {
     expect(service).toBeTruthy();
   });
 
+  describe('index', () => {
+    it('should throw an error if the user is not logged in', () => {
+      const expected$ = cold('#');
+      securityServiceStub.getSignedInUser.mockReturnValueOnce(null);
+
+      const actual$ = service.index();
+
+      expect(actual$).toBeObservable(expected$);
+    });
+
+    it('should return an empty array if there is no response body', () => {
+      const expected$ = cold('--a', { a: [] });
+      endpointsStub.catalogueUser.userPreferences.mockImplementationOnce((id: string) => {
+        return cold('--a', { a: {} });
+      });
+
+      const actual$ = service.index();
+
+      expect(actual$).toBeObservable(expected$);
+      expect(endpointsStub.catalogueUser.userPreferences).toHaveBeenCalledWith(
+        userDetails.id
+      );
+    });
+
+    it('should return an empty array if there is no bookmarks property in the response body', () => {
+      const expected$ = cold('--a', { a: [] });
+      endpointsStub.catalogueUser.userPreferences.mockImplementationOnce((id: string) => {
+        return cold('--a', { a: { body: {} } });
+      });
+
+      const actual$ = service.index();
+
+      expect(actual$).toBeObservable(expected$);
+      expect(endpointsStub.catalogueUser.userPreferences).toHaveBeenCalledWith(
+        userDetails.id
+      );
+    });
+
+    it('should return the bookmarks property if it exists', () => {
+      const expected$ = cold('-a', { a: userBookmarks });
+      const spy = jest.spyOn(endpointsStub.catalogueUser, 'userPreferences');
+      endpointsStub.catalogueUser.userPreferences.mockImplementationOnce(() => {
+        return cold('-a', { a: { body: { bookmarks: userBookmarks } } });
+      });
+
+      const actual$ = service.index();
+
+      expect(actual$).toBeObservable(expected$);
+      expect(spy).toHaveBeenCalledWith(userDetails.id);
+    });
+  });
+
   describe('add', () => {
-    test.todo(
-      'should create a userPrefs object with a bookmarks property and add the bookmark to it if either of the former do not exist'
-    );
-    test.todo('should not add the bookmark if element is already bookmarked');
-    test.todo('should add the bookmark if element is not already bookmarked');
+    beforeEach(() => {
+      endpointsStub.catalogueUser.userPreferences.mockReset();
+      endpointsStub.catalogueUser.updateUserPreferences.mockClear();
+    });
+    it('should not add the bookmark if element is already bookmarked', () => {
+      const bookmarkToAdd = b1;
+      const userPrefsAfter: UserPreferences = { bookmarks: userBookmarks };
+
+      const expected$ = cold('---a', { a: userBookmarks });
+      const saveSpy = jest.spyOn(endpointsStub.catalogueUser, 'updateUserPreferences');
+
+      endpointsStub.catalogueUser.userPreferences.mockImplementation(() => {
+        return cold('-a', { a: { body: { bookmarks: userBookmarks } } });
+      });
+
+      endpointsStub.catalogueUser.updateUserPreferences.mockImplementationOnce(
+        (id: string, data: UserPreferences) => {
+          return cold('-a', { a: { body: { bookmarks: userBookmarks } } });
+        }
+      );
+
+      const actual$ = service.add(bookmarkToAdd);
+
+      expect(actual$).toBeObservable(expected$);
+      expect(actual$).toSatisfyOnFlush(() => {
+        expect(saveSpy).toHaveBeenCalledWith(userDetails.id, userPrefsAfter);
+      });
+    });
+
+    it('should add the bookmark if element is not already bookmarked', () => {
+      const bookmarkToAdd = b2;
+      const userBookmarksBefore = [b1];
+      const userBookmarksAfter = [b1, b2];
+      const userPrefsBefore: UserPreferences = { bookmarks: userBookmarksBefore };
+      const userPrefsAfter: UserPreferences = { bookmarks: userBookmarksAfter };
+
+      const expected$ = cold('---a', { a: userBookmarksAfter });
+      const saveSpy = jest.spyOn(endpointsStub.catalogueUser, 'updateUserPreferences');
+
+      endpointsStub.catalogueUser.userPreferences
+        .mockImplementationOnce(() => {
+          return cold('-a', { a: { body: userPrefsBefore } });
+        })
+        .mockImplementationOnce(() => {
+          return cold('-a', { a: { body: userPrefsBefore } });
+        });
+
+      endpointsStub.catalogueUser.updateUserPreferences.mockImplementationOnce(
+        (id: string, data: UserPreferences) => {
+          return cold('-a', { a: { body: { bookmarks: userBookmarksAfter } } });
+        }
+      );
+
+      const actual$ = service.add(bookmarkToAdd);
+
+      expect(actual$).toBeObservable(expected$);
+      expect(actual$).toSatisfyOnFlush(() => {
+        expect(saveSpy).toHaveBeenCalledWith(userDetails.id, userPrefsAfter);
+      });
+    });
   });
 
   describe('remove', () => {
-    test.todo(
-      'should not do anything if the supplied item is already in the users bookmarks'
-    );
-    test.todo('should remove the supplied item if it exists in the users bookmarks');
-  });
+    beforeEach(() => {
+      endpointsStub.catalogueUser.userPreferences.mockReset();
+      endpointsStub.catalogueUser.updateUserPreferences.mockClear();
+    });
+    it('should not do anything if the supplied item is not in the users bookmarks', () => {
+      const bookmarkToRemove = { id: '3', label: 'not-in' } as Bookmark;
+      const userPrefsAfter: UserPreferences = { bookmarks: userBookmarks };
 
-  describe('index', () => {
-    test.todo('should throw an error if the user is not logged in');
-    test.todo('should return an empty array if there is no response body');
-    test.todo(
-      'should return an empty array if there is bookmarks property in the response body'
-    );
+      const expected$ = cold('---a', { a: userBookmarks });
+      const saveSpy = jest.spyOn(endpointsStub.catalogueUser, 'updateUserPreferences');
+
+      endpointsStub.catalogueUser.userPreferences.mockImplementation(() => {
+        return cold('-a', { a: { body: { bookmarks: userBookmarks } } });
+      });
+
+      endpointsStub.catalogueUser.updateUserPreferences.mockImplementationOnce(
+        (id: string, data: UserPreferences) => {
+          return cold('-a', { a: { body: { bookmarks: userBookmarks } } });
+        }
+      );
+
+      const actual$ = service.remove(bookmarkToRemove);
+
+      expect(actual$).toBeObservable(expected$);
+      expect(actual$).toSatisfyOnFlush(() => {
+        expect(saveSpy).toHaveBeenCalledWith(userDetails.id, userPrefsAfter);
+      });
+    });
+
+    it('should remove the supplied item if it exists in the users bookmarks', () => {
+      const bookmarkToRemove = b2;
+      const userBookmarksBefore = [b1, b2];
+      const userBookmarksAfter = [b1];
+      const userPrefsBefore: UserPreferences = { bookmarks: userBookmarksBefore };
+      const userPrefsAfter: UserPreferences = { bookmarks: userBookmarksAfter };
+
+      const expected$ = cold('---a', { a: userBookmarksAfter });
+      const saveSpy = jest.spyOn(endpointsStub.catalogueUser, 'updateUserPreferences');
+
+      endpointsStub.catalogueUser.userPreferences
+        .mockImplementationOnce(() => {
+          return cold('-a', { a: { body: userPrefsBefore } });
+        })
+        .mockImplementationOnce(() => {
+          return cold('-a', { a: { body: userPrefsBefore } });
+        });
+
+      endpointsStub.catalogueUser.updateUserPreferences.mockImplementationOnce(
+        (id: string, data: UserPreferences) => {
+          return cold('-a', { a: { body: { bookmarks: userBookmarksAfter } } });
+        }
+      );
+
+      const actual$ = service.remove(bookmarkToRemove);
+
+      expect(actual$).toBeObservable(expected$);
+      expect(actual$).toSatisfyOnFlush(() => {
+        expect(saveSpy).toHaveBeenCalledWith(userDetails.id, userPrefsAfter);
+      });
+    });
   });
 
   describe('isBookmarked', () => {
+    beforeEach(() => {
+      endpointsStub.catalogueUser.userPreferences.mockReset();
+    });
     it.each([true, false])(
       'should return %p if the user has bookmarked the supplied data element',
       (isBookmarked) => {
@@ -88,7 +250,7 @@ describe('BookmarkService', () => {
         const dataElementToCheckId = dataElementToCheck.id;
         const bookmarksDoesContain = [b1, b2];
         const bookmarksDoesNotContain = [b1];
-        const expected$ = cold('--a', { a: isBookmarked ? true : false });
+        const expected$ = cold('--a', { a: isBookmarked });
 
         securityServiceStub.getSignedInUser.mockImplementationOnce(() => {
           return { id: 'user-id' } as UserDetails;
