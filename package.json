@@ -1,5 +1,5 @@
 {
-  "name": "mdm-research-browser",
+  "name": "mdm-explorer",
   "version": "1.0.0-SNAPSHOT",
   "scripts": {
     "ng": "ng",
@@ -15,8 +15,8 @@
     "eslint-nofix-quiet": "tsc --noEmit && eslint . --ext ts --quiet",
     "eslint-report": "eslint . --ext ts --format checkstyle -o eslint/eslint_report.xml",
     "license-check": "license-check-and-add -f license-check.json",
-    "dist": "ng build --configuration production --output-path=dist/mdm-research-portal-$npm_package_version && npm run dist-archive",
-    "dist-archive": "tar zcvf dist/mdm-research-portal-${npm_package_version}.tgz -C dist mdm-research-portal-$npm_package_version",
+    "dist": "ng build --configuration production --output-path=dist/mdm-explorer-$npm_package_version && npm run dist-archive",
+    "dist-archive": "tar zcvf dist/mdm-explorer-${npm_package_version}.tgz -C dist mdm-explorer-$npm_package_version",
     "sonar": "sonar-scanner -Dsonar.projectVersion=$npm_package_version",
     "pr-checks": "npm run license-check check && npm run eslint && npm run test"
   },
@@ -32,7 +32,7 @@
     "@angular/platform-browser-dynamic": "~13.1.0",
     "@angular/router": "~13.1.0",
     "@fortawesome/fontawesome-free": "^6.0.0",
-    "@maurodatamapper/mdm-resources": "^5.0.0-RC1",
+    "@maurodatamapper/mdm-resources": "5.1.0",
     "angular-user-idle": "^2.2.7",
     "chart.js": "^3.6.0",
     "ng2-charts": "^3.0.8",
