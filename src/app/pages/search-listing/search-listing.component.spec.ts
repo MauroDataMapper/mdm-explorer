@@ -65,7 +65,7 @@ import {
 import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
 import {
   DataRequestsService,
-  SourceTargetIntersections,
+  DataAccessRequestsSourceTargetIntersections,
 } from 'src/app/data-explorer/data-requests.service';
 import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { UserDetails } from 'src/app/security/user-details.service';
@@ -105,12 +105,12 @@ describe('SearchListingComponent', () => {
     availableActions: ['show'],
   };
 
-  const mockedSourceTargetIntersections: SourceTargetIntersections = {
+  const mockedSourceTargetIntersections: DataAccessRequestsSourceTargetIntersections = {
     dataAccessRequests: [],
     sourceTargetIntersections: [],
   };
 
-  const mockedIntersections: SourceTargetIntersections[] = [
+  const mockedIntersections: DataAccessRequestsSourceTargetIntersections[] = [
     mockedSourceTargetIntersections,
   ];
 

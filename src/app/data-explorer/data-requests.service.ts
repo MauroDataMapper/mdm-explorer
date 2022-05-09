@@ -23,7 +23,11 @@ import {
   DataModelCreatePayload,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
-import { FolderDetail } from '@maurodatamapper/mdm-resources';
+import {
+  FolderDetail,
+  SourceTargetIntersection,
+  SourceTargetIntersectionPayload,
+} from '@maurodatamapper/mdm-resources';
 import { forkJoin, map, Observable, switchMap, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { UserDetails } from '../security/user-details.service';
@@ -36,21 +40,9 @@ import { DataExplorerService } from './data-explorer.service';
 import { SecurityService } from '../security/security.service';
 
 /**
- * Work in progress replacement for DataModelIntersection, in which the source and target model
- * IDs are also present.
+ * A collection data access requests and their intersections with target models.
  */
-export interface SourceTargetIntersection {
-  sourceDataModelId: Uuid;
-
-  targetDataModelId: Uuid;
-
-  intersects: Uuid[];
-}
-
-/**
- * A collection of the above, plus data access requests.
- */
-export interface SourceTargetIntersections {
+export interface DataAccessRequestsSourceTargetIntersections {
   dataAccessRequests: DataModel[];
 
   sourceTargetIntersections: SourceTargetIntersection[];
@@ -162,76 +154,50 @@ export class DataRequestsService {
   }
 
   /**
-   * Given a source data model, return an observable containing all intersections for all data access requests, by:
-   * 1. List all data access requests
-   * 2. For each data access request, get intersections
-   * This is a step towards a new endpoint which will return all intersections for all data access requests in a single API call.
+   * Given a source data model and list of data elements, get all unsent data requests and
+   * get the intersection of the source with each data request, for the list of data elements.
    *
    * @param sourceDataModelId
-   * @returns
+   * @param dataElementIds
+   * @returns Observable<DataAccessRequestsSourceTargetIntersections>
    */
   getRequestsIntersections(
-    sourceDataModelId: Uuid
-  ): Observable<SourceTargetIntersections[]> {
+    sourceDataModelId: Uuid,
+    dataElementIds: Uuid[]
+  ): Observable<DataAccessRequestsSourceTargetIntersections> {
     const user = this.security.getSignedInUser();
 
     if (user === null) {
       return throwError(() => new Error('Must be logged in to use User Preferences'));
     }
-    const sourceTargetIntersections: SourceTargetIntersections = {
-      dataAccessRequests: [],
-      sourceTargetIntersections: [],
-    };
 
     return this.list(user.email).pipe(
       map((dataRequests: DataRequest[]) =>
         dataRequests.filter((dr) => dr.status === 'unsent')
       ),
       switchMap((dataRequests: DataRequest[]) => {
-        sourceTargetIntersections.dataAccessRequests = dataRequests;
+        const sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections = {
+          dataAccessRequests: dataRequests,
+          sourceTargetIntersections: [],
+        };
 
-        const gets: Observable<SourceTargetIntersections>[] = [];
+        const payload: SourceTargetIntersectionPayload = {
+          targetDataModelIds: [],
+          dataElementIds,
+        };
 
-        sourceTargetIntersections.dataAccessRequests.forEach((item: DataModel) => {
-          if (item.id) {
-            gets.push(
-              this.getIntersection(sourceDataModelId, item.id, sourceTargetIntersections)
-            );
+        dataRequests.forEach((dataRequest: DataRequest) => {
+          if (dataRequest.id) {
+            payload.targetDataModelIds.push(dataRequest.id);
           }
         });
 
-        return forkJoin(gets);
-      })
-    );
-  }
-
-  /**
-   * Get the intersection between a source and target data model, returning an updated
-   * version of the patameter sourceTargetIntersections. This is a step towards handling all intersections
-   * in a single API call.
-   *
-   * @param sourceDataModelId
-   * @param targetDataModelId
-   * @param sourceTargetIntersections
-   * @returns
-   */
-  getIntersection(
-    sourceDataModelId: Uuid,
-    targetDataModelId: Uuid,
-    sourceTargetIntersections: SourceTargetIntersections
-  ): Observable<SourceTargetIntersections> {
-    return this.dataModels.getIntersection(sourceDataModelId, targetDataModelId).pipe(
-      map((result) => {
-        const sourceTargetIntersection: SourceTargetIntersection = {
-          sourceDataModelId,
-          targetDataModelId,
-          intersects: result.intersects,
-        };
-
-        sourceTargetIntersections.sourceTargetIntersections.push(
-          sourceTargetIntersection
+        return this.dataModels.getIntersectionMany(sourceDataModelId, payload).pipe(
+          map((result) => {
+            sourceTargetIntersections.sourceTargetIntersections = result.items;
+            return sourceTargetIntersections;
+          })
         );
-        return sourceTargetIntersections;
       })
     );
   }

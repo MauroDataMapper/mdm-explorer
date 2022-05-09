@@ -35,8 +35,8 @@ import {
 } from 'src/app/data-explorer/data-explorer.types';
 import { DataElementSearchResult } from 'src/app/data-explorer/data-explorer.types';
 import {
+  DataAccessRequestsSourceTargetIntersections,
   DataRequestsService,
-  SourceTargetIntersections,
 } from 'src/app/data-explorer/data-requests.service';
 
 @Component({
@@ -58,7 +58,7 @@ export class DataElementComponent implements OnInit {
 
   bookmarks: Bookmark[] = [];
 
-  sourceTargetIntersections: SourceTargetIntersections[] = [];
+  sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 
   constructor(
     private route: ActivatedRoute,
@@ -68,7 +68,12 @@ export class DataElementComponent implements OnInit {
     private profileService: ProfileService,
     private toastr: ToastrService,
     @Inject(DATA_EXPLORER_CONFIGURATION) private config: DataExplorerConfiguration
-  ) {}
+  ) {
+    this.sourceTargetIntersections = {
+      dataAccessRequests: [],
+      sourceTargetIntersections: [],
+    };
+  }
 
   ngOnInit(): void {
     this.bookmarkService.index().subscribe((result) => {
@@ -186,12 +191,14 @@ export class DataElementComponent implements OnInit {
   }
 
   private loadIntersections(dataModelId: Uuid) {
-    return this.dataRequests.getRequestsIntersections(dataModelId).pipe(
-      catchError((error) => {
-        console.log(error);
-        this.toastr.error('Unable to retrieve requests.');
-        return EMPTY;
-      })
-    );
+    return this.dataRequests
+      .getRequestsIntersections(dataModelId, [this.dataElementId])
+      .pipe(
+        catchError((error) => {
+          console.log(error);
+          this.toastr.error('Unable to retrieve requests.');
+          return EMPTY;
+        })
+      );
   }
 }

@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { DataClassDetail } from '@maurodatamapper/mdm-resources';
+import { DataClassDetail, Uuid } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY, forkJoin, of, switchMap, throwError } from 'rxjs';
 import { DataModelService } from 'src/app/mauro/data-model.service';
@@ -26,6 +26,7 @@ import { KnownRouterPath, StateRouterService } from 'src/app/core/state-router.s
 import { DataElementSearchService } from 'src/app/data-explorer/data-element-search.service';
 import {
   DataElementSearchParameters,
+  DataElementSearchResult,
   DataElementSearchResultSet,
   mapParamMapToSearchParameters,
   mapSearchParametersToParams,
@@ -41,7 +42,7 @@ import { SortByOption } from 'src/app/data-explorer/sort-by/sort-by.component';
 import { SecurityService } from 'src/app/security/security.service';
 import {
   DataRequestsService,
-  SourceTargetIntersections,
+  DataAccessRequestsSourceTargetIntersections,
 } from 'src/app/data-explorer/data-requests.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 
@@ -70,7 +71,7 @@ export class SearchListingComponent implements OnInit {
   userBookmarks: Bookmark[] = [];
   creatingRequest = false;
   sortBy?: SortByOption;
-  sourceTargetIntersections: SourceTargetIntersections[] = [];
+  sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
   /**
    * Each new option must have a {@link SearchListingSortByOption} as a value to ensure
    * the search-listing page can interpret the result emitted by the SortByComponent
@@ -94,6 +95,10 @@ export class SearchListingComponent implements OnInit {
     security: SecurityService
   ) {
     this.user = security.getSignedInUser();
+    this.sourceTargetIntersections = {
+      dataAccessRequests: [],
+      sourceTargetIntersections: [],
+    };
   }
 
   get backRouterLink(): KnownRouterPath {
@@ -107,10 +112,6 @@ export class SearchListingComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.bookmarks.index().subscribe((result) => {
-      this.userBookmarks = result;
-    });
-
     this.route.queryParamMap
       .pipe(
         switchMap((query) => {
@@ -132,15 +133,19 @@ export class SearchListingComponent implements OnInit {
           return forkJoin([
             this.loadDataClass(),
             this.loadSearchResults(),
-            this.loadIntersections(),
+            this.bookmarks.index(),
           ]);
+        }),
+        switchMap(([dataClass, resultSet, userBookmarks]) => {
+          this.root = dataClass;
+          this.resultSet = resultSet;
+          this.userBookmarks = userBookmarks;
+          return this.loadIntersections(resultSet);
         })
       )
-      .subscribe(([dataClass, resultSet, sourceTargetIntersections]) => {
+      .subscribe((intersections) => {
+        this.sourceTargetIntersections = intersections;
         this.status = 'ready';
-        this.root = dataClass;
-        this.resultSet = resultSet;
-        this.sourceTargetIntersections = sourceTargetIntersections;
       });
   }
 
@@ -228,14 +233,22 @@ export class SearchListingComponent implements OnInit {
     );
   }
 
-  private loadIntersections() {
+  private loadIntersections(resultSet: DataElementSearchResultSet | undefined) {
+    const dataElementIds: Uuid[] = [];
+
+    if (resultSet) {
+      resultSet.items.forEach((item: DataElementSearchResult) => {
+        dataElementIds.push(item.id);
+      });
+    }
+
     return this.explorer.getRootDataModel().pipe(
       switchMap((dataModel) => {
         if (!dataModel.id) {
           return throwError(() => new Error('Root Data Model has no id.'));
         }
 
-        return this.dataRequests.getRequestsIntersections(dataModel.id);
+        return this.dataRequests.getRequestsIntersections(dataModel.id, dataElementIds);
       })
     );
   }
