@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DataModel, DataModelSubsetPayload } from '@maurodatamapper/mdm-resources';
-import { catchError, EMPTY, filter, finalize, switchMap } from 'rxjs';
+import { catchError, EMPTY, filter, finalize, Subject, switchMap, takeUntil } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import {
   DataAccessRequestsSourceTargetIntersections,
@@ -51,8 +51,6 @@ export class DataElementInRequestComponent implements OnInit {
 
   @Output() createRequestClicked = new EventEmitter<CreateRequestEvent>();
 
-  dataAccessRequests: DataModel[] = [];
-
   creatingRequest = false;
 
   ready = false;
@@ -61,6 +59,11 @@ export class DataElementInRequestComponent implements OnInit {
   inRequests: Uuid[] = [];
 
   private user: UserDetails | null;
+
+  /**
+   * Signal to attach to subscriptions to trigger when they should be unsubscribed.
+   */
+  private unsubscribe$ = new Subject<void>();
 
   constructor(
     security: SecurityService,
@@ -85,26 +88,9 @@ export class DataElementInRequestComponent implements OnInit {
       return;
     }
 
-    if (this.sourceTargetIntersections.sourceTargetIntersections.length > 0) {
-      this.dataAccessRequests = this.sourceTargetIntersections.dataAccessRequests;
+    this.cacheInRequests();
 
-      for (
-        let i = 0;
-        i < this.sourceTargetIntersections.sourceTargetIntersections.length;
-        i++
-      ) {
-        const sourceTargetIntersection =
-          this.sourceTargetIntersections.sourceTargetIntersections[i];
-
-        const targetDataModelId = sourceTargetIntersection.targetDataModelId;
-
-        const intersections = sourceTargetIntersection.intersects;
-
-        if (this.dataElement && intersections.indexOf(this.dataElement.id) > -1) {
-          this.inRequests.push(targetDataModelId);
-        }
-      }
-    }
+    this.subscribeIntersectionsRefreshed();
 
     this.ready = true;
   }
@@ -143,6 +129,38 @@ export class DataElementInRequestComponent implements OnInit {
             } request`
           );
         }); // eslint-disable-line @typescript-eslint/no-unsafe-argument
+    }
+  }
+
+  /**
+   * Based on the list of dataAccessRequests and the list of sourceTargetIntersections,
+   * recalculate this.inRequests
+   */
+  cacheInRequests(): void {
+    this.inRequests = [];
+
+    if (this.sourceTargetIntersections.sourceTargetIntersections.length > 0) {
+      console.log(
+        'cacheInRequests',
+        this.dataElement?.label,
+        this.sourceTargetIntersections.sourceTargetIntersections
+      );
+      for (
+        let i = 0;
+        i < this.sourceTargetIntersections.sourceTargetIntersections.length;
+        i++
+      ) {
+        const sourceTargetIntersection =
+          this.sourceTargetIntersections.sourceTargetIntersections[i];
+
+        const targetDataModelId = sourceTargetIntersection.targetDataModelId;
+
+        const intersections = sourceTargetIntersection.intersects;
+
+        if (this.dataElement && intersections.indexOf(this.dataElement.id) > -1) {
+          this.inRequests.push(targetDataModelId);
+        }
+      }
     }
   }
 
@@ -207,6 +225,19 @@ export class DataElementInRequestComponent implements OnInit {
         if (action === 'view-requests') {
           this.stateRouter.navigateToKnownPath('/requests');
         }
+      });
+  }
+
+  /**
+   * When intersections are refreshed (which happens after a data request has been added) recache this.inRequests
+   */
+  private subscribeIntersectionsRefreshed(): void {
+    this.broadcast
+      .on('data-intersections-refreshed')
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((intersections) => {
+        this.sourceTargetIntersections = intersections;
+        this.cacheInRequests();
       });
   }
 }

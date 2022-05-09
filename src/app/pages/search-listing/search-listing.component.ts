@@ -20,7 +20,16 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DataClassDetail, Uuid } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, forkJoin, of, switchMap, throwError } from 'rxjs';
+import {
+  catchError,
+  EMPTY,
+  forkJoin,
+  of,
+  Subject,
+  switchMap,
+  takeUntil,
+  throwError,
+} from 'rxjs';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { KnownRouterPath, StateRouterService } from 'src/app/core/state-router.service';
 import { DataElementSearchService } from 'src/app/data-explorer/data-element-search.service';
@@ -45,6 +54,7 @@ import {
   DataAccessRequestsSourceTargetIntersections,
 } from 'src/app/data-explorer/data-requests.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
+import { BroadcastService } from 'src/app/core/broadcast.service';
 
 export type SearchListingSource = 'unknown' | 'browse' | 'search';
 export type SearchListingStatus = 'init' | 'loading' | 'ready' | 'error';
@@ -83,6 +93,11 @@ export class SearchListingComponent implements OnInit {
   sortByDefaultOption: SortByOption = this.searchListingSortByOptions[0];
   private user: UserDetails | null;
 
+  /**
+   * Signal to attach to subscriptions to trigger when they should be unsubscribed.
+   */
+  private unsubscribe$ = new Subject<void>();
+
   constructor(
     private route: ActivatedRoute,
     private dataElementsSearch: DataElementSearchService,
@@ -92,6 +107,7 @@ export class SearchListingComponent implements OnInit {
     private toastr: ToastrService,
     private stateRouter: StateRouterService,
     private bookmarks: BookmarkService,
+    private broadcast: BroadcastService,
     security: SecurityService
   ) {
     this.user = security.getSignedInUser();
@@ -140,11 +156,12 @@ export class SearchListingComponent implements OnInit {
           this.root = dataClass;
           this.resultSet = resultSet;
           this.userBookmarks = userBookmarks;
-          return this.loadIntersections(resultSet);
+          return this.loadIntersections();
         })
       )
       .subscribe((intersections) => {
         this.sourceTargetIntersections = intersections;
+        this.subscribeDataRequestChanges();
         this.status = 'ready';
       });
   }
@@ -233,11 +250,11 @@ export class SearchListingComponent implements OnInit {
     );
   }
 
-  private loadIntersections(resultSet: DataElementSearchResultSet | undefined) {
+  private loadIntersections() {
     const dataElementIds: Uuid[] = [];
 
-    if (resultSet) {
-      resultSet.items.forEach((item: DataElementSearchResult) => {
+    if (this.resultSet) {
+      this.resultSet.items.forEach((item: DataElementSearchResult) => {
         dataElementIds.push(item.id);
       });
     }
@@ -251,6 +268,22 @@ export class SearchListingComponent implements OnInit {
         return this.dataRequests.getRequestsIntersections(dataModel.id, dataElementIds);
       })
     );
+  }
+
+  /**
+   * When a data request is added, reload all intersections (which ensures we pick up intersections with the
+   * new data request) and tell all data-element-in-request components about the new intersections.
+   */
+  private subscribeDataRequestChanges() {
+    this.broadcast
+      .on('data-request-added')
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(() => {
+        this.loadIntersections().subscribe((intersections) => {
+          this.sourceTargetIntersections = intersections;
+          this.broadcast.dispatch('data-intersections-refreshed', intersections);
+        });
+      });
   }
 
   /**

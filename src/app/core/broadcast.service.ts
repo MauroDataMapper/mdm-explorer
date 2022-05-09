@@ -31,7 +31,8 @@ export type BroadcastEvent =
   | 'user-signed-out'
   | 'sign-out-user'
   | 'data-request-added'
-  | 'data-request-submitted';
+  | 'data-request-submitted'
+  | 'data-intersections-refreshed';
 
 /**
  * Represents a message to broadcast with an optional data payload.

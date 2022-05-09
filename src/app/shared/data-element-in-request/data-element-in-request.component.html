@@ -23,7 +23,9 @@ SPDX-License-Identifier: Apache-2.0
   <mat-menu #menu="matMenu">
     <ng-container *ngIf="ready">
       <section>
-        <ul *ngFor="let item of dataAccessRequests; let i = index">
+        <ul
+          *ngFor="let item of sourceTargetIntersections.dataAccessRequests; let i = index"
+        >
           <li>
             <mat-checkbox
               #menuItems
