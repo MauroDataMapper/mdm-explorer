@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DataClassDetail, Uuid } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
@@ -71,7 +71,7 @@ export type SearchListingSortByOption = 'label-asc' | 'label-desc';
   templateUrl: './search-listing.component.html',
   styleUrls: ['./search-listing.component.scss'],
 })
-export class SearchListingComponent implements OnInit {
+export class SearchListingComponent implements OnInit, OnDestroy {
   parameters: DataElementSearchParameters = {};
   source: SearchListingSource = 'unknown';
   status: SearchListingStatus = 'init';
@@ -164,6 +164,11 @@ export class SearchListingComponent implements OnInit {
         this.subscribeDataRequestChanges();
         this.status = 'ready';
       });
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   updateSearch() {

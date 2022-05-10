@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { DataModel, DataModelSubsetPayload } from '@maurodatamapper/mdm-resources';
 import { catchError, EMPTY, filter, finalize, Subject, switchMap, takeUntil } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
@@ -44,7 +44,7 @@ export interface CreateRequestEvent {
   templateUrl: './data-element-in-request.component.html',
   styleUrls: ['./data-element-in-request.component.scss'],
 })
-export class DataElementInRequestComponent implements OnInit {
+export class DataElementInRequestComponent implements OnInit, OnDestroy {
   @Input() dataElement?: DataElementSearchResult;
 
   @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
@@ -95,6 +95,11 @@ export class DataElementInRequestComponent implements OnInit {
     this.ready = true;
   }
 
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
+
   /**
    * Do a subset operation to add or remove this data element from the
    * request data model (target data model) whose ID is specified in event.source.value
@@ -140,11 +145,6 @@ export class DataElementInRequestComponent implements OnInit {
     this.inRequests = [];
 
     if (this.sourceTargetIntersections.sourceTargetIntersections.length > 0) {
-      console.log(
-        'cacheInRequests',
-        this.dataElement?.label,
-        this.sourceTargetIntersections.sourceTargetIntersections
-      );
       for (
         let i = 0;
         i < this.sourceTargetIntersections.sourceTargetIntersections.length;

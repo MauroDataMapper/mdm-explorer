@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
   CatalogueItemDomainType,
@@ -45,7 +45,7 @@ import { BroadcastService } from 'src/app/core/broadcast.service';
   templateUrl: './data-element.component.html',
   styleUrls: ['./data-element.component.scss'],
 })
-export class DataElementComponent implements OnInit {
+export class DataElementComponent implements OnInit, OnDestroy {
   dataModelId: Uuid = '';
   dataClassId: Uuid = '';
   dataElementId: Uuid = '';
@@ -131,6 +131,11 @@ export class DataElementComponent implements OnInit {
           }
         }
       });
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   toggleBookmark(selected: boolean) {
