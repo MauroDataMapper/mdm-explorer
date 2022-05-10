@@ -71,6 +71,7 @@ export type DataModelGetIntersectionManyFn = (
   sourceId: Uuid,
   data: SourceTargetIntersectionPayload
 ) => Observable<MdmIndexBody<SourceTargetIntersection>>;
+export type DataModeNextVersionFn = (model: DataModel) => Observable<DataModel>;
 
 export interface DataModelServiceStub {
   getDataModel: jest.MockedFunction<DataModelGetDataModelFn>;
@@ -85,6 +86,7 @@ export interface DataModelServiceStub {
   copySubset: jest.MockedFunction<DataModelCopySubsetFn>;
   getDataElementsForDataClass: jest.MockedFunction<DataModelElementsForClassFn>;
   getIntersectionMany: jest.MockedFunction<DataModelGetIntersectionManyFn>;
+  createNextVersion: jest.MockedFunction<DataModeNextVersionFn>;
 }
 
 export const createDataModelServiceStub = (): DataModelServiceStub => {
@@ -102,5 +104,6 @@ export const createDataModelServiceStub = (): DataModelServiceStub => {
     getDataElementsForDataClass:
       jest.fn() as jest.MockedFunction<DataModelElementsForClassFn>,
     getIntersectionMany: jest.fn() as jest.MockedFunction<DataModelGetIntersectionManyFn>,
+    createNextVersion: jest.fn() as jest.MockedFunction<DataModeNextVersionFn>,
   };
 };

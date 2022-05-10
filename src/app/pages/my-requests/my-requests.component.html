@@ -63,7 +63,7 @@ SPDX-License-Identifier: Apache-2.0
         </p>
       </div>
       <div *ngIf="allRequests && allRequests.length > 0" class="row">
-        <div class="col-md-3">
+        <div class="col-md-3 mdm-my-requests__list">
           <mat-selection-list multiple="false" (selectionChange)="selectRequest($event)">
             <mat-list-option
               *ngFor="let req of filteredRequests"
@@ -75,6 +75,9 @@ SPDX-License-Identifier: Apache-2.0
                   req.label
                 }}</span>
                 <mdm-request-status-chip [status]="req.status"></mdm-request-status-chip>
+              </p>
+              <p *ngIf="req.modelVersion">
+                <small>{{ req.modelVersion }}</small>
               </p>
             </mat-list-option>
           </mat-selection-list>
@@ -95,6 +98,14 @@ SPDX-License-Identifier: Apache-2.0
                   (click)="submitRequest()"
                 >
                   Submit request
+                </button>
+                <button
+                  *ngIf="request.status === 'submitted'"
+                  mat-raised-button
+                  matTooltip="Create a new request based on this one and make modifications."
+                  (click)="createNextVersion()"
+                >
+                  Create new version
                 </button>
               </div>
               <div
@@ -121,6 +132,13 @@ SPDX-License-Identifier: Apache-2.0
 <div *ngIf="submittingRequest">
   <mdm-loading-spinner
     caption="Submitting your request ..."
+    color="primary"
+  ></mdm-loading-spinner>
+</div>
+
+<div *ngIf="creatingNextVersion">
+  <mdm-loading-spinner
+    caption="Creating next version of your request ..."
     color="primary"
   ></mdm-loading-spinner>
 </div>

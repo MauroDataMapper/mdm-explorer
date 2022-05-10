@@ -16,12 +16,14 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { fakeAsync, tick } from '@angular/core/testing';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSelectionListChange } from '@angular/material/list';
 import {
   CatalogueItemDomainType,
   DataElement,
+  DataModel,
   DataModelDetail,
 } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
@@ -33,10 +35,12 @@ import {
   DataRequestStatus,
 } from 'src/app/data-explorer/data-explorer.types';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { DataModelService } from 'src/app/mauro/data-model.service';
 import { ResearchPluginService } from 'src/app/mauro/research-plugin.service';
 import { SecurityService } from 'src/app/security/security.service';
 import { UserDetails } from 'src/app/security/user-details.service';
 import { createBroadcastServiceStub } from 'src/app/testing/stubs/broadcast.stub';
+import { createDataModelServiceStub } from 'src/app/testing/stubs/data-model.stub';
 import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
 import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
 import { createResearchPluginServiceStub } from 'src/app/testing/stubs/research-plugin.stub';
@@ -52,6 +56,7 @@ describe('MyRequestsComponent', () => {
   let harness: ComponentHarness<MyRequestsComponent>;
   const securityStub = createSecurityServiceStub();
   const dataRequestsStub = createDataRequestsServiceStub();
+  const dataModelsStub = createDataModelServiceStub();
   const toastrStub = createToastrServiceStub();
   const researchPluginStub = createResearchPluginServiceStub();
   const dialogsStub = createMatDialogStub();
@@ -67,6 +72,10 @@ describe('MyRequestsComponent', () => {
         {
           provide: DataRequestsService,
           useValue: dataRequestsStub,
+        },
+        {
+          provide: DataModelService,
+          useValue: dataModelsStub,
         },
         {
           provide: ToastrService,
@@ -88,6 +97,12 @@ describe('MyRequestsComponent', () => {
     });
   });
 
+  const user = { email: 'test@test.com' } as UserDetails;
+
+  const mockSignedInUser = () => {
+    securityStub.getSignedInUser.mockReturnValueOnce(user);
+  };
+
   it('should create', () => {
     expect(harness.isComponentCreated).toBeTruthy();
     expect(harness.component.allRequests).toStrictEqual([]);
@@ -99,12 +114,6 @@ describe('MyRequestsComponent', () => {
   });
 
   describe('initialisation', () => {
-    const user = { email: 'test@test.com' } as UserDetails;
-
-    const mockSignedInUser = () => {
-      securityStub.getSignedInUser.mockReturnValueOnce(user);
-    };
-
     beforeEach(() => {
       dataRequestsStub.list.mockClear();
       toastrStub.error.mockClear();
@@ -435,5 +444,86 @@ describe('MyRequestsComponent', () => {
       expect(harness.component.request.status).toBe('submitted');
       expect(broadcastStub.dispatch).toHaveBeenCalledWith('data-request-submitted');
     });
+  });
+
+  describe('create next version', () => {
+    const request: DataRequest = {
+      id: '123',
+      label: 'request',
+      domainType: CatalogueItemDomainType.DataModel,
+      status: 'submitted',
+      modelVersion: '1.0.0',
+    };
+
+    beforeEach(() => {
+      dataModelsStub.createNextVersion.mockClear();
+      toastrStub.error.mockClear();
+    });
+
+    it('should do nothing if there is no request', () => {
+      harness.component.createNextVersion();
+
+      expect(dataModelsStub.createNextVersion).not.toHaveBeenCalled();
+    });
+
+    it('should do nothing if current request is not in submitted state', () => {
+      harness.component.request = {
+        ...request,
+        status: 'unsent',
+      };
+
+      harness.component.createNextVersion();
+
+      expect(dataModelsStub.createNextVersion).not.toHaveBeenCalled();
+    });
+
+    it('should do nothing if current request is not finalised', () => {
+      harness.component.request = {
+        ...request,
+        modelVersion: undefined,
+      };
+
+      harness.component.createNextVersion();
+
+      expect(dataModelsStub.createNextVersion).not.toHaveBeenCalled();
+    });
+
+    it('should raise error if failed to create', () => {
+      dataModelsStub.createNextVersion.mockImplementationOnce((model) => {
+        expect(model.id).toBe(request.id);
+        return throwError(() => new Error());
+      });
+
+      harness.component.request = request;
+      harness.component.createNextVersion();
+
+      expect(dataModelsStub.createNextVersion).toHaveBeenCalled();
+      expect(toastrStub.error).toHaveBeenCalled();
+    });
+
+    it('should create new draft version of request', fakeAsync(() => {
+      const nextDataModel: DataModel = {
+        ...request,
+        modelVersion: undefined,
+      };
+
+      mockSignedInUser();
+
+      dataModelsStub.createNextVersion.mockImplementationOnce((model) => {
+        expect(model.id).toBe(request.id);
+        return of(nextDataModel);
+      });
+
+      dataRequestsStub.list.mockImplementationOnce(() => of([request, nextDataModel]));
+      dataRequestsStub.listDataElements.mockImplementationOnce(() => of([]));
+
+      harness.component.request = request;
+      harness.component.createNextVersion();
+
+      tick();
+
+      expect(dataModelsStub.createNextVersion).toHaveBeenCalled();
+      expect(harness.component.request.status).toBe('unsent');
+    }));
   });
 });

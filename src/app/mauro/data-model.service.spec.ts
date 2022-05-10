@@ -572,4 +572,64 @@ describe('DataModelService', () => {
       expect(actual$).toBeObservable(expected$);
     });
   });
+
+  describe('create next version', () => {
+    it('should throw an error if no model id is provided', () => {
+      const expected$ = cold('#', null, new Error());
+      const actual$ = service.createNextVersion({
+        label: 'test',
+        domainType: CatalogueItemDomainType.DataModel,
+      });
+      expect(actual$).toBeObservable(expected$);
+    });
+
+    it('should throw an error if the model is not finalised', () => {
+      const expected$ = cold('#', null, new Error());
+      const actual$ = service.createNextVersion({
+        id: '123',
+        label: 'test',
+        domainType: CatalogueItemDomainType.DataModel,
+      });
+      expect(actual$).toBeObservable(expected$);
+    });
+
+    it('should return a new draft model', () => {
+      const currentModel: DataModel = {
+        id: '123',
+        label: 'test',
+        domainType: CatalogueItemDomainType.DataModel,
+        modelVersion: '1.0.0',
+      };
+
+      const nextModel: DataModel = {
+        ...currentModel,
+        id: '456',
+        modelVersion: undefined,
+      };
+
+      endpointsStub.dataModel.newBranchModelVersion.mockImplementationOnce(
+        (id, payload) => {
+          expect(id).toBe(currentModel.id);
+          expect(payload).toStrictEqual({});
+          return cold('--a|', {
+            a: {
+              body: nextModel,
+            },
+          });
+        }
+      );
+
+      const expected$ = cold('--a|', {
+        a: nextModel,
+      });
+
+      const actual$ = service.createNextVersion({
+        id: '123',
+        label: 'test',
+        domainType: CatalogueItemDomainType.DataModel,
+        modelVersion: '1.0.0',
+      });
+      expect(actual$).toBeObservable(expected$);
+    });
+  });
 });

@@ -17,6 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import {
+  BranchModelPayload,
   CatalogueItemSearchResponse,
   DataModelCreatePayload,
   DataModelDetail,
@@ -24,6 +25,7 @@ import {
   DataModelFullResponse,
   DataModelIndexResponse,
   DataModelSubsetPayload,
+  Payload,
   SearchQueryParameters,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
@@ -53,6 +55,11 @@ export type DataModelCopySubsetFn = (
   payload: DataModelSubsetPayload
 ) => Observable<DataModelDetail>;
 
+export type DataModelBranchVersionFn = (
+  id: string,
+  data: Payload | BranchModelPayload
+) => Observable<DataModelDetailResponse>;
+
 export interface MdmDataModelResourcesStub {
   get: jest.MockedFunction<DataModelGetFn>;
   search: jest.MockedFunction<DataModelSearchFn>;
@@ -60,6 +67,7 @@ export interface MdmDataModelResourcesStub {
   hierarchy: jest.MockedFunction<DataModelHierarchyFn>;
   addToFolder: jest.MockedFunction<DataModelAddToFolderFn>;
   copySubset: jest.MockedFunction<DataModelCopySubsetFn>;
+  newBranchModelVersion: jest.MockedFunction<DataModelBranchVersionFn>;
 }
 
 export const createDataModelStub = (): MdmDataModelResourcesStub => {
@@ -70,5 +78,6 @@ export const createDataModelStub = (): MdmDataModelResourcesStub => {
     hierarchy: jest.fn() as jest.MockedFunction<DataModelHierarchyFn>,
     addToFolder: jest.fn() as jest.MockedFunction<DataModelAddToFolderFn>,
     copySubset: jest.fn() as jest.MockedFunction<DataModelCopySubsetFn>,
+    newBranchModelVersion: jest.fn() as jest.MockedFunction<DataModelBranchVersionFn>,
   };
 };
