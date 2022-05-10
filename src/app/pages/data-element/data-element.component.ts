@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
   CatalogueItemDomainType,
@@ -26,7 +26,7 @@ import {
 } from '@maurodatamapper/mdm-resources';
 import { ProfileService } from 'src/app/mauro/profile.service';
 import { ToastrService } from 'ngx-toastr';
-import { switchMap, forkJoin, catchError, EMPTY } from 'rxjs';
+import { switchMap, forkJoin, catchError, EMPTY, Subject, takeUntil } from 'rxjs';
 import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import {
@@ -38,13 +38,14 @@ import {
   DataAccessRequestsSourceTargetIntersections,
   DataRequestsService,
 } from 'src/app/data-explorer/data-requests.service';
+import { BroadcastService } from 'src/app/core/broadcast.service';
 
 @Component({
   selector: 'mdm-data-element',
   templateUrl: './data-element.component.html',
   styleUrls: ['./data-element.component.scss'],
 })
-export class DataElementComponent implements OnInit {
+export class DataElementComponent implements OnInit, OnDestroy {
   dataModelId: Uuid = '';
   dataClassId: Uuid = '';
   dataElementId: Uuid = '';
@@ -60,6 +61,11 @@ export class DataElementComponent implements OnInit {
 
   sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 
+  /**
+   * Signal to attach to subscriptions to trigger when they should be unsubscribed.
+   */
+  private unsubscribe$ = new Subject<void>();
+
   constructor(
     private route: ActivatedRoute,
     private dataModels: DataModelService,
@@ -67,6 +73,7 @@ export class DataElementComponent implements OnInit {
     private bookmarkService: BookmarkService,
     private profileService: ProfileService,
     private toastr: ToastrService,
+    private broadcast: BroadcastService,
     @Inject(DATA_EXPLORER_CONFIGURATION) private config: DataExplorerConfiguration
   ) {
     this.sourceTargetIntersections = {
@@ -90,7 +97,7 @@ export class DataElementComponent implements OnInit {
           return forkJoin([
             this.loadDataElement(),
             this.loadProfile(),
-            this.loadIntersections(this.dataModelId),
+            this.loadIntersections(),
           ]);
         })
       )
@@ -105,6 +112,8 @@ export class DataElementComponent implements OnInit {
         };
         this.researchProfile = profile;
         this.sourceTargetIntersections = sourceTargetIntersections;
+
+        this.subscribeDataRequestChanges();
 
         // Check for the Identifiable Data value
         if (this.researchProfile && this.researchProfile.sections.length > 0) {
@@ -122,6 +131,11 @@ export class DataElementComponent implements OnInit {
           }
         }
       });
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   toggleBookmark(selected: boolean) {
@@ -190,9 +204,9 @@ export class DataElementComponent implements OnInit {
       );
   }
 
-  private loadIntersections(dataModelId: Uuid) {
+  private loadIntersections() {
     return this.dataRequests
-      .getRequestsIntersections(dataModelId, [this.dataElementId])
+      .getRequestsIntersections(this.dataModelId, [this.dataElementId])
       .pipe(
         catchError((error) => {
           console.log(error);
@@ -200,5 +214,21 @@ export class DataElementComponent implements OnInit {
           return EMPTY;
         })
       );
+  }
+
+  /**
+   * When a data request is added, reload all intersections (which ensures we pick up intersections with the
+   * new data request) and tell all data-element-in-request components about the new intersections.
+   */
+  private subscribeDataRequestChanges() {
+    this.broadcast
+      .on('data-request-added')
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(() => {
+        this.loadIntersections().subscribe((intersections) => {
+          this.sourceTargetIntersections = intersections;
+          this.broadcast.dispatch('data-intersections-refreshed', intersections);
+        });
+      });
   }
 }
