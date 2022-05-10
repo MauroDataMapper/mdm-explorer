@@ -23,7 +23,7 @@
       "dom"
     ],
     "paths": {
-      "@maurodatamapper/mdm-research-browser/*": [
+      "@maurodatamapper/mdm-explorer/*": [
         "./app/*"
       ]
     },

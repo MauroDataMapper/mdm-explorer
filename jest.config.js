@@ -45,7 +45,7 @@ module.exports = {
     'default',
     ['jest-junit',{outputDirectory: 'test-report'}],
     ['jest-html-reporter', {
-      pageTitle: 'Mauro Research Portal: Test Report',
+      pageTitle: 'Mauro Data Explorer: Test Report',
       outputPath: 'test-report/index.html',
       includeFailureMsg: true
     }],

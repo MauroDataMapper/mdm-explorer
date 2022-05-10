@@ -68,6 +68,6 @@ describe('AppComponent', () => {
   });
 
   it('should have expected title', () => {
-    expect(harness.component.title).toEqual('mdm-research-browser');
+    expect(harness.component.title).toEqual('mdm-explorer');
   });
 });

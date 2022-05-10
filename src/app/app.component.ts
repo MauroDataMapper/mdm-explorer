@@ -48,7 +48,7 @@ import { OverlayContainer } from '@angular/cdk/overlay';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
-  title = 'mdm-research-browser';
+  title = 'mdm-explorer';
 
   themeCssSelector = 'default-theme';
 
