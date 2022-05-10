@@ -18,18 +18,24 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { Uuid } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
+import { forkJoin, of, switchMap, throwError } from 'rxjs';
 import {
   BookmarkService,
   SelectableBookmark,
 } from 'src/app/data-explorer/bookmark.service';
+import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import {
   AddToRequestEvent,
   BookMarkCheckedEvent as BookmarkCheckedEvent,
   DataRequest,
   RemoveBookmarkEvent,
 } from 'src/app/data-explorer/data-explorer.types';
-import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import {
+  DataAccessRequestsSourceTargetIntersections,
+  DataRequestsService,
+} from 'src/app/data-explorer/data-requests.service';
 import { SecurityService } from 'src/app/security/security.service';
 
 @Component({
@@ -40,13 +46,20 @@ import { SecurityService } from 'src/app/security/security.service';
 export class MyBookmarksComponent implements OnInit {
   userBookmarks: SelectableBookmark[] = [];
   openDataRequests: DataRequest[] = [];
+  sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 
   constructor(
     private bookmarks: BookmarkService,
     private security: SecurityService,
     private dataRequests: DataRequestsService,
+    private explorer: DataExplorerService,
     private toastr: ToastrService
-  ) {}
+  ) {
+    this.sourceTargetIntersections = {
+      dataAccessRequests: [],
+      sourceTargetIntersections: [],
+    };
+  }
 
   ngOnInit(): void {
     const user = this.security.getSignedInUser();
@@ -56,11 +69,27 @@ export class MyBookmarksComponent implements OnInit {
       });
     }
 
-    this.bookmarks.index().subscribe((result) => {
-      result.forEach((bookmark) => {
-        this.userBookmarks.push({ ...bookmark, isSelected: false });
+    this.bookmarks
+      .index()
+      .pipe(
+        switchMap((bookmarks) => {
+          const selectableBookmarks: SelectableBookmark[] = [];
+          bookmarks.forEach((bookmark) => {
+            selectableBookmarks.push({ ...bookmark, isSelected: false });
+          });
+
+          return of(selectableBookmarks);
+        }),
+        switchMap((bookmarks: SelectableBookmark[]) => {
+          return forkJoin([this.loadIntersections(bookmarks), of(bookmarks)]);
+        })
+      )
+      .subscribe(([intersections, bookmarks]) => {
+        this.sourceTargetIntersections = intersections;
+        // userBookmarks must be the last property set as this triggers rendering of the
+        // bookmarks list.
+        this.userBookmarks = bookmarks;
       });
-    });
   }
 
   onChecked(event: BookmarkCheckedEvent) {
@@ -86,5 +115,25 @@ export class MyBookmarksComponent implements OnInit {
     this.userBookmarks = this.userBookmarks.map((bookmark) => {
       return { ...bookmark, isSelected: event.checked };
     });
+  }
+
+  private loadIntersections(dataElements: SelectableBookmark[] | undefined) {
+    const dataElementIds: Uuid[] = [];
+
+    if (dataElements) {
+      dataElements.forEach((item: SelectableBookmark) => {
+        dataElementIds.push(item.id);
+      });
+    }
+
+    return this.explorer.getRootDataModel().pipe(
+      switchMap((dataModel) => {
+        if (!dataModel.id) {
+          return throwError(() => new Error('Root Data Model has no id.'));
+        }
+
+        return this.dataRequests.getRequestsIntersections(dataModel.id, dataElementIds);
+      })
+    );
   }
 }

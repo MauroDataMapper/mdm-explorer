@@ -32,9 +32,10 @@ SPDX-License-Identifier: Apache-2.0
     <mdm-breadcrumb [item]="bookmark"></mdm-breadcrumb>
   </span>
   <span>
-    <button mat-stroked-button [mdmArrow]="'angle-down'" [matMenuTriggerFor]="menu">
-      Move element:
-    </button>
+    <mdm-data-element-in-request
+      [dataElement]="bookmark"
+      [sourceTargetIntersections]="sourceTargetIntersections"
+    ></mdm-data-element-in-request>
     <mdm-bookmark-toggle
       [selected]="true"
       (toggle)="handleRemove()"
