@@ -40,7 +40,7 @@ export type DataRequestsCreateFromDataElementsFn = (
 ) => Observable<DataRequest>;
 export type DataAccessRequestsSourceTargetIntersectionsFn = (
   sourceDataModelId: Uuid
-) => Observable<[DataAccessRequestsSourceTargetIntersections[]]>;
+) => Observable<DataAccessRequestsSourceTargetIntersections>;
 
 export interface DataRequestsServiceStub {
   list: jest.MockedFunction<DataRequestsListFn>;

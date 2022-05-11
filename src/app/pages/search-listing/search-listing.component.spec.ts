@@ -110,10 +110,8 @@ describe('SearchListingComponent', () => {
     sourceTargetIntersections: [],
   };
 
-  const mockedIntersections: DataAccessRequestsSourceTargetIntersections[] = [
-    mockedSourceTargetIntersections,
-  ];
-
+  const mockedIntersections: DataAccessRequestsSourceTargetIntersections =
+    mockedSourceTargetIntersections;
   securityStub.getSignedInUser.mockImplementation(() => user);
 
   const setupComponentTest = async (parameters: DataElementSearchParameters) => {
@@ -316,7 +314,7 @@ describe('SearchListingComponent', () => {
         of(mockedRootDataModel)
       );
       dataRequestsStub.getRequestsIntersections.mockImplementationOnce(() =>
-        of([mockedIntersections])
+        of(mockedIntersections)
       );
       harness.component.ngOnInit();
       tick();
@@ -340,7 +338,7 @@ describe('SearchListingComponent', () => {
         of(mockedRootDataModel)
       );
       dataRequestsStub.getRequestsIntersections.mockImplementationOnce(() =>
-        of([mockedIntersections])
+        of(mockedIntersections)
       );
       harness.component.ngOnInit();
       tick();
@@ -362,7 +360,7 @@ describe('SearchListingComponent', () => {
         of(mockedRootDataModel)
       );
       dataRequestsStub.getRequestsIntersections.mockImplementationOnce(() =>
-        of([mockedIntersections])
+        of(mockedIntersections)
       );
       harness.component.ngOnInit();
       tick();
@@ -443,7 +441,7 @@ describe('SearchListingComponent', () => {
         of(mockedRootDataModel)
       );
       dataRequestsStub.getRequestsIntersections.mockImplementationOnce(() =>
-        of([mockedIntersections])
+        of(mockedIntersections)
       );
       harness.component.ngOnInit();
       tick();
@@ -466,7 +464,7 @@ describe('SearchListingComponent', () => {
         of(mockedRootDataModel)
       );
       dataRequestsStub.getRequestsIntersections.mockImplementationOnce(() =>
-        of([mockedIntersections])
+        of(mockedIntersections)
       );
       harness.component.ngOnInit();
       expect(harness.component.source).toBe('search');

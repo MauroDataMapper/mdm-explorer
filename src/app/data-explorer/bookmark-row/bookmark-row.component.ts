@@ -25,6 +25,7 @@ import {
   RemoveBookmarkEvent,
   DataRequest,
 } from '../data-explorer.types';
+import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.service';
 
 @Component({
   selector: 'mdm-bookmark-row',
@@ -35,10 +36,18 @@ export class BookmarkRowComponent {
   @Input() bookmark?: Bookmark;
   @Input() openRequests: DataRequest[] = [];
   @Input() isChecked = false;
+  @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 
   @Output() checked = new EventEmitter<BookMarkCheckedEvent>();
   @Output() remove = new EventEmitter<RemoveBookmarkEvent>();
   @Output() addToRequest = new EventEmitter<AddToRequestEvent>();
+
+  constructor() {
+    this.sourceTargetIntersections = {
+      dataAccessRequests: [],
+      sourceTargetIntersections: [],
+    };
+  }
 
   handleChecked(event: MatCheckboxChange) {
     if (!this.bookmark) return;

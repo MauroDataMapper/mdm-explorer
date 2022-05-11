@@ -198,7 +198,9 @@ describe('DataElementComponent', () => {
   };
 
   const setupDataRequestsService = () => {
-    dataRequestsStub.getRequestsIntersections.mockReturnValue(of([[]]));
+    dataRequestsStub.getRequestsIntersections.mockReturnValue(
+      of({ dataAccessRequests: [], sourceTargetIntersections: [] })
+    );
   };
 
   beforeEach(async () => {
