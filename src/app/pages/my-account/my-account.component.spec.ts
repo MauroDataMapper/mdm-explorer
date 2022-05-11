@@ -22,6 +22,7 @@ import {
   CatalogueUser,
   CatalogueUserPayload,
   CatalogueUserService,
+  CatalogueUserContactPayload,
 } from 'src/app/mauro/catalogue-user.service';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
@@ -37,6 +38,12 @@ import {
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
 import { MyAccountComponent } from './my-account.component';
+import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
+import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
+import { MatDialog } from '@angular/material/dialog';
+import { fakeAsync, tick } from '@angular/core/testing';
+import { CatalogueItemDomainType, FolderDetail } from '@maurodatamapper/mdm-resources';
 
 describe('MyAccountComponent', () => {
   let harness: ComponentHarness<MyAccountComponent>;
@@ -46,6 +53,8 @@ describe('MyAccountComponent', () => {
   const stateRouterStub = createStateRouterStub();
   const toastrStub = createToastrServiceStub();
   const broadcastStub = createBroadcastServiceStub();
+  const dataRequestsStub = createDataRequestsServiceStub();
+  const MatDialogStub = createMatDialogStub();
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(MyAccountComponent, {
@@ -69,6 +78,14 @@ describe('MyAccountComponent', () => {
         {
           provide: BroadcastService,
           useValue: broadcastStub,
+        },
+        {
+          provide: DataRequestsService,
+          useValue: dataRequestsStub,
+        },
+        {
+          provide: MatDialog,
+          useValue: MatDialogStub,
         },
       ],
     });
@@ -217,5 +234,88 @@ describe('MyAccountComponent', () => {
       harness.component.signOut();
       expect(spy).toHaveBeenCalledWith('sign-out-user');
     });
+  });
+
+  describe('updating contact info', () => {
+    const outdatedUser: CatalogueUser = {
+      id: '123',
+      firstName: 'test',
+      lastName: 'user',
+      emailAddress: 'test@test.com',
+    };
+
+    it('should do nothing if no user is set', () => {
+      harness.component.updateContactInfo({} as CatalogueUserContactPayload);
+      expect(catalogueUserStub.updateContactInfo).not.toHaveBeenCalled();
+    });
+
+    it('should update the details of a user and the related folder', fakeAsync(() => {
+      const payload: CatalogueUserContactPayload = {
+        emailAddress: 'changed@test.com',
+      };
+
+      const folder: FolderDetail = {
+        id: '456',
+        label: 'folder',
+        domainType: CatalogueItemDomainType.Folder,
+        availableActions: [],
+      };
+
+      harness.component.user = outdatedUser;
+
+      const updatedUser: CatalogueUser = {
+        id: '123',
+        emailAddress: payload.emailAddress,
+      };
+
+      MatDialogStub.usage.afterClosed.mockImplementationOnce(() => of({ status: 'ok' }));
+
+      catalogueUserStub.updateContactInfo.mockImplementationOnce((id, pl) => {
+        expect(id).toBe(outdatedUser.id);
+        expect(pl).toBe(payload);
+        expect(harness.component.contactInfoMode).toBe('updating');
+        return of(updatedUser);
+      });
+      dataRequestsStub.getRequestsFolder.mockImplementationOnce((email) => {
+        expect(email).toBe(outdatedUser.emailAddress);
+        return of(folder);
+      });
+
+      dataRequestsStub.updateRequestsFolder.mockImplementationOnce((folderId, email) => {
+        expect(folderId).toBe(folder.id);
+        expect(email).toBe(updatedUser.emailAddress);
+        return of();
+      });
+
+      harness.component.updateContactInfo(payload);
+
+      tick();
+
+      expect(harness.component.user.emailAddress).toBe(updatedUser.emailAddress);
+      expect(harness.component.user.emailAddress).not.toBe(outdatedUser.emailAddress);
+    }));
+
+    it('should raise an error when updating fails', fakeAsync(() => {
+      const payload: CatalogueUserContactPayload = {
+        emailAddress: 'changed@test.com',
+      };
+
+      harness.component.user = outdatedUser;
+
+      MatDialogStub.usage.afterClosed.mockImplementationOnce(() => of({ status: 'ok' }));
+
+      catalogueUserStub.updateContactInfo.mockImplementationOnce(() => {
+        expect(harness.component.contactInfoMode).toBe('updating');
+        return throwError(() => {});
+      });
+
+      harness.component.updateContactInfo(payload);
+
+      tick();
+
+      expect(harness.component.user).toBe(outdatedUser);
+      expect(harness.component.contactInfoMode).toBe('edit');
+      expect(toastrStub.error).toHaveBeenCalled();
+    }));
   });
 });

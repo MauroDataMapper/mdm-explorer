@@ -25,6 +25,7 @@ import {
   DataModelFull,
   SourceTargetIntersection,
   MdmIndexBody,
+  ContainerUpdatePayload,
 } from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
 import { DataModelService } from '../mauro/data-model.service';
@@ -429,5 +430,14 @@ describe('DataRequestsService', () => {
 
       securityStub.getSignedInUser.mockClear();
     });
+  });
+
+  it('should call the folder service with a payload', () => {
+    const folderId: string = '123';
+    const label: string = 'testLabel';
+    const payload: ContainerUpdatePayload = { id: folderId, label: label };
+
+    service.updateRequestsFolder(folderId, label);
+    expect(folderServiceStub.update).toHaveBeenCalledWith(folderId, payload);
   });
 });

@@ -1,5 +1,5 @@
 /*
-Copyright 2022 University of Oxford
+Copyright 2020-2022 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,39 +16,8 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-@import "../../../styles/base/all";
-
-.mdm-my-account {
-  .heading-with-actions {
-    padding: 5em 0 1em;
-  }
-
-  section {
-    border: 1px solid $color-mauro-gold;
-    border-radius: $border-radius;
-    padding: 1em;
-    margin: 2em 0;
-
-    dt,
-    dd {
-      display: inline-block;
-
-      @include respond-to-mobile-xs {
-        display: block;
-      }
-    }
-
-    dt {
-      min-width: 200px;
-      font-weight: normal;
-      @include respond-to-mobile {
-        min-width: 100px;
-      }
-    }
-  }
-
-  &__desc-info {
-    border-bottom: 1px solid $color-description-info-underline;
-    margin: 1em 0;
-  }
+export enum DialogStatus {
+  Ok = 'ok',
+  Cancel = 'cancel',
+  Close = 'close',
 }

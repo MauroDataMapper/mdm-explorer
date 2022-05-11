@@ -22,6 +22,7 @@ import { SharedModule } from '../shared/shared.module';
 import { OpenIdConnectAuthorizeComponent } from './open-id-connect-authorize/open-id-connect-authorize.component';
 import { ForgotPasswordFormComponent } from './forgot-password-form/forgot-password-form.component';
 import { CatalogueUserFormComponent } from './catalogue-user-form/catalogue-user-form.component';
+import { CatalogueUserContactFormComponent } from './catalogue-user-contact-form/catalogue-user-contact-form.component';
 import { CoreModule } from '../core/core.module';
 import { ChangePasswordFormComponent } from './change-password-form/change-password-form.component';
 
@@ -32,6 +33,7 @@ import { ChangePasswordFormComponent } from './change-password-form/change-passw
     ForgotPasswordFormComponent,
     CatalogueUserFormComponent,
     ChangePasswordFormComponent,
+    CatalogueUserContactFormComponent,
   ],
   imports: [CoreModule, SharedModule],
   exports: [
@@ -40,6 +42,7 @@ import { ChangePasswordFormComponent } from './change-password-form/change-passw
     ForgotPasswordFormComponent,
     CatalogueUserFormComponent,
     ChangePasswordFormComponent,
+    CatalogueUserContactFormComponent,
   ],
 })
 export class SecurityModule {}

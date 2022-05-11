@@ -64,9 +64,20 @@ SPDX-License-Identifier: Apache-2.0
         (updateClicked)="updateBasicInfo($event)"
       ></mdm-catalogue-user-form>
     </section>
-    <section class="form-section">
-      <h2>Contact Information</h2>
-      <dl>
+
+    <section>
+      <div class="sub-heading-with-actions">
+        <h2>Contact Information</h2>
+        <button
+          *ngIf="contactInfoMode === 'view'"
+          mat-flat-button
+          color="primary"
+          (click)="editContactInfo()"
+        >
+          Edit
+        </button>
+      </div>
+      <dl *ngIf="contactInfoMode === 'view'">
         <div class="mdm-my-account__desc-info">
           <dt>Email</dt>
           <dd>
@@ -74,6 +85,13 @@ SPDX-License-Identifier: Apache-2.0
           </dd>
         </div>
       </dl>
+      <mdm-catalogue-user-contact-form
+        *ngIf="contactInfoMode === 'edit' || contactInfoMode === 'updating'"
+        [user]="user"
+        [isBusy]="contactInfoMode === 'updating'"
+        (cancelClicked)="cancelEditContactInfo()"
+        (updateClicked)="updateContactInfo($event)"
+      ></mdm-catalogue-user-contact-form>
     </section>
   </div>
 </div>

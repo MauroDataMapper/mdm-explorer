@@ -18,15 +18,20 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY } from 'rxjs';
+import { catchError, EMPTY, forkJoin, switchMap } from 'rxjs';
 import {
   CatalogueUser,
   CatalogueUserPayload,
+  CatalogueUserContactPayload,
   CatalogueUserService,
 } from 'src/app/mauro/catalogue-user.service';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { SecurityService } from 'src/app/security/security.service';
+import { FolderService } from 'src/app/mauro/folder.service';
+import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { ConfirmationDialogComponent } from 'src/app/shared/confirmation-dialog/confirmation-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'mdm-my-account',
@@ -36,13 +41,16 @@ import { SecurityService } from 'src/app/security/security.service';
 export class MyAccountComponent implements OnInit {
   user?: CatalogueUser;
   basicInfoMode: 'view' | 'edit' | 'updating' = 'view';
+  contactInfoMode: 'view' | 'edit' | 'updating' = 'view';
 
   constructor(
     private security: SecurityService,
     private catalogueUser: CatalogueUserService,
+    private dataRequests: DataRequestsService,
     private stateRouter: StateRouterService,
     private toastr: ToastrService,
-    private broadcast: BroadcastService
+    private broadcast: BroadcastService,
+    public dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -94,6 +102,65 @@ export class MyAccountComponent implements OnInit {
         this.basicInfoMode = 'view';
         this.toastr.success('Your account was updated.');
       });
+  }
+
+  editContactInfo() {
+    this.contactInfoMode = 'edit';
+  }
+
+  cancelEditContactInfo() {
+    this.contactInfoMode = 'view';
+  }
+
+  updateContactInfo(payload: CatalogueUserContactPayload) {
+    if (!this.user) {
+      return;
+    }
+
+    const oldEmail = this.user.emailAddress;
+    this.contactInfoMode = 'updating';
+
+    const dialog = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: 'Logout warning!',
+        okBtnTitle: 'Yes, confirm logout. ',
+        btnType: 'primary',
+        message: 'Changing your email will log you out!',
+      },
+    });
+
+    dialog.afterClosed().subscribe((result: { status: string }) => {
+      if (result?.status !== 'ok') {
+        this.cancelEditContactInfo();
+
+        return;
+      }
+      this.catalogueUser
+        .updateContactInfo(this.user!.id, payload)
+        .pipe(
+          catchError(() => {
+            this.toastr.error('There was a problem updating your account details.');
+            this.contactInfoMode = 'edit';
+            console.log('Errored out on user request');
+            return EMPTY;
+          }),
+          switchMap((user) => {
+            this.user = user;
+            return this.dataRequests.getRequestsFolder(oldEmail);
+          }),
+          switchMap((folder) => {
+            return this.dataRequests.updateRequestsFolder(
+              folder.id!,
+              this.user!.emailAddress
+            );
+          })
+        )
+        .subscribe(() => {
+          this.contactInfoMode = 'view';
+          this.toastr.success('Your account was updated.');
+          this.signOut();
+        });
+    });
   }
 
   signOut() {

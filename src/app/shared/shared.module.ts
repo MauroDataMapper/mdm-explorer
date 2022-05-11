@@ -33,6 +33,7 @@ import { NgChartsModule } from 'ng2-charts';
 import { CallToActionComponent } from './call-to-action/call-to-action.component';
 import { DataElementInRequestComponent } from './data-element-in-request/data-element-in-request.component';
 import { DataElementMultiSelectComponent } from './data-element-multi-select/data-element-multi-select.component';
+import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { DataElementMultiSelectComponent } from './data-element-multi-select/dat
     CallToActionComponent,
     DataElementInRequestComponent,
     DataElementMultiSelectComponent,
+    ConfirmationDialogComponent,
   ],
   imports: [CoreModule, NgChartsModule],
   exports: [
