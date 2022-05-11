@@ -16,11 +16,17 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-export const environment = {
-  production: true,
-  apiEndpoint: 'api',
-  checkSessionExpiryTimeout: 300000,
-  features: {
-    useOpenIdConnect: true,
-  },
+import { ApiProperty } from '@maurodatamapper/mdm-resources';
+import { Observable } from 'rxjs';
+
+export type ApiPropertiesListPublicFn = () => Observable<ApiProperty[]>;
+
+export interface ApiPropertiesServiceStub {
+  listPublic: jest.MockedFunction<ApiPropertiesListPublicFn>;
+}
+
+export const createApiPropertiesServiceStub = (): ApiPropertiesServiceStub => {
+  return {
+    listPublic: jest.fn() as jest.MockedFunction<ApiPropertiesListPublicFn>,
+  };
 };

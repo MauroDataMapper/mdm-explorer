@@ -16,11 +16,20 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-export const environment = {
-  production: true,
-  apiEndpoint: 'api',
-  checkSessionExpiryTimeout: 300000,
-  features: {
-    useOpenIdConnect: true,
-  },
-};
+import { Injectable } from '@angular/core';
+import { ApiProperty, ApiPropertyIndexResponse } from '@maurodatamapper/mdm-resources';
+import { map, Observable } from 'rxjs';
+import { MdmEndpointsService } from './mdm-endpoints.service';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class ApiPropertiesService {
+  constructor(private endpoints: MdmEndpointsService) {}
+
+  listPublic(): Observable<ApiProperty[]> {
+    return this.endpoints.apiProperties
+      .listPublic()
+      .pipe(map((response: ApiPropertyIndexResponse) => response.body.items));
+  }
+}

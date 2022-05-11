@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { PagesModule } from './pages/pages.module';
@@ -31,10 +31,54 @@ import {
   OPENID_CONNECT_CONFIG,
 } from './security/security.types';
 import { STATIC_CONTENT_CONFIGURATION } from './core/static-content.service';
-import { DATA_EXPLORER_CONFIGURATION } from './data-explorer/data-explorer.types';
+import {
+  DataExplorerConfiguration,
+  DATA_EXPLORER_CONFIGURATION,
+} from './data-explorer/data-explorer.types';
 import { CoreModule } from './core/core.module';
 import { AppRoutingModule } from './app-routing.module';
 import { NgChartsModule } from 'ng2-charts';
+import { DataExplorerService } from './data-explorer/data-explorer.service';
+import { Observable } from 'rxjs';
+
+/**
+ * Factory function for app initialization.
+ *
+ * @param explorer The {@link DataExplorerService} to call to initialise the app.
+ * @returns A function that will return an observable of {@link DataExplorerConfiguration}.
+ *
+ * This factory function should be used with the {@link APP_INITIALIZER} injection token to initialise the
+ * app during startup. It will initialise the configuration required for the application to continue functioning.
+ */
+const appInitializerFactory = (
+  explorer: DataExplorerService
+): (() => Observable<DataExplorerConfiguration>) => {
+  return () => explorer.initialise();
+};
+
+/**
+ * Factory function for getting the loaded {@link DataExplorerConfiguration}. This provides a convenient way
+ * to inject the {@link DataExplorerConfiguration} via the {@link DATA_EXPLORER_CONFIGURATION} injection token
+ * without needing to inject the {@link DataExplorerService} directly.
+ *
+ * @param explorer The {@link DataExplorerService} to fetch the {@link DataExplorerConfiguration}.
+ * @returns The loaded {@link DataExplorerConfiguration} object.
+ *
+ * This factory function should be used with the {@link DATA_EXPLORER_CONFIGURATION} injection token.
+ *
+ * This function requires the {@link APP_INITIALIZER} to have been called first and to have performed
+ * the {@link DataExplorerConfiguration.initialise()} invocation, otherwise a critical error will be
+ * thrown.
+ */
+const dataExplorerConfigurationFactory = (
+  explorer: DataExplorerService
+): DataExplorerConfiguration => {
+  if (!explorer.config) {
+    throw new Error('DataExplorerService.initialse() has not been invoked');
+  }
+
+  return explorer.config;
+};
 
 const getOpenIdAuthorizeUrl = () => {
   // Redirect authorization URL refers to a static page route found in `/src/static-pages`. See the `assets`
@@ -96,12 +140,15 @@ const getOpenIdAuthorizeUrl = () => {
       },
     },
     {
+      provide: APP_INITIALIZER,
+      useFactory: appInitializerFactory,
+      deps: [DataExplorerService],
+      multi: true,
+    },
+    {
       provide: DATA_EXPLORER_CONFIGURATION,
-      useValue: {
-        rootDataModelPath: environment.rootDataModelPath,
-        profileNamespace: environment.profileNamespace,
-        profileServiceName: environment.profileServiceName,
-      },
+      useFactory: dataExplorerConfigurationFactory,
+      deps: [DataExplorerService],
     },
   ],
   bootstrap: [AppComponent],

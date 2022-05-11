@@ -31,6 +31,7 @@ import { Bookmark } from './bookmark.service';
 export interface DataExplorerConfiguration {
   profileNamespace: string;
   profileServiceName: string;
+  rootRequestFolder: string;
   rootDataModelPath: string;
 }
 

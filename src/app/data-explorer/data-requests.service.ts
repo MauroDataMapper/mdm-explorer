@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import {
   DataElement,
   DataModel,
@@ -29,12 +29,16 @@ import {
   SourceTargetIntersectionPayload,
 } from '@maurodatamapper/mdm-resources';
 import { forkJoin, map, Observable, switchMap, throwError } from 'rxjs';
-import { environment } from 'src/environments/environment';
 import { UserDetails } from '../security/user-details.service';
 import { DataModelService } from '../mauro/data-model.service';
 import { FolderService } from '../mauro/folder.service';
 import { CatalogueUserService } from '../mauro/catalogue-user.service';
-import { DataElementBasic, mapToDataRequest } from './data-explorer.types';
+import {
+  DataElementBasic,
+  DataExplorerConfiguration,
+  DATA_EXPLORER_CONFIGURATION,
+  mapToDataRequest,
+} from './data-explorer.types';
 import { DataRequest } from '../data-explorer/data-explorer.types';
 import { DataExplorerService } from './data-explorer.service';
 import { SecurityService } from '../security/security.service';
@@ -57,7 +61,8 @@ export class DataRequestsService {
     private folder: FolderService,
     private catalogueUser: CatalogueUserService,
     private dataExplorer: DataExplorerService,
-    private security: SecurityService
+    private security: SecurityService,
+    @Inject(DATA_EXPLORER_CONFIGURATION) private config: DataExplorerConfiguration
   ) {}
 
   /**
@@ -67,7 +72,7 @@ export class DataRequestsService {
    * @returns an observable containing a FolderDetail object
    */
   getRequestsFolder(userEmail: string): Observable<FolderDetail> {
-    return this.folder.getOrCreate(`${environment.rootRequestFolder}`).pipe(
+    return this.folder.getOrCreate(this.config.rootRequestFolder).pipe(
       switchMap((rootFolder: FolderDetail) => {
         return this.folder.getOrCreateChildOf(
           rootFolder.id!, // eslint-disable-line @typescript-eslint/no-non-null-assertion

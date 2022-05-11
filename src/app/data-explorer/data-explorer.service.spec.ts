@@ -21,26 +21,28 @@ import {
   DataModelDetail,
   ProfileDefinition,
   ProfileFieldDataType,
+  ApiProperty,
 } from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
+import { ApiPropertiesService } from '../mauro/api-properties.service';
 import { DataModelService } from '../mauro/data-model.service';
 import { ProfileService } from '../mauro/profile.service';
+import { createApiPropertiesServiceStub } from '../testing/stubs/api-properties.stub';
 import { createDataModelServiceStub } from '../testing/stubs/data-model.stub';
 import { createProfileServiceStub } from '../testing/stubs/profile.stub';
 import { setupTestModuleForService } from '../testing/testing.helpers';
 
-import { DataExplorerService } from './data-explorer.service';
-import {
-  DataExplorerConfiguration,
-  DATA_EXPLORER_CONFIGURATION,
-} from './data-explorer.types';
+import { configurationKeys, DataExplorerService } from './data-explorer.service';
+import { DataExplorerConfiguration } from './data-explorer.types';
 
 describe('DataExplorerService', () => {
   let service: DataExplorerService;
+  const apiPropertiesStub = createApiPropertiesServiceStub();
   const dataModelsStub = createDataModelServiceStub();
   const profilesStub = createProfileServiceStub();
 
   const config: DataExplorerConfiguration = {
+    rootRequestFolder: 'root-folder',
     rootDataModelPath: 'my test model',
     profileServiceName: 'Profile Service',
     profileNamespace: 'Profile Namespace',
@@ -50,16 +52,16 @@ describe('DataExplorerService', () => {
     service = setupTestModuleForService(DataExplorerService, {
       providers: [
         {
-          provide: DataModelService,
-          useValue: dataModelsStub,
+          provide: ApiPropertiesService,
+          useValue: apiPropertiesStub,
         },
         {
           provide: ProfileService,
           useValue: profilesStub,
         },
         {
-          provide: DATA_EXPLORER_CONFIGURATION,
-          useValue: config,
+          provide: DataModelService,
+          useValue: dataModelsStub,
         },
       ],
     });
@@ -69,25 +71,106 @@ describe('DataExplorerService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should return the root data model', () => {
-    const dataModel: DataModelDetail = {
-      label: config.rootDataModelPath,
-      domainType: CatalogueItemDomainType.DataModel,
-      availableActions: ['show'],
-      finalised: false,
-    };
+  describe('initialise', () => {
+    it('should fail if error occurred getting api properties', () => {
+      apiPropertiesStub.listPublic.mockImplementationOnce(() =>
+        cold('#', null, new Error())
+      );
 
-    dataModelsStub.getDataModel.mockImplementationOnce((path) => {
-      expect(path).toBe(config.rootDataModelPath);
-      return cold('--a|', { a: dataModel });
+      const expected$ = cold('#', null, new Error());
+      const actual$ = service.initialise();
+      expect(actual$).toBeObservable(expected$);
     });
 
-    const expected$ = cold('--a|', {
-      a: dataModel,
+    it('should fail if required api properties are missing', () => {
+      apiPropertiesStub.listPublic.mockImplementationOnce(() =>
+        cold('--a|', {
+          a: [
+            {
+              key: 'wrongKey',
+              value: 'wrongValue',
+            },
+          ],
+        })
+      );
+
+      const expected$ = cold('--#', null, new Error());
+      const actual$ = service.initialise();
+      expect(actual$).toBeObservable(expected$);
     });
 
-    const actual$ = service.getRootDataModel();
-    expect(actual$).toBeObservable(expected$);
+    it('should be configured when required api properties are present', () => {
+      const properties: ApiProperty[] = [
+        {
+          category: configurationKeys.category,
+          key: configurationKeys.rootDataModelPath,
+          value: 'rootDataModelPath',
+        },
+        {
+          category: configurationKeys.category,
+          key: configurationKeys.rootRequestFolder,
+          value: 'rootRequestFolder',
+        },
+        {
+          category: configurationKeys.category,
+          key: configurationKeys.profileNamespace,
+          value: 'profileNamespace',
+        },
+        {
+          category: configurationKeys.category,
+          key: configurationKeys.profileServiceName,
+          value: 'profileServiceName',
+        },
+      ];
+
+      apiPropertiesStub.listPublic.mockImplementationOnce(() =>
+        cold('--a|', {
+          a: properties,
+        })
+      );
+
+      const expectedConfig: DataExplorerConfiguration = {
+        rootDataModelPath: 'rootDataModelPath',
+        rootRequestFolder: 'rootRequestFolder',
+        profileNamespace: 'profileNamespace',
+        profileServiceName: 'profileServiceName',
+      };
+
+      const expected$ = cold('--a|', {
+        a: expectedConfig,
+      });
+      const actual$ = service.initialise();
+      expect(actual$).toBeObservable(expected$);
+      expect(actual$).toSatisfyOnFlush(() => {
+        expect(service.config).toStrictEqual(expectedConfig);
+      });
+    });
+  });
+
+  describe('get root data model', () => {
+    it('should return the root data model', () => {
+      const dataModel: DataModelDetail = {
+        label: config.rootDataModelPath,
+        domainType: CatalogueItemDomainType.DataModel,
+        availableActions: ['show'],
+        finalised: false,
+      };
+
+      // Pretend that initialise() was called on the service
+      service.config = config;
+
+      dataModelsStub.getDataModel.mockImplementationOnce((path) => {
+        expect(path).toBe(config.rootDataModelPath);
+        return cold('--a|', { a: dataModel });
+      });
+
+      const expected$ = cold('--a|', {
+        a: dataModel,
+      });
+
+      const actual$ = service.getRootDataModel();
+      expect(actual$).toBeObservable(expected$);
+    });
   });
 
   describe('profile filter fields', () => {
