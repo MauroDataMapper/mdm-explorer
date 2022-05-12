@@ -54,7 +54,7 @@ describe('MyAccountComponent', () => {
   const toastrStub = createToastrServiceStub();
   const broadcastStub = createBroadcastServiceStub();
   const dataRequestsStub = createDataRequestsServiceStub();
-  const MatDialogStub = createMatDialogStub();
+  const matDialogStub = createMatDialogStub();
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(MyAccountComponent, {
@@ -85,7 +85,7 @@ describe('MyAccountComponent', () => {
         },
         {
           provide: MatDialog,
-          useValue: MatDialogStub,
+          useValue: matDialogStub,
         },
       ],
     });
@@ -268,7 +268,7 @@ describe('MyAccountComponent', () => {
         emailAddress: payload.emailAddress,
       };
 
-      MatDialogStub.usage.afterClosed.mockImplementationOnce(() => of({ status: 'ok' }));
+      matDialogStub.usage.afterClosed.mockImplementationOnce(() => of({ status: 'ok' }));
 
       catalogueUserStub.updateContactInfo.mockImplementationOnce((id, pl) => {
         expect(id).toBe(outdatedUser.id);
@@ -302,7 +302,7 @@ describe('MyAccountComponent', () => {
 
       harness.component.user = outdatedUser;
 
-      MatDialogStub.usage.afterClosed.mockImplementationOnce(() => of({ status: 'ok' }));
+      matDialogStub.usage.afterClosed.mockImplementationOnce(() => of({ status: 'ok' }));
 
       catalogueUserStub.updateContactInfo.mockImplementationOnce(() => {
         expect(harness.component.contactInfoMode).toBe('updating');

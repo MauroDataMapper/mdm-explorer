@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, forkJoin, switchMap } from 'rxjs';
+import { catchError, EMPTY, switchMap } from 'rxjs';
 import {
   CatalogueUser,
   CatalogueUserPayload,
@@ -28,7 +28,6 @@ import {
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { SecurityService } from 'src/app/security/security.service';
-import { FolderService } from 'src/app/mauro/folder.service';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import { ConfirmationDialogComponent } from 'src/app/shared/confirmation-dialog/confirmation-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -135,8 +134,13 @@ export class MyAccountComponent implements OnInit {
 
         return;
       }
+
+      if (!this.user) {
+        return;
+      }
+
       this.catalogueUser
-        .updateContactInfo(this.user!.id, payload)
+        .updateContactInfo(this.user.id, payload)
         .pipe(
           catchError(() => {
             this.toastr.error('There was a problem updating your account details.');
@@ -150,8 +154,8 @@ export class MyAccountComponent implements OnInit {
           }),
           switchMap((folder) => {
             return this.dataRequests.updateRequestsFolder(
-              folder.id!,
-              this.user!.emailAddress
+              folder.id!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+              this.user!.emailAddress // eslint-disable-line @typescript-eslint/no-non-null-assertion
             );
           })
         )

@@ -104,6 +104,7 @@ export class DataRequestsService {
   /**
    * Retrieve the users data requests folder. Updateing the label to a new value.
    * Called when a user changes thier email address
+   *
    * @param folderId - Id of the request folder to be updated
    * @param label - the new user email to be applied
    * @returns an observable containing a FolderDetail object

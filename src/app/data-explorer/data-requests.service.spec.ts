@@ -433,9 +433,9 @@ describe('DataRequestsService', () => {
   });
 
   it('should call the folder service with a payload', () => {
-    const folderId: string = '123';
-    const label: string = 'testLabel';
-    const payload: ContainerUpdatePayload = { id: folderId, label: label };
+    const folderId = '123';
+    const label = 'testLabel';
+    const payload: ContainerUpdatePayload = { id: folderId, label };
 
     service.updateRequestsFolder(folderId, label);
     expect(folderServiceStub.update).toHaveBeenCalledWith(folderId, payload);

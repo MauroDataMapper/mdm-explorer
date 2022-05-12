@@ -17,12 +17,6 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
-import {
-  Branchable,
-  CatalogueItem,
-  Modelable,
-  SecurableModel,
-} from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs/internal/Observable';
 import { filter, map, mergeMap } from 'rxjs/operators';
 import {
@@ -133,7 +127,9 @@ MatDialog.prototype.openDoubleConfirmationAsync = function (
         return this.openConfirmation(finalConfig)
           .afterClosed()
           .pipe(
-            filter((result2) => result2!.status === DialogStatus.Ok),
+            filter(
+              (result2) => (result2?.status ?? DialogStatus.Close) === DialogStatus.Ok
+            ),
             map(() => {})
           );
       })

@@ -38,12 +38,12 @@ export interface DialogResult {
   styleUrls: ['./confirmation-dialog.component.scss'],
 })
 export class ConfirmationDialogComponent implements OnInit {
-  title: string = '';
-  message: string = '';
-  okTitle: string = '';
-  cancelTitle: string = '';
-  cancelShown: boolean = false;
-  btnType: string = '';
+  title = '';
+  message = '';
+  okTitle = '';
+  cancelTitle = '';
+  cancelShown = false;
+  btnType = '';
 
   constructor(
     private dialogRef: MatDialogRef<ConfirmationDialogComponent, DialogResult>,
@@ -54,7 +54,7 @@ export class ConfirmationDialogComponent implements OnInit {
     this.okTitle = this.data.okBtnTitle ? this.data.okBtnTitle : 'OK';
     this.btnType = this.data.btnType ? this.data.btnType : 'primary';
     this.cancelTitle = this.data.cancelBtnTitle ? this.data.cancelBtnTitle : 'Cancel';
-    this.title = this.data.title!;
+    this.title = this.data.title ?? '';
     this.message = this.data.message;
     this.cancelShown = this.data.cancelShown != null ? this.data.cancelShown : true;
   }

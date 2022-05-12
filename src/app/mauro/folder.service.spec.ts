@@ -118,17 +118,11 @@ describe('FolderService', () => {
   });
 
   it('should call the update endpoint with a payload', () => {
-    const folderId: string = '123';
-    const label: string = 'testLabel';
-    const payload: ContainerUpdatePayload = { id: folderId, label: label };
-    const expectedFolder = {
-      label: label,
-      domainType: CatalogueItemDomainType.Folder,
-      availableActions: ['show'],
-    } as FolderDetail;
+    const folderId = '123';
+    const label = 'testLabel';
+    const payload: ContainerUpdatePayload = { id: folderId, label };
 
-
-    //mock endpoint return
+    // mock endpoint return
     endpointsStub.folder.update.mockImplementationOnce((id, pl) => {
       expect(id).toBe(folderId);
       expect(pl).toBe(payload);
@@ -137,7 +131,7 @@ describe('FolderService', () => {
       });
     });
 
-    //it's the servers problem now
+    // it's the servers problem now
     service.update(folderId, payload);
     expect(endpointsStub.folder.update).toHaveBeenCalledWith(folderId, payload);
   });
