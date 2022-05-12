@@ -27,6 +27,11 @@ import {
   FeedbackDialogResponse,
 } from './feedback-dialog/feedback-dialog.component';
 import {
+  OkCancelDialogComponent,
+  OkCancelDialogData,
+  OkCancelDialogResponse,
+} from './ok-cancel-dialog/ok-cancel-dialog.component';
+import {
   RequestCreatedAction,
   RequestCreatedData,
   RequestCreatedDialogComponent,
@@ -80,6 +85,15 @@ export class DialogService {
   openFeedbackForm() {
     return this.matDialog.open<FeedbackDialogComponent, any, FeedbackDialogResponse>(
       FeedbackDialogComponent
+    );
+  }
+
+  openOkCancel(data: OkCancelDialogData) {
+    return this.matDialog.open<OkCancelDialogComponent, OkCancelDialogData>(
+      OkCancelDialogComponent,
+      {
+        data,
+      }
     );
   }
 

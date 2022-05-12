@@ -18,7 +18,11 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
-import { DataElementBasic, DataElementCheckedEvent } from '../data-explorer.types';
+import {
+  DataElementBasic,
+  DataElementCheckedEvent,
+  DataElementDeleteEvent,
+} from '../data-explorer.types';
 
 @Component({
   selector: 'mdm-data-element-row',
@@ -29,6 +33,7 @@ export class DataElementRowComponent {
   @Input() item?: DataElementBasic;
 
   @Output() checked = new EventEmitter<DataElementCheckedEvent>();
+  @Output() delete = new EventEmitter<DataElementDeleteEvent>();
 
   itemChecked(event: MatCheckboxChange) {
     if (!this.item) {
@@ -36,5 +41,11 @@ export class DataElementRowComponent {
     }
 
     this.checked.emit({ item: this.item, checked: event.checked });
+  }
+
+  removeElement() {
+    if (this.item) {
+      this.delete.emit({ item: this.item });
+    }
   }
 }

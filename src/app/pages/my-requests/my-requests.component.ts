@@ -16,14 +16,17 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { HttpResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatDialogRef } from '@angular/material/dialog';
 import { MatSelectionListChange } from '@angular/material/list';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY, finalize, forkJoin, of, switchMap, throwError } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import {
   DataElementBasic,
+  DataElementDeleteEvent,
   DataRequest,
   DataRequestStatus,
   mapToDataRequest,
@@ -31,6 +34,10 @@ import {
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import { DialogService } from 'src/app/data-explorer/dialog.service';
 import { DataModelService } from 'src/app/mauro/data-model.service';
+import {
+  OkCancelDialogData,
+  OkCancelDialogResponse,
+} from 'src/app/data-explorer/ok-cancel-dialog/ok-cancel-dialog.component';
 import { ResearchPluginService } from 'src/app/mauro/research-plugin.service';
 import { SecurityService } from 'src/app/security/security.service';
 
@@ -46,6 +53,9 @@ export class MyRequestsComponent implements OnInit {
   request?: DataRequest;
   requestElements: DataElementBasic[] = [];
   state: 'idle' | 'loading' = 'idle';
+  showSpinner = false;
+  spinnerCaption = '';
+  creatingNextVersion = false;
 
   constructor(
     private security: SecurityService,
@@ -100,6 +110,8 @@ export class MyRequestsComponent implements OnInit {
 
     this.broadcast.loading({ isLoading: true, caption: 'Submitting your request...' });
 
+    this.showSpinner = true;
+    this.spinnerCaption = 'Submitting your request ...';
     this.researchPlugin
       .submitRequest(this.request.id)
       .pipe(
@@ -182,6 +194,55 @@ export class MyRequestsComponent implements OnInit {
       }),
       finalize(() => (this.state = 'idle'))
     );
+  }
+
+  deleteItem(event: DataElementDeleteEvent) {
+    const item = event.item;
+    this.okCancel(item)
+      .afterClosed()
+      .pipe(
+        switchMap((result: OkCancelDialogResponse) => {
+          if (result.result) {
+            this.showSpinner = true;
+            this.spinnerCaption = `Removing data element ${item.label} from request ${this.request?.label} ...`;
+            return this.dataRequests.deleteDataElement(item);
+          } else {
+            return EMPTY;
+          }
+        })
+      )
+      .subscribe(([result, message]: [boolean, string]) => {
+        this.processRemoveDataElementResponse(item, result, message);
+        this.showSpinner = false;
+      });
+  }
+
+  private processRemoveDataElementResponse(
+    item: DataElementBasic,
+    result: boolean,
+    message: string
+  ) {
+    if (result === false) {
+      this.toastr.error(
+        `There was a problem removing this item. Has it already been removed?`,
+        'Data element removal'
+      );
+      console.log(message);
+    } else {
+      this.toastr.success(
+        `Data element ${item.label} removed from request ${this.request?.label}`
+      );
+      this.setRequest(this.request);
+    }
+  }
+
+  private okCancel(item: DataElementBasic): MatDialogRef<OkCancelDialogData> {
+    return this.dialogs.openOkCancel({
+      heading: 'Delete data element',
+      content: `Are you sure you want to delete data element "${item.label}" from request "${this.request?.label}"?`,
+      okLabel: 'Yes',
+      cancelLabel: 'No',
+    });
   }
 
   private filterRequests() {

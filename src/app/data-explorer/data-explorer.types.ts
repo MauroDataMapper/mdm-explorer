@@ -287,3 +287,7 @@ export interface DataElementBookmarkEvent {
 export interface IsBookmarkable {
   isBookmarked: boolean;
 }
+
+export interface DataElementDeleteEvent {
+  item: DataElementBasic;
+}

@@ -28,7 +28,7 @@ import {
   SourceTargetIntersection,
   SourceTargetIntersectionPayload,
 } from '@maurodatamapper/mdm-resources';
-import { forkJoin, map, Observable, switchMap, throwError } from 'rxjs';
+import { catchError, forkJoin, map, Observable, of, switchMap, throwError } from 'rxjs';
 import { UserDetails } from '../security/user-details.service';
 import { DataModelService } from '../mauro/data-model.service';
 import { FolderService } from '../mauro/folder.service';
@@ -42,6 +42,7 @@ import {
 import { DataRequest } from '../data-explorer/data-explorer.types';
 import { DataExplorerService } from './data-explorer.service';
 import { SecurityService } from '../security/security.service';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 
 /**
  * A collection data access requests and their intersections with target models.
@@ -120,6 +121,18 @@ export class DataRequestsService {
           return parentElements.concat(childElements);
         });
       })
+    );
+  }
+
+  /**
+   * Deletes a data element from a data request
+   *
+   *
+   */
+  deleteDataElement(item: DataElementBasic): Observable<[boolean, string]> {
+    return this.dataModels.deleteDataElement(item).pipe(
+      switchMap((result: HttpResponse<any>) => of([true, 'OK'])),
+      catchError((error: HttpErrorResponse) => of([false, error.message]))
     );
   }
 

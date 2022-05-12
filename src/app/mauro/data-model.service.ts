@@ -47,6 +47,7 @@ import {
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { forkJoin, map, Observable, of, switchMap, throwError } from 'rxjs';
+import { DataElementBasic } from '../data-explorer/data-explorer.types';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { DataClassIdentifier, isDataClass } from './mauro.types';
 
@@ -286,6 +287,14 @@ export class DataModelService {
     return this.endpoints.dataModel
       .intersectsMany(sourceDataModelId, data)
       .pipe(map((response: SourceTargetIntersectionResponse) => response.body));
+  }
+
+  deleteDataElement(dataElement: DataElementBasic): any {
+    return this.endpoints.dataElement.remove(
+      dataElement.dataModelId,
+      dataElement.dataClassId,
+      dataElement.id
+    );
   }
 
   /**
