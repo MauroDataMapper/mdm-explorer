@@ -38,7 +38,7 @@ SPDX-License-Identifier: Apache-2.0
     </div>
     <mat-slide-toggle (change)="toggleShowDetails()">Show details</mat-slide-toggle>
     <div class="mdm-error__details" [hidden]="!showDetails">
-      <table class="table mdm--table-fixed">
+      <table class="table mdm--table-fixed" aria-label="Details">
         <tbody>
           <tr *ngFor="let item of data">
             <th scope="row">{{ item.name }}</th>

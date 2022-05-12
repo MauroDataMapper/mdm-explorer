@@ -94,12 +94,14 @@ SPDX-License-Identifier: Apache-2.0
             <img
               *ngIf="signedInUserProfileImageSrc"
               [src]="signedInUserProfileImageSrc"
+              alt="User profile"
               width="40"
               height="40"
             />
             <img
               *ngIf="!signedInUserProfileImageSrc"
               src="assets/images/BlackDisk.svg"
+              alt="User profile"
               width="40"
               height="40"
             />
