@@ -32,6 +32,11 @@ import {
   RequestCreatedDialogComponent,
 } from './request-created-dialog/request-created-dialog.component';
 import {
+  RequestUpdatedAction,
+  RequestUpdatedData,
+  RequestUpdatedDialogComponent,
+} from './request-updated-dialog/request-updated-dialog.component';
+import {
   SuccessDialogComponent,
   SuccessDialogData,
 } from './success-dialog/success-dialog.component';
@@ -58,6 +63,16 @@ export class DialogService {
       RequestCreatedData,
       RequestCreatedAction
     >(RequestCreatedDialogComponent, {
+      data,
+    });
+  }
+
+  openRequestUpdated(data: RequestUpdatedData) {
+    return this.matDialog.open<
+      RequestUpdatedDialogComponent,
+      RequestUpdatedData,
+      RequestUpdatedAction
+    >(RequestUpdatedDialogComponent, {
       data,
     });
   }

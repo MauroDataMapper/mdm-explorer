@@ -1,0 +1,63 @@
+<!--
+Copyright 2022 University of Oxford
+and Health and Social Care Information Centre, also known as NHS Digital
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+SPDX-License-Identifier: Apache-2.0
+-->
+<ng-container>
+  <button
+    class="ms-4"
+    #matMenuTrigger
+    mat-raised-button
+    color="primary"
+    [matMenuTriggerFor]="menu"
+    [disabled]="dataElements.length == 0"
+  >
+    With selected
+  </button>
+  <mat-menu #menu="matMenu">
+    <ng-container *ngIf="ready">
+      <section>
+        <ul
+          *ngFor="let item of sourceTargetIntersections.dataAccessRequests; let i = index"
+        >
+          <li>
+            <button
+              class="w-100"
+              mat-stroked-button
+              color="primary"
+              (click)="onClickAddSelectedToRequest(item)"
+              clickable
+            >
+              Add to {{ item.label }}
+            </button>
+          </li>
+        </ul>
+      </section>
+      <mat-divider *ngIf="ready"></mat-divider>
+    </ng-container>
+    <section>
+      <button
+        #createRequestTigger
+        mat-stroked-button
+        color="primary"
+        (click)="onClickCreateRequest()"
+        clickable
+      >
+        Create new request
+      </button>
+    </section>
+  </mat-menu>
+</ng-container>

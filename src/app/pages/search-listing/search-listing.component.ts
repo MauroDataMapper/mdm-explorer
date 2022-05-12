@@ -41,12 +41,11 @@ import {
   DataElementSearchResultSet,
   mapParamMapToSearchParameters,
   mapSearchParametersToParams,
+  SelectableDataElementSearchResult,
+  SelectableDataElementSearchResultCheckedEvent,
   SortOrder,
 } from 'src/app/data-explorer/data-explorer.types';
-import {
-  DataElementBookmarkEvent,
-  DataElementCheckedEvent,
-} from 'src/app/data-explorer/data-explorer.types';
+import { DataElementBookmarkEvent } from 'src/app/data-explorer/data-explorer.types';
 import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
 import { SortByOption } from 'src/app/data-explorer/sort-by/sort-by.component';
 import {
@@ -59,6 +58,7 @@ import {
   SearchFilterChange,
   SearchFilterField,
 } from 'src/app/data-explorer/search-filters/search-filters.component';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 export type SearchListingSource = 'unknown' | 'browse' | 'search';
 export type SearchListingStatus = 'init' | 'loading' | 'ready' | 'error';
@@ -189,8 +189,8 @@ export class SearchListingComponent implements OnInit, OnDestroy {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  selectElement(event: DataElementCheckedEvent) {
-    alert('TODO: selecting elements from SearchListingComponent');
+  selectElement(event: SelectableDataElementSearchResultCheckedEvent) {
+    event.item.isSelected = event.checked;
   }
 
   bookmarkElement(event: DataElementBookmarkEvent) {
@@ -254,6 +254,38 @@ export class SearchListingComponent implements OnInit, OnDestroy {
 
     const params = mapSearchParametersToParams(next);
     this.stateRouter.navigateToKnownPath('/search/listing', params);
+  }
+
+  /**
+   * If there are any search results, select all of them
+   *
+   * @param event
+   */
+  onSelectAll(event: MatCheckboxChange) {
+    if (this.resultSet) {
+      this.resultSet.items = this.resultSet.items.map((item) => {
+        return { ...item, isSelected: event.checked };
+      });
+    }
+  }
+
+  /**
+   * Of the current search results (if any), return those which are selected
+   *
+   * @returns collection of SelectableDataElementSearchResult
+   */
+  selectedResults() {
+    const selected: SelectableDataElementSearchResult[] = [];
+
+    if (this.resultSet) {
+      this.resultSet.items.forEach((element) => {
+        if (element.isSelected) {
+          selected.push(element);
+        }
+      });
+    }
+
+    return selected;
   }
 
   private loadDataClass() {
