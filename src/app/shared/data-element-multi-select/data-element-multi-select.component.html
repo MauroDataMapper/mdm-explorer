@@ -25,7 +25,7 @@ SPDX-License-Identifier: Apache-2.0
     [matMenuTriggerFor]="menu"
     [disabled]="dataElements.length == 0"
   >
-    With selected
+    With selected ...
   </button>
   <mat-menu #menu="matMenu">
     <ng-container *ngIf="ready">
@@ -50,6 +50,7 @@ SPDX-License-Identifier: Apache-2.0
     </ng-container>
     <section>
       <button
+        class="w-100"
         #createRequestTigger
         mat-stroked-button
         color="primary"

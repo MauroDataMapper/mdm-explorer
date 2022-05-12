@@ -275,14 +275,10 @@ export class SearchListingComponent implements OnInit, OnDestroy {
    * @returns collection of SelectableDataElementSearchResult
    */
   selectedResults() {
-    const selected: SelectableDataElementSearchResult[] = [];
+    let selected: SelectableDataElementSearchResult[] = [];
 
     if (this.resultSet) {
-      this.resultSet.items.forEach((element) => {
-        if (element.isSelected) {
-          selected.push(element);
-        }
-      });
+      selected = this.resultSet.items.filter((element) => element.isSelected);
     }
 
     return selected;
