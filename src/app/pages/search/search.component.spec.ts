@@ -16,12 +16,14 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { ProfileField } from '@maurodatamapper/mdm-resources';
 import { MockComponent } from 'ng-mocks';
+import { of } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
-import { CatalogueSearchPayload } from 'src/app/data-explorer/data-explorer.types';
-import { CatalogueSearchFormComponent } from 'src/app/security/catalogue-search-form/catalogue-search-form.component';
-import { SecurityService } from 'src/app/security/security.service';
-import { createSecurityStub } from 'src/app/testing/stubs/mdm-resources/security-resource-stub';
+import { CatalogueSearchFormComponent } from 'src/app/data-explorer/catalogue-search-form/catalogue-search-form.component';
+import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
+import { DataElementSearchParameters } from 'src/app/data-explorer/data-explorer.types';
+import { createDataExplorerServiceStub } from 'src/app/testing/stubs/data-explorer.stub';
 import { createStateRouterStub } from 'src/app/testing/stubs/state-router.stub';
 import {
   ComponentHarness,
@@ -34,7 +36,7 @@ describe('SearchComponent', () => {
   let harness: ComponentHarness<SearchComponent>;
 
   const stateRouterStub = createStateRouterStub();
-  const securityStub = createSecurityStub();
+  const explorerStub = createDataExplorerServiceStub();
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(SearchComponent, {
@@ -44,8 +46,8 @@ describe('SearchComponent', () => {
           useValue: stateRouterStub,
         },
         {
-          provide: SecurityService,
-          useValue: securityStub,
+          provide: DataExplorerService,
+          useValue: explorerStub,
         },
       ],
       declarations: [MockComponent(CatalogueSearchFormComponent)],
@@ -56,19 +58,40 @@ describe('SearchComponent', () => {
     expect(harness.component).toBeTruthy();
   });
 
-  describe('search request', () => {
-    const searchPayload = {
-      searchTerms: 'searchTerms',
-    } as CatalogueSearchPayload;
+  it('should set profile fields to use for filters', () => {
+    const fields: ProfileField[] = [
+      {
+        fieldName: 'field1',
+        metadataPropertyName: 'field1',
+        dataType: 'enumeration',
+      },
+      {
+        fieldName: 'field2',
+        metadataPropertyName: 'field2',
+        dataType: 'enumeration',
+      },
+    ];
 
-    it('should transition to search-results page with correct query string', () => {
-      const spy = jest.spyOn(stateRouterStub, 'navigateToKnownPath');
+    explorerStub.getProfileFieldsForFilters.mockImplementationOnce(() => of(fields));
 
-      harness.component.search(searchPayload);
+    harness.component.ngOnInit();
 
-      expect(spy).toHaveBeenCalledWith('/search/listing', {
-        search: searchPayload.searchTerms,
-      });
+    expect(harness.component.profileFields).toBe(fields);
+  });
+
+  it('should navigate to search page with correct query string', () => {
+    const spy = jest.spyOn(stateRouterStub, 'navigateToKnownPath');
+    const parameters: DataElementSearchParameters = {
+      search: 'test search',
+      filters: {
+        filter1: 'value',
+      },
+    };
+
+    harness.component.search(parameters);
+    expect(spy).toHaveBeenCalledWith('/search/listing', {
+      search: parameters.search,
+      filter1: parameters.filters?.filter1,
     });
   });
 });

@@ -16,7 +16,14 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { CatalogueItemDomainType, Profile } from '@maurodatamapper/mdm-resources';
+import {
+  CatalogueItemDomainType,
+  MultiFacetAwareDomainType,
+  Profile,
+  ProfileDefinition,
+  ProfileSearchResult,
+  SearchQueryParameters,
+} from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { createMdmEndpointsStub } from '../testing/stubs/mdm-endpoints.stub';
@@ -71,6 +78,120 @@ describe('ProfileService', () => {
         '1',
         'namespace',
         'name'
+      );
+      expect(actual$).toBeObservable(expected$);
+    });
+  });
+
+  describe('definitions', () => {
+    it('should get the definition of a profile', () => {
+      const definition: ProfileDefinition = {
+        sections: [
+          {
+            name: 'section',
+            fields: [
+              {
+                fieldName: 'field',
+                metadataPropertyName: 'field',
+                dataType: 'string',
+              },
+            ],
+          },
+        ],
+      };
+
+      const profileNamespace = 'test.namespace';
+      const profileName = 'testProfile';
+
+      endpointsStub.profile.definition.mockImplementationOnce((pns, pn) => {
+        expect(pns).toBe(profileNamespace);
+        expect(pn).toBe(profileName);
+        return cold('--a|', {
+          a: {
+            body: definition,
+          },
+        });
+      });
+
+      const expected$ = cold('--a|', { a: definition });
+      const actual$ = service.definition(profileNamespace, profileName);
+      expect(actual$).toBeObservable(expected$);
+    });
+  });
+
+  describe('searching', () => {
+    const profileNamespace = 'test.namespace';
+    const profileName = 'testProfile';
+    const query: SearchQueryParameters = { searchTerm: 'test' };
+
+    const expectedResults: ProfileSearchResult[] = [
+      {
+        id: '1',
+        label: 'result 1',
+        breadcrumbs: [],
+        profileFields: [],
+      },
+      {
+        id: '2',
+        label: 'result 2',
+        breadcrumbs: [],
+        profileFields: [],
+      },
+    ];
+
+    it('should search across the catalogue', () => {
+      endpointsStub.profile.search.mockImplementationOnce((pns, pn, q) => {
+        expect(pns).toBe(profileNamespace);
+        expect(pn).toBe(profileName);
+        expect(q).toBe(query);
+        return cold('--a|', {
+          a: {
+            body: {
+              count: expectedResults.length,
+              items: expectedResults,
+            },
+          },
+        });
+      });
+
+      const expected$ = cold('--a|', {
+        a: { count: expectedResults.length, items: expectedResults },
+      });
+      const actual$ = service.search(profileNamespace, profileName, query);
+      expect(actual$).toBeObservable(expected$);
+    });
+
+    it('should search within a catalogue item', () => {
+      const domainType = MultiFacetAwareDomainType.DataModels;
+      const id = '123';
+
+      endpointsStub.profile.searchCatalogueItem.mockImplementationOnce(
+        (dt, i, pns, pn, q) => {
+          expect(dt).toBe(domainType);
+          expect(i).toBe(id);
+          expect(pns).toBe(profileNamespace);
+          expect(pn).toBe(profileName);
+          expect(q).toBe(query);
+          return cold('--a|', {
+            a: {
+              body: {
+                count: expectedResults.length,
+                items: expectedResults,
+              },
+            },
+          });
+        }
+      );
+
+      const expected$ = cold('--a|', {
+        a: { count: expectedResults.length, items: expectedResults },
+      });
+      const actual$ = service.searchCatalogueItem(
+        domainType,
+        id,
+        profileNamespace,
+        profileName,
+        query
       );
       expect(actual$).toBeObservable(expected$);
     });

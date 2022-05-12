@@ -22,6 +22,7 @@ import {
   CatalogueItemDomainType,
   DataClassDetail,
   DataModelDetail,
+  ProfileField,
 } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { of, throwError } from 'rxjs';
@@ -45,31 +46,14 @@ import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
-import {
-  createMdmEndpointsStub,
-  MdmEndpointsServiceStub,
-} from 'src/app/testing/stubs/mdm-endpoints.stub';
-import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
 
 import { SearchListingComponent, SearchListingSource } from './search-listing.component';
-import {
-  createMatDialogStub,
-  MatDialogStub,
-} from 'src/app/testing/stubs/mat-dialog.stub';
-import { MatDialog } from '@angular/material/dialog';
 import { DataElementBookmarkEvent } from 'src/app/data-explorer/data-explorer.types';
-import {
-  CreateRequestDialogComponent,
-  CreateRequestDialogResponse,
-} from 'src/app/data-explorer/create-request-dialog/create-request-dialog.component';
 import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
 import {
   DataRequestsService,
   DataAccessRequestsSourceTargetIntersections,
 } from 'src/app/data-explorer/data-requests.service';
-import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
-import { UserDetails } from 'src/app/security/user-details.service';
-import { SecurityService } from 'src/app/security/security.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import { createDataExplorerServiceStub } from 'src/app/testing/stubs/data-explorer.stub';
 
@@ -81,21 +65,8 @@ describe('SearchListingComponent', () => {
   const dataElementSearchStub = createDataElementSearchServiceStub();
   const toastrStub = createToastrServiceStub();
   const stateRouterStub = createStateRouterStub();
-  const endpointsStub: MdmEndpointsServiceStub = createMdmEndpointsStub();
-  const matDialogStub: MatDialogStub<
-    CreateRequestDialogComponent,
-    CreateRequestDialogResponse
-  > = createMatDialogStub();
   const dataRequestsStub = createDataRequestsServiceStub();
-  const securityStub = createSecurityServiceStub();
   const dataExplorerStub = createDataExplorerServiceStub();
-
-  const user: UserDetails = {
-    id: '123',
-    firstName: 'test',
-    lastName: 'user',
-    email: 'test@test.com',
-  };
 
   const mockedRootDataModel: DataModelDetail = {
     id: '123',
@@ -112,7 +83,21 @@ describe('SearchListingComponent', () => {
 
   const mockedIntersections: DataAccessRequestsSourceTargetIntersections =
     mockedSourceTargetIntersections;
-  securityStub.getSignedInUser.mockImplementation(() => user);
+
+  const profileFieldsForFilters: ProfileField[] = [
+    {
+      fieldName: 'filter1',
+      metadataPropertyName: 'filter1',
+      dataType: 'enumeration',
+      allowedValues: ['val1', 'val2'],
+    },
+  ];
+
+  const implementProfileFieldsForFilters = () => {
+    dataExplorerStub.getProfileFieldsForFilters.mockImplementationOnce(() =>
+      of(profileFieldsForFilters)
+    );
+  };
 
   const setupComponentTest = async (parameters: DataElementSearchParameters) => {
     const params = mapSearchParametersToParams(parameters);
@@ -145,24 +130,12 @@ describe('SearchListingComponent', () => {
           useValue: stateRouterStub,
         },
         {
-          provide: MdmEndpointsService,
-          useValue: endpointsStub,
-        },
-        {
           provide: BookmarkService,
           useValue: bookmarkStub,
         },
         {
-          provide: MatDialog,
-          useValue: matDialogStub,
-        },
-        {
           provide: DataRequestsService,
           useValue: dataRequestsStub,
-        },
-        {
-          provide: SecurityService,
-          useValue: securityStub,
         },
         {
           provide: DataExplorerService,
@@ -306,6 +279,7 @@ describe('SearchListingComponent', () => {
     it('should be in ready state once initialised with results sorted by the default sortBy option', fakeAsync(() => {
       const spy = jest.spyOn(toastrStub, 'error');
 
+      implementProfileFieldsForFilters();
       implementDataClassReturns(parameters.dataClass!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
       implementListingReturns();
 
@@ -330,6 +304,7 @@ describe('SearchListingComponent', () => {
     it('should raise an error if there is no data class', fakeAsync(() => {
       const spy = jest.spyOn(toastrStub, 'error');
 
+      implementProfileFieldsForFilters();
       implementDataClassThrowsError();
       implementListingReturns();
 
@@ -352,6 +327,7 @@ describe('SearchListingComponent', () => {
     it('should raise an error if failed to get search results', fakeAsync(() => {
       const spy = jest.spyOn(toastrStub, 'error');
 
+      implementProfileFieldsForFilters();
       implementDataClassReturns(parameters.dataClass!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
       implementListingThrowsError();
 
@@ -434,6 +410,7 @@ describe('SearchListingComponent', () => {
     it('should be in ready state once initialised with results sorted by the default sortBy option', fakeAsync(() => {
       const spy = jest.spyOn(toastrStub, 'error');
 
+      implementProfileFieldsForFilters();
       implementSearchReturns();
 
       bookmarkStub.index.mockImplementationOnce(() => of([]));
@@ -457,6 +434,7 @@ describe('SearchListingComponent', () => {
     it('should raise an error if failed to get search results', () => {
       const spy = jest.spyOn(toastrStub, 'error');
 
+      implementProfileFieldsForFilters();
       implementSearchThrowsError();
 
       bookmarkStub.index.mockImplementationOnce(() => of([]));
@@ -562,6 +540,38 @@ describe('SearchListingComponent', () => {
         {
           sort: 'label',
           order: 'asc',
+        }
+      );
+    });
+  });
+
+  describe('changing filters', () => {
+    beforeEach(() => {
+      stateRouterStub.navigateToKnownPath.mockClear();
+    });
+
+    it('should fire off a state reload when a new filter value is set', () => {
+      const name = 'message';
+      const value = 'hello';
+
+      harness.component.filterChanged({ name, value });
+
+      expect(stateRouterStub.navigateToKnownPath).toHaveBeenCalledWith(
+        '/search/listing',
+        {
+          page: 1,
+          [name]: value,
+        }
+      );
+    });
+
+    it('should fire off a state reload when all filters are reset', () => {
+      harness.component.filterReset();
+
+      expect(stateRouterStub.navigateToKnownPath).toHaveBeenCalledWith(
+        '/search/listing',
+        {
+          page: 1,
         }
       );
     });

@@ -43,5 +43,8 @@ SPDX-License-Identifier: Apache-2.0
     <a [routerLink]="['/dataElement', item.dataModelId, item.dataClassId, item.id]"
       >View Details</a
     >
+    <mdm-identifiable-data-icon
+      [state]="item.identifiableData"
+    ></mdm-identifiable-data-icon>
   </div>
 </div>

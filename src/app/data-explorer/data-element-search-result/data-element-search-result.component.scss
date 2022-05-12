@@ -25,6 +25,8 @@ $search-result-header-padding: 0.2em 1.2em;
 $search-result-content-color: $color-mauro-light-gold;
 $search-result-content-padding: 1.2em 1.2em;
 
+$search-result-border-radius: 4px;
+
 .mdm-data-element-search-result {
   @include respond-to-mobile {
     padding: 0;
@@ -37,6 +39,7 @@ $search-result-content-padding: 1.2em 1.2em;
     padding: $search-result-header-padding;
     background-color: $search-result-heading-background-color;
     color: $search-result-heading-color;
+    border-radius: $search-result-border-radius;
 
     h3 {
       display: inline-block;
@@ -55,5 +58,8 @@ $search-result-content-padding: 1.2em 1.2em;
   &__footer {
     padding: $search-result-content-padding;
     background-color: $search-result-content-color;
+    display: flex;
+    justify-content: space-between;
+    border-radius: $search-result-border-radius;
   }
 }
