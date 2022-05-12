@@ -67,15 +67,15 @@ pipeline {
       }
     }
 
-    // stage('License Header Check') {
-    //   steps {
-    //     warnError('Missing License Headers') {
-    //       nvm('') {
-    //         sh 'npm run license-check check'
-    //       }
-    //     }
-    //   }
-    // }
+    stage('License Header Check') {
+      steps {
+        warnError('Missing License Headers') {
+          nvm('') {
+            sh 'npm run license-check check'
+          }
+        }
+      }
+    }
 
     stage('Test') {
       steps {
@@ -118,77 +118,77 @@ pipeline {
       }
     }
 
-    // stage('Distribution Build') {
-    //   when{
-    //     anyOf{
-    //       branch 'develop'
-    //       branch 'main'
-    //     }
-    //   }
-    //   steps {
-    //     nvm('') {
-    //       catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
-    //         sh 'npm run dist'
-    //       }
-    //     }
-    //   }
-    // }
+    stage('Distribution Build') {
+      when{
+        anyOf{
+          branch 'develop'
+          branch 'main'
+        }
+      }
+      steps {
+        nvm('') {
+          catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+            sh 'npm run dist'
+          }
+        }
+      }
+    }
 
-    // // Deploy develop branch even if tests fail if the code builds, as it'll be an unstable snapshot but we should still deploy
-    // stage('Deploy develop to Artifactory') {
-    //   when {
-    //     branch 'develop'
-    //   }
-    //   steps {
-    //     rtUpload(
-    //       serverId: 'cs-artifactory',
-    //       spec: '''{
-    //       "files": [
-    //         {
-    //           "pattern": "dist/mdm-explorer-*.tgz",
-    //           "target": "artifacts-snapshots/mauroDataMapper/mdm-explorer/"
-    //         }
-    //      ]
-    // }''',
-    //       )
-    //     rtPublishBuildInfo(
-    //       serverId: 'cs-artifactory',
-    //       )
-    //   }
-    // }
+    // Deploy develop branch even if tests fail if the code builds, as it'll be an unstable snapshot but we should still deploy
+    stage('Deploy develop to Artifactory') {
+      when {
+        branch 'develop'
+      }
+      steps {
+        rtUpload(
+          serverId: 'cs-artifactory',
+          spec: '''{
+          "files": [
+            {
+              "pattern": "dist/mdm-explorer-*.tgz",
+              "target": "artifacts-snapshots/mauroDataMapper/mdm-explorer/"
+            }
+         ]
+    }''',
+          )
+        rtPublishBuildInfo(
+          serverId: 'cs-artifactory',
+          )
+      }
+    }
 
-    // stage('Deploy main to Artifactory') {
-    //   when {
-    //     allOf {
-    //       branch 'main'
-    //       expression {
-    //         currentBuild.currentResult == 'SUCCESS'
-    //       }
-    //     }
+    stage('Deploy main to Artifactory') {
+      when {
+        allOf {
+          branch 'main'
+          expression {
+            currentBuild.currentResult == 'SUCCESS'
+          }
+        }
 
-    //   }
-    //   steps {
-    //     rtUpload(
-    //       serverId: 'cs-artifactory',
-    //       spec: '''{
-    //       "files": [
-    //         {
-    //           "pattern": "dist/mdm-explorer-*.tgz",
-    //           "target": "artifacts/mauroDataMapper/mdm-explorer/"
-    //         }
-    //      ]
-    // }''',
-    //       )
-    //     rtPublishBuildInfo(
-    //       serverId: 'cs-artifactory',
-    //       )
-    //   }
-    // }
+      }
+      steps {
+        rtUpload(
+          serverId: 'cs-artifactory',
+          spec: '''{
+          "files": [
+            {
+              "pattern": "dist/mdm-explorer-*.tgz",
+              "target": "artifacts/mauroDataMapper/mdm-explorer/"
+            }
+         ]
+    }''',
+          )
+        rtPublishBuildInfo(
+          serverId: 'cs-artifactory',
+          )
+      }
+    }
 
     stage('Sonarqube') {
-      // when {
-      //   branch 'develop'
-      // }
+      when {
+        branch 'develop'
+      }
       steps {
         withSonarQubeEnv('JenkinsQube') {
           nvm('') {
