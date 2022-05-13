@@ -78,18 +78,23 @@ export class BookmarkService {
    * - If the User Preference contains the Bookmark, remove iut
    * - Save the entire User Preferences
    *
-   * @param bookmark
+   * @param bookmarks Bookmark[]
    *
    * @returns Observable<Bookmark[]>
    */
-  public remove(bookmark: Bookmark): Observable<Bookmark[]> {
+  public remove(bookmarks: Bookmark[]): Observable<Bookmark[]> {
+    // Make a list of ids we want to remove
+    const idsToRemove = bookmarks.map((bookmark) => {
+      return bookmark.id;
+    });
+
     return this.getPreferences().pipe(
       switchMap((data) => {
-        // Make changes here and save
+        // Make changes here and save. Keep the bookmarks which are not in the list of removals
         if (data && data.bookmarks) {
-          data.bookmarks.forEach((item: Bookmark, index: BigInteger) => {
-            if (item.id === bookmark.id) data.bookmarks.splice(index, 1);
-          });
+          data.bookmarks = data.bookmarks.filter(
+            (bookmark: Bookmark) => idsToRemove.indexOf(bookmark.id) === -1
+          );
         }
         return this.savePreferences(data);
       }),

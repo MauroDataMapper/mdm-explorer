@@ -28,12 +28,14 @@ import { SecurityService } from 'src/app/security/security.service';
 import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
 import {
   DataElementSearchResult,
+  RemoveBookmarkEvent,
   SelectableDataElementSearchResult,
 } from 'src/app/data-explorer/data-explorer.types';
 import { DialogService } from 'src/app/data-explorer/dialog.service';
 import { UserDetails } from 'src/app/security/user-details.service';
 import { ToastrService } from 'ngx-toastr';
 import { BroadcastService } from 'src/app/core/broadcast.service';
+import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
 
 export interface CreateRequestEvent {
   item: DataElementSearchResult;
@@ -49,7 +51,11 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
 
   @Input() dataElements: SelectableDataElementSearchResult[] = [];
 
+  @Input() showRemoveFromBookmarks = false;
+
   @Output() createRequestClicked = new EventEmitter<CreateRequestEvent>();
+
+  @Output() remove = new EventEmitter<RemoveBookmarkEvent>();
 
   creatingRequest = false;
 
@@ -69,7 +75,8 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
     private endpoints: MdmEndpointsService,
     private dialogs: DialogService,
     private toastr: ToastrService,
-    private broadcast: BroadcastService
+    private broadcast: BroadcastService,
+    private bookmarks: BookmarkService
   ) {
     this.user = security.getSignedInUser();
     this.sourceTargetIntersections = {
@@ -182,6 +189,31 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
             })
             .afterClosed();
         }); // eslint-disable-line @typescript-eslint/no-unsafe-argument
+    }
+  }
+
+  /**
+   * Remove the set of selected data elements from bookmarks
+   *
+   */
+  onClickRemoveSelectedFromBookmarks() {
+    let bookmarks: Bookmark[] = [];
+
+    bookmarks = this.dataElements.map((de) => {
+      const bookmark: Bookmark = {
+        id: de.id,
+        label: de.label,
+        dataModelId: de.dataModelId,
+        dataClassId: de.dataClassId,
+      };
+
+      return bookmark;
+    });
+
+    if (bookmarks.length > 0) {
+      this.bookmarks.remove(bookmarks).subscribe(() => {
+        this.broadcast.dispatch('data-bookmarks-refreshed');
+      });
     }
   }
 }

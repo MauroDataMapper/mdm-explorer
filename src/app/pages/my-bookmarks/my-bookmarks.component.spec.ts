@@ -186,7 +186,7 @@ describe('MyBookmarkComponent', () => {
       harness.component.onRemove(event);
 
       expect(harness.component.userBookmarks).toStrictEqual(expected);
-      expect(bookmarkStub.remove).toHaveBeenCalledWith(event.item);
+      expect(bookmarkStub.remove).toHaveBeenCalledWith([event.item]);
       expect(toastrStub.success).toHaveBeenCalled();
     });
   });

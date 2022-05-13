@@ -60,5 +60,19 @@ SPDX-License-Identifier: Apache-2.0
         Create new request
       </button>
     </section>
+    <ng-container *ngIf="showRemoveFromBookmarks">
+      <section class="mt-4">
+        <button
+          class="w-100"
+          #createRequestTigger
+          mat-stroked-button
+          color="primary"
+          (click)="onClickRemoveSelectedFromBookmarks()"
+          clickable
+        >
+          Remove from bookmarks
+        </button>
+      </section>
+    </ng-container>
   </mat-menu>
 </ng-container>

@@ -199,7 +199,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
         this.toastr.success(`${event.item.label} added to bookmarks`);
       });
     } else {
-      this.bookmarks.remove(event.item).subscribe(() => {
+      this.bookmarks.remove([event.item]).subscribe(() => {
         this.toastr.success(`${event.item.label} removed from bookmarks`);
       });
     }

@@ -155,7 +155,7 @@ export class DataElementComponent implements OnInit, OnDestroy {
         this.toastr.success(`${item.label} added to bookmarks`);
       });
     } else {
-      this.bookmarkService.remove(item).subscribe(() => {
+      this.bookmarkService.remove([item]).subscribe(() => {
         this.toastr.success(`${item.label} removed from bookmarks`);
       });
     }

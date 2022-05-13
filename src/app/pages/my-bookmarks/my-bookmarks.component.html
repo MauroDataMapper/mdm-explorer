@@ -33,7 +33,14 @@ SPDX-License-Identifier: Apache-2.0
     >
     </mdm-bookmark-row>
   </div>
-  <div class="mdm-my-bookmarks__select-all">
-    <mat-checkbox (change)="onSelectAll($event)">Select all</mat-checkbox>
-  </div>
+  <ng-container *ngIf="userBookmarks.length > 0">
+    <div class="mt-4">
+      <mat-checkbox (change)="onSelectAll($event)">Select all</mat-checkbox>
+      <mdm-data-element-multi-select
+        [sourceTargetIntersections]="sourceTargetIntersections"
+        [dataElements]="selectedResults()"
+        [showRemoveFromBookmarks]="true"
+      ></mdm-data-element-multi-select>
+    </div>
+  </ng-container>
 </div>
