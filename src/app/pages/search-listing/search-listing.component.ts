@@ -375,8 +375,6 @@ export class SearchListingComponent implements OnInit, OnDestroy {
 
   /**
    * Adds isBookmarked info to the resultSet.
-   *
-   * @returns
    */
   private addIsBookmarkedToResults(): void {
     if (!this.resultSet || !this.resultSet.items) return;

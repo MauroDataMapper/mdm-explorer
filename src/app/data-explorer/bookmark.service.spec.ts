@@ -262,5 +262,18 @@ describe('BookmarkService', () => {
         expect(actual$).toBeObservable(expected$);
       }
     );
+    it('should return false if given the empty string', () => {
+      const expected$ = cold('--a', { a: false });
+      securityServiceStub.getSignedInUser.mockImplementationOnce(() => {
+        return { id: 'user-id' } as UserDetails;
+      });
+      endpointsStub.catalogueUser.userPreferences.mockImplementationOnce(() => {
+        return cold('--a', { a: { body: { bookmarks: userBookmarks } } });
+      });
+
+      const actual$ = service.isBookmarked('');
+
+      expect(actual$).toBeObservable(expected$);
+    });
   });
 });
