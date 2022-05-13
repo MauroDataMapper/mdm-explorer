@@ -18,12 +18,11 @@ SPDX-License-Identifier: Apache-2.0
 -->
 <h2>Profile</h2>
 
-<table *ngIf="profile" class="table">
-  <thead></thead>
+<table *ngIf="profile" class="table" aria-label="Profile">
   <tbody>
     <ng-container *ngFor="let profileSection of profile.sections">
       <tr class="mdm-data-element-profile-section-name">
-        <td colspan="2">{{ profileSection.name }}</td>
+        <th scope="row" colspan="2">{{ profileSection.name }}</th>
       </tr>
       <tr
         *ngIf="profileSection.description"
@@ -35,7 +34,7 @@ SPDX-License-Identifier: Apache-2.0
       </tr>
       <ng-container *ngFor="let profileField of profileSection.fields">
         <tr>
-          <td class="w-25">{{ profileField.fieldName }}</td>
+          <th scope="row" class="w-25">{{ profileField.fieldName }}</th>
           <td>{{ profileField.currentValue }}</td>
         </tr>
       </ng-container>
