@@ -130,6 +130,7 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
             dataClassId: bookmark.dataClassId,
             label: bookmark.label,
             isSelected: bookmark.isSelected,
+            isBookmarked: true,
           };
 
           selected.push(asSearchResult);
