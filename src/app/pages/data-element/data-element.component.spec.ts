@@ -135,7 +135,7 @@ describe('DataElementComponent', () => {
       return of(bookmark);
     });
     bookmarkStub.remove.mockImplementation((bookmark) => {
-      const idx = bookmarks.findIndex((element) => element.id === bookmark.id);
+      const idx = bookmarks.findIndex((element) => element.id === bookmark[0].id);
       if (idx > -1) {
         bookmarks.splice(idx, 1);
         return of(bookmark);
