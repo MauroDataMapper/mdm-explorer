@@ -95,11 +95,8 @@ describe('DataElementSearchService', () => {
             breadcrumbs: [],
             dataClassId: '',
             dataModelId: '',
-<<<<<<< HEAD
             isSelected: false,
-=======
             isBookmarked: false,
->>>>>>> mc-9870 - extend DataElementBasic to include an isBookmarked property, update broken tests.
           },
           {
             id: '2',
@@ -107,11 +104,8 @@ describe('DataElementSearchService', () => {
             breadcrumbs: [],
             dataClassId: '',
             dataModelId: '',
-<<<<<<< HEAD
             isSelected: false,
-=======
             isBookmarked: false,
->>>>>>> mc-9870 - extend DataElementBasic to include an isBookmarked property, update broken tests.
           },
         ],
       };
@@ -178,11 +172,8 @@ describe('DataElementSearchService', () => {
             breadcrumbs: [],
             dataClassId: '',
             dataModelId: '',
-<<<<<<< HEAD
             isSelected: false,
-=======
             isBookmarked: false,
->>>>>>> mc-9870 - extend DataElementBasic to include an isBookmarked property, update broken tests.
           },
           {
             id: '2',
@@ -190,11 +181,8 @@ describe('DataElementSearchService', () => {
             breadcrumbs: [],
             dataClassId: '',
             dataModelId: '',
-<<<<<<< HEAD
             isSelected: false,
-=======
             isBookmarked: false,
->>>>>>> mc-9870 - extend DataElementBasic to include an isBookmarked property, update broken tests.
           },
         ],
       };

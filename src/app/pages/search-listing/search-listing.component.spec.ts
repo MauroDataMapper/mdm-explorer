@@ -225,11 +225,8 @@ describe('SearchListingComponent', () => {
           breadcrumbs: [],
           dataClassId: '2',
           dataModelId: '3',
-<<<<<<< HEAD
           isSelected: false,
-=======
           isBookmarked: false,
->>>>>>> mc-9870 - extend DataElementBasic to include an isBookmarked property, update broken tests.
         },
         {
           id: '2',
@@ -237,11 +234,8 @@ describe('SearchListingComponent', () => {
           breadcrumbs: [],
           dataClassId: '2',
           dataModelId: '3',
-<<<<<<< HEAD
           isSelected: false,
-=======
           isBookmarked: false,
->>>>>>> mc-9870 - extend DataElementBasic to include an isBookmarked property, update broken tests.
         },
         {
           id: '3',
@@ -249,11 +243,8 @@ describe('SearchListingComponent', () => {
           breadcrumbs: [],
           dataClassId: '2',
           dataModelId: '3',
-<<<<<<< HEAD
           isSelected: false,
-=======
           isBookmarked: false,
->>>>>>> mc-9870 - extend DataElementBasic to include an isBookmarked property, update broken tests.
         },
       ],
     };
@@ -386,11 +377,8 @@ describe('SearchListingComponent', () => {
           breadcrumbs: [],
           dataClassId: '2',
           dataModelId: '3',
-<<<<<<< HEAD
           isSelected: false,
-=======
           isBookmarked: false,
->>>>>>> mc-9870 - extend DataElementBasic to include an isBookmarked property, update broken tests.
         },
         {
           id: '2',
@@ -398,11 +386,8 @@ describe('SearchListingComponent', () => {
           breadcrumbs: [],
           dataClassId: '2',
           dataModelId: '3',
-<<<<<<< HEAD
           isSelected: false,
-=======
           isBookmarked: false,
->>>>>>> mc-9870 - extend DataElementBasic to include an isBookmarked property, update broken tests.
         },
         {
           id: '3',
@@ -410,11 +395,8 @@ describe('SearchListingComponent', () => {
           breadcrumbs: [],
           dataClassId: '2',
           dataModelId: '3',
-<<<<<<< HEAD
           isSelected: false,
-=======
           isBookmarked: false,
->>>>>>> mc-9870 - extend DataElementBasic to include an isBookmarked property, update broken tests.
         },
       ],
     };
@@ -577,9 +559,7 @@ describe('SearchListingComponent', () => {
       );
     });
   });
-<<<<<<< HEAD
 
-<<<<<<< HEAD
   describe('changing filters', () => {
     beforeEach(() => {
       stateRouterStub.navigateToKnownPath.mockClear();
@@ -608,50 +588,7 @@ describe('SearchListingComponent', () => {
         {
           page: 1,
         }
-=======
-  describe('create request from single data element', () => {
-    const dataElement: DataElementSearchResult = {
-      id: '1',
-      dataClassId: '2',
-      dataModelId: '3',
-      label: 'element 1',
-      isBookmarked: false,
-    };
-
-    const event: CreateRequestEvent = {
-      item: dataElement,
-    };
-
-    beforeEach(() => {
-      dataRequestsStub.createFromDataElements.mockClear();
-    });
-
-    it('should not continue if cancelling the Create Request dialog', () => {
-      matDialogStub.usage.afterClosed.mockImplementationOnce(() => of());
-
-      harness.component.createRequest(event);
-      expect(dataRequestsStub.createFromDataElements).not.toHaveBeenCalled();
-    });
-
-    it('should create a new request', () => {
-      const requestCreation: CreateRequestDialogResponse = {
-        name: 'test request',
-        description: 'test description',
-      };
-
-      matDialogStub.usage.afterClosed.mockImplementationOnce(() => of(requestCreation));
-
-      harness.component.createRequest(event);
-
-      expect(dataRequestsStub.createFromDataElements).toHaveBeenCalledWith(
-        [dataElement],
-        user,
-        requestCreation.name,
-        requestCreation.description
->>>>>>> mc-9870 - extend DataElementBasic to include an isBookmarked property, update broken tests.
       );
     });
   });
-=======
->>>>>>> mc-9870 - fix linting/testing issues
 });

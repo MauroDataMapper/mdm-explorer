@@ -209,18 +209,15 @@ export const mapProfileSearchResult = (
     label: item.label,
     description: item.description,
     breadcrumbs: item.breadcrumbs ?? [],
-<<<<<<< HEAD
     identifiableData: idenfifableDataField?.currentValue,
     isSelected: false,
-=======
     isBookmarked: false,
->>>>>>> mc-9870 - extend DataElementBasic to include an isBookmarked property, update broken tests.
   };
 };
 
 export type DataRequestStatus = 'unsent' | 'submitted';
 
-/* .*
+/*.*
  * Determine the status of a request made by a user for data access.
  */
 export const getDataRequestStatus = (model: DataModel): DataRequestStatus => {
