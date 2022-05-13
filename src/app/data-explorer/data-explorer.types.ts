@@ -177,16 +177,20 @@ export interface DataElementSearchResult extends DataElementBasic {
   identifiableData?: string;
 }
 
+export interface SelectableDataElementSearchResult extends DataElementSearchResult {
+  isSelected: boolean;
+}
+
 export interface DataElementSearchResultSet {
   totalResults: number;
   pageSize: number;
   page: number;
-  items: DataElementSearchResult[];
+  items: SelectableDataElementSearchResult[];
 }
 
 export const mapProfileSearchResult = (
   item: ProfileSearchResult
-): DataElementSearchResult => {
+): SelectableDataElementSearchResult => {
   // Note: Assumption that the the last breadcrumb is the data class containing the data element
   const dataClassId =
     item.breadcrumbs && item.breadcrumbs.length > 0
@@ -206,6 +210,7 @@ export const mapProfileSearchResult = (
     description: item.description,
     breadcrumbs: item.breadcrumbs ?? [],
     identifiableData: idenfifableDataField?.currentValue,
+    isSelected: false,
   };
 };
 
@@ -250,6 +255,11 @@ export interface DataElementBasic {
 
 export interface DataElementCheckedEvent {
   item: DataElementBasic;
+  checked: boolean;
+}
+
+export interface SelectableDataElementSearchResultCheckedEvent {
+  item: SelectableDataElementSearchResult;
   checked: boolean;
 }
 
