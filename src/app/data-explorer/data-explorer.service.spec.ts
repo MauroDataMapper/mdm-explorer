@@ -67,6 +67,13 @@ describe('DataExplorerService', () => {
     });
   });
 
+  /**
+   * Force the service to be in an initialised state without calling `initialise()`
+   */
+  const mockInitialiseService = () => {
+    service.config = config;
+  };
+
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
@@ -148,6 +155,12 @@ describe('DataExplorerService', () => {
   });
 
   describe('get root data model', () => {
+    it('should throw an error if service is not initialised', () => {
+      const expected$ = cold('#', null, new Error());
+      const actual$ = service.getRootDataModel();
+      expect(actual$).toBeObservable(expected$);
+    });
+
     it('should return the root data model', () => {
       const dataModel: DataModelDetail = {
         label: config.rootDataModelPath,
@@ -156,8 +169,7 @@ describe('DataExplorerService', () => {
         finalised: false,
       };
 
-      // Pretend that initialise() was called on the service
-      service.config = config;
+      mockInitialiseService();
 
       dataModelsStub.getDataModel.mockImplementationOnce((path) => {
         expect(path).toBe(config.rootDataModelPath);
@@ -227,9 +239,17 @@ describe('DataExplorerService', () => {
       'json',
     ];
 
+    it('should throw an error if service is not initialised', () => {
+      const expected$ = cold('#', null, new Error());
+      const actual$ = service.getProfileFieldsForFilters();
+      expect(actual$).toBeObservable(expected$);
+    });
+
     it.each(unsupportedDataTypes)(
       'should not return unsupported profile field data type %p',
       (dataType) => {
+        mockInitialiseService();
+
         const definition = createProfileDefinition(dataType);
         mockProfileDefinition(definition);
 
@@ -242,6 +262,8 @@ describe('DataExplorerService', () => {
     it.each(supportedDataTypes)(
       'should return profile fields with data type %p',
       (dataType) => {
+        mockInitialiseService();
+
         const definition = createProfileDefinition(dataType);
         mockProfileDefinition(definition);
 
