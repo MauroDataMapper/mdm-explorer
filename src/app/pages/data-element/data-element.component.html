@@ -18,7 +18,9 @@ SPDX-License-Identifier: Apache-2.0
 -->
 <div class="container">
   <div class="main-row hero">
-    <h1><mdm-breadcrumb [item]="dataElement"></mdm-breadcrumb></h1>
+    <h1>
+      <mdm-breadcrumb [item]="dataElement"></mdm-breadcrumb>
+    </h1>
   </div>
 
   <div *ngIf="dataElement" class="highlight-box mdm-data-element-detail">
@@ -75,11 +77,11 @@ SPDX-License-Identifier: Apache-2.0
         </p>
         <div *ngIf="dataElement.dataType?.domainType == 'EnumerationType'">
           <h3>List of enumeration values</h3>
-          <table class="table table-striped">
+          <table class="table table-striped" aria-label="Enumeration values">
             <thead>
               <tr>
-                <th>Key</th>
-                <th>Value</th>
+                <th scope="col">Key</th>
+                <th scope="col">Value</th>
               </tr>
             </thead>
             <tbody>
