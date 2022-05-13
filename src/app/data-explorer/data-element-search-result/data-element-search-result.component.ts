@@ -21,8 +21,8 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 import { Bookmark } from 'src/app/data-explorer/bookmark.service';
 import {
   DataElementBookmarkEvent,
-  DataElementCheckedEvent,
-  DataElementSearchResult,
+  SelectableDataElementSearchResultCheckedEvent,
+  SelectableDataElementSearchResult,
 } from '../data-explorer.types';
 import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.service';
 
@@ -32,7 +32,7 @@ import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.se
   styleUrls: ['./data-element-search-result.component.scss'],
 })
 export class DataElementSearchResultComponent {
-  @Input() item?: DataElementSearchResult;
+  @Input() item?: SelectableDataElementSearchResult;
 
   @Input() showBreadcrumb = false;
 
@@ -40,7 +40,7 @@ export class DataElementSearchResultComponent {
 
   @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 
-  @Output() checked = new EventEmitter<DataElementCheckedEvent>();
+  @Output() checked = new EventEmitter<SelectableDataElementSearchResultCheckedEvent>();
 
   @Output() bookmark = new EventEmitter<DataElementBookmarkEvent>();
 

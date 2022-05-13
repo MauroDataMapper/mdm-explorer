@@ -95,6 +95,7 @@ describe('DataElementSearchService', () => {
             breadcrumbs: [],
             dataClassId: '',
             dataModelId: '',
+            isSelected: false,
           },
           {
             id: '2',
@@ -102,6 +103,7 @@ describe('DataElementSearchService', () => {
             breadcrumbs: [],
             dataClassId: '',
             dataModelId: '',
+            isSelected: false,
           },
         ],
       };
@@ -168,6 +170,7 @@ describe('DataElementSearchService', () => {
             breadcrumbs: [],
             dataClassId: '',
             dataModelId: '',
+            isSelected: false,
           },
           {
             id: '2',
@@ -175,6 +178,7 @@ describe('DataElementSearchService', () => {
             breadcrumbs: [],
             dataClassId: '',
             dataModelId: '',
+            isSelected: false,
           },
         ],
       };

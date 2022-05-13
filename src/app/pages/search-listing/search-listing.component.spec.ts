@@ -225,6 +225,7 @@ describe('SearchListingComponent', () => {
           breadcrumbs: [],
           dataClassId: '2',
           dataModelId: '3',
+          isSelected: false,
         },
         {
           id: '2',
@@ -232,6 +233,7 @@ describe('SearchListingComponent', () => {
           breadcrumbs: [],
           dataClassId: '2',
           dataModelId: '3',
+          isSelected: false,
         },
         {
           id: '3',
@@ -239,6 +241,7 @@ describe('SearchListingComponent', () => {
           breadcrumbs: [],
           dataClassId: '2',
           dataModelId: '3',
+          isSelected: false,
         },
       ],
     };
@@ -371,6 +374,7 @@ describe('SearchListingComponent', () => {
           breadcrumbs: [],
           dataClassId: '2',
           dataModelId: '3',
+          isSelected: false,
         },
         {
           id: '2',
@@ -378,6 +382,7 @@ describe('SearchListingComponent', () => {
           breadcrumbs: [],
           dataClassId: '2',
           dataModelId: '3',
+          isSelected: false,
         },
         {
           id: '3',
@@ -385,6 +390,7 @@ describe('SearchListingComponent', () => {
           breadcrumbs: [],
           dataClassId: '2',
           dataModelId: '3',
+          isSelected: false,
         },
       ],
     };

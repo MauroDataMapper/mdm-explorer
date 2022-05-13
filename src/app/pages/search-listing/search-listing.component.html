@@ -86,6 +86,15 @@ SPDX-License-Identifier: Apache-2.0
           (bookmark)="bookmarkElement($event)"
           [sourceTargetIntersections]="sourceTargetIntersections"
         ></mdm-data-element-search-result>
+        <ng-container *ngIf="resultSet.totalResults > 0">
+          <div class="float-start">
+            <mat-checkbox (change)="onSelectAll($event)">Select all</mat-checkbox>
+            <mdm-data-element-multi-select
+              [sourceTargetIntersections]="sourceTargetIntersections"
+              [dataElements]="selectedResults()"
+            ></mdm-data-element-multi-select>
+          </div>
+        </ng-container>
         <mdm-pagination
           [currentPage]="resultSet.page"
           [pageSize]="resultSet.pageSize"
