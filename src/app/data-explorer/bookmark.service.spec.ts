@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { setupTestModuleForService } from '../testing/testing.helpers';
 import { Bookmark, BookmarkService, UserPreferences } from './bookmark.service';
-import { Observable, of } from 'rxjs';
+import { of } from 'rxjs';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { createMdmEndpointsStub } from '../testing/stubs/mdm-endpoints.stub';
 import { createSecurityServiceStub } from '../testing/stubs/security.stub';
@@ -62,6 +62,9 @@ describe('BookmarkService', () => {
   });
 
   describe('index', () => {
+    beforeEach(() => {
+      endpointsStub.catalogueUser.userPreferences.mockClear();
+    });
     it('should throw an error if the user is not logged in', () => {
       const expected$ = cold('#');
       securityServiceStub.getSignedInUser.mockReturnValueOnce(null);
@@ -73,7 +76,7 @@ describe('BookmarkService', () => {
 
     it('should return an empty array if there is no response body', () => {
       const expected$ = cold('--a', { a: [] });
-      endpointsStub.catalogueUser.userPreferences.mockImplementationOnce((id: string) => {
+      endpointsStub.catalogueUser.userPreferences.mockImplementationOnce(() => {
         return cold('--a', { a: {} });
       });
 
@@ -87,7 +90,7 @@ describe('BookmarkService', () => {
 
     it('should return an empty array if there is no bookmarks property in the response body', () => {
       const expected$ = cold('--a', { a: [] });
-      endpointsStub.catalogueUser.userPreferences.mockImplementationOnce((id: string) => {
+      endpointsStub.catalogueUser.userPreferences.mockImplementationOnce(() => {
         return cold('--a', { a: { body: {} } });
       });
 
@@ -129,11 +132,9 @@ describe('BookmarkService', () => {
         return cold('-a', { a: { body: { bookmarks: userBookmarks } } });
       });
 
-      endpointsStub.catalogueUser.updateUserPreferences.mockImplementationOnce(
-        (id: string, data: UserPreferences) => {
-          return cold('-a', { a: { body: { bookmarks: userBookmarks } } });
-        }
-      );
+      endpointsStub.catalogueUser.updateUserPreferences.mockImplementationOnce(() => {
+        return cold('-a', { a: { body: { bookmarks: userBookmarks } } });
+      });
 
       const actual$ = service.add(bookmarkToAdd);
 
@@ -161,11 +162,9 @@ describe('BookmarkService', () => {
           return cold('-a', { a: { body: userPrefsBefore } });
         });
 
-      endpointsStub.catalogueUser.updateUserPreferences.mockImplementationOnce(
-        (id: string, data: UserPreferences) => {
-          return cold('-a', { a: { body: { bookmarks: userBookmarksAfter } } });
-        }
-      );
+      endpointsStub.catalogueUser.updateUserPreferences.mockImplementationOnce(() => {
+        return cold('-a', { a: { body: { bookmarks: userBookmarksAfter } } });
+      });
 
       const actual$ = service.add(bookmarkToAdd);
 
@@ -192,11 +191,9 @@ describe('BookmarkService', () => {
         return cold('-a', { a: { body: { bookmarks: userBookmarks } } });
       });
 
-      endpointsStub.catalogueUser.updateUserPreferences.mockImplementationOnce(
-        (id: string, data: UserPreferences) => {
-          return cold('-a', { a: { body: { bookmarks: userBookmarks } } });
-        }
-      );
+      endpointsStub.catalogueUser.updateUserPreferences.mockImplementationOnce(() => {
+        return cold('-a', { a: { body: { bookmarks: userBookmarks } } });
+      });
 
       const actual$ = service.remove(bookmarkToRemove);
 
@@ -224,11 +221,9 @@ describe('BookmarkService', () => {
           return cold('-a', { a: { body: userPrefsBefore } });
         });
 
-      endpointsStub.catalogueUser.updateUserPreferences.mockImplementationOnce(
-        (id: string, data: UserPreferences) => {
-          return cold('-a', { a: { body: { bookmarks: userBookmarksAfter } } });
-        }
-      );
+      endpointsStub.catalogueUser.updateUserPreferences.mockImplementationOnce(() => {
+        return cold('-a', { a: { body: { bookmarks: userBookmarksAfter } } });
+      });
 
       const actual$ = service.remove(bookmarkToRemove);
 

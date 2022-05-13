@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { map, switchMap, Observable, throwError, of, catchError, filter } from 'rxjs';
+import { map, switchMap, Observable, throwError, of } from 'rxjs';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { Uuid } from '@maurodatamapper/mdm-resources';
 import { SecurityService } from '../security/security.service';
@@ -104,7 +104,7 @@ export class BookmarkService {
     const userDetails = this.security.getSignedInUser();
     if (userDetails) {
       return this.getPreferences(userDetails.id).pipe(
-        switchMap((data: any) => {
+        switchMap((data: UserPreferences) => {
           if (!data) data = {};
 
           data.bookmarks = bookmarks;
@@ -121,6 +121,7 @@ export class BookmarkService {
 
   /**
    * Get the bookmarks property from the user preferences.
+   *
    * @param userId
    * @returns just the bookmarks property on userPreferences, or [] if there is no such property.
    */

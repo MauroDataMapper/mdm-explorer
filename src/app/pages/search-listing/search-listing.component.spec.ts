@@ -577,6 +577,7 @@ describe('SearchListingComponent', () => {
       );
     });
   });
+<<<<<<< HEAD
 
 <<<<<<< HEAD
   describe('changing filters', () => {
@@ -651,4 +652,6 @@ describe('SearchListingComponent', () => {
       );
     });
   });
+=======
+>>>>>>> mc-9870 - fix linting/testing issues
 });

@@ -220,7 +220,7 @@ export const mapProfileSearchResult = (
 
 export type DataRequestStatus = 'unsent' | 'submitted';
 
-/*.*
+/* .*
  * Determine the status of a request made by a user for data access.
  */
 export const getDataRequestStatus = (model: DataModel): DataRequestStatus => {

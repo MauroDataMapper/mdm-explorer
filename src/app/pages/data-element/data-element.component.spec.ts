@@ -41,7 +41,7 @@ import {
   DataExplorerConfiguration,
   DATA_EXPLORER_CONFIGURATION,
 } from 'src/app/data-explorer/data-explorer.types';
-import { EMPTY, of } from 'rxjs';
+import { of } from 'rxjs';
 import {
   Breadcrumb,
   CatalogueItemDomainType,
@@ -52,6 +52,7 @@ import { createProfileServiceStub } from 'src/app/testing/stubs/profile.stub';
 import { DataElementProfileComponent } from './data-element-profile/data-element-profile.component';
 import { MatIcon } from '@angular/material/icon';
 import { MatCard } from '@angular/material/card';
+import { MatTooltip } from '@angular/material/tooltip';
 
 describe('DataElementComponent', () => {
   let harness: ComponentHarness<DataElementComponent>;
@@ -81,6 +82,7 @@ describe('DataElementComponent', () => {
         MockComponent(MatTab),
         MockComponent(MatIcon),
         MockComponent(MatCard),
+        MockComponent(MatTooltip),
         BreadcrumbComponent,
         MockComponent(ClassifiersComponent),
         MockComponent(SummaryMetadataComponent),
@@ -297,7 +299,7 @@ describe('DataElementComponent', () => {
       const selected = true;
       harness.component.dataElement = dataElement;
 
-      bookmarkStub.add.mockImplementationOnce((item: Bookmark) => {
+      bookmarkStub.add.mockImplementationOnce(() => {
         return of([]);
       });
 
@@ -310,7 +312,7 @@ describe('DataElementComponent', () => {
       const selected = false;
       harness.component.dataElement = dataElement;
 
-      bookmarkStub.remove.mockImplementationOnce((item: Bookmark) => {
+      bookmarkStub.remove.mockImplementationOnce(() => {
         return of([]);
       });
 

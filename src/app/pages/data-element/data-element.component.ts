@@ -57,7 +57,7 @@ export class DataElementComponent implements OnInit, OnDestroy {
   researchProfile?: Profile;
   identifiableData?: string;
 
-  isBookmarked: boolean = false;
+  isBookmarked = false;
 
   sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 
@@ -92,7 +92,7 @@ export class DataElementComponent implements OnInit, OnDestroy {
 
           return forkJoin([
             this.loadDataElement(),
-            this.bookmarks.isBookmarked(params.dataElementId),
+            this.bookmarks.isBookmarked(this.dataElementId),
             this.loadProfile(),
             this.loadIntersections(),
           ]);
@@ -108,6 +108,7 @@ export class DataElementComponent implements OnInit, OnDestroy {
             dataModelId: dataElementDetail.model ?? '',
             label: dataElementDetail.label,
             breadcrumbs: dataElementDetail.breadcrumbs,
+            isBookmarked,
           };
           this.researchProfile = profile;
           this.sourceTargetIntersections = sourceTargetIntersections;

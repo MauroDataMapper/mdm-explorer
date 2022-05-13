@@ -340,15 +340,6 @@ export class SearchListingComponent implements OnInit, OnDestroy {
     );
   }
 
-  private addIsBookmarkedToResults(): void {
-    if (!this.resultSet || !this.resultSet.items) return;
-
-    this.resultSet.items = this.resultSet.items.map((item) => {
-      const isBookmarked = this.userBookmarks.some((bm) => bm.id === item.id);
-      return { ...item, isBookmarked };
-    });
-  }
-
   private createSearchFiltersFromProfileFields(
     profileFields: ProfileField[],
     filters?: DataElementSearchFilters
@@ -380,6 +371,20 @@ export class SearchListingComponent implements OnInit, OnDestroy {
           this.broadcast.dispatch('data-intersections-refreshed', intersections);
         });
       });
+  }
+
+  /**
+   * Adds isBookmarked info to the resultSet.
+   *
+   * @returns
+   */
+  private addIsBookmarkedToResults(): void {
+    if (!this.resultSet || !this.resultSet.items) return;
+
+    this.resultSet.items = this.resultSet.items.map((item) => {
+      const isBookmarked = this.userBookmarks.some((bm) => bm.id === item.id);
+      return { ...item, isBookmarked };
+    });
   }
 
   /**

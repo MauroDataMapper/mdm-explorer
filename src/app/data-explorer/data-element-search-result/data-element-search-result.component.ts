@@ -24,6 +24,7 @@ import {
   Output,
 } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { CreateRequestEvent } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
 import {
   DataElementBookmarkEvent,
   SelectableDataElementSearchResultCheckedEvent,
@@ -42,7 +43,7 @@ export class DataElementSearchResultComponent {
 
   @Input() showBreadcrumb = false;
 
-  @Input() isBookmarked: boolean = false;
+  @Input() isBookmarked = false;
 
   @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 
@@ -52,7 +53,7 @@ export class DataElementSearchResultComponent {
 
   @Output() createRequestClicked = new EventEmitter<CreateRequestEvent>();
 
-  bookmarked: boolean = false;
+  bookmarked = false;
 
   constructor() {
     this.sourceTargetIntersections = {
