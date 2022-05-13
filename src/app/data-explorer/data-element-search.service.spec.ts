@@ -42,6 +42,7 @@ describe('DataElementSearchService', () => {
 
   const explorerConfig: DataExplorerConfiguration = {
     rootDataModelPath: 'root',
+    rootRequestFolder: 'request-folder',
     profileNamespace: 'test.namespace',
     profileServiceName: 'testProfile',
   };

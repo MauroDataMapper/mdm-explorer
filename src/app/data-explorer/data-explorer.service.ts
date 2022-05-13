@@ -30,10 +30,10 @@ import { ApiPropertiesService } from '../mauro/api-properties.service';
 
 export const configurationKeys = {
   category: 'Mauro Data Explorer',
-  rootDataModelPath: 'research.config.root_data_model_path',
-  rootRequestFolder: 'research.config.root_request_folder',
-  profileNamespace: 'research.config.profile_namespace',
-  profileServiceName: 'research.config.profile_service_name',
+  rootDataModelPath: 'explorer.config.root_data_model_path',
+  rootRequestFolder: 'explorer.config.root_request_folder',
+  profileNamespace: 'explorer.config.profile_namespace',
+  profileServiceName: 'explorer.config.profile_service_name',
 };
 
 const getExplorerApiProperty = (
