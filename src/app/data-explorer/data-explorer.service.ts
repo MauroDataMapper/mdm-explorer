@@ -16,31 +16,113 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Inject, Injectable } from '@angular/core';
-import { DataModelDetail, ProfileField } from '@maurodatamapper/mdm-resources';
-import { map, Observable } from 'rxjs';
+import { Injectable } from '@angular/core';
+import {
+  ApiProperty,
+  DataModelDetail,
+  ProfileField,
+} from '@maurodatamapper/mdm-resources';
+import { catchError, map, Observable, of, switchMap, throwError } from 'rxjs';
 import { DataModelService } from '../mauro/data-model.service';
 import { ProfileService } from '../mauro/profile.service';
-import {
-  DataExplorerConfiguration,
-  DATA_EXPLORER_CONFIGURATION,
-} from './data-explorer.types';
+import { DataExplorerConfiguration } from './data-explorer.types';
+import { ApiPropertiesService } from '../mauro/api-properties.service';
+
+export const configurationKeys = {
+  category: 'Mauro Data Explorer',
+  rootDataModelPath: 'explorer.config.root_data_model_path',
+  rootRequestFolder: 'explorer.config.root_request_folder',
+  profileNamespace: 'explorer.config.profile_namespace',
+  profileServiceName: 'explorer.config.profile_service_name',
+};
+
+const getExplorerApiProperty = (
+  props: ApiProperty[],
+  key: string
+): ApiProperty | undefined => {
+  return props.find(
+    (p) => p.category === configurationKeys.category && p.key === key && p.value
+  );
+};
+
+const getExplorerApiProperties = (props: ApiProperty[]) => {
+  return {
+    rootDataModelPath: getExplorerApiProperty(props, configurationKeys.rootDataModelPath),
+    rootRequestFolder: getExplorerApiProperty(props, configurationKeys.rootRequestFolder),
+    profileNamespace: getExplorerApiProperty(props, configurationKeys.profileNamespace),
+    profileServiceName: getExplorerApiProperty(
+      props,
+      configurationKeys.profileServiceName
+    ),
+  };
+};
 
 @Injectable({
   providedIn: 'root',
 })
 export class DataExplorerService {
+  config?: DataExplorerConfiguration;
+
   constructor(
+    private apiProperties: ApiPropertiesService,
     private dataModels: DataModelService,
-    private profiles: ProfileService,
-    @Inject(DATA_EXPLORER_CONFIGURATION) private config: DataExplorerConfiguration
+    private profiles: ProfileService
   ) {}
 
+  initialise(): Observable<DataExplorerConfiguration> {
+    return this.apiProperties.listPublic().pipe(
+      catchError((error) => {
+        console.error(
+          'Cannot initialise application - error when fetching configuration properties from Mauro'
+        );
+        return throwError(() => error);
+      }),
+      switchMap((properties) => {
+        const explorerProps = getExplorerApiProperties(properties);
+
+        if (
+          !explorerProps.rootDataModelPath ||
+          !explorerProps.rootRequestFolder ||
+          !explorerProps.profileNamespace ||
+          !explorerProps.profileServiceName
+        ) {
+          return throwError(
+            () =>
+              new Error(
+                `Cannot find all configuration keys in Mauro API properties. Check all required properties are listed under the '${configurationKeys.category}' section and have values.`
+              )
+          );
+        }
+
+        this.config = {
+          rootDataModelPath: explorerProps.rootDataModelPath.value,
+          rootRequestFolder: explorerProps.rootRequestFolder.value,
+          profileNamespace: explorerProps.profileNamespace.value,
+          profileServiceName: explorerProps.profileServiceName.value,
+        };
+
+        return of(this.config);
+      })
+    );
+  }
+
   getRootDataModel(): Observable<DataModelDetail> {
+    if (!this.config) {
+      return throwError(
+        () => new Error('DataExplorerService.initialise() has not been invoked')
+      );
+    }
+
     return this.dataModels.getDataModel(this.config.rootDataModelPath);
   }
 
   getProfileFieldsForFilters(): Observable<ProfileField[]> {
+    if (!this.config) {
+      return throwError(
+        () => new Error('DataExplorerService.initialise() has not been invoked')
+      );
+    }
+
     return this.profiles
       .definition(this.config.profileNamespace, this.config.profileServiceName)
       .pipe(
