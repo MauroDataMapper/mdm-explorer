@@ -180,6 +180,7 @@ describe('BookmarkService', () => {
       endpointsStub.catalogueUser.userPreferences.mockReset();
       endpointsStub.catalogueUser.updateUserPreferences.mockClear();
     });
+
     it('should not do anything if the supplied item is not in the users bookmarks', () => {
       const bookmarkToRemove = { id: '3', label: 'not-in' } as Bookmark;
       const userPrefsAfter: UserPreferences = { bookmarks: userBookmarks };
@@ -195,7 +196,7 @@ describe('BookmarkService', () => {
         return cold('-a', { a: { body: { bookmarks: userBookmarks } } });
       });
 
-      const actual$ = service.remove(bookmarkToRemove);
+      const actual$ = service.remove([bookmarkToRemove]);
 
       expect(actual$).toBeObservable(expected$);
       expect(actual$).toSatisfyOnFlush(() => {
@@ -225,7 +226,7 @@ describe('BookmarkService', () => {
         return cold('-a', { a: { body: { bookmarks: userBookmarksAfter } } });
       });
 
-      const actual$ = service.remove(bookmarkToRemove);
+      const actual$ = service.remove([bookmarkToRemove]);
 
       expect(actual$).toBeObservable(expected$);
       expect(actual$).toSatisfyOnFlush(() => {
@@ -262,6 +263,7 @@ describe('BookmarkService', () => {
         expect(actual$).toBeObservable(expected$);
       }
     );
+
     it('should return false if given the empty string', () => {
       const expected$ = cold('--a', { a: false });
       securityServiceStub.getSignedInUser.mockImplementationOnce(() => {

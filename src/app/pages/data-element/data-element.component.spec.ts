@@ -317,7 +317,7 @@ describe('DataElementComponent', () => {
       });
 
       harness.component.toggleBookmark(selected);
-      expect(bookmarkStub.remove).toHaveBeenCalledWith(dataElementAsBookmark);
+      expect(bookmarkStub.remove).toHaveBeenCalledWith([dataElementAsBookmark]);
       expect(toastrStub.success).toHaveBeenCalled();
     });
   });

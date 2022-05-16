@@ -62,8 +62,8 @@ export class BookmarkService {
     const idsToRemove = bookmarks.map((bookmark) => bookmark.id);
     return this.index().pipe(
       switchMap((userBookmarks: Bookmark[]) => {
-        const filteredBookmarks = userBookmarks.filter((bm) =>
-          idsToRemove.includes(bm.id)
+        const filteredBookmarks = userBookmarks.filter(
+          (bm) => !idsToRemove.includes(bm.id)
         );
         return this.save(filteredBookmarks);
       })
