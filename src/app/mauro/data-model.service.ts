@@ -46,7 +46,7 @@ import {
   SourceTargetIntersectionResponse,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
-import { forkJoin, map, Observable, of, switchMap } from 'rxjs';
+import { forkJoin, map, Observable, of, switchMap, throwError } from 'rxjs';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { DataClassIdentifier, isDataClass } from './mauro.types';
 
@@ -286,5 +286,25 @@ export class DataModelService {
     return this.endpoints.dataModel
       .intersectsMany(sourceDataModelId, data)
       .pipe(map((response: SourceTargetIntersectionResponse) => response.body));
+  }
+
+  /**
+   * Create the next version of a finalised Data Model to make edits in draft model again.
+   *
+   * @param model The Data Model to create the next version for.
+   * @returns An observable containing the {@link DataModel} of the new draft version based off of `model`.
+   */
+  createNextVersion(model: DataModel): Observable<DataModelDetail> {
+    if (!model.id) {
+      return throwError(() => new Error('No data model id provided'));
+    }
+
+    if (!model.modelVersion) {
+      return throwError(() => new Error(`Data model "${model.label}" is not finalised`));
+    }
+
+    return this.endpoints.dataModel
+      .newBranchModelVersion(model.id, {})
+      .pipe(map((response: DataModelDetailResponse) => response.body));
   }
 }

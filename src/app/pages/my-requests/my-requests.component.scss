@@ -56,6 +56,15 @@ $request-elements-max-height: 500px;
     margin: 0 0 1em 0;
   }
 
+  &__list {
+    overflow-y: scroll;
+    max-height: $request-elements-max-height;
+
+    .mat-list-option {
+      height: auto;
+    }
+  }
+
   &__request-name {
     display: inline-block;
     width: 120px;

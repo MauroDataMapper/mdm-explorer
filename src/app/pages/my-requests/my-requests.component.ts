@@ -20,7 +20,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatSelectionListChange } from '@angular/material/list';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, finalize } from 'rxjs';
+import { catchError, EMPTY, finalize, forkJoin, of, switchMap, throwError } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import {
   DataElementBasic,
@@ -30,6 +30,7 @@ import {
 } from 'src/app/data-explorer/data-explorer.types';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import { DialogService } from 'src/app/data-explorer/dialog.service';
+import { DataModelService } from 'src/app/mauro/data-model.service';
 import { ResearchPluginService } from 'src/app/mauro/research-plugin.service';
 import { SecurityService } from 'src/app/security/security.service';
 
@@ -46,10 +47,12 @@ export class MyRequestsComponent implements OnInit {
   requestElements: DataElementBasic[] = [];
   state: 'idle' | 'loading' = 'idle';
   submittingRequest = false;
+  creatingNextVersion = false;
 
   constructor(
     private security: SecurityService,
     private dataRequests: DataRequestsService,
+    private dataModels: DataModelService,
     private toastr: ToastrService,
     private researchPlugin: ResearchPluginService,
     private dialogs: DialogService,
@@ -63,22 +66,10 @@ export class MyRequestsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const user = this.security.getSignedInUser();
-    if (!user) {
-      return;
-    }
-
     this.state = 'loading';
 
-    this.dataRequests
-      .list(user.email)
-      .pipe(
-        catchError(() => {
-          this.toastr.error('There was a problem finding your requests.');
-          return EMPTY;
-        }),
-        finalize(() => (this.state = 'idle'))
-      )
+    this.getUserRequests()
+      .pipe(finalize(() => (this.state = 'idle')))
       .subscribe((requests) => {
         this.allRequests = requests;
         this.filterRequests();
@@ -133,6 +124,61 @@ export class MyRequestsComponent implements OnInit {
           message: `Your request "${this.request.label}" has been successfully submitted. It will now be reviewed and you will be contacted shortly to discuss further steps.`,
         });
       });
+  }
+
+  createNextVersion() {
+    if (
+      !this.request ||
+      !this.request.id ||
+      !this.request.modelVersion ||
+      this.request.status !== 'submitted'
+    ) {
+      return;
+    }
+
+    this.creatingNextVersion = true;
+    this.dataModels
+      .createNextVersion(this.request)
+      .pipe(
+        catchError(() => {
+          this.toastr.error(
+            'There was a problem creating your request. Please try again or contact us for support.',
+            'Creation error'
+          );
+          return EMPTY;
+        }),
+        switchMap((nextDraftModel) => {
+          return forkJoin([of(nextDraftModel), this.getUserRequests()]);
+        }),
+        finalize(() => (this.creatingNextVersion = false))
+      )
+      .subscribe(([nextDraftModel, allRequests]) => {
+        const nextDataRequest = mapToDataRequest(nextDraftModel);
+
+        this.allRequests = allRequests;
+        this.filterRequests();
+        this.setRequest(mapToDataRequest(nextDraftModel));
+
+        this.dialogs.openSuccess({
+          heading: 'Request created',
+          message: `Your new request "${nextDataRequest.label}" has been successfully created. Modify this request by searching or browsing our catalogue before submitting again.`,
+        });
+      });
+  }
+
+  private getUserRequests() {
+    const user = this.security.getSignedInUser();
+    if (!user) {
+      return throwError(() => new Error('Cannot find user'));
+    }
+
+    return this.dataRequests.list(user.email).pipe(
+      catchError(() => {
+        this.toastr.error('There was a problem finding your requests.');
+        return EMPTY;
+      }),
+      finalize(() => (this.state = 'idle'))
+    );
   }
 
   private filterRequests() {
