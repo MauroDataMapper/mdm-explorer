@@ -214,6 +214,7 @@ export class MyRequestsComponent implements OnInit {
             dataClassId: element.dataClass ?? '',
             label: element.label,
             breadcrumbs: element.breadcrumbs,
+            isBookmarked: false,
           };
         });
       });

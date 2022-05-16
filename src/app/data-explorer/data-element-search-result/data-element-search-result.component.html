@@ -19,11 +19,16 @@ SPDX-License-Identifier: Apache-2.0
 <div *ngIf="item" class="highlight-box mdm-data-element-search-result">
   <div class="mdm-data-element-search-result__header">
     <span>
-      <mat-checkbox color="primary" (change)="itemChecked($event)"></mat-checkbox>
+      <mat-checkbox (change)="itemChecked($event)" [checked]="item.isSelected">
+      </mat-checkbox>
       <h3>
         {{ item.label }}
       </h3>
-      <mdm-breadcrumb *ngIf="showBreadcrumb" [item]="item"></mdm-breadcrumb>
+      <mdm-breadcrumb
+        *ngIf="showBreadcrumb"
+        class="mdm-data-element-search-result__header__breadcrumb"
+        [item]="item"
+      ></mdm-breadcrumb>
     </span>
     <span>
       <mdm-data-element-in-request
@@ -32,7 +37,7 @@ SPDX-License-Identifier: Apache-2.0
       ></mdm-data-element-in-request>
       <mdm-bookmark-toggle
         (toggle)="toggleBookmark($event)"
-        [selected]="isBookmarked()"
+        [selected]="isBookmarked"
       ></mdm-bookmark-toggle>
     </span>
   </div>
@@ -43,5 +48,8 @@ SPDX-License-Identifier: Apache-2.0
     <a [routerLink]="['/dataElement', item.dataModelId, item.dataClassId, item.id]"
       >View Details</a
     >
+    <mdm-identifiable-data-icon
+      [state]="item.identifiableData"
+    ></mdm-identifiable-data-icon>
   </div>
 </div>

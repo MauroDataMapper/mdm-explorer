@@ -256,6 +256,7 @@ describe('MyRequestsComponent', () => {
           dataClassId: e.dataClass ?? '',
           label: e.label,
           breadcrumbs: e.breadcrumbs,
+          isBookmarked: false,
         };
       });
 

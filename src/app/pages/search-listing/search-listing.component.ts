@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { DataClassDetail, Uuid } from '@maurodatamapper/mdm-resources';
+import { DataClassDetail, ProfileField, Uuid } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import {
   catchError,
@@ -28,33 +28,37 @@ import {
   Subject,
   switchMap,
   takeUntil,
+  combineLatest,
   throwError,
 } from 'rxjs';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { KnownRouterPath, StateRouterService } from 'src/app/core/state-router.service';
 import { DataElementSearchService } from 'src/app/data-explorer/data-element-search.service';
 import {
+  DataElementSearchFilters,
   DataElementSearchParameters,
   DataElementSearchResult,
   DataElementSearchResultSet,
   mapParamMapToSearchParameters,
   mapSearchParametersToParams,
+  SelectableDataElementSearchResult,
+  SelectableDataElementSearchResultCheckedEvent,
   SortOrder,
 } from 'src/app/data-explorer/data-explorer.types';
-import {
-  DataElementBookmarkEvent,
-  DataElementCheckedEvent,
-} from 'src/app/data-explorer/data-explorer.types';
-import { UserDetails } from 'src/app/security/user-details.service';
+import { DataElementBookmarkEvent } from 'src/app/data-explorer/data-explorer.types';
 import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
 import { SortByOption } from 'src/app/data-explorer/sort-by/sort-by.component';
-import { SecurityService } from 'src/app/security/security.service';
 import {
   DataRequestsService,
   DataAccessRequestsSourceTargetIntersections,
 } from 'src/app/data-explorer/data-requests.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import { BroadcastService } from 'src/app/core/broadcast.service';
+import {
+  SearchFilterChange,
+  SearchFilterField,
+} from 'src/app/data-explorer/search-filters/search-filters.component';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 export type SearchListingSource = 'unknown' | 'browse' | 'search';
 export type SearchListingStatus = 'init' | 'loading' | 'ready' | 'error';
@@ -91,7 +95,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
     { value: 'label-desc', displayName: 'Label (z-a)' },
   ];
   sortByDefaultOption: SortByOption = this.searchListingSortByOptions[0];
-  private user: UserDetails | null;
+  filters: SearchFilterField[] = [];
 
   /**
    * Signal to attach to subscriptions to trigger when they should be unsubscribed.
@@ -107,10 +111,8 @@ export class SearchListingComponent implements OnInit, OnDestroy {
     private toastr: ToastrService,
     private stateRouter: StateRouterService,
     private bookmarks: BookmarkService,
-    private broadcast: BroadcastService,
-    security: SecurityService
+    private broadcast: BroadcastService
   ) {
-    this.user = security.getSignedInUser();
     this.sourceTargetIntersections = {
       dataAccessRequests: [],
       sourceTargetIntersections: [],
@@ -128,11 +130,18 @@ export class SearchListingComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.route.queryParamMap
+    // Important to use combineLatest() instead of forkJoin() - route.queryParamMap does not complete, so need to continue
+    // on next value in route.queryParamMap stream instead
+    combineLatest([this.route.queryParamMap, this.explorer.getProfileFieldsForFilters()])
       .pipe(
-        switchMap((query) => {
-          this.parameters = mapParamMapToSearchParameters(query);
+        switchMap(([query, profileFields]) => {
+          this.parameters = mapParamMapToSearchParameters(query, profileFields);
           this.searchTerms = this.parameters.search;
+
+          this.filters = this.createSearchFiltersFromProfileFields(
+            profileFields,
+            this.parameters.filters
+          );
 
           // Set sortBy from route val, or set to default value.
           this.sortBy = this.setSortByFromRouteOrAsDefault(
@@ -156,6 +165,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
           this.root = dataClass;
           this.resultSet = resultSet;
           this.userBookmarks = userBookmarks;
+          this.addIsBookmarkedToResults();
           return this.loadIntersections();
         })
       )
@@ -180,8 +190,8 @@ export class SearchListingComponent implements OnInit, OnDestroy {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  selectElement(event: DataElementCheckedEvent) {
-    alert('TODO: selecting elements from SearchListingComponent');
+  selectElement(event: SelectableDataElementSearchResultCheckedEvent) {
+    event.item.isSelected = event.checked;
   }
 
   bookmarkElement(event: DataElementBookmarkEvent) {
@@ -190,7 +200,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
         this.toastr.success(`${event.item.label} added to bookmarks`);
       });
     } else {
-      this.bookmarks.remove(event.item).subscribe(() => {
+      this.bookmarks.remove([event.item]).subscribe(() => {
         this.toastr.success(`${event.item.label} removed from bookmarks`);
       });
     }
@@ -218,6 +228,61 @@ export class SearchListingComponent implements OnInit, OnDestroy {
 
     const params = mapSearchParametersToParams(next);
     this.stateRouter.navigateToKnownPath('/search/listing', params);
+  }
+
+  filterChanged(event: SearchFilterChange) {
+    const next: DataElementSearchParameters = {
+      ...this.parameters,
+      page: 1, // Always force to start at first page of results again
+    };
+
+    if (!next.filters) {
+      next.filters = {};
+    }
+
+    next.filters[event.name] = event.value;
+
+    const params = mapSearchParametersToParams(next);
+    this.stateRouter.navigateToKnownPath('/search/listing', params);
+  }
+
+  filterReset() {
+    const next: DataElementSearchParameters = {
+      ...this.parameters,
+      page: 1, // Always force to start at first page of results again
+      filters: {},
+    };
+
+    const params = mapSearchParametersToParams(next);
+    this.stateRouter.navigateToKnownPath('/search/listing', params);
+  }
+
+  /**
+   * If there are any search results, select all of them
+   *
+   * @param event
+   */
+  onSelectAll(event: MatCheckboxChange) {
+    if (this.resultSet) {
+      this.resultSet.items = this.resultSet.items.map((item) => {
+        return { ...item, isSelected: event.checked };
+      });
+    }
+  }
+
+  /**
+   * Of the current search results (if any), return those which are selected
+   *
+   * @returns collection of SelectableDataElementSearchResult
+   */
+  selectedResults() {
+    let selected: SelectableDataElementSearchResult[] = [];
+
+    if (this.resultSet) {
+      selected = this.resultSet.items.filter((element) => element.isSelected);
+    }
+
+    return selected;
   }
 
   private loadDataClass() {
@@ -275,6 +340,23 @@ export class SearchListingComponent implements OnInit, OnDestroy {
     );
   }
 
+  private createSearchFiltersFromProfileFields(
+    profileFields: ProfileField[],
+    filters?: DataElementSearchFilters
+  ): SearchFilterField[] {
+    return profileFields
+      .filter((field) => field.dataType === 'enumeration')
+      .map((field) => {
+        return {
+          name: field.metadataPropertyName,
+          label: field.fieldName,
+          dataType: 'enumeration',
+          allowedValues: field.allowedValues,
+          currentValue: filters?.[field.metadataPropertyName],
+        };
+      });
+  }
+
   /**
    * When a data request is added, reload all intersections (which ensures we pick up intersections with the
    * new data request) and tell all data-element-in-request components about the new intersections.
@@ -289,6 +371,18 @@ export class SearchListingComponent implements OnInit, OnDestroy {
           this.broadcast.dispatch('data-intersections-refreshed', intersections);
         });
       });
+  }
+
+  /**
+   * Adds isBookmarked info to the resultSet.
+   */
+  private addIsBookmarkedToResults(): void {
+    if (!this.resultSet || !this.resultSet.items) return;
+
+    this.resultSet.items = this.resultSet.items.map((item) => {
+      const isBookmarked = this.userBookmarks.some((bm) => bm.id === item.id);
+      return { ...item, isBookmarked };
+    });
   }
 
   /**

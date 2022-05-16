@@ -30,8 +30,12 @@ import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { DataElementRowComponent } from './data-element-row/data-element-row.component';
 import { CreateRequestDialogComponent } from './create-request-dialog/create-request-dialog.component';
 import { RequestCreatedDialogComponent } from './request-created-dialog/request-created-dialog.component';
+import { RequestUpdatedDialogComponent } from './request-updated-dialog/request-updated-dialog.component';
 import { SuccessDialogComponent } from './success-dialog/success-dialog.component';
 import { BookmarkRowComponent } from './bookmark-row/bookmark-row.component';
+import { IdentifiableDataIconComponent } from './identifiable-data-icon/identifiable-data-icon.component';
+import { SearchFiltersComponent } from './search-filters/search-filters.component';
+import { CatalogueSearchFormComponent } from './catalogue-search-form/catalogue-search-form.component';
 
 @NgModule({
   declarations: [
@@ -45,8 +49,12 @@ import { BookmarkRowComponent } from './bookmark-row/bookmark-row.component';
     BreadcrumbComponent,
     CreateRequestDialogComponent,
     RequestCreatedDialogComponent,
+    RequestUpdatedDialogComponent,
     SuccessDialogComponent,
     BookmarkRowComponent,
+    IdentifiableDataIconComponent,
+    SearchFiltersComponent,
+    CatalogueSearchFormComponent,
   ],
   imports: [CoreModule, SharedModule],
   exports: [
@@ -59,6 +67,9 @@ import { BookmarkRowComponent } from './bookmark-row/bookmark-row.component';
     RequestStatusChipComponent,
     BreadcrumbComponent,
     BookmarkRowComponent,
+    IdentifiableDataIconComponent,
+    SearchFiltersComponent,
+    CatalogueSearchFormComponent,
   ],
   providers: [
     {

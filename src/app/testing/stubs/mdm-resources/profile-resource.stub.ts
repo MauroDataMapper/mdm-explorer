@@ -16,7 +16,16 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { CatalogueItemDomainType, Profile, Uuid } from '@maurodatamapper/mdm-resources';
+import {
+  CatalogueItemDomainType,
+  MdmIndexBody,
+  MultiFacetAwareDomainType,
+  Profile,
+  ProfileDefinition,
+  ProfileSearchResult,
+  SearchQueryParameters,
+  Uuid,
+} from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
 
 export type ProfileGetFn = (
@@ -26,12 +35,37 @@ export type ProfileGetFn = (
   profileName: string
 ) => Observable<Profile>;
 
+export type ProfileDefinitionFn = (
+  profileNamespace: string,
+  profileName: string
+) => Observable<ProfileDefinition>;
+
+export type ProfileSearchFn = (
+  profileNamespace: string,
+  profileName: string,
+  query: SearchQueryParameters
+) => Observable<MdmIndexBody<ProfileSearchResult>>;
+
+export type ProfileSearchCatalogueItemFn = (
+  domainType: MultiFacetAwareDomainType,
+  id: Uuid,
+  profileNamespace: string,
+  profileName: string,
+  query: SearchQueryParameters
+) => Observable<MdmIndexBody<ProfileSearchResult>>;
+
 export interface MdmProfileResourcesStub {
   profile: jest.MockedFunction<ProfileGetFn>;
+  definition: jest.MockedFunction<ProfileDefinitionFn>;
+  search: jest.MockedFunction<ProfileSearchFn>;
+  searchCatalogueItem: jest.MockedFunction<ProfileSearchCatalogueItemFn>;
 }
 
 export const createProfileStub = (): MdmProfileResourcesStub => {
   return {
     profile: jest.fn() as jest.MockedFunction<ProfileGetFn>,
+    definition: jest.fn() as jest.MockedFunction<ProfileDefinitionFn>,
+    search: jest.fn() as jest.MockedFunction<ProfileSearchFn>,
+    searchCatalogueItem: jest.fn() as jest.MockedFunction<ProfileSearchCatalogueItemFn>,
   };
 };

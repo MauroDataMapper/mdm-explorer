@@ -16,17 +16,21 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { DataModelDetail } from '@maurodatamapper/mdm-resources';
+import { DataModelDetail, ProfileField } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
 
 export type DataExplorerGetRootDataModelFn = () => Observable<DataModelDetail>;
+export type DataExplorerGetProfileFieldsFn = () => Observable<ProfileField[]>;
 
 export interface DataExplorerServiceStub {
   getRootDataModel: jest.MockedFunction<DataExplorerGetRootDataModelFn>;
+  getProfileFieldsForFilters: jest.MockedFunction<DataExplorerGetProfileFieldsFn>;
 }
 
 export const createDataExplorerServiceStub = (): DataExplorerServiceStub => {
   return {
     getRootDataModel: jest.fn() as jest.MockedFunction<DataExplorerGetRootDataModelFn>,
+    getProfileFieldsForFilters:
+      jest.fn() as jest.MockedFunction<DataExplorerGetProfileFieldsFn>,
   };
 };

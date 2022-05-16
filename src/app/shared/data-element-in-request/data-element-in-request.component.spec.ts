@@ -107,6 +107,7 @@ describe('DataElementInRequestComponent', () => {
       dataClassId: '2',
       dataModelId: '3',
       label: 'element 1',
+      isBookmarked: false,
     };
 
     const event: CreateRequestEvent = {

@@ -54,6 +54,7 @@ describe('DataElementRowComponent', () => {
         dataModelId: '2',
         dataClassId: '3',
         label: 'test',
+        isBookmarked: false,
       };
 
       harness.component.item = item;
