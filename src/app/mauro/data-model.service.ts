@@ -23,6 +23,7 @@ import {
   DataClass,
   DataClassDetail,
   DataClassDetailResponse,
+  DataClassIndexParameters,
   DataClassIndexResponse,
   DataElement,
   DataElementDetail,
@@ -86,9 +87,16 @@ export class DataModelService {
       return of([]);
     }
 
+    const options: DataClassIndexParameters = {
+      // Ideally we should be setting `all: true` but there is a bug on the backend which will end up returning _all_
+      // data classes for a data model, including children. We only one one level of data class at a time, so
+      // for now set a very large maximum instead
+      max: 9999,
+    };
+
     const request$: Observable<DataClassIndexResponse> = isDataClass(parent)
-      ? this.endpoints.dataClass.listChildDataClasses(parent.model!, parent.id) // eslint-disable-line @typescript-eslint/no-non-null-assertion
-      : this.endpoints.dataClass.list(parent.id);
+      ? this.endpoints.dataClass.listChildDataClasses(parent.model!, parent.id, options) // eslint-disable-line @typescript-eslint/no-non-null-assertion
+      : this.endpoints.dataClass.list(parent.id, options);
 
     return request$.pipe(map((response) => response.body.items));
   }
