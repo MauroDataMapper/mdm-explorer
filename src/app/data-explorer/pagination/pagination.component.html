@@ -27,7 +27,7 @@ SPDX-License-Identifier: Apache-2.0
       aria-label="First page"
       (click)="select(1)"
     >
-      <i class="fa-solid fa-angles-left"></i>
+      <span class="fa-solid fa-angles-left"></span>
     </button>
   </li>
   <li [ngClass]="{ disabled: currentPage === 1 }" class="page-item previous-item">
@@ -37,7 +37,7 @@ SPDX-License-Identifier: Apache-2.0
       aria-label="Previous"
       (click)="select(currentPage - 1)"
     >
-      <i class="fa-solid fa-angle-left"></i>
+      <span class="fa-solid fa-angle-left"></span>
     </button>
   </li>
   <li
@@ -54,7 +54,7 @@ SPDX-License-Identifier: Apache-2.0
       aria-label="Next"
       (click)="select(currentPage + 1)"
     >
-      <i class="fa-solid fa-angle-right"></i>
+      <span class="fa-solid fa-angle-right"></span>
     </button>
   </li>
   <li [ngClass]="{ disabled: currentPage === totalPages }" class="page-item last-item">
@@ -64,7 +64,7 @@ SPDX-License-Identifier: Apache-2.0
       aria-label="Last page"
       (click)="select(totalPages)"
     >
-      <i class="fa-solid fa-angles-right"></i>
+      <span class="fa-solid fa-angles-right"></span>
     </button>
   </li>
   <li class="page-item page-counter">

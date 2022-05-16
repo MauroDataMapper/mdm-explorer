@@ -165,6 +165,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
           this.root = dataClass;
           this.resultSet = resultSet;
           this.userBookmarks = userBookmarks;
+          this.addIsBookmarkedToResults();
           return this.loadIntersections();
         })
       )
@@ -199,7 +200,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
         this.toastr.success(`${event.item.label} added to bookmarks`);
       });
     } else {
-      this.bookmarks.remove(event.item).subscribe(() => {
+      this.bookmarks.remove([event.item]).subscribe(() => {
         this.toastr.success(`${event.item.label} removed from bookmarks`);
       });
     }
@@ -370,6 +371,18 @@ export class SearchListingComponent implements OnInit, OnDestroy {
           this.broadcast.dispatch('data-intersections-refreshed', intersections);
         });
       });
+  }
+
+  /**
+   * Adds isBookmarked info to the resultSet.
+   */
+  private addIsBookmarkedToResults(): void {
+    if (!this.resultSet || !this.resultSet.items) return;
+
+    this.resultSet.items = this.resultSet.items.map((item) => {
+      const isBookmarked = this.userBookmarks.some((bm) => bm.id === item.id);
+      return { ...item, isBookmarked };
+    });
   }
 
   /**

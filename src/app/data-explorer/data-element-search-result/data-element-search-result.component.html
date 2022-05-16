@@ -24,7 +24,11 @@ SPDX-License-Identifier: Apache-2.0
       <h3>
         {{ item.label }}
       </h3>
-      <mdm-breadcrumb *ngIf="showBreadcrumb" [item]="item"></mdm-breadcrumb>
+      <mdm-breadcrumb
+        *ngIf="showBreadcrumb"
+        class="mdm-data-element-search-result__header__breadcrumb"
+        [item]="item"
+      ></mdm-breadcrumb>
     </span>
     <span>
       <mdm-data-element-in-request
@@ -33,7 +37,7 @@ SPDX-License-Identifier: Apache-2.0
       ></mdm-data-element-in-request>
       <mdm-bookmark-toggle
         (toggle)="toggleBookmark($event)"
-        [selected]="isBookmarked()"
+        [selected]="isBookmarked"
       ></mdm-bookmark-toggle>
     </span>
   </div>

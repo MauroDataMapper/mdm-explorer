@@ -123,6 +123,7 @@ export class BrowseComponent implements OnInit {
               label: de.label,
               dataModelId: de.model ?? '',
               dataClassId: de.dataClass ?? '',
+              isBookmarked: false,
             };
           });
 

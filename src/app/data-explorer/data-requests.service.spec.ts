@@ -290,12 +290,14 @@ describe('DataRequestsService', () => {
           dataModelId: '999',
           dataClassId: '888',
           label: 'element 1',
+          isBookmarked: false,
         },
         {
           id: '2',
           dataModelId: '999',
           dataClassId: '888',
           label: 'element 2',
+          isBookmarked: false,
         },
       ];
 

@@ -18,6 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { MdmResponse, Uuid } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
+import { UserPreferences } from 'src/app/data-explorer/bookmark.service';
 import {
   CatalogueUser,
   CatalogueUserPayload,
@@ -36,10 +37,20 @@ export type CatalogueUserResetPasswordLinkFn = (email: string) => any;
 export type CatalogueUserResetPasswordLinkMockedFn =
   jest.MockedFunction<CatalogueUserResetPasswordLinkFn>;
 
+export type CatalogueUserPreferencesFn = (id: string) => any;
+export type CatalogueUserPreferencesMockedFn =
+  jest.MockedFunction<CatalogueUserPreferencesFn>;
+
+export type CatalogueUserUpdatePreferencesFn = (id: string, data: UserPreferences) => any;
+export type CatalogueUserUpdatePreferencesMockedFn =
+  jest.MockedFunction<CatalogueUserUpdatePreferencesFn>;
+
 export interface MdmCatalogueUserResourceStub {
   get: CatalogueUserGetMockedFn;
   update: CatalogueUserUpdateMockedFn;
   resetPasswordLink: CatalogueUserResetPasswordLinkMockedFn;
+  userPreferences: CatalogueUserPreferencesMockedFn;
+  updateUserPreferences: CatalogueUserUpdatePreferencesMockedFn;
 }
 
 export const createCatalogueUserStub = (): MdmCatalogueUserResourceStub => {
@@ -47,5 +58,7 @@ export const createCatalogueUserStub = (): MdmCatalogueUserResourceStub => {
     get: jest.fn() as CatalogueUserGetMockedFn,
     update: jest.fn() as CatalogueUserUpdateMockedFn,
     resetPasswordLink: jest.fn() as CatalogueUserResetPasswordLinkMockedFn,
+    userPreferences: jest.fn() as CatalogueUserPreferencesMockedFn,
+    updateUserPreferences: jest.fn() as CatalogueUserUpdatePreferencesMockedFn,
   };
 };

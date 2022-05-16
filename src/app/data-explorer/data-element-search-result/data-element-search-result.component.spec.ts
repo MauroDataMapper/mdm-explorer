@@ -80,6 +80,7 @@ describe('DataElementSearchResultComponent', () => {
       dataClassId: '2',
       dataModelId: '3',
       isSelected: false,
+      isBookmarked: false,
     };
 
     harness.component.item = item;
@@ -105,6 +106,7 @@ describe('DataElementSearchResultComponent', () => {
         dataClassId: '2',
         dataModelId: '3',
         isSelected: false,
+        isBookmarked: false,
       };
 
       harness.component.item = item;
