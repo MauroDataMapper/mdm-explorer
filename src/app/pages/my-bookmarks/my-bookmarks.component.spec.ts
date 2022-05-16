@@ -37,8 +37,18 @@ import {
 import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
 import { SecurityService } from 'src/app/security/security.service';
-import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import {
+  DataAccessRequestsSourceTargetIntersections,
+  DataRequestsService,
+} from 'src/app/data-explorer/data-requests.service';
 import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
+import { createDataExplorerServiceStub } from 'src/app/testing/stubs/data-explorer.stub';
+import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
+import {
+  DataModel,
+  DataModelDetail,
+  SourceTargetIntersection,
+} from '@maurodatamapper/mdm-resources';
 
 describe('MyBookmarkComponent', () => {
   let harness: ComponentHarness<MyBookmarksComponent>;
@@ -49,11 +59,21 @@ describe('MyBookmarkComponent', () => {
   const selectableBookmarks: SelectableBookmark[] = bookmarks.map((bm) => {
     return { ...bm, isSelected: false };
   });
+  const rootDataModel = { id: 'ID' } as DataModelDetail;
+  const dar1 = {} as DataModel;
+  const dar2 = {} as DataModel;
+  const sti1 = {} as SourceTargetIntersection;
+  const sti2 = {} as SourceTargetIntersection;
+  const intersections: DataAccessRequestsSourceTargetIntersections = {
+    dataAccessRequests: [dar1, dar2],
+    sourceTargetIntersections: [sti1, sti2],
+  };
 
   const bookmarkStub = createBookmarkServiceStub();
   const securityStub = createSecurityServiceStub();
   const dataRequestStub = createDataRequestsServiceStub();
   const toastrStub = createToastrServiceStub();
+  const dataExplorerStub = createDataExplorerServiceStub();
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(MyBookmarksComponent, {
@@ -75,8 +95,13 @@ describe('MyBookmarkComponent', () => {
           provide: ToastrService,
           useValue: toastrStub,
         },
+        {
+          provide: DataExplorerService,
+          useValue: dataExplorerStub,
+        },
       ],
     });
+    dataExplorerStub.getRootDataModel.mockImplementation(() => of(rootDataModel));
   });
 
   it('should create', () => {
@@ -89,10 +114,43 @@ describe('MyBookmarkComponent', () => {
       bookmarkStub.index.mockImplementationOnce(() => {
         return of(bookmarks);
       });
+      dataRequestStub.getRequestsIntersections.mockImplementationOnce(() =>
+        of({} as DataAccessRequestsSourceTargetIntersections)
+      );
 
       harness.component.ngOnInit();
 
       expect(harness.component.userBookmarks).toStrictEqual(selectableBookmarks);
+    });
+
+    it('should load intersections', () => {
+      bookmarkStub.index.mockImplementationOnce(() => {
+        return of(bookmarks);
+      });
+      dataRequestStub.getRequestsIntersections.mockImplementationOnce(() =>
+        of(intersections)
+      );
+
+      harness.component.ngOnInit();
+
+      expect(harness.component.sourceTargetIntersections.dataAccessRequests.length).toBe(
+        2
+      );
+      expect(
+        harness.component.sourceTargetIntersections.sourceTargetIntersections.length
+      ).toBe(2);
+      expect(harness.component.sourceTargetIntersections.dataAccessRequests[0]).toBe(
+        dar1
+      );
+      expect(harness.component.sourceTargetIntersections.dataAccessRequests[1]).toBe(
+        dar2
+      );
+      expect(
+        harness.component.sourceTargetIntersections.sourceTargetIntersections[0]
+      ).toBe(sti1);
+      expect(
+        harness.component.sourceTargetIntersections.sourceTargetIntersections[1]
+      ).toBe(sti2);
     });
   });
 
@@ -128,7 +186,7 @@ describe('MyBookmarkComponent', () => {
       harness.component.onRemove(event);
 
       expect(harness.component.userBookmarks).toStrictEqual(expected);
-      expect(bookmarkStub.remove).toHaveBeenCalledWith(event.item);
+      expect(bookmarkStub.remove).toHaveBeenCalledWith([event.item]);
       expect(toastrStub.success).toHaveBeenCalled();
     });
   });

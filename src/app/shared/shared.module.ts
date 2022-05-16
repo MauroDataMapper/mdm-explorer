@@ -32,6 +32,7 @@ import { SummaryMetadataChartComponent } from './summary-metadata/summary-metada
 import { NgChartsModule } from 'ng2-charts';
 import { CallToActionComponent } from './call-to-action/call-to-action.component';
 import { DataElementInRequestComponent } from './data-element-in-request/data-element-in-request.component';
+import { DataElementMultiSelectComponent } from './data-element-multi-select/data-element-multi-select.component';
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import { DataElementInRequestComponent } from './data-element-in-request/data-el
     LoadingSpinnerComponent,
     CallToActionComponent,
     DataElementInRequestComponent,
+    DataElementMultiSelectComponent,
   ],
   imports: [CoreModule, NgChartsModule],
   exports: [
@@ -63,6 +65,7 @@ import { DataElementInRequestComponent } from './data-element-in-request/data-el
     SummaryMetadataReportComponent,
     CallToActionComponent,
     DataElementInRequestComponent,
+    DataElementMultiSelectComponent,
   ],
 })
 export class SharedModule {}

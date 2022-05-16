@@ -16,10 +16,11 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ProfileField } from '@maurodatamapper/mdm-resources';
 import { StateRouterService } from 'src/app/core/state-router.service';
+import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import {
-  CatalogueSearchPayload,
   DataElementSearchParameters,
   mapSearchParametersToParams,
 } from 'src/app/data-explorer/data-explorer.types';
@@ -29,15 +30,22 @@ import {
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
 })
-export class SearchComponent {
-  constructor(private stateRouter: StateRouterService) {}
+export class SearchComponent implements OnInit {
+  profileFields: ProfileField[] = [];
 
-  search(payload: CatalogueSearchPayload) {
-    const searchParameters: DataElementSearchParameters = {
-      search: payload.searchTerms,
-    };
+  constructor(
+    private stateRouter: StateRouterService,
+    private explorer: DataExplorerService
+  ) {}
 
-    const params = mapSearchParametersToParams(searchParameters);
+  ngOnInit(): void {
+    this.explorer.getProfileFieldsForFilters().subscribe((fields) => {
+      this.profileFields = fields;
+    });
+  }
+
+  search(event: DataElementSearchParameters) {
+    const params = mapSearchParametersToParams(event);
     this.stateRouter.navigateToKnownPath('/search/listing', params);
   }
 }

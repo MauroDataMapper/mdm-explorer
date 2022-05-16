@@ -417,6 +417,7 @@ describe('BrowseComponent', () => {
           dataModelId: de.model ?? '',
           dataClassId: de.dataClass ?? '',
           label: de.label,
+          isBookmarked: false,
         };
       });
 

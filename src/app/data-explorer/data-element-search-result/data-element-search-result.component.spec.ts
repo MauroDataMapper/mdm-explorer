@@ -25,7 +25,7 @@ import {
   createMdmEndpointsStub,
   MdmEndpointsServiceStub,
 } from 'src/app/testing/stubs/mdm-endpoints.stub';
-import { DataElementSearchResult } from '../data-explorer.types';
+import { SelectableDataElementSearchResult } from '../data-explorer.types';
 import { DataElementSearchResultComponent } from './data-element-search-result.component';
 import { createDataElementSearchServiceStub } from 'src/app/testing/stubs/data-element-search.stub';
 import { DataElementSearchService } from '../data-element-search.service';
@@ -73,12 +73,14 @@ describe('DataElementSearchResultComponent', () => {
   it.each([true, false])('should emit a checked event when checked is %p', (checked) => {
     const emitSpy = jest.spyOn(harness.component.checked, 'emit');
     const event = { checked } as MatCheckboxChange;
-    const item: DataElementSearchResult = {
+    const item: SelectableDataElementSearchResult = {
       id: '1',
       label: 'test',
       breadcrumbs: [],
       dataClassId: '2',
       dataModelId: '3',
+      isSelected: false,
+      isBookmarked: false,
     };
 
     harness.component.item = item;
@@ -97,12 +99,14 @@ describe('DataElementSearchResultComponent', () => {
     'should emit a bookmark event when selected is %p',
     (selected) => {
       const emitSpy = jest.spyOn(harness.component.bookmark, 'emit');
-      const item: DataElementSearchResult = {
+      const item: SelectableDataElementSearchResult = {
         id: '1',
         label: 'test',
         breadcrumbs: [],
         dataClassId: '2',
         dataModelId: '3',
+        isSelected: false,
+        isBookmarked: false,
       };
 
       harness.component.item = item;

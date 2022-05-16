@@ -16,22 +16,25 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import {
   CatalogueItemDomainType,
-  DataElementIndexParameters,
+  MultiFacetAwareDomainType,
   PageParameters,
   SearchQueryParameters,
+  Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { map, Observable, switchMap, throwError } from 'rxjs';
-import { DataModelService } from '../mauro/data-model.service';
 import { DataExplorerService } from './data-explorer.service';
 import { PaginationService } from './pagination.service';
 import {
   DataElementSearchParameters,
   DataElementSearchResultSet,
-  mapSearchResult,
+  DataExplorerConfiguration,
+  DATA_EXPLORER_CONFIGURATION,
+  mapProfileSearchResult,
 } from './data-explorer.types';
+import { ProfileService } from '../mauro/profile.service';
 
 /**
  * Service to search for Data Elements, either by providing a listing or using full text search.
@@ -41,9 +44,10 @@ import {
 })
 export class DataElementSearchService {
   constructor(
-    private dataModels: DataModelService,
+    private profiles: ProfileService,
     private dataExplorer: DataExplorerService,
-    private pagination: PaginationService
+    private pagination: PaginationService,
+    @Inject(DATA_EXPLORER_CONFIGURATION) private explorerConfig: DataExplorerConfiguration
   ) {}
 
   /**
@@ -55,26 +59,23 @@ export class DataElementSearchService {
    * results and information related to the results.
    */
   listing(params: DataElementSearchParameters): Observable<DataElementSearchResultSet> {
-    const [page, pageParams] = this.getPageParameters(params);
-    const query: DataElementIndexParameters = {
-      ...pageParams,
-      sort: params.sort,
-      order: params.order,
-    };
-
     if (!params?.dataClass) {
       return throwError(() => new Error('Must provide a root Data Class.'));
     }
 
-    return this.dataModels.getDataElements(params.dataClass, query).pipe(
-      map((dataElements) => {
-        return {
-          totalResults: dataElements.count,
-          pageSize: pageParams.max!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-          page,
-          items: dataElements.items.map(mapSearchResult),
-        };
-      })
+    const [page, pageParams] = this.getPageParameters(params);
+    const query: SearchQueryParameters = {
+      ...this.getCommonQueryParameters(params),
+      ...pageParams,
+      searchTerm: '*', // No search term, use filters for listing instead
+    };
+
+    return this.performSearch(
+      MultiFacetAwareDomainType.DataClasses,
+      params.dataClass.dataClassId,
+      query,
+      page,
+      pageParams
     );
   }
 
@@ -89,11 +90,9 @@ export class DataElementSearchService {
   search(params: DataElementSearchParameters): Observable<DataElementSearchResultSet> {
     const [page, pageParams] = this.getPageParameters(params);
     const query: SearchQueryParameters = {
-      searchTerm: params.search,
-      sort: params.sort,
-      order: params.order,
-      domainTypes: [CatalogueItemDomainType.DataElement],
+      ...this.getCommonQueryParameters(params),
       ...pageParams,
+      searchTerm: params.search,
     };
 
     return this.dataExplorer.getRootDataModel().pipe(
@@ -102,15 +101,13 @@ export class DataElementSearchService {
           return throwError(() => new Error('Root Data Model has no id.'));
         }
 
-        return this.dataModels.searchDataModel(dataModel.id, query);
-      }),
-      map((dataElements) => {
-        return {
-          totalResults: dataElements.count,
-          pageSize: pageParams.max!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+        return this.performSearch(
+          MultiFacetAwareDomainType.DataModels,
+          dataModel.id,
+          query,
           page,
-          items: dataElements.items.map(mapSearchResult),
-        };
+          pageParams
+        );
       })
     );
   }
@@ -121,5 +118,44 @@ export class DataElementSearchService {
     const page = params.page ?? 1;
     const pageParams = this.pagination.buildPageParameters(page, params.pageSize);
     return [page, pageParams];
+  }
+
+  private getCommonQueryParameters(
+    params: DataElementSearchParameters
+  ): SearchQueryParameters {
+    return {
+      sort: params.sort,
+      order: params.order,
+      researchFields: params.filters, // Use custom research profile fields to map filter values
+      domainTypes: [CatalogueItemDomainType.DataElement],
+    };
+  }
+
+  private performSearch(
+    domainType: MultiFacetAwareDomainType,
+    id: Uuid,
+    query: SearchQueryParameters,
+    page: number,
+    pageParams: PageParameters
+  ): Observable<DataElementSearchResultSet> {
+    // Force search to be limited to a domain, this might change in future to do catalogue-wide search...
+    return this.profiles
+      .searchCatalogueItem(
+        domainType,
+        id,
+        this.explorerConfig.profileNamespace,
+        this.explorerConfig.profileServiceName,
+        query
+      )
+      .pipe(
+        map((dataElements) => {
+          return {
+            totalResults: dataElements.count,
+            pageSize: pageParams.max!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+            page,
+            items: dataElements.items.map(mapProfileSearchResult),
+          };
+        })
+      );
   }
 }

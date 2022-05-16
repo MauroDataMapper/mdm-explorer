@@ -16,7 +16,14 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, Input, EventEmitter, Output } from '@angular/core';
+import {
+  Component,
+  Input,
+  EventEmitter,
+  Output,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox/checkbox';
 import { Bookmark } from '../bookmark.service';
 import {
@@ -24,21 +31,39 @@ import {
   AddToRequestEvent,
   RemoveBookmarkEvent,
   DataRequest,
+  DataElementSearchResult,
 } from '../data-explorer.types';
+import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.service';
 
 @Component({
   selector: 'mdm-bookmark-row',
   templateUrl: './bookmark-row.component.html',
   styleUrls: ['./bookmark-row.component.scss'],
 })
-export class BookmarkRowComponent {
+export class BookmarkRowComponent implements OnChanges {
   @Input() bookmark?: Bookmark;
   @Input() openRequests: DataRequest[] = [];
   @Input() isChecked = false;
+  @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 
   @Output() checked = new EventEmitter<BookMarkCheckedEvent>();
   @Output() remove = new EventEmitter<RemoveBookmarkEvent>();
   @Output() addToRequest = new EventEmitter<AddToRequestEvent>();
+
+  dataElement?: DataElementSearchResult;
+
+  constructor() {
+    this.sourceTargetIntersections = {
+      dataAccessRequests: [],
+      sourceTargetIntersections: [],
+    };
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.bookmark && this.bookmark) {
+      this.dataElement = { ...this.bookmark, isBookmarked: true };
+    }
+  }
 
   handleChecked(event: MatCheckboxChange) {
     if (!this.bookmark) return;

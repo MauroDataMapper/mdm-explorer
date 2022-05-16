@@ -16,20 +16,28 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { Uuid } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
+import { forkJoin, of, Subject, switchMap, takeUntil, throwError } from 'rxjs';
+import { BroadcastService } from 'src/app/core/broadcast.service';
 import {
   BookmarkService,
   SelectableBookmark,
 } from 'src/app/data-explorer/bookmark.service';
+import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import {
   AddToRequestEvent,
   BookMarkCheckedEvent as BookmarkCheckedEvent,
   DataRequest,
   RemoveBookmarkEvent,
+  SelectableDataElementSearchResult,
 } from 'src/app/data-explorer/data-explorer.types';
-import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import {
+  DataAccessRequestsSourceTargetIntersections,
+  DataRequestsService,
+} from 'src/app/data-explorer/data-requests.service';
 import { SecurityService } from 'src/app/security/security.service';
 
 @Component({
@@ -37,16 +45,29 @@ import { SecurityService } from 'src/app/security/security.service';
   templateUrl: './my-bookmarks.component.html',
   styleUrls: ['./my-bookmarks.component.scss'],
 })
-export class MyBookmarksComponent implements OnInit {
+export class MyBookmarksComponent implements OnInit, OnDestroy {
   userBookmarks: SelectableBookmark[] = [];
   openDataRequests: DataRequest[] = [];
+  sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
+
+  /**
+   * Signal to attach to subscriptions to trigger when they should be unsubscribed.
+   */
+  private unsubscribe$ = new Subject<void>();
 
   constructor(
     private bookmarks: BookmarkService,
     private security: SecurityService,
     private dataRequests: DataRequestsService,
-    private toastr: ToastrService
-  ) {}
+    private explorer: DataExplorerService,
+    private toastr: ToastrService,
+    private broadcast: BroadcastService
+  ) {
+    this.sourceTargetIntersections = {
+      dataAccessRequests: [],
+      sourceTargetIntersections: [],
+    };
+  }
 
   ngOnInit(): void {
     const user = this.security.getSignedInUser();
@@ -56,11 +77,13 @@ export class MyBookmarksComponent implements OnInit {
       });
     }
 
-    this.bookmarks.index().subscribe((result) => {
-      result.forEach((bookmark) => {
-        this.userBookmarks.push({ ...bookmark, isSelected: false });
-      });
-    });
+    this.loadBookmarks();
+    this.subscribeBookmarksRefreshed();
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   onChecked(event: BookmarkCheckedEvent) {
@@ -73,7 +96,7 @@ export class MyBookmarksComponent implements OnInit {
   }
 
   onRemove(event: RemoveBookmarkEvent): void {
-    this.bookmarks.remove(event.item).subscribe(() => {
+    this.bookmarks.remove([event.item]).subscribe(() => {
       this.toastr.success(`${event.item.label} removed from bookmarks`);
     });
 
@@ -86,5 +109,108 @@ export class MyBookmarksComponent implements OnInit {
     this.userBookmarks = this.userBookmarks.map((bookmark) => {
       return { ...bookmark, isSelected: event.checked };
     });
+  }
+
+  /**
+   * Of the current bookmarks (if any), return those which are selected. The SelectableBookmark type
+   * is basically the same as SelectableDataElementSearchResult. With some refactoring, SelectableBookmark
+   * could perhaps be removed.
+   *
+   * @returns collection of SelectableDataElementSearchResult
+   */
+  selectedResults() {
+    const selected: SelectableDataElementSearchResult[] = [];
+
+    if (this.userBookmarks) {
+      this.userBookmarks.forEach((bookmark) => {
+        if (bookmark.isSelected) {
+          const asSearchResult: SelectableDataElementSearchResult = {
+            id: bookmark.id,
+            dataModelId: bookmark.dataModelId,
+            dataClassId: bookmark.dataClassId,
+            label: bookmark.label,
+            isSelected: bookmark.isSelected,
+            isBookmarked: true,
+          };
+
+          selected.push(asSearchResult);
+        }
+      });
+    }
+
+    return selected;
+  }
+
+  /**
+   * When a data request is added, reload all intersections (which ensures we pick up intersections with the
+   * new data request) and tell all data-element-in-request components about the new intersections.
+   */
+  private subscribeDataRequestChanges() {
+    this.broadcast
+      .on('data-request-added')
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(() => {
+        this.loadIntersections(this.userBookmarks).subscribe((intersections) => {
+          this.sourceTargetIntersections = intersections;
+          this.broadcast.dispatch('data-intersections-refreshed', intersections);
+        });
+      });
+  }
+
+  private loadBookmarks() {
+    this.bookmarks
+      .index()
+      .pipe(
+        switchMap((bookmarks) => {
+          const selectableBookmarks: SelectableBookmark[] = [];
+          bookmarks.forEach((bookmark) => {
+            selectableBookmarks.push({ ...bookmark, isSelected: false });
+          });
+
+          return of(selectableBookmarks);
+        }),
+        switchMap((bookmarks: SelectableBookmark[]) => {
+          return forkJoin([this.loadIntersections(bookmarks), of(bookmarks)]);
+        })
+      )
+      .subscribe(([intersections, bookmarks]) => {
+        this.sourceTargetIntersections = intersections;
+        this.subscribeDataRequestChanges();
+        // userBookmarks must be the last property set as this triggers rendering of the
+        // bookmarks list.
+        this.userBookmarks = bookmarks;
+      });
+  }
+
+  private loadIntersections(dataElements: SelectableBookmark[] | undefined) {
+    const dataElementIds: Uuid[] = [];
+
+    if (dataElements) {
+      dataElements.forEach((item: SelectableBookmark) => {
+        dataElementIds.push(item.id);
+      });
+    }
+
+    return this.explorer.getRootDataModel().pipe(
+      switchMap((dataModel) => {
+        if (!dataModel.id) {
+          return throwError(() => new Error('Root Data Model has no id.'));
+        }
+
+        return this.dataRequests.getRequestsIntersections(dataModel.id, dataElementIds);
+      })
+    );
+  }
+
+  /**
+   * When bookmarks are refreshed, reload them
+   */
+  private subscribeBookmarksRefreshed(): void {
+    this.broadcast
+      .on('data-bookmarks-refreshed')
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(() => {
+        this.loadBookmarks();
+      });
   }
 }

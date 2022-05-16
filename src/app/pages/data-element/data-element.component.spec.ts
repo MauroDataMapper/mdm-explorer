@@ -32,6 +32,7 @@ import { ToastrService } from 'ngx-toastr';
 import { createBookmarkServiceStub } from 'src/app/testing/stubs/bookmark.stub';
 import { ProfileService } from 'src/app/mauro/profile.service';
 import { BreadcrumbComponent } from 'src/app/data-explorer/breadcrumb/breadcrumb.component';
+import { BookmarkToggleComponent } from 'src/app/shared/bookmark-toggle/bookmark-toggle.component';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { BookmarkService, Bookmark } from 'src/app/data-explorer/bookmark.service';
 import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
@@ -40,7 +41,7 @@ import {
   DataExplorerConfiguration,
   DATA_EXPLORER_CONFIGURATION,
 } from 'src/app/data-explorer/data-explorer.types';
-import { EMPTY, of } from 'rxjs';
+import { of } from 'rxjs';
 import {
   Breadcrumb,
   CatalogueItemDomainType,
@@ -49,6 +50,9 @@ import {
 } from '@maurodatamapper/mdm-resources';
 import { createProfileServiceStub } from 'src/app/testing/stubs/profile.stub';
 import { DataElementProfileComponent } from './data-element-profile/data-element-profile.component';
+import { MatIcon } from '@angular/material/icon';
+import { MatCard } from '@angular/material/card';
+import { MatTooltip } from '@angular/material/tooltip';
 
 describe('DataElementComponent', () => {
   let harness: ComponentHarness<DataElementComponent>;
@@ -58,24 +62,11 @@ describe('DataElementComponent', () => {
   const dataRequestsStub = createDataRequestsServiceStub();
   const profileStub = createProfileServiceStub();
   const config: DataExplorerConfiguration = {
+    rootRequestFolder: 'root-folder',
     rootDataModelPath: 'my test model',
     profileServiceName: 'Profile Service',
     profileNamespace: 'Profile Namespace',
   };
-  const bookmarks: Bookmark[] = [
-    {
-      id: 'BookmarkId1',
-      dataModelId: 'DataModelId1',
-      dataClassId: 'DataClassId1',
-      label: 'BookmarkLabel1',
-    },
-    {
-      id: 'BookmarkId2',
-      dataModelId: 'DataModelId2',
-      dataClassId: 'DataClassId2',
-      label: 'BookmarkLabel2',
-    },
-  ];
 
   const setupComponentTest = async () => {
     const activatedRoute: ActivatedRoute = {
@@ -90,10 +81,14 @@ describe('DataElementComponent', () => {
       declarations: [
         MockComponent(MatTabGroup),
         MockComponent(MatTab),
+        MockComponent(MatIcon),
+        MockComponent(MatCard),
+        MockComponent(MatTooltip),
         BreadcrumbComponent,
         MockComponent(ClassifiersComponent),
         MockComponent(SummaryMetadataComponent),
         DataElementProfileComponent,
+        BookmarkToggleComponent,
       ],
       providers: [
         {
@@ -125,23 +120,6 @@ describe('DataElementComponent', () => {
           useValue: dataRequestsStub,
         },
       ],
-    });
-  };
-
-  const setupBookmarks = () => {
-    bookmarkStub.index.mockReturnValue(of(bookmarks));
-    bookmarkStub.add.mockImplementation((bookmark) => {
-      bookmarks.push(bookmark);
-      return of(bookmark);
-    });
-    bookmarkStub.remove.mockImplementation((bookmark) => {
-      const idx = bookmarks.findIndex((element) => element.id === bookmark.id);
-      if (idx > -1) {
-        bookmarks.splice(idx, 1);
-        return of(bookmark);
-      } else {
-        return EMPTY;
-      }
     });
   };
 
@@ -198,15 +176,32 @@ describe('DataElementComponent', () => {
   };
 
   const setupDataRequestsService = () => {
-    dataRequestsStub.getRequestsIntersections.mockReturnValue(of([[]]));
+    dataRequestsStub.getRequestsIntersections.mockReturnValue(
+      of({ dataAccessRequests: [], sourceTargetIntersections: [] })
+    );
   };
 
   beforeEach(async () => {
     harness = await setupComponentTest();
-    setupBookmarks();
     setupDataModelService();
     setupProfileService();
     setupDataRequestsService();
+    bookmarkStub.isBookmarked.mockReturnValue(of(false));
+  });
+
+  it('should initialise', () => {
+    const component = harness.component;
+    component.ngOnInit();
+    expect(component.isBookmarked).toBe(false);
+    expect(component.dataClassId).toBe('RouteDataClassId');
+    expect(component.dataElementId).toBe('RouteDataElementId');
+    expect(component.dataElement?.id).toBe('DataElementId');
+    expect(component.identifiableData).toBe('Identifiable Data Value');
+    expect(component.researchProfile?.id).toBe('ProfileId');
+  });
+
+  it('should create', () => {
+    expect(harness.isComponentCreated).toBeTruthy();
   });
 
   it('should display profile', () => {
@@ -283,38 +278,60 @@ describe('DataElementComponent', () => {
     expect(labelHtml).toMatch(labelMatcher);
   });
 
-  it('should add and remove bookmark', () => {
-    const component = harness.component;
-    harness.detectChanges();
-    toastrStub.success.mockClear();
+  describe('toggleBookmark', () => {
+    const dataElement = { id: '1', label: 'label-1' } as DataElementDetail;
+    const dataElementAsBookmark = {
+      ...dataElement,
+      dataModelId: '',
+      dataClassId: '',
+    } as Bookmark;
 
-    component.toggleBookmark(true);
-    expect(component.bookmarks.length).toBe(3);
-    component.toggleBookmark(false);
-    expect(component.bookmarks.length).toBe(2);
-    component.toggleBookmark(false);
-    expect(component.bookmarks.length).toBe(2);
+    it('should not call the bookmark service if there is no dataElement', () => {
+      harness.component.dataElement = undefined;
 
-    expect(toastrStub.success.mock.calls[0][0]).toBe(
-      `${component.dataElement?.label} added to bookmarks`
-    );
-    expect(toastrStub.success.mock.calls[1][0]).toBe(
-      `${component.dataElement?.label} removed from bookmarks`
-    );
-    expect(toastrStub.success.mock.calls.length).toBe(2);
+      harness.component.toggleBookmark(true);
+      harness.component.toggleBookmark(false);
+
+      expect(bookmarkStub.add).not.toHaveBeenCalled();
+      expect(bookmarkStub.remove).not.toHaveBeenCalled();
+    });
+
+    it('should request that dataElement be added if selected is true and fire toastr success', () => {
+      const selected = true;
+      harness.component.dataElement = dataElement;
+
+      bookmarkStub.add.mockImplementationOnce(() => {
+        return of([]);
+      });
+
+      harness.component.toggleBookmark(selected);
+      expect(bookmarkStub.add).toHaveBeenCalledWith(dataElementAsBookmark);
+      expect(toastrStub.success).toHaveBeenCalled();
+    });
+
+    it('should request that dataElement be removed if selected is false and fire toastr success', () => {
+      const selected = false;
+      harness.component.dataElement = dataElement;
+
+      bookmarkStub.remove.mockImplementationOnce(() => {
+        return of([]);
+      });
+
+      harness.component.toggleBookmark(selected);
+      expect(bookmarkStub.remove).toHaveBeenCalledWith([dataElementAsBookmark]);
+      expect(toastrStub.success).toHaveBeenCalled();
+    });
   });
 
   it('should initialise', () => {
     const component = harness.component;
+    bookmarkStub.isBookmarked.mockImplementationOnce(() => of(false));
     harness.detectChanges();
-    expect(component.bookmarks.length).toBe(2);
-    expect(component.bookmarks[0].id).toBe('BookmarkId1');
-    expect(component.bookmarks[1].id).toBe('BookmarkId2');
+    expect(component.isBookmarked).toBe(false);
     expect(component.dataClassId).toBe('RouteDataClassId');
     expect(component.dataElementId).toBe('RouteDataElementId');
     expect(component.dataElement?.id).toBe('DataElementId');
     expect(component.identifiableData).toBe('Identifiable Data Value');
-    expect(component.isBookmarked()).toBeFalsy();
     expect(component.researchProfile?.id).toBe('ProfileId');
   });
 
