@@ -226,6 +226,7 @@ describe('SearchListingComponent', () => {
           dataClassId: '2',
           dataModelId: '3',
           isSelected: false,
+          isBookmarked: false,
         },
         {
           id: '2',
@@ -234,6 +235,7 @@ describe('SearchListingComponent', () => {
           dataClassId: '2',
           dataModelId: '3',
           isSelected: false,
+          isBookmarked: false,
         },
         {
           id: '3',
@@ -242,6 +244,7 @@ describe('SearchListingComponent', () => {
           dataClassId: '2',
           dataModelId: '3',
           isSelected: false,
+          isBookmarked: false,
         },
       ],
     };
@@ -375,6 +378,7 @@ describe('SearchListingComponent', () => {
           dataClassId: '2',
           dataModelId: '3',
           isSelected: false,
+          isBookmarked: false,
         },
         {
           id: '2',
@@ -383,6 +387,7 @@ describe('SearchListingComponent', () => {
           dataClassId: '2',
           dataModelId: '3',
           isSelected: false,
+          isBookmarked: false,
         },
         {
           id: '3',
@@ -391,6 +396,7 @@ describe('SearchListingComponent', () => {
           dataClassId: '2',
           dataModelId: '3',
           isSelected: false,
+          isBookmarked: false,
         },
       ],
     };
@@ -482,6 +488,7 @@ describe('SearchListingComponent', () => {
       breadcrumbs: [],
       dataClassId: '2',
       dataModelId: '3',
+      isBookmarked: false,
     };
 
     const dataElementBookmarkAddEvent: DataElementBookmarkEvent = {
@@ -490,6 +497,7 @@ describe('SearchListingComponent', () => {
         dataModelId: dataElementSearchResult.dataModelId,
         dataClassId: dataElementSearchResult.dataClassId,
         label: dataElementSearchResult.label,
+        isBookmarked: dataElementSearchResult.isBookmarked,
       },
       // item: dataElementSearchResult,
       selected: true,
@@ -502,6 +510,7 @@ describe('SearchListingComponent', () => {
         dataModelId: dataElementSearchResult.dataModelId,
         dataClassId: dataElementSearchResult.dataClassId,
         label: dataElementSearchResult.label,
+        isBookmarked: dataElementSearchResult.isBookmarked,
       },
       selected: false,
     };

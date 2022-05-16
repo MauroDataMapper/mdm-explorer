@@ -211,12 +211,13 @@ export const mapProfileSearchResult = (
     breadcrumbs: item.breadcrumbs ?? [],
     identifiableData: idenfifableDataField?.currentValue,
     isSelected: false,
+    isBookmarked: false,
   };
 };
 
 export type DataRequestStatus = 'unsent' | 'submitted';
 
-/**
+/* .*
  * Determine the status of a request made by a user for data access.
  */
 export const getDataRequestStatus = (model: DataModel): DataRequestStatus => {
@@ -245,7 +246,7 @@ export const mapToDataRequest = (dataModel: DataModel): DataRequest => {
   };
 };
 
-export interface DataElementBasic {
+export interface DataElementBasic extends IsBookmarkable {
   id: Uuid;
   dataModelId: Uuid;
   dataClassId: Uuid;
@@ -280,4 +281,8 @@ export interface RemoveBookmarkEvent {
 export interface DataElementBookmarkEvent {
   item: DataElementBasic;
   selected: boolean;
+}
+
+export interface IsBookmarkable {
+  isBookmarked: boolean;
 }

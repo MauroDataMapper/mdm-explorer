@@ -96,6 +96,7 @@ describe('DataElementSearchService', () => {
             dataClassId: '',
             dataModelId: '',
             isSelected: false,
+            isBookmarked: false,
           },
           {
             id: '2',
@@ -104,6 +105,7 @@ describe('DataElementSearchService', () => {
             dataClassId: '',
             dataModelId: '',
             isSelected: false,
+            isBookmarked: false,
           },
         ],
       };
@@ -171,6 +173,7 @@ describe('DataElementSearchService', () => {
             dataClassId: '',
             dataModelId: '',
             isSelected: false,
+            isBookmarked: false,
           },
           {
             id: '2',
@@ -179,6 +182,7 @@ describe('DataElementSearchService', () => {
             dataClassId: '',
             dataModelId: '',
             isSelected: false,
+            isBookmarked: false,
           },
         ],
       };

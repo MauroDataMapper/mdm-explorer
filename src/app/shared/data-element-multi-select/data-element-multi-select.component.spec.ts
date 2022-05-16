@@ -105,6 +105,7 @@ describe('DataElementMultiSelectComponent', () => {
       dataModelId: '3',
       label: 'element 1',
       isSelected: true,
+      isBookmarked: false,
     };
 
     const dataElement2: SelectableDataElementSearchResult = {
@@ -113,6 +114,7 @@ describe('DataElementMultiSelectComponent', () => {
       dataModelId: '3',
       label: 'element 2',
       isSelected: true,
+      isBookmarked: false,
     };
 
     beforeEach(() => {

@@ -25,11 +25,14 @@ export type BookmarkAddFn = (bookmark: Bookmark) => Observable<any>;
 export type BookmarkAddMockedFn = jest.MockedFunction<BookmarkAddFn>;
 export type BookmarkRemoveFn = (bookmarks: Bookmark[]) => Observable<any>;
 export type BookmarkRemoveMockedFn = jest.MockedFunction<BookmarkRemoveFn>;
+export type IsBookmarkedFn = (dataElementId: string) => Observable<boolean>;
+export type IsBookmarkedMockedFn = jest.MockedFunction<IsBookmarkedFn>;
 
 export interface BookmarkServiceStub {
   index: BookmarkIndexMockedFn;
   add: BookmarkAddMockedFn;
   remove: BookmarkRemoveMockedFn;
+  isBookmarked: IsBookmarkedMockedFn;
 }
 
 export const createBookmarkServiceStub = (): BookmarkServiceStub => {
@@ -37,5 +40,6 @@ export const createBookmarkServiceStub = (): BookmarkServiceStub => {
     index: jest.fn() as BookmarkIndexMockedFn,
     add: jest.fn() as BookmarkAddMockedFn,
     remove: jest.fn() as BookmarkRemoveMockedFn,
+    isBookmarked: jest.fn() as IsBookmarkedMockedFn,
   };
 };
