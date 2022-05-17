@@ -79,9 +79,9 @@ export class SearchListingComponent implements OnInit, OnDestroy {
   parameters: DataElementSearchParameters = {};
   source: SearchListingSource = 'unknown';
 
-  backRouterLink: string = '';
-  backQueryParams: { search?: string } = {};
-  backLabel: string = '';
+  backRouterLink: KnownRouterPath = '';
+  backQueryParams: DataElementSearchParameters = {};
+  backLabel = '';
 
   status: SearchListingStatus = 'init';
   root?: DataClassDetail;
