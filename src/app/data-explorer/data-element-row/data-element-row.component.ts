@@ -22,6 +22,7 @@ import {
   DataElementBasic,
   DataElementCheckedEvent,
   DataElementDeleteEvent,
+  SelectableDataElementSearchResult,
 } from '../data-explorer.types';
 
 @Component({
@@ -30,7 +31,7 @@ import {
   styleUrls: ['./data-element-row.component.scss'],
 })
 export class DataElementRowComponent {
-  @Input() item?: DataElementBasic;
+  @Input() item?: SelectableDataElementSearchResult;
 
   @Output() checked = new EventEmitter<DataElementCheckedEvent>();
   @Output() delete = new EventEmitter<DataElementDeleteEvent>();
@@ -46,6 +47,12 @@ export class DataElementRowComponent {
   removeElement() {
     if (this.item) {
       this.delete.emit({ item: this.item });
+    }
+  }
+
+  checkedChanged() {
+    if (this.item) {
+      this.item.isSelected = !this.item?.isSelected ?? false;
     }
   }
 }

@@ -189,6 +189,17 @@ export interface DataElementSearchResultSet {
   items: SelectableDataElementSearchResult[];
 }
 
+export interface DataElementOperationResult {
+  success: boolean;
+  message: string;
+  item: DataElementBasic;
+}
+
+export interface DataElementMultipleOperationResult {
+  successes: DataElementOperationResult[];
+  failures: DataElementOperationResult[];
+}
+
 export const mapProfileSearchResult = (
   item: ProfileSearchResult
 ): SelectableDataElementSearchResult => {
@@ -289,5 +300,5 @@ export interface IsBookmarkable {
 }
 
 export interface DataElementDeleteEvent {
-  item: DataElementBasic;
+  item: SelectableDataElementSearchResult;
 }

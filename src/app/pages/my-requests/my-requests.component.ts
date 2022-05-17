@@ -21,15 +21,18 @@ import { Component, OnInit } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSelectionListChange } from '@angular/material/list';
+import { DataModelDetail } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, finalize, forkJoin, of, switchMap, throwError } from 'rxjs';
+import { catchError, EMPTY, finalize, from, forkJoin, of, switchMap, throwError } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import {
-  DataElementBasic,
   DataElementDeleteEvent,
+  DataElementMultipleOperationResult,
+  DataElementOperationResult,
   DataRequest,
   DataRequestStatus,
   mapToDataRequest,
+  SelectableDataElementSearchResult,
 } from 'src/app/data-explorer/data-explorer.types';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import { DialogService } from 'src/app/data-explorer/dialog.service';
@@ -40,6 +43,7 @@ import {
 } from 'src/app/data-explorer/ok-cancel-dialog/ok-cancel-dialog.component';
 import { ResearchPluginService } from 'src/app/mauro/research-plugin.service';
 import { SecurityService } from 'src/app/security/security.service';
+import { resourceLimits } from 'worker_threads';
 
 @Component({
   selector: 'mdm-my-requests',
@@ -51,7 +55,7 @@ export class MyRequestsComponent implements OnInit {
   filteredRequests: DataRequest[] = [];
   statusFilters: DataRequestStatus[] = [];
   request?: DataRequest;
-  requestElements: DataElementBasic[] = [];
+  requestElements: SelectableDataElementSearchResult[] = [];
   state: 'idle' | 'loading' = 'idle';
   showSpinner = false;
   spinnerCaption = '';
@@ -196,9 +200,45 @@ export class MyRequestsComponent implements OnInit {
     );
   }
 
-  deleteItem(event: DataElementDeleteEvent) {
+
+  removeSelected() {
+    const itemList = this.requestElements.filter((item) => item.isSelected);
+    this.okCancelItemList(itemList)
+      .afterClosed()
+      .pipe(
+        switchMap((result: OkCancelDialogResponse) => {
+          if (result.result) {
+            this.showSpinner = true;
+            this.spinnerCaption = `Removing ${itemList.length} data element${
+              itemList.length === 1 ? '' : 's'
+            } from request ${this.request?.label} ...`;
+            return this.dataRequests.deleteDataElementMultiple(itemList);
+          } else {
+            return EMPTY;
+          }
+        })
+      )
+      .subscribe((result: DataElementMultipleOperationResult) => {
+        const success = result.failures.length === 0;
+        let message = `${result.successes.length} Data element${
+          result.successes.length === 1 ? '' : 's'
+        } removed from request "${this.request?.label}".`;
+        if (!success) {
+          message += `\r\n${result.failures.length} Data element${
+            result.failures.length === 1 ? '' : 's'
+          } caused an error.`;
+          result.failures.forEach((item: DataElementOperationResult) =>
+            console.log(item.message)
+          );
+        }
+        this.processRemoveDataElementResponse(success, message);
+        this.showSpinner = false;
+      });
+  }
+
+  removeItem(event: DataElementDeleteEvent) {
     const item = event.item;
-    this.okCancel(item)
+    this.okCancelItem(item)
       .afterClosed()
       .pipe(
         switchMap((result: OkCancelDialogResponse) => {
@@ -211,32 +251,55 @@ export class MyRequestsComponent implements OnInit {
           }
         })
       )
-      .subscribe(([result, message]: [boolean, string]) => {
-        this.processRemoveDataElementResponse(item, result, message);
+      .subscribe((result: DataElementOperationResult) => {
+        let message: string = '';
+        if (!result.success) {
+          message = `Removal of data element ${item.label} failed. The error message is: ${result.message}`;
+        } else {
+          message = `Data element "${item.label}" removed from request "${this.request?.label}".`;
+        }
+        this.processRemoveDataElementResponse(result.success, message);
         this.showSpinner = false;
       });
   }
 
-  private processRemoveDataElementResponse(
-    item: DataElementBasic,
-    result: boolean,
-    message: string
-  ) {
-    if (result === false) {
-      this.toastr.error(
-        `There was a problem removing this item. Has it already been removed?`,
-        'Data element removal'
-      );
-      console.log(message);
-    } else {
-      this.toastr.success(
-        `Data element ${item.label} removed from request ${this.request?.label}`
-      );
-      this.setRequest(this.request);
+  removeSelectedButtonDisabled(): boolean {
+    const selectedItemList = this.requestElements.filter((item) => item.isSelected);
+    return !this.request || !this.requestElements || selectedItemList.length === 0;
+  }
+
+  onSelectAll(event: MatCheckboxChange) {
+    if (this.requestElements) {
+      this.requestElements = this.requestElements.map((item) => {
+        return { ...item, isSelected: event.checked };
+      });
     }
   }
 
-  private okCancel(item: DataElementBasic): MatDialogRef<OkCancelDialogData> {
+  private processRemoveDataElementResponse(result: boolean, message: string) {
+    if (result === false) {
+      this.toastr.error(message, 'Data element removal');
+      console.log(message);
+    } else {
+      this.toastr.success(message, 'Data element removal');
+    }
+    this.setRequest(this.request);
+  }
+
+  private okCancelItemList(
+    itemList: SelectableDataElementSearchResult[]
+  ): MatDialogRef<OkCancelDialogData> {
+    return this.dialogs.openOkCancel({
+      heading: 'Delete selected data elements',
+      content: `Are you sure you want to delete these ${itemList.length} selected data elements from request ${this.request?.label}?`,
+      okLabel: 'Yes',
+      cancelLabel: 'No',
+    });
+  }
+
+  private okCancelItem(
+    item: SelectableDataElementSearchResult
+  ): MatDialogRef<OkCancelDialogData> {
     return this.dialogs.openOkCancel({
       heading: 'Delete data element',
       content: `Are you sure you want to delete data element "${item.label}" from request "${this.request?.label}"?`,
@@ -278,6 +341,7 @@ export class MyRequestsComponent implements OnInit {
             dataClassId: element.dataClass ?? '',
             label: element.label,
             breadcrumbs: element.breadcrumbs,
+            isSelected: false,
             isBookmarked: false,
           };
         });

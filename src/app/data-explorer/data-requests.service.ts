@@ -21,6 +21,8 @@ import {
   DataElement,
   DataModel,
   DataModelCreatePayload,
+  DataModelDetail,
+  DataModelSubsetPayload,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import {
@@ -28,21 +30,36 @@ import {
   SourceTargetIntersection,
   SourceTargetIntersectionPayload,
 } from '@maurodatamapper/mdm-resources';
-import { catchError, forkJoin, map, Observable, of, switchMap, throwError } from 'rxjs';
+import {
+  catchError,
+  concatMap,
+  forkJoin,
+  from,
+  map,
+  Observable,
+  of,
+  pipe,
+  switchMap,
+  throwError,
+  toArray,
+} from 'rxjs';
 import { UserDetails } from '../security/user-details.service';
 import { DataModelService } from '../mauro/data-model.service';
 import { FolderService } from '../mauro/folder.service';
 import { CatalogueUserService } from '../mauro/catalogue-user.service';
 import {
   DataElementBasic,
+  DataElementMultipleOperationResult,
+  DataElementOperationResult,
+  mapToDataRequest,
   DataExplorerConfiguration,
   DATA_EXPLORER_CONFIGURATION,
-  mapToDataRequest,
 } from './data-explorer.types';
 import { DataRequest } from '../data-explorer/data-explorer.types';
 import { DataExplorerService } from './data-explorer.service';
 import { SecurityService } from '../security/security.service';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { resourceLimits } from 'worker_threads';
 
 /**
  * A collection data access requests and their intersections with target models.
@@ -125,14 +142,52 @@ export class DataRequestsService {
   }
 
   /**
+   * Deletes multiple data elements from a data request, calling the delete endpoint once
+   * for each element. Using concatMap sidestep backend exceptions
+   *
+   * @param items: The data elements to be removed
+   *
+   * @returns: Observable of DataElementMultipleOperationResult
+   */
+  deleteDataElementMultiple(
+    items: DataElementBasic[]
+  ): Observable<DataElementMultipleOperationResult> {
+    return from(items).pipe(
+      concatMap((item: DataElementBasic) => {
+        return this.deleteDataElement(item);
+      }),
+      toArray(),
+      switchMap((results: DataElementOperationResult[]) => {
+        const successes: DataElementOperationResult[] = [];
+        const failures: DataElementOperationResult[] = [];
+        results.forEach((result: DataElementOperationResult) => {
+          const destination = result.success ? successes : failures;
+          destination.push(result);
+        });
+        return of({ successes, failures });
+      })
+    );
+  }
+
+  /**
    * Deletes a data element from a data request
    *
+   * @param item: The data element to be removed
    *
+   * @returns: Observable of DataElementOperationResult
    */
-  deleteDataElement(item: DataElementBasic): Observable<[boolean, string]> {
+  deleteDataElement(item: DataElementBasic): Observable<DataElementOperationResult> {
     return this.dataModels.deleteDataElement(item).pipe(
-      switchMap((result: HttpResponse<any>) => of([true, 'OK'])),
-      catchError((error: HttpErrorResponse) => of([false, error.message]))
+      map((response: HttpResponse<any>) => {
+        if (response.status === 200 || response.status === 204) {
+          return { success: true, message: 'OK', item };
+        } else {
+          return { success: false, message: response.body, item };
+        }
+      }),
+      catchError((response: HttpErrorResponse) => {
+        return of({ success: false, message: response.message, item });
+      })
     );
   }
 

@@ -120,10 +120,31 @@ SPDX-License-Identifier: Apache-2.0
             <mdm-data-element-row
               *ngFor="let element of requestElements"
               [item]="element"
-              (delete)="deleteItem($event)"
+              (delete)="removeItem($event)"
             >
             </mdm-data-element-row>
           </div>
+          <ng-container
+            *ngIf="
+              allRequests &&
+              allRequests.length > 0 &&
+              requestElements &&
+              requestElements.length > 0
+            "
+          >
+            <div class="float-start mdm-my-requests__request-elements-footer">
+              <mat-checkbox (change)="onSelectAll($event)">Select all</mat-checkbox>
+              <button
+                class="ms-4"
+                mat-raised-button
+                color="primary"
+                [disabled]="removeSelectedButtonDisabled()"
+                (click)="removeSelected()"
+              >
+                Remove selected ...
+              </button>
+            </div>
+          </ng-container>
         </div>
       </div>
     </div>
