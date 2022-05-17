@@ -47,6 +47,7 @@ import { SecurityService } from 'src/app/security/security.service';
 })
 export class MyBookmarksComponent implements OnInit, OnDestroy {
   userBookmarks: SelectableBookmark[] = [];
+  selectedElements: SelectableDataElementSearchResult[] = [];
   openDataRequests: DataRequest[] = [];
   sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 
@@ -89,6 +90,8 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
   onChecked(event: BookmarkCheckedEvent) {
     const toUpdate = this.userBookmarks.find((bm) => bm.id === event.item.id);
     if (toUpdate) toUpdate.isSelected = event.checked;
+
+    this.updateSelectedElements();
   }
 
   onAddToRequest(event: AddToRequestEvent) {
@@ -109,36 +112,21 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
     this.userBookmarks = this.userBookmarks.map((bookmark) => {
       return { ...bookmark, isSelected: event.checked };
     });
+
+    this.updateSelectedElements();
   }
 
-  /**
-   * Of the current bookmarks (if any), return those which are selected. The SelectableBookmark type
-   * is basically the same as SelectableDataElementSearchResult. With some refactoring, SelectableBookmark
-   * could perhaps be removed.
-   *
-   * @returns collection of SelectableDataElementSearchResult
-   */
-  selectedResults() {
-    const selected: SelectableDataElementSearchResult[] = [];
-
-    if (this.userBookmarks) {
-      this.userBookmarks.forEach((bookmark) => {
-        if (bookmark.isSelected) {
-          const asSearchResult: SelectableDataElementSearchResult = {
-            id: bookmark.id,
-            dataModelId: bookmark.dataModelId,
-            dataClassId: bookmark.dataClassId,
-            label: bookmark.label,
-            isSelected: bookmark.isSelected,
-            isBookmarked: true,
-          };
-
-          selected.push(asSearchResult);
-        }
+  private updateSelectedElements() {
+    // Work out which elements are selected. Store as a property to data bind to mdm-data-element-multi-select
+    // and improve performance
+    this.selectedElements = this.userBookmarks
+      .filter((bookmark) => bookmark.isSelected)
+      .map((bookmark) => {
+        return {
+          ...bookmark,
+          isBookmarked: true,
+        };
       });
-    }
-
-    return selected;
   }
 
   /**

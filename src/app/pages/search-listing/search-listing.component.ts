@@ -82,6 +82,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
   root?: DataClassDetail;
   searchTerms?: string;
   resultSet?: DataElementSearchResultSet;
+  selectedElements: SelectableDataElementSearchResult[] = [];
   userBookmarks: Bookmark[] = [];
   creatingRequest = false;
   sortBy?: SortByOption;
@@ -192,6 +193,8 @@ export class SearchListingComponent implements OnInit, OnDestroy {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   selectElement(event: SelectableDataElementSearchResultCheckedEvent) {
     event.item.isSelected = event.checked;
+
+    this.updateSelectedElements();
   }
 
   bookmarkElement(event: DataElementBookmarkEvent) {
@@ -267,22 +270,19 @@ export class SearchListingComponent implements OnInit, OnDestroy {
       this.resultSet.items = this.resultSet.items.map((item) => {
         return { ...item, isSelected: event.checked };
       });
+
+      this.updateSelectedElements();
     }
   }
 
-  /**
-   * Of the current search results (if any), return those which are selected
-   *
-   * @returns collection of SelectableDataElementSearchResult
-   */
-  selectedResults() {
-    let selected: SelectableDataElementSearchResult[] = [];
-
-    if (this.resultSet) {
-      selected = this.resultSet.items.filter((element) => element.isSelected);
+  private updateSelectedElements() {
+    if (!this.resultSet) {
+      return;
     }
 
-    return selected;
+    // Work out which elements are selected. Store as a property to data bind to mdm-data-element-multi-select
+    // and improve performance
+    this.selectedElements = this.resultSet.items.filter((element) => element.isSelected);
   }
 
   private loadDataClass() {
