@@ -21,6 +21,7 @@ import {
   EventEmitter,
   Input,
   OnChanges,
+  OnInit,
   Output,
   SimpleChanges,
 } from '@angular/core';
@@ -39,8 +40,8 @@ import {
 })
 export class CatalogueSearchFormComponent implements OnChanges {
   @Input() profileFields: ProfileField[] = [];
-
   @Input() appearance: MatFormFieldAppearance = 'outline';
+  @Input() routeSearchTerm?: string = '';
 
   @Output() searchClicked = new EventEmitter<DataElementSearchParameters>();
 
@@ -51,11 +52,10 @@ export class CatalogueSearchFormComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.profileFields) {
+    if (changes.profileFields || changes.routeSearchTerm) {
       this.formGroup = new FormGroup({
-        searchTerms: new FormControl(''),
+        searchTerms: new FormControl(this.routeSearchTerm),
       });
-
       this.profileFields.forEach((field) => {
         this.formGroup.addControl(field.metadataPropertyName, new FormControl(''));
       });

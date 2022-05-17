@@ -17,11 +17,14 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { ProfileField } from '@maurodatamapper/mdm-resources';
+import { combineLatest, of, switchMap } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import {
   DataElementSearchParameters,
+  mapParamMapToSearchParameters,
   mapSearchParametersToParams,
 } from 'src/app/data-explorer/data-explorer.types';
 
@@ -32,14 +35,22 @@ import {
 })
 export class SearchComponent implements OnInit {
   profileFields: ProfileField[] = [];
+  routeSearchTerm: string = '';
 
   constructor(
     private stateRouter: StateRouterService,
-    private explorer: DataExplorerService
+    private explorer: DataExplorerService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    this.explorer.getProfileFieldsForFilters().subscribe((fields) => {
+    combineLatest([
+      this.route.queryParamMap,
+      this.explorer.getProfileFieldsForFilters(),
+    ]).subscribe(([queryMap, fields]) => {
+      const parameters = mapParamMapToSearchParameters(queryMap, fields);
+
+      this.routeSearchTerm = parameters.search ?? '';
       this.profileFields = fields;
     });
   }
