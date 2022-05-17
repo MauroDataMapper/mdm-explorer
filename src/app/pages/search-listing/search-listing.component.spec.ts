@@ -47,7 +47,7 @@ import {
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
 
-import { SearchListingComponent, SearchListingSource } from './search-listing.component';
+import { SearchListingComponent } from './search-listing.component';
 import { DataElementBookmarkEvent } from 'src/app/data-explorer/data-explorer.types';
 import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
 import {
@@ -159,38 +159,6 @@ describe('SearchListingComponent', () => {
       expect(harness.component.resultSet).toBeUndefined();
       expect(harness.component.sortBy).toBeUndefined();
     });
-  });
-
-  describe('back label', () => {
-    beforeEach(async () => {
-      harness = await setupComponentTest({});
-    });
-
-    const backRoutesCases: [SearchListingSource, string][] = [
-      ['browse', '/browse'],
-      ['search', '/search'],
-    ];
-
-    const backLabelCases: [SearchListingSource, string][] = [
-      ['browse', 'Back to browsing compartments'],
-      ['search', 'Back to search fields'],
-    ];
-
-    it.each(backRoutesCases)(
-      'should return correct back route for source %p - expecting %p',
-      (source, route) => {
-        harness.component.source = source;
-        expect(harness.component.backRouterLink).toBe(route);
-      }
-    );
-
-    it.each(backLabelCases)(
-      'should return correct back label for source %p - expected %p',
-      (source, label) => {
-        harness.component.source = source;
-        expect(harness.component.backLabel).toBe(label);
-      }
-    );
   });
 
   describe('initialisation from browsing', () => {
@@ -353,6 +321,25 @@ describe('SearchListingComponent', () => {
       expect(harness.component.resultSet).toBeUndefined();
       expect(spy).not.toHaveBeenCalled();
     }));
+
+    it('should have backButton properties correctly set', () => {
+      implementProfileFieldsForFilters();
+      implementDataClassReturns(parameters.dataClass!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
+      implementListingReturns();
+
+      bookmarkStub.index.mockImplementationOnce(() => of([]));
+      dataExplorerStub.getRootDataModel.mockImplementationOnce(() =>
+        of(mockedRootDataModel)
+      );
+      dataRequestsStub.getRequestsIntersections.mockImplementationOnce(() =>
+        of(mockedIntersections)
+      );
+      harness.component.ngOnInit();
+
+      expect(harness.component.backRouterLink).toBe('/browse');
+      expect(harness.component.backQueryParams).toStrictEqual({});
+      expect(harness.component.backLabel).toBe('Back to browsing compartments');
+    });
   });
 
   describe('initialisation from search', () => {
@@ -462,6 +449,23 @@ describe('SearchListingComponent', () => {
       expect(harness.component.root).toBeUndefined();
       expect(harness.component.resultSet).toBeUndefined();
       expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should have backButton properties correctly set', () => {
+      implementProfileFieldsForFilters();
+      implementSearchReturns();
+      bookmarkStub.index.mockImplementationOnce(() => of([]));
+      dataExplorerStub.getRootDataModel.mockImplementationOnce(() =>
+        of(mockedRootDataModel)
+      );
+      dataRequestsStub.getRequestsIntersections.mockImplementationOnce(() =>
+        of(mockedIntersections)
+      );
+      harness.component.ngOnInit();
+
+      expect(harness.component.backRouterLink).toBe('/search');
+      expect(harness.component.backQueryParams).toStrictEqual({ search: 'test' });
+      expect(harness.component.backLabel).toBe('Back to search fields');
     });
   });
 
