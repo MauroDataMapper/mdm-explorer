@@ -89,7 +89,6 @@ export class SearchListingComponent implements OnInit, OnDestroy {
   resultSet?: DataElementSearchResultSet;
   selectedElements: SelectableDataElementSearchResult[] = [];
   userBookmarks: Bookmark[] = [];
-  creatingRequest = false;
   sortBy?: SortByOption;
   sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 

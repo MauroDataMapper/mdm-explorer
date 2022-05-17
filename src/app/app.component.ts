@@ -52,6 +52,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
   themeCssSelector = 'default-theme';
 
+  isLoading = false;
+  loadingCaption = '';
+
   unsentRequestsCount = 0;
 
   signedInUserProfileImageSrc?: string;
@@ -218,6 +221,14 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subscribeHttpErrorEvent('http-server-error', '/server-error');
 
     this.subscribeDataRequestChanges();
+
+    this.broadcast
+      .onLoading()
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((payload) => {
+        this.isLoading = payload.isLoading;
+        this.loadingCaption = payload.caption ?? '';
+      });
 
     // Check immediately if the last authenticated session is expired and setup a recurring
     // check for this

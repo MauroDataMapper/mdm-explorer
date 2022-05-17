@@ -46,8 +46,6 @@ export class MyRequestsComponent implements OnInit {
   request?: DataRequest;
   requestElements: DataElementBasic[] = [];
   state: 'idle' | 'loading' = 'idle';
-  submittingRequest = false;
-  creatingNextVersion = false;
 
   constructor(
     private security: SecurityService,
@@ -100,7 +98,8 @@ export class MyRequestsComponent implements OnInit {
       return;
     }
 
-    this.submittingRequest = true;
+    this.broadcast.loading({ isLoading: true, caption: 'Submitting your request...' });
+
     this.researchPlugin
       .submitRequest(this.request.id)
       .pipe(
@@ -111,7 +110,7 @@ export class MyRequestsComponent implements OnInit {
           );
           return EMPTY;
         }),
-        finalize(() => (this.submittingRequest = false))
+        finalize(() => this.broadcast.loading({ isLoading: false }))
       )
       .subscribe((dataModel) => {
         // Refresh the current state of the request in view
@@ -136,7 +135,11 @@ export class MyRequestsComponent implements OnInit {
       return;
     }
 
-    this.creatingNextVersion = true;
+    this.broadcast.loading({
+      isLoading: true,
+      caption: 'Creating next version of your request...',
+    });
+
     this.dataModels
       .createNextVersion(this.request)
       .pipe(
@@ -150,7 +153,7 @@ export class MyRequestsComponent implements OnInit {
         switchMap((nextDraftModel) => {
           return forkJoin([of(nextDraftModel), this.getUserRequests()]);
         }),
-        finalize(() => (this.creatingNextVersion = false))
+        finalize(() => this.broadcast.loading({ isLoading: false }))
       )
       .subscribe(([nextDraftModel, allRequests]) => {
         const nextDataRequest = mapToDataRequest(nextDraftModel);
