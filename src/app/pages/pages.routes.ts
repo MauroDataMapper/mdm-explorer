@@ -35,6 +35,7 @@ import { NotAuthorizedComponent } from './error/not-authorized/not-authorized.co
 import { ServerErrorComponent } from './error/server-error/server-error.component';
 import { NotFoundComponent } from './error/not-found/not-found.component';
 import { MyRequestsComponent } from './my-requests/my-requests.component';
+import { ChangePasswordComponent } from './change-password/change-password.component';
 
 export const buildStaticContentRoute = (path: string, staticAssetPath: string): Route => {
   return {
@@ -133,6 +134,11 @@ export const routes: Route[] = [
   {
     path: 'account',
     component: MyAccountComponent,
+    canActivate: [AuthorizedGuard],
+  },
+  {
+    path: 'change-password',
+    component: ChangePasswordComponent,
     canActivate: [AuthorizedGuard],
   },
   {

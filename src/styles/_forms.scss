@@ -16,6 +16,32 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+@import "../styles/base/all";
+
+section.form-section {
+  border: 1px solid $color-stroked-border;
+  border-radius: $border-radius;
+  padding: 1em;
+  margin: 2em 0;
+
+  dt,
+  dd {
+    display: inline-block;
+
+    @include respond-to-mobile-xs {
+      display: block;
+    }
+  }
+
+  dt {
+    min-width: 200px;
+
+    @include respond-to-mobile {
+      min-width: 100px;
+    }
+  }
+}
+
 form {
   .form-input,
   .mat-form-field {

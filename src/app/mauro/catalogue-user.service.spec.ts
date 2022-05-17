@@ -24,6 +24,7 @@ import {
   CatalogueUser,
   CatalogueUserPayload,
   CatalogueUserService,
+  ChangePasswordPayload,
 } from './catalogue-user.service';
 
 describe('CatalogueUserService', () => {
@@ -97,6 +98,35 @@ describe('CatalogueUserService', () => {
 
     const expected$ = cold('--a|', { a: expectedUser });
     const actual$ = service.update(userId, payload);
+    expect(actual$).toBeObservable(expected$);
+  });
+
+  it('should change a user password', () => {
+    const id = '123';
+    const payload: ChangePasswordPayload = {
+      oldPassword: 'old-password',
+      newPassword: 'new-password',
+    };
+
+    const expectedUser: CatalogueUser = {
+      id,
+      emailAddress: 'test@test.com',
+    };
+
+    endpointsStub.catalogueUser.changePassword.mockImplementationOnce((i, pl) => {
+      expect(i).toBe(id);
+      expect(pl).toBe(payload);
+      return cold('--a|', {
+        a: {
+          body: expectedUser,
+        },
+      });
+    });
+
+    const expected$ = cold('--a|', {
+      a: expectedUser,
+    });
+    const actual$ = service.changePassword(id, payload);
     expect(actual$).toBeObservable(expected$);
   });
 });

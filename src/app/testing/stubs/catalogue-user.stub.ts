@@ -21,6 +21,7 @@ import { Observable } from 'rxjs';
 import {
   CatalogueUser,
   CatalogueUserPayload,
+  ChangePasswordPayload,
 } from 'src/app/mauro/catalogue-user.service';
 
 export type CatalogueUserGetFn = (id: Uuid) => Observable<CatalogueUser>;
@@ -32,14 +33,21 @@ export type CatalogueUserUpdateFn = (
 ) => Observable<CatalogueUser>;
 export type CatalogueUserUpdateMockedFn = jest.MockedFunction<CatalogueUserUpdateFn>;
 
+export type CatalogueUserChangePasswordFn = (
+  id: Uuid,
+  payload: ChangePasswordPayload
+) => Observable<CatalogueUser>;
+
 export interface CatalogueUserServiceStub {
   get: CatalogueUserGetMockedFn;
   update: CatalogueUserUpdateMockedFn;
+  changePassword: jest.MockedFunction<CatalogueUserChangePasswordFn>;
 }
 
 export const createCatalogueUserServiceStub = (): CatalogueUserServiceStub => {
   return {
     get: jest.fn() as CatalogueUserGetMockedFn,
     update: jest.fn() as CatalogueUserUpdateMockedFn,
+    changePassword: jest.fn() as jest.MockedFunction<CatalogueUserChangePasswordFn>,
   };
 };

@@ -22,6 +22,7 @@ import { UserPreferences } from 'src/app/data-explorer/bookmark.service';
 import {
   CatalogueUser,
   CatalogueUserPayload,
+  ChangePasswordPayload,
 } from 'src/app/mauro/catalogue-user.service';
 
 export type CatalogueUserGetFn = (id: Uuid) => Observable<MdmResponse<CatalogueUser>>;
@@ -45,12 +46,18 @@ export type CatalogueUserUpdatePreferencesFn = (id: string, data: UserPreference
 export type CatalogueUserUpdatePreferencesMockedFn =
   jest.MockedFunction<CatalogueUserUpdatePreferencesFn>;
 
+export type CatalogueUserChangePasswordFn = (
+  id: Uuid,
+  payload: ChangePasswordPayload
+) => Observable<MdmResponse<CatalogueUser>>;
+
 export interface MdmCatalogueUserResourceStub {
   get: CatalogueUserGetMockedFn;
   update: CatalogueUserUpdateMockedFn;
   resetPasswordLink: CatalogueUserResetPasswordLinkMockedFn;
   userPreferences: CatalogueUserPreferencesMockedFn;
   updateUserPreferences: CatalogueUserUpdatePreferencesMockedFn;
+  changePassword: jest.MockedFunction<CatalogueUserChangePasswordFn>;
 }
 
 export const createCatalogueUserStub = (): MdmCatalogueUserResourceStub => {
@@ -60,5 +67,6 @@ export const createCatalogueUserStub = (): MdmCatalogueUserResourceStub => {
     resetPasswordLink: jest.fn() as CatalogueUserResetPasswordLinkMockedFn,
     userPreferences: jest.fn() as CatalogueUserPreferencesMockedFn,
     updateUserPreferences: jest.fn() as CatalogueUserUpdatePreferencesMockedFn,
+    changePassword: jest.fn() as jest.MockedFunction<CatalogueUserChangePasswordFn>,
   };
 };
