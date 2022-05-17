@@ -193,6 +193,8 @@ export class SearchListingComponent implements OnInit, OnDestroy {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   selectElement(event: SelectableDataElementSearchResultCheckedEvent) {
     event.item.isSelected = event.checked;
+
+    this.updateSelectedElements();
   }
 
   bookmarkElement(event: DataElementBookmarkEvent) {
@@ -269,12 +271,18 @@ export class SearchListingComponent implements OnInit, OnDestroy {
         return { ...item, isSelected: event.checked };
       });
 
-      // Work out which elements are selected. Store as a property to data bind to mdm-data-element-multi-select
-      // and improve performance
-      this.selectedElements = this.resultSet.items.filter(
-        (element) => element.isSelected
-      );
+      this.updateSelectedElements();
     }
+  }
+
+  private updateSelectedElements() {
+    if (!this.resultSet) {
+      return;
+    }
+
+    // Work out which elements are selected. Store as a property to data bind to mdm-data-element-multi-select
+    // and improve performance
+    this.selectedElements = this.resultSet.items.filter((element) => element.isSelected);
   }
 
   private loadDataClass() {
