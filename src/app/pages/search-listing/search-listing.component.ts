@@ -78,6 +78,11 @@ export type SearchListingSortByOption = 'label-asc' | 'label-desc';
 export class SearchListingComponent implements OnInit, OnDestroy {
   parameters: DataElementSearchParameters = {};
   source: SearchListingSource = 'unknown';
+
+  backRouterLink: string = '';
+  backQueryParams: { search?: string } = {};
+  backLabel: string = '';
+
   status: SearchListingStatus = 'init';
   root?: DataClassDetail;
   searchTerms?: string;
@@ -87,6 +92,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
   creatingRequest = false;
   sortBy?: SortByOption;
   sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
+
   /**
    * Each new option must have a {@link SearchListingSortByOption} as a value to ensure
    * the search-listing page can interpret the result emitted by the SortByComponent
@@ -120,16 +126,6 @@ export class SearchListingComponent implements OnInit, OnDestroy {
     };
   }
 
-  get backRouterLink(): KnownRouterPath {
-    return this.source === 'browse' ? '/browse' : '/search';
-  }
-
-  get backLabel() {
-    return this.source === 'browse'
-      ? 'Back to browsing compartments'
-      : 'Back to search fields';
-  }
-
   ngOnInit(): void {
     // Important to use combineLatest() instead of forkJoin() - route.queryParamMap does not complete, so need to continue
     // on next value in route.queryParamMap stream instead
@@ -154,6 +150,8 @@ export class SearchListingComponent implements OnInit, OnDestroy {
           // listing Data Elements under a specific Data Class
           this.source = this.parameters.dataClass?.dataClassId ? 'browse' : 'search';
 
+          // Set the back button properties
+          this.setBackButtonProperties(this.source, this.searchTerms);
           this.status = 'loading';
 
           return forkJoin([
@@ -371,6 +369,13 @@ export class SearchListingComponent implements OnInit, OnDestroy {
           this.broadcast.dispatch('data-intersections-refreshed', intersections);
         });
       });
+  }
+
+  private setBackButtonProperties(source: string, search?: string) {
+    this.backRouterLink = source === 'browse' ? '/browse' : '/search';
+    this.backQueryParams = source === 'browse' ? {} : { search };
+    this.backLabel =
+      source === 'browse' ? 'Back to browsing compartments' : 'Back to search fields';
   }
 
   /**
