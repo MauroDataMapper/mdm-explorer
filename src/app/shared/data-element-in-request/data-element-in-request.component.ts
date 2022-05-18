@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { DataModel, DataModelSubsetPayload } from '@maurodatamapper/mdm-resources';
+import { DataModelSubsetPayload } from '@maurodatamapper/mdm-resources';
 import { catchError, EMPTY, filter, finalize, Subject, switchMap, takeUntil } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import {
