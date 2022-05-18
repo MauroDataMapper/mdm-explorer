@@ -71,4 +71,17 @@ export class MdmPluginResearchResource extends MdmResource {
     const url = `${this.apiEndpoint}/researchAccessRequest/${id}`;
     return this.simplePut(url, null, options);
   }
+
+  /**
+   * `HTTP POST` - Get, or create if none exists, a folder in which to keep a user's requests
+   *
+   * @param options Optional REST handler parameters, if required.
+   * @returns The result of the `POST` request:
+   *
+   * `200 OK` - will return an folder detail response. The HTTP status explains that it was successful.
+   */
+  userFolder(options?: RequestSettings) {
+    const url = `${this.apiEndpoint}/userFolder`;
+    return this.simplePost(url, null, options);
+  }
 }

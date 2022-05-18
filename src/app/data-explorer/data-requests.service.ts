@@ -45,7 +45,6 @@ import {
 } from 'rxjs';
 import { UserDetails } from '../security/user-details.service';
 import { DataModelService } from '../mauro/data-model.service';
-import { FolderService } from '../mauro/folder.service';
 import { CatalogueUserService } from '../mauro/catalogue-user.service';
 import {
   DataElementBasic,
@@ -59,6 +58,7 @@ import { DataRequest } from '../data-explorer/data-explorer.types';
 import { DataExplorerService } from './data-explorer.service';
 import { SecurityService } from '../security/security.service';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { ResearchPluginService } from '../mauro/research-plugin.service';
 
 /**
  * A collection data access requests and their intersections with target models.
@@ -75,7 +75,7 @@ export interface DataAccessRequestsSourceTargetIntersections {
 export class DataRequestsService {
   constructor(
     private dataModels: DataModelService,
-    private folder: FolderService,
+    private pluginResearch: ResearchPluginService,
     private catalogueUser: CatalogueUserService,
     private dataExplorer: DataExplorerService,
     private security: SecurityService,
@@ -85,28 +85,19 @@ export class DataRequestsService {
   /**
    * Retrieve the users data requests folder. Creates a new folder if there isn't one.
    *
-   * @param userEmail - get the data requests folder for the user with the given unique username
    * @returns an observable containing a FolderDetail object
    */
-  getRequestsFolder(userEmail: string): Observable<FolderDetail> {
-    return this.folder.getOrCreate(this.config.rootRequestFolder).pipe(
-      switchMap((rootFolder: FolderDetail) => {
-        return this.folder.getOrCreateChildOf(
-          rootFolder.id!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-          this.getDataRequestsFolderName(userEmail)
-        );
-      })
-    );
+  getRequestsFolder(): Observable<FolderDetail> {
+    return this.pluginResearch.userFolder();
   }
 
   /**
    * Lists all of the users requests as {@link DataRequest} objects.
    *
-   * @param userEmail the username of the user.
    * @returns an observable containing an array of data requests
    */
-  list(userEmail: string): Observable<DataRequest[]> {
-    return this.getRequestsFolder(userEmail).pipe(
+  list(): Observable<DataRequest[]> {
+    return this.getRequestsFolder().pipe(
       switchMap((requestsFolder: FolderDetail): Observable<DataModel[]> => {
         return this.dataModels.listInFolder(requestsFolder.id!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
       }),
@@ -213,10 +204,7 @@ export class DataRequestsService {
    * @returns An observable containing the new {@link DataRequest}.
    */
   create(user: UserDetails, name: string, description?: string): Observable<DataRequest> {
-    return forkJoin([
-      this.getRequestsFolder(user.email),
-      this.catalogueUser.get(user.id),
-    ]).pipe(
+    return forkJoin([this.getRequestsFolder(), this.catalogueUser.get(user.id)]).pipe(
       switchMap(([folder, catalogueUser]) => {
         if (!folder || !folder.id) {
           return throwError(() => new Error('No requests folder available'));
@@ -257,7 +245,7 @@ export class DataRequestsService {
       return throwError(() => new Error('Must be logged in to use User Preferences'));
     }
 
-    return this.list(user.email).pipe(
+    return this.list().pipe(
       map((dataRequests: DataRequest[]) =>
         dataRequests.filter((dr) => dr.status === 'unsent')
       ),

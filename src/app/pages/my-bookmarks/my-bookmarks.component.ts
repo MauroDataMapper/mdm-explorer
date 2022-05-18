@@ -73,7 +73,7 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const user = this.security.getSignedInUser();
     if (user) {
-      this.dataRequests.list(user.email).subscribe((requests: DataRequest[]) => {
+      this.dataRequests.list().subscribe((requests: DataRequest[]) => {
         this.openDataRequests = [...requests.filter((req) => req.status === 'unsent')];
       });
     }

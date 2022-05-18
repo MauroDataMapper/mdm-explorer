@@ -199,7 +199,7 @@ export class AppComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((userSignedIn) => {
         this.setupSignedInUser(userSignedIn);
-        this.getRequestsInfo(userSignedIn);
+        this.getRequestsInfo();
       });
 
     this.broadcast
@@ -210,7 +210,7 @@ export class AppComponent implements OnInit, OnDestroy {
     const user = this.userDetails.get();
     if (user) {
       this.setupSignedInUser(user);
-      this.getRequestsInfo(user);
+      this.getRequestsInfo();
     }
 
     this.signedInUser = user;
@@ -283,15 +283,15 @@ export class AppComponent implements OnInit, OnDestroy {
    * Verify that a user's request folder exists (or create if it doesn't), then check how many current requests they
    * have pending.
    */
-  private getRequestsInfo(user: UserDetails) {
+  private getRequestsInfo() {
     this.dataRequests
-      .getRequestsFolder(user.email)
+      .getRequestsFolder()
       .pipe(
         catchError(() => {
           this.toastr.error('There was a problem locating your requests folder.');
           return EMPTY;
         }),
-        switchMap(() => this.dataRequests.list(user.email)),
+        switchMap(() => this.dataRequests.list()),
         catchError(() => {
           this.toastr.error('There was a problem locating your current requests.');
           return EMPTY;
