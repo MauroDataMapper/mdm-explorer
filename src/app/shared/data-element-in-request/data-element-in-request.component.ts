@@ -38,6 +38,12 @@ export interface CreateRequestEvent {
   item: DataElementSearchResult;
 }
 
+interface DataAccessRequestMenuItem {
+  id: Uuid;
+  label: string;
+  containsElement: boolean;
+}
+
 @Component({
   selector: 'mdm-data-element-in-request',
   templateUrl: './data-element-in-request.component.html',
@@ -54,8 +60,8 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
 
   ready = false;
 
-  // A list of requests to which this data element belongs
-  inRequests: Uuid[] = [];
+  // The list of items in the createRequest menu
+  dataRequestMenuItems: DataAccessRequestMenuItem[] = [];
 
   private user: UserDetails | null;
 
@@ -86,7 +92,7 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.cacheInRequests();
+    this.refreshDataRequestMenuItems();
 
     this.subscribeIntersectionsRefreshed();
 
@@ -136,40 +142,25 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Based on the list of dataAccessRequests and the list of sourceTargetIntersections,
-   * recalculate this.inRequests
+   * Refresh the addToRequest menu items
    */
-  cacheInRequests(): void {
-    this.inRequests = [];
+  refreshDataRequestMenuItems(): void {
+    if (!this.dataElement) return;
 
-    if (this.sourceTargetIntersections.sourceTargetIntersections.length > 0) {
-      for (
-        let i = 0;
-        i < this.sourceTargetIntersections.sourceTargetIntersections.length;
-        i++
-      ) {
-        const sourceTargetIntersection =
-          this.sourceTargetIntersections.sourceTargetIntersections[i];
+    const idsOfRequestsContainingElement =
+      this.sourceTargetIntersections.sourceTargetIntersections
+        .filter((sti) => sti.intersects.includes(this.dataElement!.id)) // eslint-disable-line @typescript-eslint/no-non-null-assertion
+        .map((sti) => sti.targetDataModelId);
 
-        const targetDataModelId = sourceTargetIntersection.targetDataModelId;
-
-        const intersections = sourceTargetIntersection.intersects;
-
-        if (this.dataElement && intersections.indexOf(this.dataElement.id) > -1) {
-          this.inRequests.push(targetDataModelId);
-        }
+    this.dataRequestMenuItems = this.sourceTargetIntersections.dataAccessRequests.map(
+      (req) => {
+        return {
+          id: req.id ?? '',
+          label: req.label,
+          containsElement: idsOfRequestsContainingElement.includes(req.id ?? ''),
+        };
       }
-    }
-  }
-
-  /**
-   * Is this data element present in the targetDataModel?
-   *
-   * @param targetDataModel
-   * @returns boolean
-   */
-  isInRequests(targetDataModel: DataModel): boolean {
-    return this.inRequests.indexOf(targetDataModel.id ?? '') > -1;
+    );
   }
 
   onClickCreateRequest() {
@@ -235,7 +226,7 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((intersections) => {
         this.sourceTargetIntersections = intersections;
-        this.cacheInRequests();
+        this.refreshDataRequestMenuItems();
       });
   }
 }
