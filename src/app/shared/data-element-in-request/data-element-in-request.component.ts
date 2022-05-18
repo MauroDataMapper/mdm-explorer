@@ -28,7 +28,6 @@ import { Uuid } from '@maurodatamapper/mdm-resources';
 import { SecurityService } from 'src/app/security/security.service';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
-import { DataModelService } from 'src/app/mauro/data-model.service';
 import { DataElementSearchResult } from 'src/app/data-explorer/data-explorer.types';
 import { DialogService } from 'src/app/data-explorer/dialog.service';
 import { UserDetails } from 'src/app/security/user-details.service';
@@ -68,7 +67,6 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
   constructor(
     security: SecurityService,
     private stateRouter: StateRouterService,
-    private dataModels: DataModelService,
     private dataRequests: DataRequestsService,
     private endpoints: MdmEndpointsService,
     private dialogs: DialogService,
