@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { DataModel, DataModelSubsetPayload } from '@maurodatamapper/mdm-resources';
+import { DataModelSubsetPayload } from '@maurodatamapper/mdm-resources';
 import { catchError, EMPTY, filter, finalize, Subject, switchMap, takeUntil } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import {
@@ -28,7 +28,6 @@ import { Uuid } from '@maurodatamapper/mdm-resources';
 import { SecurityService } from 'src/app/security/security.service';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
-import { DataModelService } from 'src/app/mauro/data-model.service';
 import { DataElementSearchResult } from 'src/app/data-explorer/data-explorer.types';
 import { DialogService } from 'src/app/data-explorer/dialog.service';
 import { UserDetails } from 'src/app/security/user-details.service';
@@ -37,6 +36,12 @@ import { BroadcastService } from 'src/app/core/broadcast.service';
 
 export interface CreateRequestEvent {
   item: DataElementSearchResult;
+}
+
+interface DataAccessRequestMenuItem {
+  id: Uuid;
+  label: string;
+  containsElement: boolean;
 }
 
 @Component({
@@ -55,8 +60,8 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
 
   ready = false;
 
-  // A list of requests to which this data element belongs
-  inRequests: Uuid[] = [];
+  // The list of items in the createRequest menu
+  dataRequestMenuItems: DataAccessRequestMenuItem[] = [];
 
   private user: UserDetails | null;
 
@@ -68,7 +73,6 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
   constructor(
     security: SecurityService,
     private stateRouter: StateRouterService,
-    private dataModels: DataModelService,
     private dataRequests: DataRequestsService,
     private endpoints: MdmEndpointsService,
     private dialogs: DialogService,
@@ -88,7 +92,7 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.cacheInRequests();
+    this.refreshDataRequestMenuItems();
 
     this.subscribeIntersectionsRefreshed();
 
@@ -138,40 +142,25 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Based on the list of dataAccessRequests and the list of sourceTargetIntersections,
-   * recalculate this.inRequests
+   * Refresh the addToRequest menu items
    */
-  cacheInRequests(): void {
-    this.inRequests = [];
+  refreshDataRequestMenuItems(): void {
+    if (!this.dataElement) return;
 
-    if (this.sourceTargetIntersections.sourceTargetIntersections.length > 0) {
-      for (
-        let i = 0;
-        i < this.sourceTargetIntersections.sourceTargetIntersections.length;
-        i++
-      ) {
-        const sourceTargetIntersection =
-          this.sourceTargetIntersections.sourceTargetIntersections[i];
+    const idsOfRequestsContainingElement =
+      this.sourceTargetIntersections.sourceTargetIntersections
+        .filter((sti) => sti.intersects.includes(this.dataElement!.id)) // eslint-disable-line @typescript-eslint/no-non-null-assertion
+        .map((sti) => sti.targetDataModelId);
 
-        const targetDataModelId = sourceTargetIntersection.targetDataModelId;
-
-        const intersections = sourceTargetIntersection.intersects;
-
-        if (this.dataElement && intersections.indexOf(this.dataElement.id) > -1) {
-          this.inRequests.push(targetDataModelId);
-        }
+    this.dataRequestMenuItems = this.sourceTargetIntersections.dataAccessRequests.map(
+      (req) => {
+        return {
+          id: req.id ?? '',
+          label: req.label,
+          containsElement: idsOfRequestsContainingElement.includes(req.id ?? ''),
+        };
       }
-    }
-  }
-
-  /**
-   * Is this data element present in the targetDataModel?
-   *
-   * @param targetDataModel
-   * @returns boolean
-   */
-  isInRequests(targetDataModel: DataModel): boolean {
-    return this.inRequests.indexOf(targetDataModel.id ?? '') > -1;
+    );
   }
 
   onClickCreateRequest() {
@@ -237,7 +226,7 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((intersections) => {
         this.sourceTargetIntersections = intersections;
-        this.cacheInRequests();
+        this.refreshDataRequestMenuItems();
       });
   }
 }

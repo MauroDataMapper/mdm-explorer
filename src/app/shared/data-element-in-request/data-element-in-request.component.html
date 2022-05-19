@@ -23,18 +23,16 @@ SPDX-License-Identifier: Apache-2.0
   <mat-menu #menu="matMenu">
     <ng-container *ngIf="ready">
       <section>
-        <ul
-          *ngFor="let item of sourceTargetIntersections.dataAccessRequests; let i = index"
-        >
+        <ul *ngFor="let dataRequest of dataRequestMenuItems">
           <li>
             <mat-checkbox
               #menuItems
               color="primary"
-              [checked]="isInRequests(item)"
-              [value]="item.id ?? ''"
+              [checked]="dataRequest.containsElement"
+              [value]="dataRequest.id ?? ''"
               (click)="$event.stopPropagation()"
               (change)="changed($event)"
-              >{{ item.label }}</mat-checkbox
+              >{{ dataRequest.label }}</mat-checkbox
             >
           </li>
         </ul>
