@@ -16,13 +16,17 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { ActivatedRoute, convertToParamMap, ParamMap } from '@angular/router';
 import { ProfileField } from '@maurodatamapper/mdm-resources';
 import { MockComponent } from 'ng-mocks';
 import { of } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { CatalogueSearchFormComponent } from 'src/app/data-explorer/catalogue-search-form/catalogue-search-form.component';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
-import { DataElementSearchParameters } from 'src/app/data-explorer/data-explorer.types';
+import {
+  DataElementSearchParameters,
+  mapSearchParametersToParams,
+} from 'src/app/data-explorer/data-explorer.types';
 import { createDataExplorerServiceStub } from 'src/app/testing/stubs/data-explorer.stub';
 import { createStateRouterStub } from 'src/app/testing/stubs/state-router.stub';
 import {
@@ -38,8 +42,15 @@ describe('SearchComponent', () => {
   const stateRouterStub = createStateRouterStub();
   const explorerStub = createDataExplorerServiceStub();
 
-  beforeEach(async () => {
-    harness = await setupTestModuleForComponent(SearchComponent, {
+  const setupComponentTest = async (parameters: DataElementSearchParameters) => {
+    const params = mapSearchParametersToParams(parameters);
+    const paramMap: ParamMap = convertToParamMap(params);
+
+    const activatedRoute: ActivatedRoute = {
+      queryParamMap: of(paramMap),
+    } as ActivatedRoute;
+
+    return await setupTestModuleForComponent(SearchComponent, {
       providers: [
         {
           provide: StateRouterService,
@@ -49,34 +60,65 @@ describe('SearchComponent', () => {
           provide: DataExplorerService,
           useValue: explorerStub,
         },
+        {
+          provide: ActivatedRoute,
+          useValue: activatedRoute,
+        },
       ],
       declarations: [MockComponent(CatalogueSearchFormComponent)],
     });
+  };
+
+  describe('creation', () => {
+    beforeEach(async () => {
+      harness = await setupComponentTest({});
+    });
+
+    it('should be created', () => {
+      expect(harness.component).toBeTruthy();
+      expect(harness.component.routeSearchTerm).toBe('');
+      expect(harness.component.profileFields).toStrictEqual([]);
+    });
   });
 
-  it('should be created', () => {
-    expect(harness.component).toBeTruthy();
+  describe('initialization', () => {
+    it('should set profile fields to use for filters', () => {
+      const fields: ProfileField[] = [
+        {
+          fieldName: 'field1',
+          metadataPropertyName: 'field1',
+          dataType: 'enumeration',
+        },
+        {
+          fieldName: 'field2',
+          metadataPropertyName: 'field2',
+          dataType: 'enumeration',
+        },
+      ];
+
+      explorerStub.getProfileFieldsForFilters.mockImplementationOnce(() => of(fields));
+
+      harness.component.ngOnInit();
+
+      expect(harness.component.profileFields).toBe(fields);
+    });
   });
 
-  it('should set profile fields to use for filters', () => {
-    const fields: ProfileField[] = [
-      {
-        fieldName: 'field1',
-        metadataPropertyName: 'field1',
-        dataType: 'enumeration',
-      },
-      {
-        fieldName: 'field2',
-        metadataPropertyName: 'field2',
-        dataType: 'enumeration',
-      },
-    ];
+  describe('initialization from back button on search listing page', () => {
+    const parameters: DataElementSearchParameters = {
+      search: 'test',
+    };
+    beforeEach(async () => {
+      harness = await setupComponentTest(parameters);
+    });
 
-    explorerStub.getProfileFieldsForFilters.mockImplementationOnce(() => of(fields));
+    it('should set the routeSearchTerm if one is passed as a queryParam', () => {
+      explorerStub.getProfileFieldsForFilters.mockImplementationOnce(() => of([]));
 
-    harness.component.ngOnInit();
+      harness.component.ngOnInit();
 
-    expect(harness.component.profileFields).toBe(fields);
+      expect(harness.component.routeSearchTerm).toBe(parameters.search);
+    });
   });
 
   it('should navigate to search page with correct query string', () => {

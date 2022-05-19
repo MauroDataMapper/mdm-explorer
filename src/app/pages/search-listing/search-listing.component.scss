@@ -24,9 +24,12 @@ $back-link-color: $color-mauro-dark-green;
 $no-results-background-color: $color-mauro-light-gold;
 
 .mdm-search-listing {
-  &__back-link,
-  &__search {
+  &__back-link {
     margin: 1em 0;
+  }
+
+  &__search {
+    text-align: center;
   }
 
   &__sort-row {
