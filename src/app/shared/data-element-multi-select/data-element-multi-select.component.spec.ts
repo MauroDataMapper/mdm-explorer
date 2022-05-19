@@ -43,6 +43,8 @@ import { UserDetails } from 'src/app/security/user-details.service';
 import { SelectableDataElementSearchResult } from 'src/app/data-explorer/data-explorer.types';
 import { CreateRequestDialogResponse } from 'src/app/data-explorer/create-request-dialog/create-request-dialog.component';
 import { of } from 'rxjs';
+import { createBroadcastServiceStub } from 'src/app/testing/stubs/broadcast.stub';
+import { BroadcastService } from 'src/app/core/broadcast.service';
 
 describe('DataElementMultiSelectComponent', () => {
   let harness: ComponentHarness<DataElementMultiSelectComponent>;
@@ -52,6 +54,7 @@ describe('DataElementMultiSelectComponent', () => {
   const stateRouterStub = createStateRouterStub();
   const endpointsStub: MdmEndpointsServiceStub = createMdmEndpointsStub();
   const matDialogStub = createMatDialogStub();
+  const broadcastStub = createBroadcastServiceStub();
 
   const user: UserDetails = {
     id: '123',
@@ -90,6 +93,10 @@ describe('DataElementMultiSelectComponent', () => {
           provide: MatDialog,
           useValue: matDialogStub,
         },
+        {
+          provide: BroadcastService,
+          useValue: broadcastStub,
+        },
       ],
     });
   });
@@ -119,6 +126,7 @@ describe('DataElementMultiSelectComponent', () => {
 
     beforeEach(() => {
       dataRequestsStub.createFromDataElements.mockClear();
+      broadcastStub.loading.mockClear();
     });
 
     it('should create a new request', () => {
@@ -137,6 +145,11 @@ describe('DataElementMultiSelectComponent', () => {
         requestCreation.name,
         requestCreation.description
       );
+      expect(broadcastStub.loading).toHaveBeenCalledWith({
+        isLoading: true,
+        caption: 'Creating new request ...',
+      });
+      expect(broadcastStub.loading).toHaveBeenCalledWith({ isLoading: false });
     });
   });
 });

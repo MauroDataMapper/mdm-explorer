@@ -391,6 +391,7 @@ describe('MyRequestsComponent', () => {
       researchPluginStub.submitRequest.mockClear();
       toastrStub.error.mockClear();
       broadcastStub.dispatch.mockClear();
+      broadcastStub.loading.mockClear();
     });
 
     it('should do nothing if there is no request', () => {
@@ -444,6 +445,11 @@ describe('MyRequestsComponent', () => {
       expect(researchPluginStub.submitRequest).toHaveBeenCalled();
       expect(harness.component.request.status).toBe('submitted');
       expect(broadcastStub.dispatch).toHaveBeenCalledWith('data-request-submitted');
+      expect(broadcastStub.loading).toHaveBeenCalledWith({
+        isLoading: true,
+        caption: 'Submitting your request...',
+      });
+      expect(broadcastStub.loading).toHaveBeenCalledWith({ isLoading: false });
     });
   });
 
@@ -459,6 +465,7 @@ describe('MyRequestsComponent', () => {
     beforeEach(() => {
       dataModelsStub.createNextVersion.mockClear();
       toastrStub.error.mockClear();
+      broadcastStub.loading.mockClear();
     });
 
     it('should do nothing if there is no request', () => {
@@ -525,6 +532,11 @@ describe('MyRequestsComponent', () => {
 
       expect(dataModelsStub.createNextVersion).toHaveBeenCalled();
       expect(harness.component.request.status).toBe('unsent');
+      expect(broadcastStub.loading).toHaveBeenCalledWith({
+        isLoading: true,
+        caption: 'Creating next version of your request...',
+      });
+      expect(broadcastStub.loading).toHaveBeenCalledWith({ isLoading: false });
     }));
   });
 });
