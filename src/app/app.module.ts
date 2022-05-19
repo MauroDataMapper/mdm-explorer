@@ -112,7 +112,7 @@ const getOpenIdAuthorizeUrl = () => {
     AppRoutingModule,
     ToastrModule.forRoot({
       timeOut: 30000,
-      positionClass: 'toast-bottom-center',
+      positionClass: 'toast-top-right-custom',
       preventDuplicates: false,
     }),
     UserIdleModule.forRoot({

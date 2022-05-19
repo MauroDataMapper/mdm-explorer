@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { SimpleChange } from '@angular/core';
-import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
 import { ProfileField } from '@maurodatamapper/mdm-resources';
 import { MockComponent } from 'ng-mocks';
 import {
@@ -48,6 +48,7 @@ describe('CatalogueSearchFormComponent', () => {
 
   const initForm = () => {
     harness.component.profileFields = profileFields;
+    harness.component.routeSearchTerm = 'test';
 
     harness.component.ngOnChanges({
       profileFields: new SimpleChange(null, profileFields, false),
@@ -56,7 +57,11 @@ describe('CatalogueSearchFormComponent', () => {
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(CatalogueSearchFormComponent, {
-      declarations: [MockComponent(MatFormField), MockComponent(MatLabel)],
+      declarations: [
+        MockComponent(MatFormField),
+        MockComponent(MatLabel),
+        MockComponent(MatHint),
+      ],
     });
   });
 
@@ -64,12 +69,13 @@ describe('CatalogueSearchFormComponent', () => {
     expect(harness.isComponentCreated).toBeTruthy();
     expect(harness.component.formGroup).toBeDefined();
     expect(harness.component.searchTerms?.value).toBeUndefined();
+    expect(harness.component.routeSearchTerm).toBe('');
   });
 
-  it('should set form fields when profileFields is changed', () => {
+  it('should set form fields and searchTerms when profileFields is changed', () => {
     initForm();
 
-    expect(harness.component.searchTerms?.value).toBe('');
+    expect(harness.component.searchTerms?.value).toBe('test');
     expect(harness.component.formGroup.get('field1')?.value).toBe('');
     expect(harness.component.formGroup.get('field2')?.value).toBe('');
   });
