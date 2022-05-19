@@ -40,7 +40,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { NgChartsModule } from 'ng2-charts';
 import { DataExplorerService } from './data-explorer/data-explorer.service';
 import { Observable } from 'rxjs';
-import { OkCancelDialogComponent } from './data-explorer/ok-cancel-dialog/ok-cancel-dialog.component';
 
 /**
  * Factory function for app initialization.

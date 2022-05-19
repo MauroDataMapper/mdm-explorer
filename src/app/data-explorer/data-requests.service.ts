@@ -33,12 +33,14 @@ import {
 import {
   catchError,
   concatMap,
+  EMPTY,
+  filter,
   forkJoin,
   from,
   map,
   Observable,
   of,
-  pipe,
+  OperatorFunction,
   switchMap,
   throwError,
   toArray,
@@ -59,7 +61,6 @@ import { DataRequest } from '../data-explorer/data-explorer.types';
 import { DataExplorerService } from './data-explorer.service';
 import { SecurityService } from '../security/security.service';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { resourceLimits } from 'worker_threads';
 
 /**
  * A collection data access requests and their intersections with target models.
@@ -150,11 +151,25 @@ export class DataRequestsService {
    * @returns: Observable of DataElementMultipleOperationResult
    */
   deleteDataElementMultiple(
-    items: DataElementBasic[]
+    elements: DataElementBasic[],
+    targetModel: DataModelDetail
   ): Observable<DataElementMultipleOperationResult> {
-    return from(items).pipe(
-      concatMap((item: DataElementBasic) => {
-        return this.deleteDataElement(item);
+    const items: DataElement[] = elements.map((dataElementBasic) => {
+      return this.dataModels.dataElementFromBasic(dataElementBasic);
+    });
+    return of(items).pipe(
+      switchMap((dataElements: DataElement[]) => {
+        return this.dataModels.elementsInAnotherModel(targetModel, dataElements);
+      }),
+      switchMap((dataElements: (DataElement | null)[]) => from(dataElements)),
+      filter((item) => item !== null) as OperatorFunction<
+        DataElement | null,
+        DataElement
+      >,
+      concatMap((item: DataElement) => {
+        const dataElementBasic: DataElementBasic =
+          this.dataModels.dataElementToBasic(item);
+        return this.deleteDataElement(dataElementBasic);
       }),
       toArray(),
       switchMap((results: DataElementOperationResult[]) => {

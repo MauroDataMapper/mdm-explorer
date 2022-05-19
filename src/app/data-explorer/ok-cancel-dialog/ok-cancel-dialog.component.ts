@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, Inject, Input, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 export interface OkCancelDialogResponse {
@@ -60,6 +60,6 @@ export class OkCancelDialogComponent implements OnInit {
   ngOnInit(): void {}
 
   close(result: boolean) {
-    this.dialogRef.close({ result: result });
+    this.dialogRef.close({ result });
   }
 }

@@ -16,8 +16,10 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
+  CatalogueItemDomainType,
   CatalogueItemSearchResponse,
   CatalogueItemSearchResult,
   DataClass,
@@ -46,7 +48,19 @@ import {
   SourceTargetIntersectionResponse,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
-import { forkJoin, map, Observable, of, switchMap, throwError } from 'rxjs';
+import {
+  filter,
+  forkJoin,
+  from,
+  map,
+  mergeMap,
+  Observable,
+  of,
+  OperatorFunction,
+  switchMap,
+  throwError,
+  toArray,
+} from 'rxjs';
 import { DataElementBasic } from '../data-explorer/data-explorer.types';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { DataClassIdentifier, isDataClass } from './mauro.types';
@@ -315,5 +329,65 @@ export class DataModelService {
     return this.endpoints.dataModel
       .newBranchModelVersion(model.id, {})
       .pipe(map((response: DataModelDetailResponse) => response.body));
+  }
+
+  dataElementToBasic(dataElement: DataElement, isBookmarked = false): DataElementBasic {
+    return {
+      id: dataElement.id ?? '',
+      dataModelId: dataElement.model ?? '',
+      dataClassId: dataElement.dataClass ?? '',
+      label: dataElement.label,
+      isBookmarked,
+      breadcrumbs: dataElement.breadcrumbs,
+    };
+  }
+
+  dataElementFromBasic(
+    dataElementBasic: DataElementBasic,
+    description = ''
+  ): DataElement {
+    return {
+      domainType: CatalogueItemDomainType.DataElement,
+      label: dataElementBasic.label,
+      id: dataElementBasic.id,
+      description,
+      model: dataElementBasic.dataModelId,
+      dataClass: dataElementBasic.dataClassId,
+      breadcrumbs: dataElementBasic.breadcrumbs,
+    };
+  }
+
+  elementsInAnotherModel(
+    rootModel: DataModelDetail,
+    dataElements: DataElement[]
+  ): Observable<DataElement[]> {
+    return from(dataElements).pipe(
+      mergeMap((dataElement: DataElement) => {
+        let path = '';
+        if (dataElement.breadcrumbs) {
+          const bc = dataElement.breadcrumbs;
+          if (bc.length === 2) {
+            path = `dm:${rootModel.label}|dc:${bc[1].label}|de:${dataElement.label}`;
+          } else if (bc.length === 3) {
+            path = `dm:${rootModel.label}|dc:${bc[1].label}|dc:${bc[2].label}|de:${dataElement.label}`;
+          }
+        }
+        if (path === '') {
+          throw new Error('Path cannot be interpreted');
+        } else {
+          return this.endpoints.catalogueItem.getPath('dataModels', path) as Observable<
+            HttpResponse<DataElement>
+          >;
+        }
+      }),
+      map((response: HttpResponse<DataElement>) => {
+        return response.body;
+      }),
+      filter((element) => element !== null) as OperatorFunction<
+        DataElement | null,
+        DataElement
+      >,
+      toArray()
+    );
   }
 }

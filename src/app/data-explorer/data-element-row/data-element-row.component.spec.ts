@@ -21,7 +21,7 @@ import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
-import { DataElementBasic } from '../data-explorer.types';
+import { SelectableDataElementSearchResult } from '../data-explorer.types';
 
 import { DataElementRowComponent } from './data-element-row.component';
 
@@ -49,12 +49,13 @@ describe('DataElementRowComponent', () => {
     (checked) => {
       const emitSpy = jest.spyOn(harness.component.checked, 'emit');
       const event = { checked } as MatCheckboxChange;
-      const item: DataElementBasic = {
+      const item: SelectableDataElementSearchResult = {
         id: '1',
         dataModelId: '2',
         dataClassId: '3',
         label: 'test',
         isBookmarked: false,
+        isSelected: false,
       };
 
       harness.component.item = item;

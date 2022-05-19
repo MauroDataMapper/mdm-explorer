@@ -19,11 +19,15 @@ SPDX-License-Identifier: Apache-2.0
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import {
-  DataElementBasic,
+  CreateRequestEvent,
+  RequestElementAddDeleteEvent,
+} from 'src/app/shared/data-element-in-request/data-element-in-request.component';
+import {
   DataElementCheckedEvent,
   DataElementDeleteEvent,
   SelectableDataElementSearchResult,
 } from '../data-explorer.types';
+import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.service';
 
 @Component({
   selector: 'mdm-data-element-row',
@@ -32,9 +36,27 @@ import {
 })
 export class DataElementRowComponent {
   @Input() item?: SelectableDataElementSearchResult;
+  @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 
   @Output() checked = new EventEmitter<DataElementCheckedEvent>();
   @Output() delete = new EventEmitter<DataElementDeleteEvent>();
+  @Output() requestAddDelete = new EventEmitter<RequestElementAddDeleteEvent>();
+  @Output() requestCreated = new EventEmitter<CreateRequestEvent>();
+
+  constructor() {
+    this.sourceTargetIntersections = {
+      dataAccessRequests: [],
+      sourceTargetIntersections: [],
+    };
+  }
+
+  handleRequestAddDelete(event: RequestElementAddDeleteEvent) {
+    this.requestAddDelete.emit(event);
+  }
+
+  handleCreateRequest(event: CreateRequestEvent) {
+    this.requestCreated.emit(event);
+  }
 
   itemChecked(event: MatCheckboxChange) {
     if (!this.item) {

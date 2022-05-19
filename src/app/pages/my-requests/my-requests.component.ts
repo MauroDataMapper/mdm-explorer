@@ -16,25 +16,43 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { HttpResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSelectionListChange } from '@angular/material/list';
-import { DataModelDetail } from '@maurodatamapper/mdm-resources';
+import {
+  CatalogueItemDomainType,
+  DataElement,
+  DataModelDetail,
+  Uuid,
+} from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, finalize, from, forkJoin, of, switchMap, throwError } from 'rxjs';
+import {
+  catchError,
+  EMPTY,
+  finalize,
+  forkJoin,
+  of,
+  switchMap,
+  throwError,
+  Observable,
+} from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import {
+  DataElementBasic,
   DataElementDeleteEvent,
   DataElementMultipleOperationResult,
   DataElementOperationResult,
+  DataElementSearchResult,
   DataRequest,
   DataRequestStatus,
   mapToDataRequest,
   SelectableDataElementSearchResult,
 } from 'src/app/data-explorer/data-explorer.types';
-import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import {
+  DataAccessRequestsSourceTargetIntersections,
+  DataRequestsService,
+} from 'src/app/data-explorer/data-requests.service';
 import { DialogService } from 'src/app/data-explorer/dialog.service';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import {
@@ -43,7 +61,8 @@ import {
 } from 'src/app/data-explorer/ok-cancel-dialog/ok-cancel-dialog.component';
 import { ResearchPluginService } from 'src/app/mauro/research-plugin.service';
 import { SecurityService } from 'src/app/security/security.service';
-import { resourceLimits } from 'worker_threads';
+import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
+import { RequestElementAddDeleteEvent } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
 
 @Component({
   selector: 'mdm-my-requests',
@@ -60,6 +79,7 @@ export class MyRequestsComponent implements OnInit {
   showSpinner = false;
   spinnerCaption = '';
   creatingNextVersion = false;
+  sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 
   constructor(
     private security: SecurityService,
@@ -68,8 +88,14 @@ export class MyRequestsComponent implements OnInit {
     private toastr: ToastrService,
     private researchPlugin: ResearchPluginService,
     private dialogs: DialogService,
-    private broadcast: BroadcastService
-  ) {}
+    private broadcast: BroadcastService,
+    private explorer: DataExplorerService
+  ) {
+    this.sourceTargetIntersections = {
+      dataAccessRequests: [],
+      sourceTargetIntersections: [],
+    };
+  }
 
   get hasMultipleRequestStatus() {
     const statuses = this.allRequests.map((req) => req.status);
@@ -78,17 +104,7 @@ export class MyRequestsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.state = 'loading';
-
-    this.getUserRequests()
-      .pipe(finalize(() => (this.state = 'idle')))
-      .subscribe((requests) => {
-        this.allRequests = requests;
-        this.filterRequests();
-        this.setRequest(
-          this.filteredRequests.length > 0 ? this.filteredRequests[0] : undefined
-        );
-      });
+    this.initialiseRequests();
   }
 
   selectRequest(event: MatSelectionListChange) {
@@ -185,22 +201,6 @@ export class MyRequestsComponent implements OnInit {
       });
   }
 
-  private getUserRequests() {
-    const user = this.security.getSignedInUser();
-    if (!user) {
-      return throwError(() => new Error('Cannot find user'));
-    }
-
-    return this.dataRequests.list(user.email).pipe(
-      catchError(() => {
-        this.toastr.error('There was a problem finding your requests.');
-        return EMPTY;
-      }),
-      finalize(() => (this.state = 'idle'))
-    );
-  }
-
-
   removeSelected() {
     const itemList = this.requestElements.filter((item) => item.isSelected);
     this.okCancelItemList(itemList)
@@ -212,7 +212,14 @@ export class MyRequestsComponent implements OnInit {
             this.spinnerCaption = `Removing ${itemList.length} data element${
               itemList.length === 1 ? '' : 's'
             } from request ${this.request?.label} ...`;
-            return this.dataRequests.deleteDataElementMultiple(itemList);
+            const dataModel: DataModelDetail = {
+              domainType: CatalogueItemDomainType.DataModel,
+              label: this.request?.label ?? '',
+              availableActions: [],
+              finalised: false,
+              id: this.request?.id ?? '',
+            };
+            return this.dataRequests.deleteDataElementMultiple(itemList, dataModel);
           } else {
             return EMPTY;
           }
@@ -245,14 +252,25 @@ export class MyRequestsComponent implements OnInit {
           if (result.result) {
             this.showSpinner = true;
             this.spinnerCaption = `Removing data element ${item.label} from request ${this.request?.label} ...`;
-            return this.dataRequests.deleteDataElement(item);
+            const dataModel: DataModelDetail = {
+              domainType: CatalogueItemDomainType.DataModel,
+              label: this.request?.label ?? '',
+              availableActions: [],
+              finalised: false,
+              id: this.request?.id ?? '',
+            };
+            return this.dataRequests.deleteDataElementMultiple([item], dataModel);
           } else {
             return EMPTY;
           }
         })
       )
-      .subscribe((result: DataElementOperationResult) => {
-        let message: string = '';
+      .subscribe((resultMultiple: DataElementMultipleOperationResult) => {
+        const result =
+          resultMultiple.failures.length === 0
+            ? resultMultiple.successes[0]
+            : resultMultiple.failures[0];
+        let message = '';
         if (!result.success) {
           message = `Removal of data element ${item.label} failed. The error message is: ${result.message}`;
         } else {
@@ -274,6 +292,45 @@ export class MyRequestsComponent implements OnInit {
         return { ...item, isSelected: event.checked };
       });
     }
+  }
+
+  handlePossibleSelfDelete(event: RequestElementAddDeleteEvent) {
+    if (event.dataModel?.id === this.request?.id) {
+      this.setRequest(this.request);
+    }
+  }
+
+  refreshRequests() {
+    this.initialiseRequests();
+  }
+
+  initialiseRequests(requestToSelect?: DataRequest | undefined) {
+    this.state = 'loading';
+
+    this.getUserRequests()
+      .pipe(finalize(() => (this.state = 'idle')))
+      .subscribe((requests) => {
+        this.allRequests = requests;
+        this.filterRequests();
+        this.setRequest(
+          this.filteredRequests.length > 0 ? this.filteredRequests[0] : requestToSelect
+        );
+      });
+  }
+
+  private getUserRequests() {
+    const user = this.security.getSignedInUser();
+    if (!user) {
+      return throwError(() => new Error('Cannot find user'));
+    }
+
+    return this.dataRequests.list(user.email).pipe(
+      catchError(() => {
+        this.toastr.error('There was a problem finding your requests.');
+        return EMPTY;
+      }),
+      finalize(() => (this.state = 'idle'))
+    );
   }
 
   private processRemoveDataElementResponse(result: boolean, message: string) {
@@ -324,28 +381,75 @@ export class MyRequestsComponent implements OnInit {
 
     this.state = 'loading';
 
-    this.dataRequests
-      .listDataElements(this.request)
+    forkJoin([
+      this.dataRequests.listDataElements(this.request),
+      this.explorer.getRootDataModel(),
+    ])
       .pipe(
+        switchMap(([dataElements, rootModel]: [DataElement[], DataModelDetail]) => {
+          if (this.request?.id && rootModel?.id) {
+            return this.dataModels.elementsInAnotherModel(rootModel, dataElements);
+          }
+          throw new Error('Id cannot be found for user request or root data model');
+        }),
+        switchMap((dataElements: (DataElement | null)[]) => {
+          return of(
+            dataElements.map((element) => {
+              return (
+                element
+                  ? {
+                      ...this.dataModels.dataElementToBasic(element),
+                      isSelected: false,
+                      isBookmarked: false,
+                    }
+                  : null
+              ) as SelectableDataElementSearchResult;
+            })
+          );
+        }),
+        switchMap((dataElements: SelectableDataElementSearchResult[]) => {
+          return forkJoin([
+            of(dataElements),
+            this.loadIntersections(dataElements),
+          ]) as Observable<
+            [
+              SelectableDataElementSearchResult[],
+              DataAccessRequestsSourceTargetIntersections
+            ]
+          >;
+        }),
         catchError(() => {
           this.toastr.error('There was a problem locating your request details.');
           return EMPTY;
         }),
         finalize(() => (this.state = 'idle'))
       )
-      .subscribe((dataElements) => {
-        this.requestElements = dataElements.map((element) => {
-          return {
-            id: element.id ?? '',
-            dataModelId: element.model ?? '',
-            dataClassId: element.dataClass ?? '',
-            label: element.label,
-            breadcrumbs: element.breadcrumbs,
-            isSelected: false,
-            isBookmarked: false,
-          };
-        });
+      .subscribe({
+        next: ([dataElements, intersections]) => {
+          this.requestElements = dataElements;
+          this.sourceTargetIntersections = intersections;
+        },
       });
+  }
+
+  private loadIntersections(elements: DataElementBasic[]) {
+    const dataElementIds: Uuid[] = [];
+
+    if (elements) {
+      elements.forEach((item: DataElementSearchResult) => {
+        dataElementIds.push(item.id);
+      });
+    }
+
+    return this.explorer.getRootDataModel().pipe(
+      switchMap((rootModel: DataModelDetail) => {
+        if (rootModel.id) {
+          return this.dataRequests.getRequestsIntersections(rootModel.id, dataElementIds);
+        } else {
+          return EMPTY;
+        }
+      })
+    );
   }
 
   private updateRequestList(request: DataRequest) {

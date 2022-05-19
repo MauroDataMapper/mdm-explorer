@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 -->
 <ng-container>
   <button #matMenuTrigger mat-raised-button color="primary" [matMenuTriggerFor]="menu">
-    Add to request
+    {{ caption }}
   </button>
   <mat-menu #menu="matMenu">
     <ng-container *ngIf="ready">
@@ -31,7 +31,7 @@ SPDX-License-Identifier: Apache-2.0
               [checked]="dataRequest.containsElement"
               [value]="dataRequest.id ?? ''"
               (click)="$event.stopPropagation()"
-              (change)="changed($event)"
+              (change)="changed($event, item)"
               >{{ dataRequest.label }}</mat-checkbox
             >
           </li>

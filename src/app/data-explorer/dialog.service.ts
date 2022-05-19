@@ -29,7 +29,6 @@ import {
 import {
   OkCancelDialogComponent,
   OkCancelDialogData,
-  OkCancelDialogResponse,
 } from './ok-cancel-dialog/ok-cancel-dialog.component';
 import {
   RequestCreatedAction,

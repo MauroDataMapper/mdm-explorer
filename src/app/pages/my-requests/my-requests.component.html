@@ -116,11 +116,17 @@ SPDX-License-Identifier: Apache-2.0
               </div>
             </div>
           </div>
-          <div class="mdm-my-requests__request-elements">
+          <div
+            class="mdm-my-requests__request-elements"
+            *ngIf="sourceTargetIntersections.dataAccessRequests.length > 0"
+          >
             <mdm-data-element-row
               *ngFor="let element of requestElements"
               [item]="element"
               (delete)="removeItem($event)"
+              [sourceTargetIntersections]="sourceTargetIntersections"
+              (requestAddDelete)="handlePossibleSelfDelete($event)"
+              (requestCreated)="refreshRequests()"
             >
             </mdm-data-element-row>
           </div>
