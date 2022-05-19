@@ -81,7 +81,7 @@ export class MdmPluginResearchResource extends MdmResource {
    * `200 OK` - will return an folder detail response. The HTTP status explains that it was successful.
    */
   userFolder(options?: RequestSettings) {
-    const url = `${this.apiEndpoint}/userFolder`;
+    const url = `${this.apiEndpoint}/explorer/userFolder`;
     return this.simplePost(url, null, options);
   }
 }
