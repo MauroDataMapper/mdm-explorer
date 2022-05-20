@@ -18,7 +18,8 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { DialogStatus } from './constants/dialog-status';
+import { DialogStatus } from '../types/shared.types';
+
 export interface ConfirmationDialogConfig {
   title?: string;
   message: string;
@@ -59,7 +60,11 @@ export class ConfirmationDialogComponent implements OnInit {
     this.cancelShown = this.data.cancelShown != null ? this.data.cancelShown : true;
   }
 
-  ok = () => this.dialogRef.close({ status: DialogStatus.Ok });
+  ok() {
+    return this.dialogRef.close({ status: 'ok' });
+  }
 
-  cancel = () => this.dialogRef.close({ status: DialogStatus.Cancel });
+  cancel() {
+    this.dialogRef.close({ status: 'cancel' });
+  }
 }

@@ -16,34 +16,32 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<form role="form">
-  <div class="modal-header">
-    <h2 class="modal-title marginless">{{ title }}</h2>
-  </div>
-  <div class="modal-body">
-    <span [innerHtml]="message"></span>
-  </div>
-  <div class="modal-footer">
-    <button
-      mat-button
-      data-cy="cancel"
-      color="primary"
-      *ngIf="cancelShown"
-      class="mr-1"
-      type="button"
-      d
-      (click)="cancel()"
-    >
-      {{ cancelTitle }}
-    </button>
-    <button
-      mat-flat-button
-      data-cy="continue"
-      color="{{ btnType }}"
-      type="button"
-      (click)="ok()"
-    >
-      {{ okTitle }}
-    </button>
-  </div>
-</form>
+<div class="modal-header">
+  <h2 class="modal-title marginless">{{ title }}</h2>
+</div>
+<div class="modal-body">
+  <span [innerHtml]="message"></span>
+</div>
+<div class="modal-footer">
+  <button
+    mat-button
+    data-cy="cancel"
+    color="primary"
+    *ngIf="cancelShown"
+    class="mr-1"
+    type="button"
+    d
+    (click)="cancel()"
+  >
+    {{ cancelTitle }}
+  </button>
+  <button
+    mat-flat-button
+    data-cy="continue"
+    color="{{ btnType }}"
+    type="button"
+    (click)="ok()"
+  >
+    {{ okTitle }}
+  </button>
+</div>

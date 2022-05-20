@@ -73,7 +73,10 @@ export class CatalogueUserService {
    * @param payload The details to update.
    * @returns An observable containing a {@link CatalogueUser}.
    */
-  update(id: Uuid, payload: CatalogueUserPayload): Observable<CatalogueUser> {
+  update(
+    id: Uuid,
+    payload: CatalogueUserPayload | CatalogueUserContactPayload
+  ): Observable<CatalogueUser> {
     return this.endpoints.catalogueUser
       .update(id, payload)
       .pipe(map((response: MdmResponse<CatalogueUser>) => response.body));
@@ -102,7 +105,7 @@ export class CatalogueUserService {
    */
   updateContactInfo(
     id: Uuid,
-    payload: CatalogueUserContactPayload
+    payload: CatalogueUserPayload | CatalogueUserContactPayload
   ): Observable<CatalogueUser> {
     return this.endpoints.catalogueUser
       .update(id, payload)

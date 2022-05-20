@@ -16,8 +16,5 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-export enum DialogStatus {
-  Ok = 'ok',
-  Cancel = 'cancel',
-  Close = 'close',
-}
+
+export type DialogStatus = 'ok' | 'cancel' | 'close';

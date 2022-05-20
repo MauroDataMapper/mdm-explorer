@@ -24,7 +24,6 @@ import {
   ConfirmationDialogConfig,
   DialogResult,
 } from '../confirmation-dialog.component';
-import { DialogStatus } from '../constants/dialog-status';
 
 declare module '@angular/material/dialog/dialog' {
   interface MatDialog {
@@ -109,7 +108,7 @@ MatDialog.prototype.openConfirmationAsync = function (
   return this.openConfirmation(config)
     .afterClosed()
     .pipe(
-      filter((result) => (result?.status ?? DialogStatus.Close) === DialogStatus.Ok),
+      filter((result) => (result?.status ?? 'close') === 'ok'),
       map(() => {})
     );
 };
@@ -122,14 +121,12 @@ MatDialog.prototype.openDoubleConfirmationAsync = function (
   return this.openConfirmation(firstConfig)
     .afterClosed()
     .pipe(
-      filter((result) => (result?.status ?? DialogStatus.Close) === DialogStatus.Ok),
+      filter((result) => (result?.status ?? 'close') === 'ok'),
       mergeMap(() => {
         return this.openConfirmation(finalConfig)
           .afterClosed()
           .pipe(
-            filter(
-              (result2) => (result2?.status ?? DialogStatus.Close) === DialogStatus.Ok
-            ),
+            filter((result2) => (result2?.status ?? 'close') === 'ok'),
             map(() => {})
           );
       })

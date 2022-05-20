@@ -31,7 +31,10 @@ import { SecurityService } from 'src/app/security/security.service';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import { ConfirmationDialogComponent } from 'src/app/shared/confirmation-dialog/confirmation-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { type } from 'os';
+import { DialogService } from 'src/app/data-explorer/dialog.service';
 
+export type MyAccountViewStatus = 'view' | 'edit' | 'updating';
 @Component({
   selector: 'mdm-my-account',
   templateUrl: './my-account.component.html',
@@ -39,8 +42,9 @@ import { MatDialog } from '@angular/material/dialog';
 })
 export class MyAccountComponent implements OnInit {
   user?: CatalogueUser;
-  basicInfoMode: 'view' | 'edit' | 'updating' = 'view';
-  contactInfoMode: 'view' | 'edit' | 'updating' = 'view';
+
+  basicInfoMode: MyAccountViewStatus = 'view';
+  contactInfoMode: MyAccountViewStatus = 'view';
 
   constructor(
     private security: SecurityService,
@@ -49,7 +53,7 @@ export class MyAccountComponent implements OnInit {
     private stateRouter: StateRouterService,
     private toastr: ToastrService,
     private broadcast: BroadcastService,
-    public dialog: MatDialog
+    public dialog: DialogService
   ) {}
 
   ngOnInit(): void {
@@ -119,13 +123,12 @@ export class MyAccountComponent implements OnInit {
     const oldEmail = this.user.emailAddress;
     this.contactInfoMode = 'updating';
 
-    const dialog = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        title: 'Logout warning!',
-        okBtnTitle: 'Yes, confirm logout. ',
-        btnType: 'primary',
-        message: 'Changing your email will log you out!',
-      },
+    const dialog = this.dialog.openConfirmation({
+      title: 'Account changes',
+      okBtnTitle: 'Yes, continue.',
+      btnType: 'primary',
+      message:
+        'Changing your email address will require us to sign you out of this website to make changes to your account. Once successful you can then sign in again with your new email address. Are you sure you would like to continue?',
     });
 
     dialog.afterClosed().subscribe((result: { status: string }) => {
@@ -140,7 +143,7 @@ export class MyAccountComponent implements OnInit {
       }
 
       this.catalogueUser
-        .updateContactInfo(this.user.id, payload)
+        .update(this.user.id, payload)
         .pipe(
           catchError(() => {
             this.toastr.error('There was a problem updating your account details.');
