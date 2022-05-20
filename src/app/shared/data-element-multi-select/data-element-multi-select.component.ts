@@ -18,7 +18,16 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { DataModel, DataModelSubsetPayload } from '@maurodatamapper/mdm-resources';
-import { catchError, EMPTY, filter, finalize, Subject, switchMap } from 'rxjs';
+import {
+  catchError,
+  EMPTY,
+  filter,
+  finalize,
+  Observable,
+  of,
+  Subject,
+  switchMap,
+} from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import {
   DataAccessRequestsSourceTargetIntersections,
@@ -36,6 +45,7 @@ import { UserDetails } from 'src/app/security/user-details.service';
 import { ToastrService } from 'ngx-toastr';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
+import { CreateRequestDialogResponse } from 'src/app/data-explorer/create-request-dialog/create-request-dialog.component';
 
 export interface CreateRequestEvent {
   item: DataElementSearchResult;
@@ -102,6 +112,28 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
       this.createRequest(this.dataElements);
     }
   }
+
+  func(): void {
+    const fn = (id: string): SelectableDataElementSearchResult[] => {
+      return [];
+    };
+  }
+
+  getCreateRequestDialogueResponse(
+    fn: () => {}
+  ): Observable<CreateRequestDialogResponse> {
+    return this.dialogs
+      .openCreateRequest()
+      .afterClosed()
+      .pipe(
+        filter((response) => !!response),
+        switchMap((response): Observable<CreateRequestDialogResponse> => {
+          return !response ? EMPTY : of(response);
+        })
+      );
+  }
+
+  finalizeCreateRequest();
 
   createRequest(dataElements: SelectableDataElementSearchResult[]) {
     this.dialogs
