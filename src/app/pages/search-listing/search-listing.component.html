@@ -18,12 +18,12 @@ SPDX-License-Identifier: Apache-2.0
 -->
 <div *ngIf="source !== 'unknown'" class="container hero-top-spacer">
   <div class="mdm-search-listing__back-link">
-    <a [routerLink]="backRouterLink">
+    <a [routerLink]="backRouterLink" [queryParams]="backQueryParams">
       <span class="fa-solid fa-arrow-left"></span>
       {{ backLabel }}
     </a>
   </div>
-  <div class="main-row mdm-search-listing__search">
+  <div class="mdm-search-listing__search">
     <form role="form" name="search" (submit)="updateSearch()">
       <mat-form-field appearance="outline" class="mdm-search-listing__search-input">
         <input matInput placeholder="Search" name="search" [(ngModel)]="searchTerms" />
