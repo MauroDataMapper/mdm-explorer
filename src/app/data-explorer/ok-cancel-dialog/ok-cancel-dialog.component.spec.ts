@@ -16,29 +16,38 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { createMatDialogRefStub } from 'src/app/testing/stubs/mat-dialog.stub';
+import {
+  ComponentHarness,
+  setupTestModuleForComponent,
+} from 'src/app/testing/testing.helpers';
 
-import { OkCancelDialogComponent } from './ok-cancel-dialog.component';
+import {
+  OkCancelDialogComponent,
+  OkCancelDialogResponse,
+} from './ok-cancel-dialog.component';
 
 describe('OkCancelDialogComponent', () => {
-  let component: OkCancelDialogComponent;
-  let fixture: ComponentFixture<OkCancelDialogComponent>;
+  let harness: ComponentHarness<OkCancelDialogComponent>;
+  const dialogRefStub = createMatDialogRefStub<OkCancelDialogResponse>();
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [OkCancelDialogComponent],
-    }).compileComponents();
-  });
-
-  beforeEach(() => {
-    //fixture = TestBed.createComponent(OkCancelDialogComponent);
-    //component = fixture.componentInstance;
-    //fixture.detectChanges();
-    fixture = {} as ComponentFixture<OkCancelDialogComponent>;
-    component = {} as OkCancelDialogComponent;
+    harness = await setupTestModuleForComponent(OkCancelDialogComponent, {
+      providers: [
+        {
+          provide: MatDialogRef,
+          useValue: dialogRefStub,
+        },
+        {
+          provide: MAT_DIALOG_DATA,
+          useValue: {},
+        },
+      ],
+    });
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(harness.isComponentCreated).toBeTruthy();
   });
 });
