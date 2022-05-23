@@ -32,6 +32,7 @@ import {
 import {
   catchError,
   concatMap,
+  EMPTY,
   filter,
   forkJoin,
   from,
@@ -83,12 +84,18 @@ export class DataRequestsService {
   ) {}
 
   /**
-   * Retrieve the users data requests folder. Creates a new folder if there isn't one.
+   * Retrieve the users data requests folder, which is assumed to be in local storage.
    *
    * @returns an observable containing a FolderDetail object
    */
   getRequestsFolder(): Observable<FolderDetail> {
-    return this.pluginResearch.userFolder();
+    const user = this.security.getSignedInUser();
+
+    if (user === null) {
+      return EMPTY;
+    } else {
+      return user.requestFolder ? of(user.requestFolder) : EMPTY;
+    }
   }
 
   /**

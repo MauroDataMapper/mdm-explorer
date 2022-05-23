@@ -17,6 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
+import { FolderDetail } from '@maurodatamapper/mdm-resources';
 
 /**
  * Represents the common details of a signed in user.
@@ -29,6 +30,7 @@ export interface UserDetails {
   email: string;
   role?: string;
   needsToResetPassword?: boolean;
+  requestFolder?: FolderDetail;
 }
 
 /**
@@ -50,6 +52,8 @@ export class UserDetailsService {
     if (!userEmail || userEmail.length === 0) {
       return null;
     }
+    const requestFolder = localStorage.getItem('requestFolder');
+
     return {
       id: localStorage.getItem('userId') ?? '',
       token: localStorage.getItem('token') ?? undefined,
@@ -58,6 +62,9 @@ export class UserDetailsService {
       email: localStorage.getItem('email') ?? '',
       role: localStorage.getItem('role') ?? undefined,
       needsToResetPassword: Boolean(localStorage.getItem('needsToResetPassword')),
+      requestFolder: requestFolder
+        ? (JSON.parse(requestFolder) as FolderDetail)
+        : undefined,
     };
   }
 
@@ -75,6 +82,7 @@ export class UserDetailsService {
       'needsToResetPassword',
       (user.needsToResetPassword ?? false).toString()
     );
+    localStorage.setItem('requestFolder', JSON.stringify(user.requestFolder));
   }
 
   /**
@@ -88,5 +96,6 @@ export class UserDetailsService {
     localStorage.removeItem('email');
     localStorage.removeItem('role');
     localStorage.removeItem('needsToResetPassword');
+    localStorage.removeItem('requestFolder');
   }
 }

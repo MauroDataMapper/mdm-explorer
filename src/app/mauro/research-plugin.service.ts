@@ -50,9 +50,9 @@ export class ResearchPluginService {
     );
   }
 
-  userFolder(): Observable<FolderDetail> {
+  getOrCreateUserFolder(): Observable<FolderDetail> {
     return this.endpoints.pluginResearch
-      .userFolder()
+      .getOrCreateUserFolder()
       .pipe(map((response: FolderDetailResponse) => response.body));
   }
 }
