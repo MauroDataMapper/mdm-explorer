@@ -96,21 +96,33 @@ describe('DataRequestsService', () => {
 
   describe('get requests folder', () => {
     it('should get the user folder with the expected name', () => {
-      // Arrange
-      const expectedFolder = { label: 'test[at]gmail.com' } as FolderDetail;
+      const expectedFolder: FolderDetail = {
+        id: '9987',
+        label: 'expected[at]email.com',
+        domainType: CatalogueItemDomainType.Folder,
+        availableActions: [],
+      };
 
-      const expected$ = cold('a|', {
-        a: expectedFolder,
-      });
+      const expectedUser: UserDetails = {
+        id: '456',
+        firstName: 'first',
+        lastName: 'last',
+        email: 'test@test.com',
+        needsToResetPassword: false,
+        role: '',
+        token: undefined,
+        requestFolder: expectedFolder,
+      };
 
-      researchPluginStub.userFolder.mockImplementationOnce(() => {
-        return cold('a|', {
-          a: expectedFolder,
-        });
-      });
+      securityStub.getSignedInUser.mockClear();
+      securityStub.getSignedInUser.mockImplementationOnce(() => expectedUser);
 
       // Act
       const actual$ = service.getRequestsFolder();
+
+      const expected$ = cold('(a|)', {
+        a: expectedFolder,
+      });
 
       // Assert
       expect(actual$).toBeObservable(expected$);
@@ -120,15 +132,29 @@ describe('DataRequestsService', () => {
   describe('list', () => {
     it('should return a list of dms under the user folder', () => {
       // Arrange
-      const expectedFolder = { label: 'test[at]gmail.com' } as FolderDetail;
+      const expectedFolder: FolderDetail = {
+        id: '9987',
+        label: 'expected[at]email.com',
+        domainType: CatalogueItemDomainType.Folder,
+        availableActions: [],
+      };
+
+      const expectedUser: UserDetails = {
+        id: '456',
+        firstName: 'first',
+        lastName: 'last',
+        email: 'test@test.com',
+        needsToResetPassword: false,
+        role: '',
+        token: undefined,
+        requestFolder: expectedFolder,
+      };
+
+      securityStub.getSignedInUser.mockClear();
+      securityStub.getSignedInUser.mockImplementationOnce(() => expectedUser);
+
       const dms = ['label-1', 'label-2', 'label-3'].map((label: string) => {
         return { label } as DataModel;
-      });
-
-      researchPluginStub.userFolder.mockImplementationOnce(() => {
-        return cold('--a|', {
-          a: expectedFolder,
-        });
       });
 
       dataModelsStub.listInFolder.mockImplementationOnce(() => {
@@ -137,7 +163,7 @@ describe('DataRequestsService', () => {
         });
       });
 
-      const expected$ = cold('---a|', {
+      const expected$ = cold('-a|', {
         a: dms.map((dm) => {
           return { ...dm, status: 'unsent' };
         }),
@@ -235,12 +261,28 @@ describe('DataRequestsService', () => {
     };
 
     beforeEach(() => {
-      const userFolder = { label: 'test[at]test.com', id: '987' } as FolderDetail;
-      researchPluginStub.userFolder.mockImplementationOnce(() => {
-        return cold('-a|', {
-          a: userFolder,
-        });
-      });
+      // Mock a folder for the user's requests
+      const expectedFolder: FolderDetail = {
+        id: '9987',
+        label: 'test[at]gmail.com',
+        domainType: CatalogueItemDomainType.Folder,
+        availableActions: [],
+      };
+
+      // Mock a signed in user
+      const expectedUser: UserDetails = {
+        id: '456',
+        firstName: 'first',
+        lastName: 'last',
+        email: 'test@test.com',
+        needsToResetPassword: false,
+        role: '',
+        token: undefined,
+        requestFolder: expectedFolder,
+      };
+
+      securityStub.getSignedInUser.mockClear();
+      securityStub.getSignedInUser.mockImplementation(() => expectedUser);
 
       catalogueUserStub.get.mockImplementationOnce(() => {
         return cold('-a|', {
@@ -331,19 +373,28 @@ describe('DataRequestsService', () => {
         a: expectedDataAccessRequestSourceTargetIntersection,
       });
 
-      // Mock a signed in user
-      securityStub.getSignedInUser.mockImplementationOnce(() => {
-        return { email: 'test@gmail.com' } as UserDetails;
-      });
-
       // Mock a folder for the user's requests
-      const expectedFolder = { label: 'test[at]gmail.com' } as FolderDetail;
+      const expectedFolder: FolderDetail = {
+        id: '9987',
+        label: 'test[at]gmail.com',
+        domainType: CatalogueItemDomainType.Folder,
+        availableActions: [],
+      };
 
-      researchPluginStub.userFolder.mockImplementationOnce(() => {
-        return cold('--a|', {
-          a: expectedFolder,
-        });
-      });
+      // Mock a signed in user
+      const expectedUser: UserDetails = {
+        id: '456',
+        firstName: 'first',
+        lastName: 'last',
+        email: 'test@test.com',
+        needsToResetPassword: false,
+        role: '',
+        token: undefined,
+        requestFolder: expectedFolder,
+      };
+
+      securityStub.getSignedInUser.mockClear();
+      securityStub.getSignedInUser.mockImplementation(() => expectedUser);
 
       // Mock one target model
       const target: DataModel = {
@@ -365,7 +416,7 @@ describe('DataRequestsService', () => {
       };
 
       dataModelsStub.getIntersectionMany.mockImplementationOnce(() => {
-        return cold('--a|', {
+        return cold('----a|', {
           a: many,
         });
       });
@@ -375,6 +426,8 @@ describe('DataRequestsService', () => {
 
       // Assert
       expect(actual$).toBeObservable(expected$);
+
+      securityStub.getSignedInUser.mockClear();
     });
   });
 });

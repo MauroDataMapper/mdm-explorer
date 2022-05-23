@@ -18,6 +18,8 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { HttpErrorResponse } from '@angular/common/http';
 import {
+  CatalogueItemDomainType,
+  FolderDetail,
   LoginPayload,
   PublicOpenIdConnectProvider,
 } from '@maurodatamapper/mdm-resources';
@@ -93,6 +95,19 @@ describe('SecurityService', () => {
         },
       })
     );
+
+    endpointsStub.pluginResearch.userFolder.mockImplementationOnce(() =>
+      cold('--a|', {
+        a: {
+          body: {
+            id: '9987',
+            label: 'expected[at]email.com',
+            domainType: 'Folder',
+            availableActions: [],
+          },
+        },
+      })
+    );
   };
 
   describe('sign in', () => {
@@ -105,6 +120,13 @@ describe('SecurityService', () => {
         password: 'test',
       };
 
+      const expectedRequestFolder: FolderDetail = {
+        id: '9987',
+        label: 'expected[at]email.com',
+        domainType: CatalogueItemDomainType.Folder,
+        availableActions: [],
+      };
+
       const expectedUser: UserDetails = {
         id,
         firstName: 'first',
@@ -113,11 +135,12 @@ describe('SecurityService', () => {
         needsToResetPassword: false,
         role: '',
         token: undefined,
+        requestFolder: expectedRequestFolder,
       };
 
       setupLoginMocks(expectedUser);
 
-      const expected$ = cold('--a|', { a: expectedUser });
+      const expected$ = cold('----a|', { a: expectedUser });
       const actual$ = service.signIn(payload);
 
       expect(actual$).toBeObservable(expected$);
@@ -249,6 +272,13 @@ describe('SecurityService', () => {
         code: 'code',
       };
 
+      const expectedRequestFolder: FolderDetail = {
+        id: '9987',
+        label: 'expected[at]email.com',
+        domainType: CatalogueItemDomainType.Folder,
+        availableActions: [],
+      };
+
       const expectedUser: UserDetails = {
         id: '456',
         firstName: 'first',
@@ -257,11 +287,12 @@ describe('SecurityService', () => {
         needsToResetPassword: false,
         role: '',
         token: undefined,
+        requestFolder: expectedRequestFolder,
       };
 
       setupLoginMocks(expectedUser);
 
-      const expected$ = cold('--a|', { a: expectedUser });
+      const expected$ = cold('----a|', { a: expectedUser });
       const actual$ = service.authorizeOpenIdConnectSession(session);
 
       expect(actual$).toBeObservable(expected$);

@@ -80,7 +80,7 @@ export class MdmPluginResearchResource extends MdmResource {
    *
    * `200 OK` - will return an folder detail response. The HTTP status explains that it was successful.
    */
-  getOrCreateUserFolder(options?: RequestSettings) {
+  userFolder(options?: RequestSettings) {
     const url = `${this.apiEndpoint}/explorer/userFolder`;
     return this.simplePost(url, null, options);
   }

@@ -91,10 +91,13 @@ export class DataRequestsService {
   getRequestsFolder(): Observable<FolderDetail> {
     const user = this.security.getSignedInUser();
 
-    if (user === null) {
-      return EMPTY;
+    if (user && user.requestFolder) {
+      return new Observable<FolderDetail>((subscriber) => {
+        subscriber.next(user.requestFolder);
+        subscriber.complete();
+      });
     } else {
-      return user.requestFolder ? of(user.requestFolder) : EMPTY;
+      return EMPTY;
     }
   }
 

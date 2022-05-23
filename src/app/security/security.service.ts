@@ -96,7 +96,7 @@ export class SecurityService {
         return user;
       }),
       concatMap((user: UserDetails) => {
-        return this.researchPlugin.getOrCreateUserFolder().pipe(
+        return this.researchPlugin.userFolder().pipe(
           map((folder: FolderDetail) => {
             user.requestFolder = folder;
 

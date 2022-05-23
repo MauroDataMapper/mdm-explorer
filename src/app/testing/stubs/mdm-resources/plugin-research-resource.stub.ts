@@ -27,15 +27,18 @@ export type PluginResearchContactFn = (
   data: PluginResearchContactPayload
 ) => Observable<PluginResearchContactResponse>;
 export type PluginResearchSubmitRequestFn = (id: Uuid) => Observable<MdmResponse<any>>;
+export type PluginResearchUserFolderFn = () => Observable<MdmResponse<any>>;
 
 export interface MdmPluginResearchResourceStub {
   contact: jest.MockedFunction<PluginResearchContactFn>;
   submitRequest: jest.MockedFunction<PluginResearchSubmitRequestFn>;
+  userFolder: jest.MockedFunction<PluginResearchUserFolderFn>;
 }
 
 export const createPluginResearchStub = (): MdmPluginResearchResourceStub => {
   return {
     contact: jest.fn() as jest.MockedFunction<PluginResearchContactFn>,
     submitRequest: jest.fn() as jest.MockedFunction<PluginResearchSubmitRequestFn>,
+    userFolder: jest.fn() as jest.MockedFunction<PluginResearchUserFolderFn>,
   };
 };
