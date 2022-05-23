@@ -329,7 +329,7 @@ export class DataRequestsService {
     );
   }
 
-  createDataRequestWithDialogs(
+  createWithDialogs(
     getDataElements: () => Observable<DataElementBasic[]>
   ): Observable<RequestCreatedAction | undefined> {
     const user = this.security.getSignedInUser();

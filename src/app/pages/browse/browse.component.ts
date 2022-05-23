@@ -122,13 +122,11 @@ export class BrowseComponent implements OnInit {
       );
     };
 
-    this.dataRequests
-      .createDataRequestWithDialogs(getDataElements)
-      .subscribe((action) => {
-        if (action === 'view-requests') {
-          this.stateRouter.navigateToKnownPath('/requests');
-        }
-      });
+    this.dataRequests.createWithDialogs(getDataElements).subscribe((action) => {
+      if (action === 'view-requests') {
+        this.stateRouter.navigateToKnownPath('/requests');
+      }
+    });
   }
 
   selectParentDataClass(event: MatSelectionListChange) {

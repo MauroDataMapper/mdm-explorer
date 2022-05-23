@@ -123,13 +123,11 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
       return of(dataElements);
     };
 
-    this.dataRequests
-      .createDataRequestWithDialogs(getDataElements)
-      .subscribe((action) => {
-        if (action === 'view-requests') {
-          this.stateRouter.navigateToKnownPath('/requests');
-        }
-      });
+    this.dataRequests.createWithDialogs(getDataElements).subscribe((action) => {
+      if (action === 'view-requests') {
+        this.stateRouter.navigateToKnownPath('/requests');
+      }
+    });
   }
 
   /**

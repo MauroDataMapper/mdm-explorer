@@ -210,13 +210,11 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
       return of([event.item]);
     };
 
-    this.dataRequests
-      .createDataRequestWithDialogs(getDataElements)
-      .subscribe((action) => {
-        if (action === 'view-requests') {
-          this.stateRouter.navigateToKnownPath('/requests');
-        }
-      });
+    this.dataRequests.createWithDialogs(getDataElements).subscribe((action) => {
+      if (action === 'view-requests') {
+        this.stateRouter.navigateToKnownPath('/requests');
+      }
+    });
   }
 
   /**
