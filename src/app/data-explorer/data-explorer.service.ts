@@ -23,23 +23,11 @@ import {
   ProfileField,
   ProfileSection,
 } from '@maurodatamapper/mdm-resources';
-import {
-  catchError,
-  EMPTY,
-  filter,
-  map,
-  Observable,
-  of,
-  switchMap,
-  throwError,
-} from 'rxjs';
+import { catchError, map, Observable, of, switchMap, throwError } from 'rxjs';
 import { DataModelService } from '../mauro/data-model.service';
 import { ProfileService } from '../mauro/profile.service';
-import { DataElementBasic, DataExplorerConfiguration } from './data-explorer.types';
 import { ApiPropertiesService } from '../mauro/api-properties.service';
-import { DialogService } from './dialog.service';
-import { DataRequestsService } from './data-requests.service';
-import { CreateRequestDialogResponse } from './create-request-dialog/create-request-dialog.component';
+import { DataExplorerConfiguration } from './data-explorer.types';
 
 export const configurationKeys = {
   category: 'Mauro Data Explorer',
@@ -77,9 +65,7 @@ export class DataExplorerService {
   constructor(
     private apiProperties: ApiPropertiesService,
     private dataModels: DataModelService,
-    private profiles: ProfileService,
-    private dialogs: DialogService,
-    private dataRequests: DataRequestsService
+    private profiles: ProfileService
   ) {}
 
   initialise(): Observable<DataExplorerConfiguration> {
@@ -142,20 +128,6 @@ export class DataExplorerService {
           return definition.sections
             .flatMap((section: ProfileSection) => section.fields)
             .filter((field: ProfileField) => field.dataType === 'enumeration');
-        })
-      );
-  }
-
-  createDataRequestWithDialogs(getDataElements: () => DataElementBasic[]): void {
-    this.dialogs
-      .openCreateRequest()
-      .afterClosed()
-      .pipe(
-        filter((response) => !!response),
-        switchMap((response) => {
-          if (!response) return EMPTY;
-
-          return getDataElements();
         })
       );
   }
