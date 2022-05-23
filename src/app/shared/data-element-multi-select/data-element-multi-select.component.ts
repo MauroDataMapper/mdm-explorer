@@ -36,6 +36,7 @@ import {
 import { SecurityService } from 'src/app/security/security.service';
 import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
 import {
+  DataElementBasic,
   DataElementSearchResult,
   RemoveBookmarkEvent,
   SelectableDataElementSearchResult,
@@ -45,7 +46,6 @@ import { UserDetails } from 'src/app/security/user-details.service';
 import { ToastrService } from 'ngx-toastr';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
-import { CreateRequestDialogResponse } from 'src/app/data-explorer/create-request-dialog/create-request-dialog.component';
 
 export interface CreateRequestEvent {
   item: DataElementSearchResult;
@@ -113,70 +113,18 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
     }
   }
 
-  func(): void {
-    const fn = (id: string): SelectableDataElementSearchResult[] => {
-      return [];
-    };
-  }
-
-  getCreateRequestDialogueResponse(
-    fn: () => {}
-  ): Observable<CreateRequestDialogResponse> {
-    return this.dialogs
-      .openCreateRequest()
-      .afterClosed()
-      .pipe(
-        filter((response) => !!response),
-        switchMap((response): Observable<CreateRequestDialogResponse> => {
-          return !response ? EMPTY : of(response);
-        })
-      );
-  }
-
-  finalizeCreateRequest();
-
   createRequest(dataElements: SelectableDataElementSearchResult[]) {
-    this.dialogs
-      .openCreateRequest()
-      .afterClosed()
-      .pipe(
-        filter((response) => !!response),
-        switchMap((response) => {
-          if (!response || !this.user) {
-            return EMPTY;
-          }
+    if (!this.user) {
+      this.toastr.error('You must be signed in in order to create data requests.');
+      return;
+    }
 
-          this.broadcast.loading({
-            isLoading: true,
-            caption: 'Creating new request ...',
-          });
+    const getDataElements = (): Observable<DataElementBasic[]> => {
+      return of(dataElements);
+    };
 
-          return this.dataRequests.createFromDataElements(
-            dataElements,
-            this.user,
-            response.name,
-            response.description
-          );
-        }),
-        catchError((error) => {
-          this.toastr.error(
-            `There was a problem creating your request. ${error}`,
-            'Request creation error'
-          );
-          return EMPTY;
-        }),
-        switchMap((dataRequest) => {
-          this.broadcast.dispatch('data-request-added');
-
-          return this.dialogs
-            .openRequestCreated({
-              request: dataRequest,
-              addedElements: dataElements,
-            })
-            .afterClosed();
-        }),
-        finalize(() => this.broadcast.loading({ isLoading: false }))
-      )
+    this.dataRequests
+      .createDataRequestWithDialogs(getDataElements)
       .subscribe((action) => {
         if (action === 'view-requests') {
           this.stateRouter.navigateToKnownPath('/requests');

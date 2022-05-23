@@ -18,7 +18,17 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { DataModelSubsetPayload } from '@maurodatamapper/mdm-resources';
-import { catchError, EMPTY, filter, finalize, Subject, switchMap, takeUntil } from 'rxjs';
+import {
+  catchError,
+  EMPTY,
+  filter,
+  finalize,
+  Observable,
+  of,
+  Subject,
+  switchMap,
+  takeUntil,
+} from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import {
   DataAccessRequestsSourceTargetIntersections,
@@ -36,6 +46,7 @@ import { DialogService } from 'src/app/data-explorer/dialog.service';
 import { UserDetails } from 'src/app/security/user-details.service';
 import { ToastrService } from 'ngx-toastr';
 import { BroadcastService } from 'src/app/core/broadcast.service';
+import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 
 export interface CreateRequestEvent {
   item: DataElementSearchResult;
@@ -84,7 +95,6 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
     private stateRouter: StateRouterService,
     private dataRequests: DataRequestsService,
     private endpoints: MdmEndpointsService,
-    private dialogs: DialogService,
     private toastr: ToastrService,
     private broadcast: BroadcastService
   ) {
@@ -191,50 +201,17 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
   }
 
   createRequest(event: CreateRequestEvent) {
-    this.dialogs
-      .openCreateRequest()
-      .afterClosed()
-      .pipe(
-        filter((response) => !!response),
-        switchMap((response) => {
-          if (!response || !this.user) {
-            return EMPTY;
-          }
+    if (!this.user) {
+      this.toastr.error('You must be signed in in order to create data requests.');
+      return;
+    }
 
-          this.broadcast.loading({
-            isLoading: true,
-            caption: 'Creating new request ...',
-          });
+    const getDataElements = (): Observable<DataElementBasic[]> => {
+      return of([event.item]);
+    };
 
-          return this.dataRequests.createFromDataElements(
-            [event.item],
-            this.user,
-            response.name,
-            response.description
-          );
-        }),
-        catchError((error) => {
-          this.toastr.error(
-            `There was a problem creating your request. ${error}`,
-            'Request creation error'
-          );
-          return EMPTY;
-        }),
-        switchMap((dataRequest) => {
-          this.broadcast.dispatch('data-request-added');
-
-          return this.dialogs
-            .openRequestCreated({
-              request: dataRequest,
-              addedElements: [event.item],
-            })
-            .afterClosed();
-        }),
-        finalize(() => {
-          this.broadcast.loading({ isLoading: false });
-          this.createRequestClicked.emit(event);
-        })
-      )
+    this.dataRequests
+      .createDataRequestWithDialogs(getDataElements)
       .subscribe((action) => {
         if (action === 'view-requests') {
           this.stateRouter.navigateToKnownPath('/requests');
