@@ -25,7 +25,6 @@ import {
   DataModel,
   DataModelCreatePayload,
   DataModelDetail,
-  DataModelDetailResponse,
   DataModelSubsetPayload,
   MdmIndexBody,
   SearchQueryParameters,

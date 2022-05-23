@@ -76,8 +76,6 @@ export class MyRequestsComponent implements OnInit {
   request?: DataRequest;
   requestElements: SelectableDataElementSearchResult[] = [];
   state: 'idle' | 'loading' = 'idle';
-  showSpinner = false;
-  spinnerCaption = '';
   creatingNextVersion = false;
   sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 
@@ -129,9 +127,6 @@ export class MyRequestsComponent implements OnInit {
     }
 
     this.broadcast.loading({ isLoading: true, caption: 'Submitting your request...' });
-
-    this.showSpinner = true;
-    this.spinnerCaption = 'Submitting your request ...';
     this.researchPlugin
       .submitRequest(this.request.id)
       .pipe(
@@ -208,10 +203,12 @@ export class MyRequestsComponent implements OnInit {
       .pipe(
         switchMap((result: OkCancelDialogResponse) => {
           if (result.result) {
-            this.showSpinner = true;
-            this.spinnerCaption = `Removing ${itemList.length} data element${
-              itemList.length === 1 ? '' : 's'
-            } from request ${this.request?.label} ...`;
+            this.broadcast.loading({
+              isLoading: true,
+              caption: `Removing ${itemList.length} data element${
+                itemList.length === 1 ? '' : 's'
+              } from request ${this.request?.label} ...`,
+            });
             const dataModel: DataModelDetail = {
               domainType: CatalogueItemDomainType.DataModel,
               label: this.request?.label ?? '',
@@ -239,7 +236,7 @@ export class MyRequestsComponent implements OnInit {
           );
         }
         this.processRemoveDataElementResponse(success, message);
-        this.showSpinner = false;
+        this.broadcast.loading({ isLoading: false });
       });
   }
 
@@ -250,8 +247,10 @@ export class MyRequestsComponent implements OnInit {
       .pipe(
         switchMap((result: OkCancelDialogResponse) => {
           if (result.result) {
-            this.showSpinner = true;
-            this.spinnerCaption = `Removing data element ${item.label} from request ${this.request?.label} ...`;
+            this.broadcast.loading({
+              isLoading: true,
+              caption: `Removing data element ${item.label} from request ${this.request?.label} ...`,
+            });
             const dataModel: DataModelDetail = {
               domainType: CatalogueItemDomainType.DataModel,
               label: this.request?.label ?? '',
@@ -277,7 +276,7 @@ export class MyRequestsComponent implements OnInit {
           message = `Data element "${item.label}" removed from request "${this.request?.label}".`;
         }
         this.processRemoveDataElementResponse(result.success, message);
-        this.showSpinner = false;
+        this.broadcast.loading({ isLoading: false });
       });
   }
 

@@ -156,14 +156,3 @@ SPDX-License-Identifier: Apache-2.0
     </div>
   </div>
 </div>
-
-<div *ngIf="showSpinner">
-  <mdm-loading-spinner [caption]="spinnerCaption" color="primary"></mdm-loading-spinner>
-</div>
-
-<div *ngIf="creatingNextVersion">
-  <mdm-loading-spinner
-    caption="Creating next version of your request ..."
-    color="primary"
-  ></mdm-loading-spinner>
-</div>

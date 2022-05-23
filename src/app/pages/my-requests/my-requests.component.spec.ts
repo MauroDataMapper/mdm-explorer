@@ -22,7 +22,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSelectionListChange } from '@angular/material/list';
 import {
   CatalogueItemDomainType,
-  DataElement,
+  // DataElement,
   DataModel,
   DataModelDetail,
 } from '@maurodatamapper/mdm-resources';
@@ -31,12 +31,12 @@ import { of, throwError } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import {
-  DataElementBasic,
+  // DataElementBasic,
   DataRequest,
   DataRequestStatus,
 } from 'src/app/data-explorer/data-explorer.types';
 import {
-  DataAccessRequestsSourceTargetIntersections,
+  // DataAccessRequestsSourceTargetIntersections,
   DataRequestsService,
 } from 'src/app/data-explorer/data-requests.service';
 import { DataModelService } from 'src/app/mauro/data-model.service';
@@ -48,7 +48,7 @@ import { createDataExplorerServiceStub } from 'src/app/testing/stubs/data-explor
 import { createDataModelServiceStub } from 'src/app/testing/stubs/data-model.stub';
 import {
   createDataRequestsServiceStub,
-  DataAccessRequestsSourceTargetIntersectionsFn,
+  // DataAccessRequestsSourceTargetIntersectionsFn,
 } from 'src/app/testing/stubs/data-requests.stub';
 import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
 import { createResearchPluginServiceStub } from 'src/app/testing/stubs/research-plugin.stub';

@@ -23,6 +23,7 @@ import {
   DataModel,
   ProfileField,
   ProfileSearchResult,
+  ProfileSearchResultField,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { DataClassIdentifier } from '../mauro/mauro.types';
@@ -211,7 +212,7 @@ export const mapProfileSearchResult = (
 
   // Map profile fields directly to the returned object for ease of access
   const idenfifableDataField = item.profileFields.find(
-    (field) => field.metadataPropertyName === 'identifiableData'
+    (field: ProfileSearchResultField) => field.metadataPropertyName === 'identifiableData'
   );
 
   return {

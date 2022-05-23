@@ -22,7 +22,6 @@ import {
   DataModel,
   DataModelCreatePayload,
   DataModelDetail,
-  DataModelSubsetPayload,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import {
@@ -33,7 +32,6 @@ import {
 import {
   catchError,
   concatMap,
-  EMPTY,
   filter,
   forkJoin,
   from,

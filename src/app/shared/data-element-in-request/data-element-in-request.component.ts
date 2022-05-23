@@ -43,7 +43,7 @@ export interface CreateRequestEvent {
 
 export interface RequestElementAddDeleteEvent {
   adding: boolean;
-  dataModel: DataModel;
+  dataModel: DataAccessRequestMenuItem;
   dataElement: DataElementBasic;
 }
 
@@ -119,7 +119,7 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
    *
    * @param event
    */
-  changed(event: MatCheckboxChange, item: DataModel) {
+  changed(event: MatCheckboxChange, item: DataAccessRequestMenuItem) {
     if (this.dataElement) {
       const targetDataModelId = event.source.value;
       const datamodelSubsetPayload: DataModelSubsetPayload = {
@@ -231,7 +231,7 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
             .afterClosed();
         }),
         finalize(() => {
-          this.broadcast.loading({ isLoading: false })
+          this.broadcast.loading({ isLoading: false });
           this.createRequestClicked.emit(event);
         })
       )

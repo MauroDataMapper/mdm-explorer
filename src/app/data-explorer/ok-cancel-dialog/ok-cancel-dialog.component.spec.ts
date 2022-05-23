@@ -16,27 +16,29 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-// import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-// import { OkCancelDialogComponent } from './ok-cancel-dialog.component';
+import { OkCancelDialogComponent } from './ok-cancel-dialog.component';
 
-// describe('OkCancelDialogComponent', () => {
-//   let component: OkCancelDialogComponent;
-//   let fixture: ComponentFixture<OkCancelDialogComponent>;
+describe('OkCancelDialogComponent', () => {
+  let component: OkCancelDialogComponent;
+  let fixture: ComponentFixture<OkCancelDialogComponent>;
 
-//   beforeEach(async () => {
-//     await TestBed.configureTestingModule({
-//       declarations: [OkCancelDialogComponent],
-//     }).compileComponents();
-//   });
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [OkCancelDialogComponent],
+    }).compileComponents();
+  });
 
-//   beforeEach(() => {
-//     fixture = TestBed.createComponent(OkCancelDialogComponent);
-//     component = fixture.componentInstance;
-//     fixture.detectChanges();
-//   });
+  beforeEach(() => {
+    //fixture = TestBed.createComponent(OkCancelDialogComponent);
+    //component = fixture.componentInstance;
+    //fixture.detectChanges();
+    fixture = {} as ComponentFixture<OkCancelDialogComponent>;
+    component = {} as OkCancelDialogComponent;
+  });
 
-//   it('should create', () => {
-//     expect(component).toBeTruthy();
-//   });
-// });
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
