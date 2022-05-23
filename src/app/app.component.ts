@@ -18,7 +18,6 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
-import { UserIdleService } from 'angular-user-idle';
 import { ToastrService } from 'ngx-toastr';
 import {
   catchError,
@@ -41,6 +40,7 @@ import { UserDetails, UserDetailsService } from './security/user-details.service
 import { FooterLink } from './shared/footer/footer.component';
 import { HeaderImageLink, HeaderLink } from './shared/header/header.component';
 import { OverlayContainer } from '@angular/cdk/overlay';
+import { UserIdleService } from './external/user-idle.service';
 
 @Component({
   selector: 'mdm-root',
