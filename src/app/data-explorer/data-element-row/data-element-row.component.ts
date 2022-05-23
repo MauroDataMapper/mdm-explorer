@@ -63,18 +63,13 @@ export class DataElementRowComponent {
       return;
     }
 
+    this.item.isSelected = !this.item?.isSelected ?? false;
     this.checked.emit({ item: this.item, checked: event.checked });
   }
 
   removeElement() {
     if (this.item) {
       this.delete.emit({ item: this.item });
-    }
-  }
-
-  checkedChanged() {
-    if (this.item) {
-      this.item.isSelected = !this.item?.isSelected ?? false;
     }
   }
 }

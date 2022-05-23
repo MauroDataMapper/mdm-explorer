@@ -23,7 +23,7 @@ SPDX-License-Identifier: Apache-2.0
         <mat-checkbox
           class="mdm-data-element-row__header-title-checkbox"
           [checked]="item.isSelected"
-          (change)="checkedChanged()"
+          (change)="itemChecked($event)"
         ></mat-checkbox>
         <h3>{{ item.label }}</h3>
       </div>
@@ -34,7 +34,7 @@ SPDX-License-Identifier: Apache-2.0
         ></mdm-breadcrumb>
       </div>
     </span>
-    <span class="mdm-data-element-row__header-button-panel">
+    <span class="mdm-data-element-row__header-button-panel" id="mine">
       <button
         mat-raised-button
         class="mdm-data-element-row__header-button"
