@@ -91,6 +91,7 @@ export class DialogService {
     return this.matDialog.open<OkCancelDialogComponent, OkCancelDialogData>(
       OkCancelDialogComponent,
       {
+        maxWidth: 500,
         data,
       }
     );

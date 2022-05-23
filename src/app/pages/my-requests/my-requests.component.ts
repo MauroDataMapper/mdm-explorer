@@ -347,8 +347,8 @@ export class MyRequestsComponent implements OnInit {
     itemList: SelectableDataElementSearchResult[]
   ): MatDialogRef<OkCancelDialogData> {
     return this.dialogs.openOkCancel({
-      heading: 'Delete selected data elements',
-      content: `Are you sure you want to delete these ${itemList.length} selected data elements from request ${this.request?.label}?`,
+      heading: 'Remove selected data elements',
+      content: `Are you sure you want to remove these ${itemList.length} selected data elements from request ${this.request?.label}?`,
       okLabel: 'Yes',
       cancelLabel: 'No',
     });
@@ -358,8 +358,8 @@ export class MyRequestsComponent implements OnInit {
     item: SelectableDataElementSearchResult
   ): MatDialogRef<OkCancelDialogData> {
     return this.dialogs.openOkCancel({
-      heading: 'Delete data element',
-      content: `Are you sure you want to delete data element "${item.label}" from request "${this.request?.label}"?`,
+      heading: 'Remove data element',
+      content: `Are you sure you want to remove data element "${item.label}" from request "${this.request?.label}"?`,
       okLabel: 'Yes',
       cancelLabel: 'No',
     });
