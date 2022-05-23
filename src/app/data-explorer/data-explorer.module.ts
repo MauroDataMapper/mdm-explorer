@@ -36,6 +36,7 @@ import { BookmarkRowComponent } from './bookmark-row/bookmark-row.component';
 import { IdentifiableDataIconComponent } from './identifiable-data-icon/identifiable-data-icon.component';
 import { SearchFiltersComponent } from './search-filters/search-filters.component';
 import { CatalogueSearchFormComponent } from './catalogue-search-form/catalogue-search-form.component';
+import { OkCancelDialogComponent } from './ok-cancel-dialog/ok-cancel-dialog.component';
 
 @NgModule({
   declarations: [
@@ -55,6 +56,7 @@ import { CatalogueSearchFormComponent } from './catalogue-search-form/catalogue-
     IdentifiableDataIconComponent,
     SearchFiltersComponent,
     CatalogueSearchFormComponent,
+    OkCancelDialogComponent,
   ],
   imports: [CoreModule, SharedModule],
   exports: [

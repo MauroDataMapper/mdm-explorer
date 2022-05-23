@@ -28,7 +28,10 @@ import { Uuid } from '@maurodatamapper/mdm-resources';
 import { SecurityService } from 'src/app/security/security.service';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
-import { DataElementSearchResult } from 'src/app/data-explorer/data-explorer.types';
+import {
+  DataElementBasic,
+  DataElementSearchResult,
+} from 'src/app/data-explorer/data-explorer.types';
 import { DialogService } from 'src/app/data-explorer/dialog.service';
 import { UserDetails } from 'src/app/security/user-details.service';
 import { ToastrService } from 'ngx-toastr';
@@ -36,6 +39,12 @@ import { BroadcastService } from 'src/app/core/broadcast.service';
 
 export interface CreateRequestEvent {
   item: DataElementSearchResult;
+}
+
+export interface RequestElementAddDeleteEvent {
+  adding: boolean;
+  dataModel: DataAccessRequestMenuItem;
+  dataElement: DataElementBasic;
 }
 
 interface DataAccessRequestMenuItem {
@@ -51,10 +60,12 @@ interface DataAccessRequestMenuItem {
 })
 export class DataElementInRequestComponent implements OnInit, OnDestroy {
   @Input() dataElement?: DataElementSearchResult;
+  @Input() caption = 'Add to request';
 
   @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 
   @Output() createRequestClicked = new EventEmitter<CreateRequestEvent>();
+  @Output() requestAddDelete = new EventEmitter<RequestElementAddDeleteEvent>();
 
   ready = false;
 
@@ -108,7 +119,7 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
    *
    * @param event
    */
-  changed(event: MatCheckboxChange) {
+  changed(event: MatCheckboxChange, item: DataAccessRequestMenuItem) {
     if (this.dataElement) {
       const targetDataModelId = event.source.value;
       const datamodelSubsetPayload: DataModelSubsetPayload = {
@@ -135,6 +146,15 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
               event.checked ? 'added to' : 'removed from'
             } request`
           );
+          // Communicate change to the outside world
+          if (this.dataElement) {
+            const addDeleteEventData: RequestElementAddDeleteEvent = {
+              adding: event.checked,
+              dataElement: this.dataElement,
+              dataModel: item,
+            };
+            this.requestAddDelete.emit(addDeleteEventData);
+          }
         }); // eslint-disable-line @typescript-eslint/no-unsafe-argument
     }
   }
@@ -210,7 +230,10 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
             })
             .afterClosed();
         }),
-        finalize(() => this.broadcast.loading({ isLoading: false }))
+        finalize(() => {
+          this.broadcast.loading({ isLoading: false });
+          this.createRequestClicked.emit(event);
+        })
       )
       .subscribe((action) => {
         if (action === 'view-requests') {

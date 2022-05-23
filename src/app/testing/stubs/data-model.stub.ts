@@ -34,7 +34,7 @@ import {
 } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
 import { DataClassIdentifier } from 'src/app/mauro/mauro.types';
-import { DataRequest } from 'src/app/data-explorer/data-explorer.types';
+import { DataElementBasic, DataRequest } from 'src/app/data-explorer/data-explorer.types';
 
 export type DataModelGetDataModelFn = (path: string) => Observable<DataModelDetail>;
 export type DataModelGetDataClassesFn = (
@@ -72,6 +72,12 @@ export type DataModelGetIntersectionManyFn = (
   data: SourceTargetIntersectionPayload
 ) => Observable<MdmIndexBody<SourceTargetIntersection>>;
 export type DataModeNextVersionFn = (model: DataModel) => Observable<DataModel>;
+export type DataModelElementsInAnotherModelFn = (
+  model: DataModelDetail,
+  elements: DataElement[]
+) => Observable<DataElement[]>;
+export type DataModelDataElementToBasicFn = (element: DataElement) => DataElementBasic;
+export type DataModelDataElementFromBasicFn = (element: DataElementBasic) => DataElement;
 
 export interface DataModelServiceStub {
   getDataModel: jest.MockedFunction<DataModelGetDataModelFn>;
@@ -87,6 +93,9 @@ export interface DataModelServiceStub {
   getDataElementsForDataClass: jest.MockedFunction<DataModelElementsForClassFn>;
   getIntersectionMany: jest.MockedFunction<DataModelGetIntersectionManyFn>;
   createNextVersion: jest.MockedFunction<DataModeNextVersionFn>;
+  elementsInAnotherModel: jest.MockedFunction<DataModelElementsInAnotherModelFn>;
+  dataElementToBasic: jest.MockedFunction<DataModelDataElementToBasicFn>;
+  dataElementFromBasic: jest.MockedFunction<DataModelDataElementFromBasicFn>;
 }
 
 export const createDataModelServiceStub = (): DataModelServiceStub => {
@@ -105,5 +114,10 @@ export const createDataModelServiceStub = (): DataModelServiceStub => {
       jest.fn() as jest.MockedFunction<DataModelElementsForClassFn>,
     getIntersectionMany: jest.fn() as jest.MockedFunction<DataModelGetIntersectionManyFn>,
     createNextVersion: jest.fn() as jest.MockedFunction<DataModeNextVersionFn>,
+    elementsInAnotherModel:
+      jest.fn() as jest.MockedFunction<DataModelElementsInAnotherModelFn>,
+    dataElementToBasic: jest.fn() as jest.MockedFunction<DataModelDataElementToBasicFn>,
+    dataElementFromBasic:
+      jest.fn() as jest.MockedFunction<DataModelDataElementFromBasicFn>,
   };
 };

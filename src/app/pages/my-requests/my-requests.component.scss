@@ -98,4 +98,8 @@ $request-elements-max-height: 500px;
     overflow-y: scroll;
     max-height: $request-elements-max-height;
   }
+
+  &__request-elements-footer {
+    padding: 0.75em 1.2em;
+  }
 }

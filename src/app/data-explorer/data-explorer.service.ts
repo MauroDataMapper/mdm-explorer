@@ -21,6 +21,7 @@ import {
   ApiProperty,
   DataModelDetail,
   ProfileField,
+  ProfileSection,
 } from '@maurodatamapper/mdm-resources';
 import { catchError, map, Observable, of, switchMap, throwError } from 'rxjs';
 import { DataModelService } from '../mauro/data-model.service';
@@ -129,8 +130,8 @@ export class DataExplorerService {
         map((definition) => {
           // Filters only support "enumeration" data types for now, this could change later though
           return definition.sections
-            .flatMap((section) => section.fields)
-            .filter((field) => field.dataType === 'enumeration');
+            .flatMap((section: ProfileSection) => section.fields)
+            .filter((field: ProfileField) => field.dataType === 'enumeration');
         })
       );
   }

@@ -18,21 +18,51 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatDialogRef } from '@angular/material/dialog';
 import { MatSelectionListChange } from '@angular/material/list';
+import {
+  CatalogueItemDomainType,
+  DataElement,
+  DataModelDetail,
+  Uuid,
+} from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, finalize, forkJoin, of, switchMap, throwError } from 'rxjs';
+import {
+  catchError,
+  EMPTY,
+  finalize,
+  forkJoin,
+  of,
+  switchMap,
+  throwError,
+  Observable,
+} from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import {
   DataElementBasic,
+  DataElementDeleteEvent,
+  DataElementMultipleOperationResult,
+  DataElementOperationResult,
+  DataElementSearchResult,
   DataRequest,
   DataRequestStatus,
   mapToDataRequest,
+  SelectableDataElementSearchResult,
 } from 'src/app/data-explorer/data-explorer.types';
-import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import {
+  DataAccessRequestsSourceTargetIntersections,
+  DataRequestsService,
+} from 'src/app/data-explorer/data-requests.service';
 import { DialogService } from 'src/app/data-explorer/dialog.service';
 import { DataModelService } from 'src/app/mauro/data-model.service';
+import {
+  OkCancelDialogData,
+  OkCancelDialogResponse,
+} from 'src/app/data-explorer/ok-cancel-dialog/ok-cancel-dialog.component';
 import { ResearchPluginService } from 'src/app/mauro/research-plugin.service';
 import { SecurityService } from 'src/app/security/security.service';
+import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
+import { RequestElementAddDeleteEvent } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
 
 @Component({
   selector: 'mdm-my-requests',
@@ -44,8 +74,10 @@ export class MyRequestsComponent implements OnInit {
   filteredRequests: DataRequest[] = [];
   statusFilters: DataRequestStatus[] = [];
   request?: DataRequest;
-  requestElements: DataElementBasic[] = [];
+  requestElements: SelectableDataElementSearchResult[] = [];
   state: 'idle' | 'loading' = 'idle';
+  creatingNextVersion = false;
+  sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 
   constructor(
     private security: SecurityService,
@@ -54,8 +86,14 @@ export class MyRequestsComponent implements OnInit {
     private toastr: ToastrService,
     private researchPlugin: ResearchPluginService,
     private dialogs: DialogService,
-    private broadcast: BroadcastService
-  ) {}
+    private broadcast: BroadcastService,
+    private explorer: DataExplorerService
+  ) {
+    this.sourceTargetIntersections = {
+      dataAccessRequests: [],
+      sourceTargetIntersections: [],
+    };
+  }
 
   get hasMultipleRequestStatus() {
     const statuses = this.allRequests.map((req) => req.status);
@@ -64,17 +102,7 @@ export class MyRequestsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.state = 'loading';
-
-    this.getUserRequests()
-      .pipe(finalize(() => (this.state = 'idle')))
-      .subscribe((requests) => {
-        this.allRequests = requests;
-        this.filterRequests();
-        this.setRequest(
-          this.filteredRequests.length > 0 ? this.filteredRequests[0] : undefined
-        );
-      });
+    this.initialiseRequests();
   }
 
   selectRequest(event: MatSelectionListChange) {
@@ -99,7 +127,6 @@ export class MyRequestsComponent implements OnInit {
     }
 
     this.broadcast.loading({ isLoading: true, caption: 'Submitting your request...' });
-
     this.researchPlugin
       .submitRequest(this.request.id)
       .pipe(
@@ -169,6 +196,127 @@ export class MyRequestsComponent implements OnInit {
       });
   }
 
+  removeSelected() {
+    const itemList = this.requestElements.filter((item) => item.isSelected);
+    this.okCancelItemList(itemList)
+      .afterClosed()
+      .pipe(
+        switchMap((result: OkCancelDialogResponse) => {
+          if (result.result) {
+            this.broadcast.loading({
+              isLoading: true,
+              caption: `Removing ${itemList.length} data element${
+                itemList.length === 1 ? '' : 's'
+              } from request ${this.request?.label} ...`,
+            });
+            const dataModel: DataModelDetail = {
+              domainType: CatalogueItemDomainType.DataModel,
+              label: this.request?.label ?? '',
+              availableActions: [],
+              finalised: false,
+              id: this.request?.id ?? '',
+            };
+            return this.dataRequests.deleteDataElementMultiple(itemList, dataModel);
+          } else {
+            return EMPTY;
+          }
+        })
+      )
+      .subscribe((result: DataElementMultipleOperationResult) => {
+        const success = result.failures.length === 0;
+        let message = `${result.successes.length} Data element${
+          result.successes.length === 1 ? '' : 's'
+        } removed from request "${this.request?.label}".`;
+        if (!success) {
+          message += `\r\n${result.failures.length} Data element${
+            result.failures.length === 1 ? '' : 's'
+          } caused an error.`;
+          result.failures.forEach((item: DataElementOperationResult) =>
+            console.log(item.message)
+          );
+        }
+        this.processRemoveDataElementResponse(success, message);
+        this.broadcast.loading({ isLoading: false });
+      });
+  }
+
+  removeItem(event: DataElementDeleteEvent) {
+    const item = event.item;
+    this.okCancelItem(item)
+      .afterClosed()
+      .pipe(
+        switchMap((result: OkCancelDialogResponse) => {
+          if (result.result) {
+            this.broadcast.loading({
+              isLoading: true,
+              caption: `Removing data element ${item.label} from request ${this.request?.label} ...`,
+            });
+            const dataModel: DataModelDetail = {
+              domainType: CatalogueItemDomainType.DataModel,
+              label: this.request?.label ?? '',
+              availableActions: [],
+              finalised: false,
+              id: this.request?.id ?? '',
+            };
+            return this.dataRequests.deleteDataElementMultiple([item], dataModel);
+          } else {
+            return EMPTY;
+          }
+        })
+      )
+      .subscribe((resultMultiple: DataElementMultipleOperationResult) => {
+        const result =
+          resultMultiple.failures.length === 0
+            ? resultMultiple.successes[0]
+            : resultMultiple.failures[0];
+        let message = '';
+        if (!result.success) {
+          message = `Removal of data element ${item.label} failed. The error message is: ${result.message}`;
+        } else {
+          message = `Data element "${item.label}" removed from request "${this.request?.label}".`;
+        }
+        this.processRemoveDataElementResponse(result.success, message);
+        this.broadcast.loading({ isLoading: false });
+      });
+  }
+
+  removeSelectedButtonDisabled(): boolean {
+    const selectedItemList = this.requestElements.filter((item) => item.isSelected);
+    return !this.request || !this.requestElements || selectedItemList.length === 0;
+  }
+
+  onSelectAll(event: MatCheckboxChange) {
+    if (this.requestElements) {
+      this.requestElements = this.requestElements.map((item) => {
+        return { ...item, isSelected: event.checked };
+      });
+    }
+  }
+
+  handlePossibleSelfDelete(event: RequestElementAddDeleteEvent) {
+    if (event.dataModel?.id === this.request?.id) {
+      this.setRequest(this.request);
+    }
+  }
+
+  refreshRequests() {
+    this.initialiseRequests();
+  }
+
+  initialiseRequests(requestToSelect?: DataRequest | undefined) {
+    this.state = 'loading';
+
+    this.getUserRequests()
+      .pipe(finalize(() => (this.state = 'idle')))
+      .subscribe((requests) => {
+        this.allRequests = requests;
+        this.filterRequests();
+        this.setRequest(
+          this.filteredRequests.length > 0 ? this.filteredRequests[0] : requestToSelect
+        );
+      });
+  }
+
   private getUserRequests() {
     const user = this.security.getSignedInUser();
     if (!user) {
@@ -182,6 +330,38 @@ export class MyRequestsComponent implements OnInit {
       }),
       finalize(() => (this.state = 'idle'))
     );
+  }
+
+  private processRemoveDataElementResponse(result: boolean, message: string) {
+    if (result === false) {
+      this.toastr.error(message, 'Data element removal');
+      console.log(message);
+    } else {
+      this.toastr.success(message, 'Data element removal');
+    }
+    this.setRequest(this.request);
+  }
+
+  private okCancelItemList(
+    itemList: SelectableDataElementSearchResult[]
+  ): MatDialogRef<OkCancelDialogData> {
+    return this.dialogs.openOkCancel({
+      heading: 'Remove selected data elements',
+      content: `Are you sure you want to remove these ${itemList.length} selected data elements from request ${this.request?.label}?`,
+      okLabel: 'Yes',
+      cancelLabel: 'No',
+    });
+  }
+
+  private okCancelItem(
+    item: SelectableDataElementSearchResult
+  ): MatDialogRef<OkCancelDialogData> {
+    return this.dialogs.openOkCancel({
+      heading: 'Remove data element',
+      content: `Are you sure you want to remove data element "${item.label}" from request "${this.request?.label}"?`,
+      okLabel: 'Yes',
+      cancelLabel: 'No',
+    });
   }
 
   private filterRequests() {
@@ -200,27 +380,75 @@ export class MyRequestsComponent implements OnInit {
 
     this.state = 'loading';
 
-    this.dataRequests
-      .listDataElements(this.request)
+    forkJoin([
+      this.dataRequests.listDataElements(this.request),
+      this.explorer.getRootDataModel(),
+    ])
       .pipe(
+        switchMap(([dataElements, rootModel]: [DataElement[], DataModelDetail]) => {
+          if (this.request?.id && rootModel?.id) {
+            return this.dataModels.elementsInAnotherModel(rootModel, dataElements);
+          }
+          throw new Error('Id cannot be found for user request or root data model');
+        }),
+        switchMap((dataElements: (DataElement | null)[]) => {
+          return of(
+            dataElements.map((element) => {
+              return (
+                element
+                  ? {
+                      ...this.dataModels.dataElementToBasic(element),
+                      isSelected: false,
+                      isBookmarked: false,
+                    }
+                  : null
+              ) as SelectableDataElementSearchResult;
+            })
+          );
+        }),
+        switchMap((dataElements: SelectableDataElementSearchResult[]) => {
+          return forkJoin([
+            of(dataElements),
+            this.loadIntersections(dataElements),
+          ]) as Observable<
+            [
+              SelectableDataElementSearchResult[],
+              DataAccessRequestsSourceTargetIntersections
+            ]
+          >;
+        }),
         catchError(() => {
           this.toastr.error('There was a problem locating your request details.');
           return EMPTY;
         }),
         finalize(() => (this.state = 'idle'))
       )
-      .subscribe((dataElements) => {
-        this.requestElements = dataElements.map((element) => {
-          return {
-            id: element.id ?? '',
-            dataModelId: element.model ?? '',
-            dataClassId: element.dataClass ?? '',
-            label: element.label,
-            breadcrumbs: element.breadcrumbs,
-            isBookmarked: false,
-          };
-        });
+      .subscribe({
+        next: ([dataElements, intersections]) => {
+          this.requestElements = dataElements;
+          this.sourceTargetIntersections = intersections;
+        },
       });
+  }
+
+  private loadIntersections(elements: DataElementBasic[]) {
+    const dataElementIds: Uuid[] = [];
+
+    if (elements) {
+      elements.forEach((item: DataElementSearchResult) => {
+        dataElementIds.push(item.id);
+      });
+    }
+
+    return this.explorer.getRootDataModel().pipe(
+      switchMap((rootModel: DataModelDetail) => {
+        if (rootModel.id) {
+          return this.dataRequests.getRequestsIntersections(rootModel.id, dataElementIds);
+        } else {
+          return EMPTY;
+        }
+      })
+    );
   }
 
   private updateRequestList(request: DataRequest) {

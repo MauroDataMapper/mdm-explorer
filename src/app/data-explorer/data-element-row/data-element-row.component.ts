@@ -18,7 +18,16 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
-import { DataElementBasic, DataElementCheckedEvent } from '../data-explorer.types';
+import {
+  CreateRequestEvent,
+  RequestElementAddDeleteEvent,
+} from 'src/app/shared/data-element-in-request/data-element-in-request.component';
+import {
+  DataElementCheckedEvent,
+  DataElementDeleteEvent,
+  SelectableDataElementSearchResult,
+} from '../data-explorer.types';
+import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.service';
 
 @Component({
   selector: 'mdm-data-element-row',
@@ -26,9 +35,28 @@ import { DataElementBasic, DataElementCheckedEvent } from '../data-explorer.type
   styleUrls: ['./data-element-row.component.scss'],
 })
 export class DataElementRowComponent {
-  @Input() item?: DataElementBasic;
+  @Input() item?: SelectableDataElementSearchResult;
+  @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 
   @Output() checked = new EventEmitter<DataElementCheckedEvent>();
+  @Output() delete = new EventEmitter<DataElementDeleteEvent>();
+  @Output() requestAddDelete = new EventEmitter<RequestElementAddDeleteEvent>();
+  @Output() requestCreated = new EventEmitter<CreateRequestEvent>();
+
+  constructor() {
+    this.sourceTargetIntersections = {
+      dataAccessRequests: [],
+      sourceTargetIntersections: [],
+    };
+  }
+
+  handleRequestAddDelete(event: RequestElementAddDeleteEvent) {
+    this.requestAddDelete.emit(event);
+  }
+
+  handleCreateRequest(event: CreateRequestEvent) {
+    this.requestCreated.emit(event);
+  }
 
   itemChecked(event: MatCheckboxChange) {
     if (!this.item) {
@@ -36,5 +64,17 @@ export class DataElementRowComponent {
     }
 
     this.checked.emit({ item: this.item, checked: event.checked });
+  }
+
+  removeElement() {
+    if (this.item) {
+      this.delete.emit({ item: this.item });
+    }
+  }
+
+  checkedChanged() {
+    if (this.item) {
+      this.item.isSelected = !this.item?.isSelected ?? false;
+    }
   }
 }
