@@ -20,16 +20,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { UserIdleService } from 'angular-user-idle';
 import { ToastrService } from 'ngx-toastr';
-import {
-  catchError,
-  EMPTY,
-  filter,
-  finalize,
-  map,
-  Subject,
-  switchMap,
-  takeUntil,
-} from 'rxjs';
+import { catchError, EMPTY, filter, finalize, map, Subject, takeUntil } from 'rxjs';
 import { environment } from '../environments/environment';
 import { BroadcastEvent, BroadcastService } from './core/broadcast.service';
 import { StateRouterService } from './core/state-router.service';
@@ -280,18 +271,12 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Verify that a user's request folder exists (or create if it doesn't), then check how many current requests they
-   * have pending.
+   * Check how many current requests user has pending.
    */
   private getRequestsInfo() {
     this.dataRequests
-      .getRequestsFolder()
+      .list()
       .pipe(
-        catchError(() => {
-          this.toastr.error('There was a problem locating your requests folder.');
-          return EMPTY;
-        }),
-        switchMap(() => this.dataRequests.list()),
         catchError(() => {
           this.toastr.error('There was a problem locating your current requests.');
           return EMPTY;
