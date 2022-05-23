@@ -37,6 +37,11 @@ export interface CatalogueUserPayload {
   jobTitle?: string;
 }
 
+export interface ChangePasswordPayload {
+  oldPassword: string;
+  newPassword: string;
+}
+
 /**
  * Service to manage catalogue user actions.
  */
@@ -68,6 +73,19 @@ export class CatalogueUserService {
   update(id: Uuid, payload: CatalogueUserPayload): Observable<CatalogueUser> {
     return this.endpoints.catalogueUser
       .update(id, payload)
+      .pipe(map((response: MdmResponse<CatalogueUser>) => response.body));
+  }
+
+  /**
+   * Change the password of an existing user.
+   *
+   * @param id The ID of the user to update.
+   * @param payload The new password to change to.
+   * @returns An observable containing a {@link CatalogueUser}.
+   */
+  changePassword(id: Uuid, payload: ChangePasswordPayload): Observable<CatalogueUser> {
+    return this.endpoints.catalogueUser
+      .changePassword(id, payload)
       .pipe(map((response: MdmResponse<CatalogueUser>) => response.body));
   }
 }

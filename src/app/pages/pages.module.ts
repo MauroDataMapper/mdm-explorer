@@ -42,6 +42,7 @@ import { NotFoundComponent } from './error/not-found/not-found.component';
 import { ServerErrorComponent } from './error/server-error/server-error.component';
 import { DataElementProfileComponent } from './data-element/data-element-profile/data-element-profile.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ChangePasswordComponent } from './change-password/change-password.component';
 
 @NgModule({
   declarations: [
@@ -64,6 +65,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     HomeComponent,
     ContactSupportComponent,
     MyRequestsComponent,
+    ChangePasswordComponent,
   ],
   imports: [
     CoreModule,

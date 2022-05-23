@@ -37,6 +37,7 @@ import { CarouselModule } from 'primeng/carousel';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatPasswordStrengthModule } from '@angular-material-extensions/password-strength';
 
 const angularModules = [CommonModule, FormsModule, ReactiveFormsModule, RouterModule];
 const primeNgModules = [CarouselModule];
@@ -58,6 +59,7 @@ const materialModules = [
   MatSelectModule,
   MatDialogModule,
   MatTooltipModule,
+  MatPasswordStrengthModule,
 ];
 
 @NgModule({
