@@ -49,6 +49,8 @@ import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { SecurityService } from 'src/app/security/security.service';
 import { UserDetails } from 'src/app/security/user-details.service';
 import { DataElementBasic } from 'src/app/data-explorer/data-explorer.types';
+import { createBroadcastServiceStub } from 'src/app/testing/stubs/broadcast.stub';
+import { BroadcastService } from 'src/app/core/broadcast.service';
 
 describe('BrowseComponent', () => {
   let harness: ComponentHarness<BrowseComponent>;
@@ -59,6 +61,7 @@ describe('BrowseComponent', () => {
   const matDialogStub = createMatDialogStub();
   const dataRequestsStub = createDataRequestsServiceStub();
   const securityStub = createSecurityServiceStub();
+  const broadcastStub = createBroadcastServiceStub();
 
   const user: UserDetails = {
     id: '123',
@@ -108,6 +111,10 @@ describe('BrowseComponent', () => {
         {
           provide: SecurityService,
           useValue: securityStub,
+        },
+        {
+          provide: BroadcastService,
+          useValue: broadcastStub,
         },
       ],
     });
@@ -387,6 +394,7 @@ describe('BrowseComponent', () => {
 
     beforeEach(() => {
       dataRequestsStub.createFromDataElements.mockClear();
+      broadcastStub.loading.mockClear();
 
       dataModelStub.getDataElementsForDataClass.mockImplementationOnce((dc) => {
         expect(dc).toBe(selected);
@@ -429,6 +437,11 @@ describe('BrowseComponent', () => {
         requestCreation.name,
         requestCreation.description
       );
+      expect(broadcastStub.loading).toHaveBeenCalledWith({
+        isLoading: true,
+        caption: 'Creating new request ...',
+      });
+      expect(broadcastStub.loading).toHaveBeenCalledWith({ isLoading: false });
     });
   });
 });

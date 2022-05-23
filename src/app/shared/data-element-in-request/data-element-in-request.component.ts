@@ -56,8 +56,6 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
 
   @Output() createRequestClicked = new EventEmitter<CreateRequestEvent>();
 
-  creatingRequest = false;
-
   ready = false;
 
   // The list of items in the createRequest menu
@@ -183,7 +181,11 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
             return EMPTY;
           }
 
-          this.creatingRequest = true;
+          this.broadcast.loading({
+            isLoading: true,
+            caption: 'Creating new request ...',
+          });
+
           return this.dataRequests.createFromDataElements(
             [event.item],
             this.user,
@@ -208,7 +210,7 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
             })
             .afterClosed();
         }),
-        finalize(() => (this.creatingRequest = false))
+        finalize(() => this.broadcast.loading({ isLoading: false }))
       )
       .subscribe((action) => {
         if (action === 'view-requests') {

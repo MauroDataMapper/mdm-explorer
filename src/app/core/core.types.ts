@@ -19,3 +19,8 @@ SPDX-License-Identifier: Apache-2.0
 // eslint-disable-next-line no-useless-escape
 export const defaultEmailPattern =
   /^[_A-Za-z0-9-'!#%&=\/~\`\+\$\*\?\^\{\|\}]+(\.[_A-Za-z0-9-'!#%&=\/~\`\+\$\*\?\^\{\|\}]+)*@[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-\+]+)*(\.[A-Za-z]{2,})$/;
+
+export interface LoadingBroadcastPayload {
+  isLoading: boolean;
+  caption?: string;
+}

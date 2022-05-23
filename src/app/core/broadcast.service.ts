@@ -19,6 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 import { Injectable } from '@angular/core';
 import { filter, map, Observable, Subject } from 'rxjs';
 import { UserDetails } from '../security/user-details.service';
+import { LoadingBroadcastPayload } from './core.types';
 
 export type BroadcastEvent =
   | 'http-application-offline'
@@ -33,7 +34,8 @@ export type BroadcastEvent =
   | 'data-request-added'
   | 'data-request-submitted'
   | 'data-intersections-refreshed'
-  | 'data-bookmarks-refreshed';
+  | 'data-bookmarks-refreshed'
+  | 'loading';
 
 /**
  * Represents a message to broadcast with an optional data payload.
@@ -93,5 +95,13 @@ export class BroadcastService {
    */
   onUserSignedIn(): Observable<UserDetails> {
     return this.on<UserDetails>('user-signed-in');
+  }
+
+  loading(payload: LoadingBroadcastPayload) {
+    this.dispatch('loading', payload);
+  }
+
+  onLoading(): Observable<LoadingBroadcastPayload> {
+    return this.on<LoadingBroadcastPayload>('loading');
   }
 }

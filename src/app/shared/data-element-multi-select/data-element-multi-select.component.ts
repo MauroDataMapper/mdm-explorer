@@ -57,8 +57,6 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
 
   @Output() remove = new EventEmitter<RemoveBookmarkEvent>();
 
-  creatingRequest = false;
-
   ready = false;
 
   private user: UserDetails | null;
@@ -116,7 +114,11 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
             return EMPTY;
           }
 
-          this.creatingRequest = true;
+          this.broadcast.loading({
+            isLoading: true,
+            caption: 'Creating new request ...',
+          });
+
           return this.dataRequests.createFromDataElements(
             dataElements,
             this.user,
@@ -141,7 +143,7 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
             })
             .afterClosed();
         }),
-        finalize(() => (this.creatingRequest = false))
+        finalize(() => this.broadcast.loading({ isLoading: false }))
       )
       .subscribe((action) => {
         if (action === 'view-requests') {

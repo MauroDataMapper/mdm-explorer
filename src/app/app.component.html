@@ -34,5 +34,10 @@ SPDX-License-Identifier: Apache-2.0
     </main>
 
     <mdm-footer version="0.1.0" [links]="footerLinks"></mdm-footer>
+
+    <mdm-loading-spinner
+      *ngIf="isLoading"
+      [caption]="loadingCaption"
+    ></mdm-loading-spinner>
   </div>
 </div>
