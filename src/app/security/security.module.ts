@@ -23,6 +23,7 @@ import { OpenIdConnectAuthorizeComponent } from './open-id-connect-authorize/ope
 import { ForgotPasswordFormComponent } from './forgot-password-form/forgot-password-form.component';
 import { CatalogueUserFormComponent } from './catalogue-user-form/catalogue-user-form.component';
 import { CoreModule } from '../core/core.module';
+import { ChangePasswordFormComponent } from './change-password-form/change-password-form.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { CoreModule } from '../core/core.module';
     OpenIdConnectAuthorizeComponent,
     ForgotPasswordFormComponent,
     CatalogueUserFormComponent,
+    ChangePasswordFormComponent,
   ],
   imports: [CoreModule, SharedModule],
   exports: [
@@ -37,6 +39,7 @@ import { CoreModule } from '../core/core.module';
     OpenIdConnectAuthorizeComponent,
     ForgotPasswordFormComponent,
     CatalogueUserFormComponent,
+    ChangePasswordFormComponent,
   ],
 })
 export class SecurityModule {}

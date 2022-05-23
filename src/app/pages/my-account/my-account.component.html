@@ -22,7 +22,15 @@ SPDX-License-Identifier: Apache-2.0
       <h1>My Account</h1>
       <button mat-flat-button color="primary" (click)="signOut()">Sign out</button>
     </div>
-    <section>
+    <section class="form-section">
+      <div class="sub-heading-with-actions">
+        <h2>Security</h2>
+        <a mat-stroked-button color="primary" routerLink="/change-password"
+          >Change password</a
+        >
+      </div>
+    </section>
+    <section class="form-section">
       <div class="sub-heading-with-actions">
         <h2>Basic Information</h2>
         <button
@@ -56,7 +64,7 @@ SPDX-License-Identifier: Apache-2.0
         (updateClicked)="updateBasicInfo($event)"
       ></mdm-catalogue-user-form>
     </section>
-    <section>
+    <section class="form-section">
       <h2>Contact Information</h2>
       <dl>
         <div class="mdm-my-account__desc-info">
