@@ -34,10 +34,8 @@ import {
   DATA_EXPLORER_CONFIGURATION,
 } from '../data-explorer/data-explorer.types';
 import { createDataModelServiceStub } from '../testing/stubs/data-model.stub';
-import { createFolderServiceStub } from '../testing/stubs/folder.stub';
 import { createSecurityServiceStub } from '../testing/stubs/security.stub';
 import { setupTestModuleForService } from '../testing/testing.helpers';
-import { FolderService } from '../mauro/folder.service';
 import {
   DataAccessRequestsSourceTargetIntersections,
   DataRequestsService,
@@ -48,14 +46,16 @@ import { createCatalogueUserServiceStub } from '../testing/stubs/catalogue-user.
 import { createDataExplorerServiceStub } from '../testing/stubs/data-explorer.stub';
 import { DataExplorerService } from './data-explorer.service';
 import { SecurityService } from '../security/security.service';
+import { ResearchPluginService } from '../mauro/research-plugin.service';
+import { createResearchPluginServiceStub } from '../testing/stubs/research-plugin.stub';
 
 describe('DataRequestsService', () => {
   let service: DataRequestsService;
   const dataModelsStub = createDataModelServiceStub();
-  const folderServiceStub = createFolderServiceStub();
   const catalogueUserStub = createCatalogueUserServiceStub();
   const dataExplorerStub = createDataExplorerServiceStub();
   const securityStub = createSecurityServiceStub();
+  const researchPluginStub = createResearchPluginServiceStub();
 
   beforeEach(() => {
     service = setupTestModuleForService(DataRequestsService, {
@@ -65,8 +65,8 @@ describe('DataRequestsService', () => {
           useValue: dataModelsStub,
         },
         {
-          provide: FolderService,
-          useValue: folderServiceStub,
+          provide: ResearchPluginService,
+          useValue: researchPluginStub,
         },
         {
           provide: CatalogueUserService,
@@ -96,31 +96,33 @@ describe('DataRequestsService', () => {
 
   describe('get requests folder', () => {
     it('should get the user folder with the expected name', () => {
-      // Arrange
-      const username = 'test@gmail.com';
-      const rootFolder = { label: 'root' } as FolderDetail;
-      const expectedFolder = { label: 'test[at]gmail.com' } as FolderDetail;
+      const expectedFolder: FolderDetail = {
+        id: '9987',
+        label: 'expected[at]email.com',
+        domainType: CatalogueItemDomainType.Folder,
+        availableActions: [],
+      };
 
-      const expected$ = cold('----a|', {
-        a: expectedFolder,
-      });
+      const expectedUser: UserDetails = {
+        id: '456',
+        firstName: 'first',
+        lastName: 'last',
+        email: 'test@test.com',
+        needsToResetPassword: false,
+        role: '',
+        token: undefined,
+        requestFolder: expectedFolder,
+      };
 
-      folderServiceStub.getOrCreate.mockImplementationOnce(() => {
-        return cold('--a|', {
-          a: rootFolder,
-        });
-      });
-
-      folderServiceStub.getOrCreateChildOf.mockImplementationOnce(
-        (id: string, label: string) => {
-          return cold('--a|', {
-            a: { label },
-          });
-        }
-      );
+      securityStub.getSignedInUser.mockClear();
+      securityStub.getSignedInUser.mockImplementationOnce(() => expectedUser);
 
       // Act
-      const actual$ = service.getRequestsFolder(username);
+      const actual$ = service.getRequestsFolder();
+
+      const expected$ = cold('(a|)', {
+        a: expectedFolder,
+      });
 
       // Assert
       expect(actual$).toBeObservable(expected$);
@@ -130,24 +132,30 @@ describe('DataRequestsService', () => {
   describe('list', () => {
     it('should return a list of dms under the user folder', () => {
       // Arrange
-      const userEmail = 'test@gmail.com';
+      const expectedFolder: FolderDetail = {
+        id: '9987',
+        label: 'expected[at]email.com',
+        domainType: CatalogueItemDomainType.Folder,
+        availableActions: [],
+      };
+
+      const expectedUser: UserDetails = {
+        id: '456',
+        firstName: 'first',
+        lastName: 'last',
+        email: 'test@test.com',
+        needsToResetPassword: false,
+        role: '',
+        token: undefined,
+        requestFolder: expectedFolder,
+      };
+
+      securityStub.getSignedInUser.mockClear();
+      securityStub.getSignedInUser.mockImplementationOnce(() => expectedUser);
+
       const dms = ['label-1', 'label-2', 'label-3'].map((label: string) => {
         return { label } as DataModel;
       });
-
-      folderServiceStub.getOrCreate.mockImplementationOnce(() => {
-        return cold('-a|', {
-          a: { label: 'root' },
-        });
-      });
-
-      folderServiceStub.getOrCreateChildOf.mockImplementationOnce(
-        (id: string, label: string) => {
-          return cold('-a|', {
-            a: { label },
-          });
-        }
-      );
 
       dataModelsStub.listInFolder.mockImplementationOnce(() => {
         return cold('-a|', {
@@ -155,14 +163,14 @@ describe('DataRequestsService', () => {
         });
       });
 
-      const expected$ = cold('---a|', {
+      const expected$ = cold('-a|', {
         a: dms.map((dm) => {
           return { ...dm, status: 'unsent' };
         }),
       });
 
       // Act
-      const actual$ = service.list(userEmail);
+      const actual$ = service.list();
 
       // Assert
       expect(actual$).toBeObservable(expected$);
@@ -253,13 +261,28 @@ describe('DataRequestsService', () => {
     };
 
     beforeEach(() => {
-      folderServiceStub.getOrCreate.mockImplementationOnce(() => {
-        return cold('-a|', { a: {} });
-      });
+      // Mock a folder for the user's requests
+      const expectedFolder: FolderDetail = {
+        id: '9987',
+        label: 'test[at]gmail.com',
+        domainType: CatalogueItemDomainType.Folder,
+        availableActions: [],
+      };
 
-      folderServiceStub.getOrCreateChildOf.mockImplementationOnce(() => {
-        return cold('-a|', { a: { id: '987' } });
-      });
+      // Mock a signed in user
+      const expectedUser: UserDetails = {
+        id: '456',
+        firstName: 'first',
+        lastName: 'last',
+        email: 'test@test.com',
+        needsToResetPassword: false,
+        role: '',
+        token: undefined,
+        requestFolder: expectedFolder,
+      };
+
+      securityStub.getSignedInUser.mockClear();
+      securityStub.getSignedInUser.mockImplementation(() => expectedUser);
 
       catalogueUserStub.get.mockImplementationOnce(() => {
         return cold('-a|', {
@@ -275,7 +298,7 @@ describe('DataRequestsService', () => {
     });
 
     it('should create a new data request', () => {
-      const expected$ = cold('----a|', {
+      const expected$ = cold('---a|', {
         a: dataRequest,
       });
       const actual$ = service.create(user, name, description);
@@ -312,7 +335,7 @@ describe('DataRequestsService', () => {
         return cold('-a|', { a: dataRequest });
       });
 
-      const expected$ = cold('------a|', {
+      const expected$ = cold('-----a|', {
         a: dataRequest,
       });
       const actual$ = service.createFromDataElements(elements, user, name, description);
@@ -346,31 +369,32 @@ describe('DataRequestsService', () => {
           sourceTargetIntersections: [expectedSourceTargetIntersection],
         };
 
-      const expected$ = cold('------a|', {
+      const expected$ = cold('-----a|', {
         a: expectedDataAccessRequestSourceTargetIntersection,
       });
 
-      // Mock a signed in user
-      securityStub.getSignedInUser.mockImplementationOnce(() => {
-        return { email: 'test@gmail.com' } as UserDetails;
-      });
-
       // Mock a folder for the user's requests
-      const rootFolder = { label: 'root' } as FolderDetail;
+      const expectedFolder: FolderDetail = {
+        id: '9987',
+        label: 'test[at]gmail.com',
+        domainType: CatalogueItemDomainType.Folder,
+        availableActions: [],
+      };
 
-      folderServiceStub.getOrCreate.mockImplementationOnce(() => {
-        return cold('--a|', {
-          a: rootFolder,
-        });
-      });
+      // Mock a signed in user
+      const expectedUser: UserDetails = {
+        id: '456',
+        firstName: 'first',
+        lastName: 'last',
+        email: 'test@test.com',
+        needsToResetPassword: false,
+        role: '',
+        token: undefined,
+        requestFolder: expectedFolder,
+      };
 
-      folderServiceStub.getOrCreateChildOf.mockImplementationOnce(
-        (id: string, label: string) => {
-          return cold('-a|', {
-            a: { label },
-          });
-        }
-      );
+      securityStub.getSignedInUser.mockClear();
+      securityStub.getSignedInUser.mockImplementation(() => expectedUser);
 
       // Mock one target model
       const target: DataModel = {
@@ -392,7 +416,7 @@ describe('DataRequestsService', () => {
       };
 
       dataModelsStub.getIntersectionMany.mockImplementationOnce(() => {
-        return cold('--a|', {
+        return cold('----a|', {
           a: many,
         });
       });
@@ -402,6 +426,8 @@ describe('DataRequestsService', () => {
 
       // Assert
       expect(actual$).toBeObservable(expected$);
+
+      securityStub.getSignedInUser.mockClear();
     });
   });
 });

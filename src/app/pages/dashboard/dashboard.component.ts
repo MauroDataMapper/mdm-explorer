@@ -51,12 +51,12 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
-    this.loadRequests(user.email);
+    this.loadRequests();
   }
 
-  loadRequests(username: string) {
+  loadRequests() {
     this.dataRequests
-      .list(username)
+      .list()
       .pipe(
         catchError((error) => {
           this.toastr.error('Unable to retrieve your current requests from the server.');

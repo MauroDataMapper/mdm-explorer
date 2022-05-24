@@ -323,7 +323,7 @@ export class MyRequestsComponent implements OnInit {
       return throwError(() => new Error('Cannot find user'));
     }
 
-    return this.dataRequests.list(user.email).pipe(
+    return this.dataRequests.list().pipe(
       catchError(() => {
         this.toastr.error('There was a problem finding your requests.');
         return EMPTY;
