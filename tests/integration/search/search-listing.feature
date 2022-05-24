@@ -30,6 +30,7 @@ Feature: Viewing and interacting with search results
     When I search for the search term "episode"
     And I click the link "Back to search fields"
     Then I go to the search page
+    And The search term is auto-populated in the search form
 
   Scenario: Initial view of the browse results
     When I browse for the data class "ICU > Admissions"

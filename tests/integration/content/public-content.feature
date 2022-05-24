@@ -31,9 +31,14 @@ Feature: Accessing public content
     Then I go to the page with URL "<url>"
 
     Examples:
-      | link         | url    |
-      | About        | /about |
-      | Help Section | /help  |
+      | link                 | url                   |
+      | About                | /about                |
+      | Help Section         | /help                 |
+      | Privacy policy       | /privacy-policy       |
+      | Terms and conditions | /terms-and-conditions |
+      | Cookies              | /cookie-policy        |
+      | Safeguarding         | /safeguarding         |
+      | Site map             | /site-map             |
 
   Scenario Outline: Navigating from the home page to restricted pages
     Given I am on the home page
@@ -51,7 +56,7 @@ Feature: Accessing public content
 
   Scenario: Viewing the help page
     When I click on the "Help" link in the header
-    Then I go to the about page
+    Then I go to the help page
 
   Scenario: Only seeing publicly available links in the header
     Given I am on the home page

@@ -25,13 +25,13 @@ Feature: Changing a user's password
 
   Scenario: Go back to the account page
     When I click on the link "Back to my account"
-    Then I got to the account page
+    Then I go to the account page
 
   Scenario: Leave the form empty
     When I enter no values in the form
     Then The "Update" button is disabled
     And The current password field says "Please enter your current password"
-    And The new password field says "Please enter your new password"
+    And The new password field says "Please enter a new password"
     And The confirm password field says "Please enter your new password again"
 
   Scenario Outline: Toggle password visibility in form fields

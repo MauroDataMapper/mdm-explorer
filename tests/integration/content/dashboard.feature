@@ -30,6 +30,18 @@ Feature: Dashboard
     When I click on the link "Advanced search"
     Then I go to the search page
 
+  Scenario: Browse the catalogue
+    When I click on the link "browsing our catalogue"
+    Then I go to the browse page
+
+  Scenario: View all help
+    When I click on the link "help guides"
+    Then I go to the help page
+
+  Scenario: View help on requests
+    When I click on the link "What are requests?"
+    Then I go to the requests help page
+
   Scenario: Manage my requests
     When I click on the button "Manage my requests"
     Then I go to the requests page
@@ -38,3 +50,13 @@ Feature: Dashboard
     Given I have 3 or more data requests
     When I click the arrow buttons in the requests scroll area
     Then The requests scroll to show more
+
+  Scenario: Browse the catalogue when there are no requests
+    Given I have no data requests
+    When I click the link "browse"
+    Then I go to the browse page
+
+  Scenario: Search the catalogue when there are no requests
+    Given I have no data requests
+    When I click the link "search"
+    Then I go to the search page

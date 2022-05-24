@@ -48,6 +48,27 @@ Feature: Forgotten and resetting passwords
     Then I see the confirmation message that an email was sent
 
     Examples:
-      | email                         | password |
-      | admin@maurodatamapper.com     | password |
-      | researher@maurodatamapper.com | password |
+      | email                         |
+      | admin@maurodatamapper.com     |
+      | researher@maurodatamapper.com |
+
+  Scenario Outline: I reset a password for a non-existent user
+    When I reset a password with the email address "<email>"
+    Then I see the confirmation message that an email was sent
+
+    Examples:
+      | email                 |
+      | i-dont-exist@test.com |
+
+  Scenario: Go back to sign-in page
+    When I click on the link "Return to Sign-in"
+    Then I go to the sign-in page
+
+  Scenario Outline: Return to sign-in after reset link is sent
+    When I reset a password with the email address "<email>"
+    And I click the link "Return to Sign-in" in the confirmation message
+    Then I go to the sign-in page
+
+    Examples:
+      | email                         |
+      | researher@maurodatamapper.com |
