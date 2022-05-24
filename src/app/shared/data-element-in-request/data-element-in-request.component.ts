@@ -18,17 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { DataModelSubsetPayload } from '@maurodatamapper/mdm-resources';
-import {
-  catchError,
-  EMPTY,
-  filter,
-  finalize,
-  Observable,
-  of,
-  Subject,
-  switchMap,
-  takeUntil,
-} from 'rxjs';
+import { Observable, of, Subject, takeUntil } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import {
   DataAccessRequestsSourceTargetIntersections,
@@ -42,11 +32,9 @@ import {
   DataElementBasic,
   DataElementSearchResult,
 } from 'src/app/data-explorer/data-explorer.types';
-import { DialogService } from 'src/app/data-explorer/dialog.service';
 import { UserDetails } from 'src/app/security/user-details.service';
 import { ToastrService } from 'ngx-toastr';
 import { BroadcastService } from 'src/app/core/broadcast.service';
-import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 
 export interface CreateRequestEvent {
   item: DataElementSearchResult;
@@ -192,12 +180,12 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
   }
 
   onClickCreateRequest() {
-    if (this.dataElement) {
-      const event: CreateRequestEvent = {
-        item: this.dataElement, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-      };
-      this.createRequest(event);
-    }
+    if (!this.dataElement) return;
+
+    const event: CreateRequestEvent = {
+      item: this.dataElement, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+    };
+    this.createRequest(event);
   }
 
   createRequest(event: CreateRequestEvent) {

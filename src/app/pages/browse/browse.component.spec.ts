@@ -26,7 +26,7 @@ import {
 } from '@maurodatamapper/mdm-resources';
 import { MockComponent } from 'ng-mocks';
 import { ToastrService } from 'ngx-toastr';
-import { of, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { createDataModelServiceStub } from 'src/app/testing/stubs/data-model.stub';
@@ -51,6 +51,7 @@ import { UserDetails } from 'src/app/security/user-details.service';
 import { DataElementBasic } from 'src/app/data-explorer/data-explorer.types';
 import { createBroadcastServiceStub } from 'src/app/testing/stubs/broadcast.stub';
 import { BroadcastService } from 'src/app/core/broadcast.service';
+import { RequestCreatedAction } from 'src/app/data-explorer/request-created-dialog/request-created-dialog.component';
 
 describe('BrowseComponent', () => {
   let harness: ComponentHarness<BrowseComponent>;
@@ -82,7 +83,11 @@ describe('BrowseComponent', () => {
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(BrowseComponent, {
-      declarations: [MockComponent(MatSelectionList), MockComponent(MatMenu)],
+      declarations: [
+        MockComponent(MatSelectionList),
+        MockComponent(MatMenu),
+        MockComponent(MatDialog),
+      ],
       providers: [
         {
           provide: DataModelService,
@@ -392,9 +397,21 @@ describe('BrowseComponent', () => {
       },
     ];
 
+    dataRequestsStub.createWithDialogs.mockImplementation(
+      (
+        getDataElements: () => Observable<DataElementBasic[]>
+      ): Observable<RequestCreatedAction> => {
+        return of('view-requests');
+      }
+    );
+
+    const routerSpy = jest.spyOn(stateRouterStub, 'navigateToKnownPath');
+
     beforeEach(() => {
-      dataRequestsStub.createFromDataElements.mockClear();
+      dataRequestsStub.createWithDialogs.mockClear();
       broadcastStub.loading.mockClear();
+      toastrStub.error.mockClear();
+      routerSpy.mockClear();
 
       dataModelStub.getDataElementsForDataClass.mockImplementationOnce((dc) => {
         expect(dc).toBe(selected);
@@ -404,21 +421,48 @@ describe('BrowseComponent', () => {
       harness.component.selected = selected;
     });
 
-    it('should not continue if cancelling the Create Request dialog', () => {
-      matDialogStub.usage.afterClosed.mockImplementationOnce(() => of());
+    it('should halt and display toastr message if there is no selected dataClass', () => {
+      // arrange
+      harness.component.selected = undefined;
+      const spy = jest.spyOn(toastrStub, 'error');
 
+      // act
       harness.component.createRequest();
-      expect(dataRequestsStub.createFromDataElements).not.toHaveBeenCalled();
+
+      // assert
+      expect(spy).toHaveBeenCalledWith(
+        'You must have selected an element to create a request with.'
+      );
     });
 
-    it('should create a new request', () => {
-      const requestCreation: CreateRequestDialogResponse = {
-        name: 'test request',
-        description: 'test description',
-      };
+    it("should transition to requests page if RequestCreatedAction is 'view-requests'", () => {
+      // act
+      harness.component.createRequest();
 
-      matDialogStub.usage.afterClosed.mockImplementationOnce(() => of(requestCreation));
+      // assert
+      expect(routerSpy).toHaveBeenCalledWith('/requests');
+    });
 
+    it("should not transition to requests page if RequestCreatedAction is 'continue'", () => {
+      // arrange
+      dataRequestsStub.createWithDialogs.mockImplementationOnce(
+        (
+          getDataElements: () => Observable<DataElementBasic[]>
+        ): Observable<RequestCreatedAction> => {
+          return of('continue');
+        }
+      );
+
+      // act
+      harness.component.createRequest();
+
+      // assert
+      expect(routerSpy).not.toHaveBeenCalled();
+    });
+
+    it('should use the provided callback function to retrieve the dataElements to add', () => {
+      // arrange
+      const createSpy = jest.spyOn(dataRequestsStub, 'createWithDialogs');
       const expectedDataElements = dataElements.map<DataElementBasic>((de) => {
         return {
           id: de.id ?? '',
@@ -429,19 +473,26 @@ describe('BrowseComponent', () => {
         };
       });
 
+      dataRequestsStub.createWithDialogs.mockImplementationOnce(
+        (
+          getDataElements: () => Observable<DataElementBasic[]>
+        ): Observable<RequestCreatedAction> => {
+          return of('view-requests');
+        }
+      );
+
+      // act
       harness.component.createRequest();
 
-      expect(dataRequestsStub.createFromDataElements).toHaveBeenCalledWith(
-        expectedDataElements,
-        user,
-        requestCreation.name,
-        requestCreation.description
-      );
-      expect(broadcastStub.loading).toHaveBeenCalledWith({
-        isLoading: true,
-        caption: 'Creating new request ...',
+      // assert
+
+      // Grab the callback method passed to createSpy and retrieve it's output to check its return value.
+      let returnedDataElements;
+      createSpy.mock.calls[0][0]().subscribe((items) => {
+        returnedDataElements = items;
       });
-      expect(broadcastStub.loading).toHaveBeenCalledWith({ isLoading: false });
+
+      expect(returnedDataElements).toStrictEqual(expectedDataElements);
     });
   });
 });

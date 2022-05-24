@@ -18,16 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { DataModel, DataModelSubsetPayload } from '@maurodatamapper/mdm-resources';
-import {
-  catchError,
-  EMPTY,
-  filter,
-  finalize,
-  Observable,
-  of,
-  Subject,
-  switchMap,
-} from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import {
   DataAccessRequestsSourceTargetIntersections,
@@ -108,14 +99,14 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
   }
 
   onClickCreateRequest() {
-    if (this.dataElements && this.dataElements.length > 0) {
-      this.createRequest(this.dataElements);
-    }
+    if (this.dataElements.length === 0) return;
+
+    this.createRequest(this.dataElements);
   }
 
   createRequest(dataElements: SelectableDataElementSearchResult[]) {
     if (!this.user) {
-      this.toastr.error('You must be signed in in order to create data requests.');
+      this.toastr.error('You must be signed-in in order to create data requests.');
       return;
     }
 

@@ -20,7 +20,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatSelectionListChange } from '@angular/material/list';
 import { DataClass, DataElement } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, filter, finalize, forkJoin, of, switchMap } from 'rxjs';
+import { catchError, EMPTY, of, switchMap } from 'rxjs';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import {
@@ -31,9 +31,7 @@ import {
 import { UserDetails } from 'src/app/security/user-details.service';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
-import { DialogService } from 'src/app/data-explorer/dialog.service';
 import { SecurityService } from 'src/app/security/security.service';
-import { BroadcastService } from 'src/app/core/broadcast.service';
 import { Uuid } from '@maurodatamapper/mdm-resources';
 import { __createBinding } from 'tslib';
 
@@ -61,9 +59,7 @@ export class BrowseComponent implements OnInit {
     private dataModels: DataModelService,
     private toastr: ToastrService,
     private stateRouter: StateRouterService,
-    private dialogs: DialogService,
-    security: SecurityService,
-    private broadcast: BroadcastService
+    security: SecurityService
   ) {
     this.user = security.getSignedInUser();
   }
