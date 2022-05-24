@@ -22,7 +22,6 @@ import { AppComponent } from './app.component';
 import { PagesModule } from './pages/pages.module';
 import { environment } from '../environments/environment';
 import { ToastrModule } from 'ngx-toastr';
-import { UserIdleModule } from 'angular-user-idle';
 import { MauroModule } from './mauro/mauro.module';
 import { SharedModule } from './shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -40,6 +39,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { NgChartsModule } from 'ng2-charts';
 import { DataExplorerService } from './data-explorer/data-explorer.service';
 import { Observable } from 'rxjs';
+import { USER_IDLE_CONFIGURATION } from './external/user-idle.service';
 
 /**
  * Factory function for app initialization.
@@ -115,10 +115,6 @@ const getOpenIdAuthorizeUrl = () => {
       positionClass: 'toast-top-right-custom',
       preventDuplicates: false,
     }),
-    UserIdleModule.forRoot({
-      idle: 600,
-      timeout: 300,
-    }),
     PagesModule,
     NgChartsModule,
   ],
@@ -131,6 +127,13 @@ const getOpenIdAuthorizeUrl = () => {
       provide: OPENID_CONNECT_CONFIG,
       useValue: {
         redirectUrl: getOpenIdAuthorizeUrl(),
+      },
+    },
+    {
+      provide: USER_IDLE_CONFIGURATION,
+      useValue: {
+        idle: 600,
+        timeout: 300,
       },
     },
     {
