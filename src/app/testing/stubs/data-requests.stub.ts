@@ -26,6 +26,7 @@ import {
 import { Observable } from 'rxjs';
 import { DataElementBasic, DataRequest } from 'src/app/data-explorer/data-explorer.types';
 import { DataAccessRequestsSourceTargetIntersections } from 'src/app/data-explorer/data-requests.service';
+import { RequestCreatedAction } from 'src/app/data-explorer/request-created-dialog/request-created-dialog.component';
 import { UserDetails } from 'src/app/security/user-details.service';
 
 export type DataRequestsListFn = (username: string) => Observable<DataModel[]>;
@@ -44,6 +45,9 @@ export type DataRequestsCreateFromDataElementsFn = (
   name: string,
   description: string
 ) => Observable<DataRequest>;
+export type CreateFromDialogsFn = (
+  callback: () => Observable<DataElementBasic[]>
+) => Observable<RequestCreatedAction | undefined>;
 export type DataAccessRequestsSourceTargetIntersectionsFn = (
   sourceDataModelId: Uuid
 ) => Observable<DataAccessRequestsSourceTargetIntersections>;
@@ -58,6 +62,7 @@ export interface DataRequestsServiceStub {
   list: jest.MockedFunction<DataRequestsListFn>;
   listDataElements: jest.MockedFunction<DataRequestsListElementsFn>;
   createFromDataElements: jest.MockedFunction<DataRequestsCreateFromDataElementsFn>;
+  createWithDialogs: jest.MockedFunction<CreateFromDialogsFn>;
   getRequestsIntersections: jest.MockedFunction<DataAccessRequestsSourceTargetIntersectionsFn>;
   updateRequestsFolder: jest.MockedFunction<DataRequestsUpdateRequestsFolderFn>;
   getRequestsFolder: jest.MockedFunction<DataRequestGetRequestsFolderFn>;
@@ -70,6 +75,7 @@ export const createDataRequestsServiceStub = (): DataRequestsServiceStub => {
     listDataElements: jest.fn() as jest.MockedFunction<DataRequestsListElementsFn>,
     createFromDataElements:
       jest.fn() as jest.MockedFunction<DataRequestsCreateFromDataElementsFn>,
+    createWithDialogs: jest.fn() as jest.MockedFunction<CreateFromDialogsFn>,
     getRequestsIntersections:
       jest.fn() as jest.MockedFunction<DataAccessRequestsSourceTargetIntersectionsFn>,
     updateRequestsFolder:
