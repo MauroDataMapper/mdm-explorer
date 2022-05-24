@@ -20,6 +20,8 @@ import { Injectable } from '@angular/core';
 import {
   DataModelDetail,
   DataModelDetailResponse,
+  FolderDetail,
+  FolderDetailResponse,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { map, Observable, switchMap } from 'rxjs';
@@ -46,5 +48,11 @@ export class ResearchPluginService {
       switchMap(() => this.endpoints.dataModel.get(id)),
       map((response: DataModelDetailResponse) => response.body)
     );
+  }
+
+  userFolder(): Observable<FolderDetail> {
+    return this.endpoints.pluginResearch
+      .userFolder()
+      .pipe(map((response: FolderDetailResponse) => response.body));
   }
 }

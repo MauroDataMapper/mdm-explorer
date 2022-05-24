@@ -115,13 +115,12 @@ describe('DashboardComponent', () => {
   describe('loadRequests', () => {
     it('should raise a toastr message if something goes wrong and not set currentUserRequests', () => {
       const spy = jest.spyOn(toastrStub, 'error');
-      const username = 'username';
 
       dataRequestsStub.list.mockImplementationOnce(() => {
         return throwError(() => {});
       });
 
-      harness.component.loadRequests(username);
+      harness.component.loadRequests();
 
       expect(spy).toHaveBeenCalledWith(
         'Unable to retrieve your current requests from the server.'

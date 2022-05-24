@@ -19,16 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import {
-  catchError,
-  EMPTY,
-  filter,
-  finalize,
-  map,
-  Subject,
-  switchMap,
-  takeUntil,
-} from 'rxjs';
+import { catchError, EMPTY, filter, finalize, map, Subject, takeUntil } from 'rxjs';
 import { environment } from '../environments/environment';
 import { BroadcastEvent, BroadcastService } from './core/broadcast.service';
 import { StateRouterService } from './core/state-router.service';
@@ -199,7 +190,7 @@ export class AppComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((userSignedIn) => {
         this.setupSignedInUser(userSignedIn);
-        this.getRequestsInfo(userSignedIn);
+        this.getRequestsInfo();
       });
 
     this.broadcast
@@ -210,7 +201,7 @@ export class AppComponent implements OnInit, OnDestroy {
     const user = this.userDetails.get();
     if (user) {
       this.setupSignedInUser(user);
-      this.getRequestsInfo(user);
+      this.getRequestsInfo();
     }
 
     this.signedInUser = user;
@@ -280,18 +271,12 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Verify that a user's request folder exists (or create if it doesn't), then check how many current requests they
-   * have pending.
+   * Check how many current requests user has pending.
    */
-  private getRequestsInfo(user: UserDetails) {
+  private getRequestsInfo() {
     this.dataRequests
-      .getRequestsFolder(user.email)
+      .list()
       .pipe(
-        catchError(() => {
-          this.toastr.error('There was a problem locating your requests folder.');
-          return EMPTY;
-        }),
-        switchMap(() => this.dataRequests.list(user.email)),
         catchError(() => {
           this.toastr.error('There was a problem locating your current requests.');
           return EMPTY;

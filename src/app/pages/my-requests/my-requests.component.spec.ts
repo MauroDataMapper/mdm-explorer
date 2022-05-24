@@ -155,8 +155,7 @@ describe('MyRequestsComponent', () => {
 
       mockSignedInUser();
 
-      dataRequestsStub.list.mockImplementationOnce((email) => {
-        expect(email).toBe(user.email);
+      dataRequestsStub.list.mockImplementationOnce(() => {
         expect(harness.component.state).toBe('loading');
         return of(requests);
       });
@@ -186,8 +185,7 @@ describe('MyRequestsComponent', () => {
     it('should handle having no requests available', () => {
       mockSignedInUser();
 
-      dataRequestsStub.list.mockImplementationOnce((email) => {
-        expect(email).toBe(user.email);
+      dataRequestsStub.list.mockImplementationOnce(() => {
         expect(harness.component.state).toBe('loading');
         return of([]);
       });

@@ -20,6 +20,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Inject, Injectable, Optional } from '@angular/core';
 import {
   AuthenticatedResponse,
+  FolderDetail,
   LoginPayload,
   LoginResponse,
   PublicOpenIdConnectProvider,
@@ -27,6 +28,7 @@ import {
 } from '@maurodatamapper/mdm-resources';
 import {
   catchError,
+  concatMap,
   EMPTY,
   finalize,
   map,
@@ -46,6 +48,7 @@ import {
   OPENID_CONNECT_CONFIG,
 } from './security.types';
 import { UserDetails, UserDetailsService } from './user-details.service';
+import { ResearchPluginService } from '../mauro/research-plugin.service';
 
 /**
  * Manages security operations on Mauro user interfaces.
@@ -62,11 +65,12 @@ export class SecurityService {
     private userDetails: UserDetailsService,
     @Optional()
     @Inject(OPENID_CONNECT_CONFIG)
-    private openIdConnectConfig: OpenIdConnectConfiguration
+    private openIdConnectConfig: OpenIdConnectConfiguration,
+    private researchPlugin: ResearchPluginService
   ) {}
 
   /**
-   * Log in a user to the Mauro system.
+   * Log in a user to the Mauro system, and get or create a folder for their requests.
    *
    * @param credentials The login credentials to use.
    * @returns An observable to return a `UserDetails` object representing the logged in user.
@@ -89,8 +93,17 @@ export class SecurityService {
           needsToResetPassword: login.needsToResetPassword ?? false,
         };
 
-        this.userDetails.set(user);
         return user;
+      }),
+      concatMap((user: UserDetails) => {
+        return this.researchPlugin.userFolder().pipe(
+          map((folder: FolderDetail) => {
+            user.requestFolder = folder;
+
+            this.userDetails.set(user);
+            return user;
+          })
+        );
       })
     );
   }
