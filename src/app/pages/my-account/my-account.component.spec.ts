@@ -245,8 +245,9 @@ describe('MyAccountComponent', () => {
     };
 
     it('should do nothing if no user is set', () => {
+      //since we genericly use update its called twice in previous tests, we want it to exit before calling a third time with an empty payload.
       harness.component.updateContactInfo({} as CatalogueUserContactPayload);
-      expect(catalogueUserStub.updateContactInfo).not.toHaveBeenCalled();
+      expect(catalogueUserStub.update).not.toBeCalledTimes(3);
     });
 
     it('should update the details of a user and the related folder', fakeAsync(() => {
@@ -270,7 +271,7 @@ describe('MyAccountComponent', () => {
 
       matDialogStub.usage.afterClosed.mockImplementationOnce(() => of({ status: 'ok' }));
 
-      catalogueUserStub.updateContactInfo.mockImplementationOnce((id, pl) => {
+      catalogueUserStub.update.mockImplementationOnce((id, pl) => {
         expect(id).toBe(outdatedUser.id);
         expect(pl).toBe(payload);
         expect(harness.component.contactInfoMode).toBe('updating');
@@ -304,7 +305,7 @@ describe('MyAccountComponent', () => {
 
       matDialogStub.usage.afterClosed.mockImplementationOnce(() => of({ status: 'ok' }));
 
-      catalogueUserStub.updateContactInfo.mockImplementationOnce(() => {
+      catalogueUserStub.update.mockImplementationOnce(() => {
         expect(harness.component.contactInfoMode).toBe('updating');
         return throwError(() => {});
       });

@@ -56,13 +56,13 @@ SPDX-License-Identifier: Apache-2.0
           <dd>{{ user.jobTitle }}</dd>
         </div>
       </dl>
-      <mdm-catalogue-user-form
+      <mdm-catalogue-user-basic-form
         *ngIf="basicInfoMode === 'edit' || basicInfoMode === 'updating'"
         [user]="user"
         [isBusy]="basicInfoMode === 'updating'"
         (cancelClicked)="cancelEditBasicInfo()"
         (updateClicked)="updateBasicInfo($event)"
-      ></mdm-catalogue-user-form>
+      ></mdm-catalogue-user-basic-form>
     </section>
 
     <section>

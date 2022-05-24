@@ -16,9 +16,9 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, OnInit } from '@angular/core';
+import { Component, ComponentFactoryResolver, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, switchMap } from 'rxjs';
+import { catchError, EMPTY, filter, switchMap } from 'rxjs';
 import {
   CatalogueUser,
   CatalogueUserPayload,
@@ -131,43 +131,38 @@ export class MyAccountComponent implements OnInit {
         'Changing your email address will require us to sign you out of this website to make changes to your account. Once successful you can then sign in again with your new email address. Are you sure you would like to continue?',
     });
 
-    dialog.afterClosed().subscribe((result: { status: string }) => {
-      if (result?.status !== 'ok') {
-        this.cancelEditContactInfo();
-
-        return;
-      }
-
-      if (!this.user) {
-        return;
-      }
-
-      this.catalogueUser
-        .update(this.user.id, payload)
-        .pipe(
-          catchError(() => {
-            this.toastr.error('There was a problem updating your account details.');
-            this.contactInfoMode = 'edit';
-            console.log('Errored out on user request');
+    dialog
+      .afterClosed()
+      .pipe(
+        filter((result) => result?.status === 'ok'),
+        switchMap(() => {
+          if (!this.user) {
             return EMPTY;
-          }),
-          switchMap((user) => {
-            this.user = user;
-            return this.dataRequests.getRequestsFolder(oldEmail);
-          }),
-          switchMap((folder) => {
-            return this.dataRequests.updateRequestsFolder(
-              folder.id!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-              this.user!.emailAddress // eslint-disable-line @typescript-eslint/no-non-null-assertion
-            );
-          })
-        )
-        .subscribe(() => {
-          this.contactInfoMode = 'view';
-          this.toastr.success('Your account was updated.');
-          this.signOut();
-        });
-    });
+          }
+          return this.catalogueUser.update(this.user.id, payload);
+        }),
+        catchError(() => {
+          this.toastr.error('There was a problem updating your account details.');
+          this.contactInfoMode = 'edit';
+          return EMPTY;
+        }),
+        switchMap((user) => {
+          this.user = user;
+
+          return this.dataRequests.getRequestsFolder(oldEmail);
+        }),
+        switchMap((folder) => {
+          return this.dataRequests.updateRequestsFolder(
+            folder.id!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+            this.user!.emailAddress // eslint-disable-line @typescript-eslint/no-non-null-assertion
+          );
+        })
+      )
+      .subscribe(() => {
+        this.contactInfoMode = 'view';
+        this.toastr.success('Your account was updated.');
+        this.signOut();
+      });
   }
 
   signOut() {
