@@ -51,9 +51,8 @@ export type DataRequestsUpdateRequestsFolderFn = (
   folderId: Uuid,
   label: string
 ) => Observable<[DataModel, string[]]>;
-export type DataRequestGetRequestsFolderFn = (
-  userEmail: string
-) => Observable<FolderDetail>;
+export type DataRequestGetRequestsFolderFn = () => Observable<FolderDetail>;
+export type DataRequestGetFolderNameFn = (userEmail: string) => string;
 
 export interface DataRequestsServiceStub {
   list: jest.MockedFunction<DataRequestsListFn>;
@@ -62,6 +61,7 @@ export interface DataRequestsServiceStub {
   getRequestsIntersections: jest.MockedFunction<DataAccessRequestsSourceTargetIntersectionsFn>;
   updateRequestsFolder: jest.MockedFunction<DataRequestsUpdateRequestsFolderFn>;
   getRequestsFolder: jest.MockedFunction<DataRequestGetRequestsFolderFn>;
+  getDataRequestsFolderName: jest.MockedFunction<DataRequestGetFolderNameFn>;
 }
 
 export const createDataRequestsServiceStub = (): DataRequestsServiceStub => {
@@ -75,5 +75,7 @@ export const createDataRequestsServiceStub = (): DataRequestsServiceStub => {
     updateRequestsFolder:
       jest.fn() as jest.MockedFunction<DataRequestsUpdateRequestsFolderFn>,
     getRequestsFolder: jest.fn() as jest.MockedFunction<DataRequestGetRequestsFolderFn>,
+    getDataRequestsFolderName:
+      jest.fn() as jest.MockedFunction<DataRequestGetFolderNameFn>,
   };
 };

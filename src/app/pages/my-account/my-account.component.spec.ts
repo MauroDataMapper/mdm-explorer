@@ -44,6 +44,8 @@ import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
 import { MatDialog } from '@angular/material/dialog';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { CatalogueItemDomainType, FolderDetail } from '@maurodatamapper/mdm-resources';
+import { createFolderServiceStub } from 'src/app/testing/stubs/folder.stub';
+import { FolderService } from 'src/app/mauro/folder.service';
 
 describe('MyAccountComponent', () => {
   let harness: ComponentHarness<MyAccountComponent>;
@@ -55,6 +57,7 @@ describe('MyAccountComponent', () => {
   const broadcastStub = createBroadcastServiceStub();
   const dataRequestsStub = createDataRequestsServiceStub();
   const matDialogStub = createMatDialogStub();
+  const folderStub = createFolderServiceStub();
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(MyAccountComponent, {
@@ -86,6 +89,10 @@ describe('MyAccountComponent', () => {
         {
           provide: MatDialog,
           useValue: matDialogStub,
+        },
+        {
+          provide: FolderService,
+          useValue: folderStub,
         },
       ],
     });
@@ -244,6 +251,11 @@ describe('MyAccountComponent', () => {
       emailAddress: 'test@test.com',
     };
 
+    beforeEach(() => {
+      toastrStub.success.mockClear();
+      broadcastStub.dispatch.mockClear();
+    });
+
     it('should do nothing if no user is set', () => {
       //since we genericly use update its called twice in previous tests, we want it to exit before calling a third time with an empty payload.
       harness.component.updateContactInfo({} as CatalogueUserContactPayload);
@@ -254,6 +266,8 @@ describe('MyAccountComponent', () => {
       const payload: CatalogueUserContactPayload = {
         emailAddress: 'changed@test.com',
       };
+
+      const newFolderName = 'changed[at]test.com';
 
       const folder: FolderDetail = {
         id: '456',
@@ -277,9 +291,14 @@ describe('MyAccountComponent', () => {
         expect(harness.component.contactInfoMode).toBe('updating');
         return of(updatedUser);
       });
-      dataRequestsStub.getRequestsFolder.mockImplementationOnce((email) => {
-        expect(email).toBe(outdatedUser.emailAddress);
+
+      dataRequestsStub.getRequestsFolder.mockImplementationOnce(() => {
         return of(folder);
+      });
+
+      dataRequestsStub.getDataRequestsFolderName.mockImplementationOnce((email) => {
+        expect(email).toBe(updatedUser.emailAddress);
+        return newFolderName;
       });
 
       dataRequestsStub.updateRequestsFolder.mockImplementationOnce((folderId, email) => {
@@ -288,12 +307,18 @@ describe('MyAccountComponent', () => {
         return of();
       });
 
+      folderStub.update.mockImplementationOnce((folderId, payload) => {
+        expect(folderId).toBe(folder.id);
+        expect(payload.label).toBe(newFolderName);
+        return of(folder);
+      });
+
       harness.component.updateContactInfo(payload);
 
       tick();
 
-      expect(harness.component.user.emailAddress).toBe(updatedUser.emailAddress);
-      expect(harness.component.user.emailAddress).not.toBe(outdatedUser.emailAddress);
+      expect(toastrStub.success).toHaveBeenCalled();
+      expect(broadcastStub.dispatch).toHaveBeenCalledWith('sign-out-user');
     }));
 
     it('should raise an error when updating fails', fakeAsync(() => {

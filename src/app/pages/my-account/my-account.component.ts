@@ -149,13 +149,8 @@ export class MyAccountComponent implements OnInit {
           return EMPTY;
         }),
         switchMap((user) => {
-          // //
-          // return this.dataRequests.getRequestsFolder();
-          // this.user = user;
-
           return forkJoin([of(user), this.dataRequests.getRequestsFolder()]);
         }),
-        //switchMap((folderDetail) => {
         switchMap(([user, folder]) => {
           if (!folder.id) {
             return EMPTY;
