@@ -102,21 +102,6 @@ export class DataRequestsService {
   }
 
   /**
-   * Retrieve the users data requests folder. Updateing the label to a new value.
-   * Called when a user changes thier email address
-   *
-   * @param folderId - Id of the request folder to be updated
-   * @param label - the new user email to be applied
-   * @returns an observable containing a FolderDetail object
-   */
-  updateRequestsFolder(folderId: Uuid, label: string): Observable<FolderDetail> {
-    return this.folder.update(folderId, {
-      id: folderId,
-      label: this.getDataRequestsFolderName(label),
-    });
-  }
-
-  /**
    * Lists all of the users requests as {@link DataRequest} objects.
    *
    * @returns an observable containing an array of data requests
@@ -346,7 +331,7 @@ export class DataRequestsService {
    * @returns The input string with all instances of '@' replaced with
    * '[at]'
    */
-  private getDataRequestsFolderName(userEmail: string): string {
+  public getDataRequestsFolderName(userEmail: string): string {
     return userEmail.replace('@', '[at]');
   }
 }

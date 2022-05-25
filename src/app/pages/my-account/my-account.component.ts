@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, ComponentFactoryResolver, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, filter, switchMap } from 'rxjs';
+import { catchError, EMPTY, filter, forkJoin, of, switchMap } from 'rxjs';
 import {
   CatalogueUser,
   CatalogueUserPayload,
@@ -33,6 +33,7 @@ import { ConfirmationDialogComponent } from 'src/app/shared/confirmation-dialog/
 import { MatDialog } from '@angular/material/dialog';
 import { type } from 'os';
 import { DialogService } from 'src/app/data-explorer/dialog.service';
+import { FolderService } from 'src/app/mauro/folder.service';
 
 export type MyAccountViewStatus = 'view' | 'edit' | 'updating';
 @Component({
@@ -53,6 +54,7 @@ export class MyAccountComponent implements OnInit {
     private stateRouter: StateRouterService,
     private toastr: ToastrService,
     private broadcast: BroadcastService,
+    private folder: FolderService,
     public dialog: DialogService
   ) {}
 
@@ -120,7 +122,6 @@ export class MyAccountComponent implements OnInit {
       return;
     }
 
-    const oldEmail = this.user.emailAddress;
     this.contactInfoMode = 'updating';
 
     const dialog = this.dialog.openConfirmation({
@@ -139,6 +140,7 @@ export class MyAccountComponent implements OnInit {
           if (!this.user) {
             return EMPTY;
           }
+          switchMap;
           return this.catalogueUser.update(this.user.id, payload);
         }),
         catchError(() => {
@@ -147,15 +149,21 @@ export class MyAccountComponent implements OnInit {
           return EMPTY;
         }),
         switchMap((user) => {
-          this.user = user;
+          // //
+          // return this.dataRequests.getRequestsFolder();
+          // this.user = user;
 
-          return this.dataRequests.getRequestsFolder(oldEmail);
+          return forkJoin([of(user), this.dataRequests.getRequestsFolder()]);
         }),
-        switchMap((folder) => {
-          return this.dataRequests.updateRequestsFolder(
-            folder.id!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-            this.user!.emailAddress // eslint-disable-line @typescript-eslint/no-non-null-assertion
-          );
+        //switchMap((folderDetail) => {
+        switchMap(([user, folder]) => {
+          if (!folder.id) {
+            return EMPTY;
+          }
+          return this.folder.update(folder.id, {
+            id: folder.id,
+            label: this.dataRequests.getDataRequestsFolderName(user.emailAddress),
+          });
         })
       )
       .subscribe(() => {
