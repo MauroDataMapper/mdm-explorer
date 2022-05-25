@@ -43,11 +43,7 @@ import {
 } from 'src/app/testing/stubs/mdm-endpoints.stub';
 import { MatDialog } from '@angular/material/dialog';
 import { UserDetails } from 'src/app/security/user-details.service';
-import {
-  DataElementBasic,
-  DataElementSearchResult,
-} from 'src/app/data-explorer/data-explorer.types';
-import { CreateRequestDialogResponse } from 'src/app/data-explorer/create-request-dialog/create-request-dialog.component';
+import { DataElementSearchResult } from 'src/app/data-explorer/data-explorer.types';
 import { Observable, of } from 'rxjs';
 import { createBroadcastServiceStub } from 'src/app/testing/stubs/broadcast.stub';
 import { BroadcastService } from 'src/app/core/broadcast.service';
@@ -142,14 +138,10 @@ describe('DataElementInRequestComponent', () => {
       expect(spy).not.toHaveBeenCalled();
     });
 
-    test.todo('should display toastr error if user not signed-in');
-
-    it("should transition to requests page if RequestCreatedAction is 'view-requests'", () => {
+    it('should transition to requests page if RequestCreatedAction is \'view-requests\'', () => {
       // arrange
       dataRequestsStub.createWithDialogs.mockImplementationOnce(
-        (
-          getDataElements: () => Observable<DataElementBasic[]>
-        ): Observable<RequestCreatedAction> => {
+        (): Observable<RequestCreatedAction> => {
           return of('view-requests');
         }
       );
@@ -161,12 +153,10 @@ describe('DataElementInRequestComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith('/requests');
     });
 
-    it("should not transition to requests page if RequestCreatedAction is 'continue'", () => {
+    it('should not transition to requests page if RequestCreatedAction is \'continue\'', () => {
       // arrange
       dataRequestsStub.createWithDialogs.mockImplementationOnce(
-        (
-          getDataElements: () => Observable<DataElementBasic[]>
-        ): Observable<RequestCreatedAction> => {
+        (): Observable<RequestCreatedAction> => {
           return of('continue');
         }
       );
@@ -184,9 +174,7 @@ describe('DataElementInRequestComponent', () => {
       const callbackReturnValue = [event.item];
 
       dataRequestsStub.createWithDialogs.mockImplementationOnce(
-        (
-          getDataElements: () => Observable<DataElementBasic[]>
-        ): Observable<RequestCreatedAction> => {
+        (): Observable<RequestCreatedAction> => {
           return of('view-requests');
         }
       );
@@ -197,6 +185,10 @@ describe('DataElementInRequestComponent', () => {
       // assert
 
       // Grab the callback method passed to createSpy and retrieve it's output to check its return value.
+      // createSpy.mock.calls is an array containing the call arguments of all calls that have been made to this mock function.
+      // Each item in the array is an array of arguments that were passed during the call. For example, createSpy.mock.calls[0][0]
+      // gets the first argument of the first call to this mock function. In this case, this is the callback function used to retrieve
+      // the Observable<DataElementBasic[]> containing the dataElements to be added to the new request.
       let returnedDataElements;
       createSpy.mock.calls[0][0]().subscribe((items) => {
         returnedDataElements = items;

@@ -40,11 +40,7 @@ import {
 } from 'src/app/testing/stubs/mdm-endpoints.stub';
 import { MatDialog } from '@angular/material/dialog';
 import { UserDetails } from 'src/app/security/user-details.service';
-import {
-  DataElementBasic,
-  SelectableDataElementSearchResult,
-} from 'src/app/data-explorer/data-explorer.types';
-import { CreateRequestDialogResponse } from 'src/app/data-explorer/create-request-dialog/create-request-dialog.component';
+import { SelectableDataElementSearchResult } from 'src/app/data-explorer/data-explorer.types';
 import { Observable, of } from 'rxjs';
 import { createBroadcastServiceStub } from 'src/app/testing/stubs/broadcast.stub';
 import { BroadcastService } from 'src/app/core/broadcast.service';
@@ -154,14 +150,10 @@ describe('DataElementMultiSelectComponent', () => {
       expect(spy).not.toHaveBeenCalled();
     });
 
-    test.todo('should display toastr error if user not signed-in');
-
-    it("should transition to requests page if RequestCreatedAction is 'view-requests'", () => {
+    it('should transition to requests page if RequestCreatedAction is \'view-requests\'', () => {
       // arrange
       dataRequestsStub.createWithDialogs.mockImplementationOnce(
-        (
-          getDataElements: () => Observable<DataElementBasic[]>
-        ): Observable<RequestCreatedAction> => {
+        (): Observable<RequestCreatedAction> => {
           return of('view-requests');
         }
       );
@@ -173,12 +165,10 @@ describe('DataElementMultiSelectComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith('/requests');
     });
 
-    it("should not transition to requests page if RequestCreatedAction is 'continue'", () => {
+    it('should not transition to requests page if RequestCreatedAction is \'continue\'', () => {
       // arrange
       dataRequestsStub.createWithDialogs.mockImplementationOnce(
-        (
-          getDataElements: () => Observable<DataElementBasic[]>
-        ): Observable<RequestCreatedAction> => {
+        (): Observable<RequestCreatedAction> => {
           return of('continue');
         }
       );
@@ -195,9 +185,7 @@ describe('DataElementMultiSelectComponent', () => {
       const createSpy = jest.spyOn(dataRequestsStub, 'createWithDialogs');
 
       dataRequestsStub.createWithDialogs.mockImplementationOnce(
-        (
-          getDataElements: () => Observable<DataElementBasic[]>
-        ): Observable<RequestCreatedAction> => {
+        (): Observable<RequestCreatedAction> => {
           return of('view-requests');
         }
       );

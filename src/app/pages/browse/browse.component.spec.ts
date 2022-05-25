@@ -44,7 +44,6 @@ import { createDataExplorerServiceStub } from 'src/app/testing/stubs/data-explor
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
-import { CreateRequestDialogResponse } from 'src/app/data-explorer/create-request-dialog/create-request-dialog.component';
 import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { SecurityService } from 'src/app/security/security.service';
 import { UserDetails } from 'src/app/security/user-details.service';
@@ -398,9 +397,7 @@ describe('BrowseComponent', () => {
     ];
 
     dataRequestsStub.createWithDialogs.mockImplementation(
-      (
-        getDataElements: () => Observable<DataElementBasic[]>
-      ): Observable<RequestCreatedAction> => {
+      (): Observable<RequestCreatedAction> => {
         return of('view-requests');
       }
     );
@@ -435,7 +432,7 @@ describe('BrowseComponent', () => {
       );
     });
 
-    it("should transition to requests page if RequestCreatedAction is 'view-requests'", () => {
+    it('should transition to requests page if RequestCreatedAction is \'view-requests\'', () => {
       // act
       harness.component.createRequest();
 
@@ -443,12 +440,10 @@ describe('BrowseComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith('/requests');
     });
 
-    it("should not transition to requests page if RequestCreatedAction is 'continue'", () => {
+    it('should not transition to requests page if RequestCreatedAction is \'continue\'', () => {
       // arrange
       dataRequestsStub.createWithDialogs.mockImplementationOnce(
-        (
-          getDataElements: () => Observable<DataElementBasic[]>
-        ): Observable<RequestCreatedAction> => {
+        (): Observable<RequestCreatedAction> => {
           return of('continue');
         }
       );
@@ -474,9 +469,7 @@ describe('BrowseComponent', () => {
       });
 
       dataRequestsStub.createWithDialogs.mockImplementationOnce(
-        (
-          getDataElements: () => Observable<DataElementBasic[]>
-        ): Observable<RequestCreatedAction> => {
+        (): Observable<RequestCreatedAction> => {
           return of('view-requests');
         }
       );

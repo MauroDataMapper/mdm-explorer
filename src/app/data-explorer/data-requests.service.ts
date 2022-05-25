@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   DataElement,
   DataModel,
@@ -32,7 +32,6 @@ import {
 import {
   catchError,
   concatMap,
-  OperatorFunction,
   toArray,
   EMPTY,
   filter,
@@ -52,15 +51,12 @@ import {
   DataElementBasic,
   DataElementMultipleOperationResult,
   DataElementOperationResult,
-  DataExplorerConfiguration,
-  DATA_EXPLORER_CONFIGURATION,
   mapToDataRequest,
 } from './data-explorer.types';
 import { DataRequest } from '../data-explorer/data-explorer.types';
 import { DataExplorerService } from './data-explorer.service';
 import { SecurityService } from '../security/security.service';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { ResearchPluginService } from '../mauro/research-plugin.service';
 import { RequestCreatedAction } from './request-created-dialog/request-created-dialog.component';
 import { ToastrService } from 'ngx-toastr';
 import { BroadcastService } from '../core/broadcast.service';
@@ -81,14 +77,12 @@ export interface DataAccessRequestsSourceTargetIntersections {
 export class DataRequestsService {
   constructor(
     private dataModels: DataModelService,
-    private pluginResearch: ResearchPluginService,
     private catalogueUser: CatalogueUserService,
     private dataExplorer: DataExplorerService,
     private security: SecurityService,
     private toastr: ToastrService,
     private broadcast: BroadcastService,
-    private dialogs: DialogService,
-    @Inject(DATA_EXPLORER_CONFIGURATION) private config: DataExplorerConfiguration
+    private dialogs: DialogService
   ) {}
 
   /**
