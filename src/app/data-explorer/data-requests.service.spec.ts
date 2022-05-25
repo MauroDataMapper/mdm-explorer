@@ -25,7 +25,6 @@ import {
   DataModelFull,
   SourceTargetIntersection,
   MdmIndexBody,
-  ContainerUpdatePayload,
 } from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
 import { DataModelService } from '../mauro/data-model.service';

@@ -17,10 +17,9 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { catchError, map, Observable, throwError } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { FolderDetail, FolderDetailResponse, Uuid } from '@maurodatamapper/mdm-resources';
-import { HttpErrorResponse } from '@angular/common/http';
 import { ContainerUpdatePayload } from '@maurodatamapper/mdm-resources';
 @Injectable({
   providedIn: 'root',

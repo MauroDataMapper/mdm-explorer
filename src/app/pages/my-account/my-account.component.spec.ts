@@ -257,7 +257,7 @@ describe('MyAccountComponent', () => {
     });
 
     it('should do nothing if no user is set', () => {
-      //since we genericly use update its called twice in previous tests, we want it to exit before calling a third time with an empty payload.
+      // since we genericly use update its called twice in previous tests, we want it to exit before calling a third time with an empty payload.
       harness.component.updateContactInfo({} as CatalogueUserContactPayload);
       expect(catalogueUserStub.update).not.toBeCalledTimes(3);
     });
@@ -307,9 +307,9 @@ describe('MyAccountComponent', () => {
         return of();
       });
 
-      folderStub.update.mockImplementationOnce((folderId, payload) => {
+      folderStub.update.mockImplementationOnce((folderId, pl) => {
         expect(folderId).toBe(folder.id);
-        expect(payload.label).toBe(newFolderName);
+        expect(pl.label).toBe(newFolderName);
         return of(folder);
       });
 

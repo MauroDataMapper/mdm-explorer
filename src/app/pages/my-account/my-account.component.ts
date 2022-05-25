@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, ComponentFactoryResolver, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY, filter, forkJoin, of, switchMap } from 'rxjs';
 import {
@@ -29,9 +29,6 @@ import { BroadcastService } from 'src/app/core/broadcast.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { SecurityService } from 'src/app/security/security.service';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
-import { ConfirmationDialogComponent } from 'src/app/shared/confirmation-dialog/confirmation-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
-import { type } from 'os';
 import { DialogService } from 'src/app/data-explorer/dialog.service';
 import { FolderService } from 'src/app/mauro/folder.service';
 
@@ -129,18 +126,24 @@ export class MyAccountComponent implements OnInit {
       okBtnTitle: 'Yes, continue.',
       btnType: 'primary',
       message:
-        'Changing your email address will require us to sign you out of this website to make changes to your account. Once successful you can then sign in again with your new email address. Are you sure you would like to continue?',
+        '<p>Changing your email address will require us to sign you out of this website to make changes to your account. Once successful you can then sign in again with your new email address.</p>' +
+        '<p>Are you sure you would like to continue?</p>',
     });
 
     dialog
       .afterClosed()
       .pipe(
-        filter((result) => result?.status === 'ok'),
+        filter((result) => {
+          if (result?.status !== 'ok') {
+            this.contactInfoMode = 'view';
+          }
+
+          return result?.status === 'ok';
+        }),
         switchMap(() => {
           if (!this.user) {
             return EMPTY;
           }
-          switchMap;
           return this.catalogueUser.update(this.user.id, payload);
         }),
         catchError(() => {
@@ -163,7 +166,10 @@ export class MyAccountComponent implements OnInit {
       )
       .subscribe(() => {
         this.contactInfoMode = 'view';
-        this.toastr.success('Your account was updated.');
+        this.toastr.success(
+          'Your account was updated. Please sign-in again with your new email address.',
+          'Account updated'
+        );
         this.signOut();
       });
   }

@@ -16,7 +16,6 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { HttpErrorResponse } from '@angular/common/http';
 import {
   CatalogueItemDomainType,
   ContainerUpdatePayload,
