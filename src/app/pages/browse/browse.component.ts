@@ -33,7 +33,6 @@ import { DataRequestsService } from 'src/app/data-explorer/data-requests.service
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import { SecurityService } from 'src/app/security/security.service';
 import { Uuid } from '@maurodatamapper/mdm-resources';
-import { __createBinding } from 'tslib';
 
 @Component({
   selector: 'mdm-browse',
@@ -102,6 +101,7 @@ export class BrowseComponent implements OnInit {
     }
 
     const getDataElements = () => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return this.dataModels.getDataElementsForDataClass(this.selected!).pipe(
         switchMap((dataElements: DataElement[]) => {
           const dataElementBasics = dataElements.map((de) => {
