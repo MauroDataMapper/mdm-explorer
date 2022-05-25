@@ -51,8 +51,6 @@ export class DataElementSearchResultComponent {
 
   @Output() bookmark = new EventEmitter<DataElementBookmarkEvent>();
 
-  @Output() createRequestClicked = new EventEmitter<CreateRequestEvent>();
-
   bookmarked = false;
 
   constructor() {
@@ -76,12 +74,5 @@ export class DataElementSearchResultComponent {
     }
 
     this.bookmark.emit({ item: this.item, selected });
-  }
-
-  createRequest() {
-    const event: CreateRequestEvent = {
-      item: this.item!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-    };
-    this.createRequestClicked.emit(event);
   }
 }

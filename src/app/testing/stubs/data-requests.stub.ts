@@ -20,11 +20,17 @@ import {
   DataClass,
   DataElement,
   DataModel,
+  DataModelDetail,
   FolderDetail,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
-import { DataElementBasic, DataRequest } from 'src/app/data-explorer/data-explorer.types';
+import {
+  DataElementBasic,
+  DataElementMultipleOperationResult,
+  DataRequest,
+  SelectableDataElementSearchResult,
+} from 'src/app/data-explorer/data-explorer.types';
 import { DataAccessRequestsSourceTargetIntersections } from 'src/app/data-explorer/data-requests.service';
 import { RequestCreatedAction } from 'src/app/data-explorer/request-created-dialog/request-created-dialog.component';
 import { UserDetails } from 'src/app/security/user-details.service';
@@ -51,6 +57,10 @@ export type CreateFromDialogsFn = (
 export type DataAccessRequestsSourceTargetIntersectionsFn = (
   sourceDataModelId: Uuid
 ) => Observable<DataAccessRequestsSourceTargetIntersections>;
+export type DeleteDataElementMultipleFn = (
+  elements: [DataElementBasic],
+  targetModel: DataModelDetail
+) => Observable<DataElementMultipleOperationResult>;
 export type DataRequestsUpdateRequestsFolderFn = (
   folderId: Uuid,
   label: string
@@ -64,6 +74,7 @@ export interface DataRequestsServiceStub {
   createFromDataElements: jest.MockedFunction<DataRequestsCreateFromDataElementsFn>;
   createWithDialogs: jest.MockedFunction<CreateFromDialogsFn>;
   getRequestsIntersections: jest.MockedFunction<DataAccessRequestsSourceTargetIntersectionsFn>;
+  deleteDataElementMultiple: jest.MockedFunction<DeleteDataElementMultipleFn>;
   updateRequestsFolder: jest.MockedFunction<DataRequestsUpdateRequestsFolderFn>;
   getRequestsFolder: jest.MockedFunction<DataRequestGetRequestsFolderFn>;
   getDataRequestsFolderName: jest.MockedFunction<DataRequestGetFolderNameFn>;
@@ -78,6 +89,8 @@ export const createDataRequestsServiceStub = (): DataRequestsServiceStub => {
     createWithDialogs: jest.fn() as jest.MockedFunction<CreateFromDialogsFn>,
     getRequestsIntersections:
       jest.fn() as jest.MockedFunction<DataAccessRequestsSourceTargetIntersectionsFn>,
+    deleteDataElementMultiple:
+      jest.fn() as jest.MockedFunction<DeleteDataElementMultipleFn>,
     updateRequestsFolder:
       jest.fn() as jest.MockedFunction<DataRequestsUpdateRequestsFolderFn>,
     getRequestsFolder: jest.fn() as jest.MockedFunction<DataRequestGetRequestsFolderFn>,
