@@ -28,11 +28,7 @@ import {
 } from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
 import { DataModelService } from '../mauro/data-model.service';
-import {
-  DataElementBasic,
-  DataRequest,
-  DATA_EXPLORER_CONFIGURATION,
-} from '../data-explorer/data-explorer.types';
+import { DataElementBasic, DataRequest } from '../data-explorer/data-explorer.types';
 import { createDataModelServiceStub } from '../testing/stubs/data-model.stub';
 import { createSecurityServiceStub } from '../testing/stubs/security.stub';
 import { setupTestModuleForService } from '../testing/testing.helpers';
@@ -79,12 +75,6 @@ describe('DataRequestsService', () => {
         {
           provide: SecurityService,
           useValue: securityStub,
-        },
-        {
-          provide: DATA_EXPLORER_CONFIGURATION,
-          useValue: {
-            rootRequestFolder: 'root-folder',
-          },
         },
       ],
     });

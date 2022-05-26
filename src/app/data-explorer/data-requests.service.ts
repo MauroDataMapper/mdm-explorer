@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   DataElement,
   DataModel,
@@ -52,8 +52,6 @@ import {
   DataElementMultipleOperationResult,
   DataElementOperationResult,
   mapToDataRequest,
-  DataExplorerConfiguration,
-  DATA_EXPLORER_CONFIGURATION,
 } from './data-explorer.types';
 import { DataRequest } from '../data-explorer/data-explorer.types';
 import { DataExplorerService } from './data-explorer.service';
@@ -79,8 +77,7 @@ export class DataRequestsService {
     private pluginResearch: ResearchPluginService,
     private catalogueUser: CatalogueUserService,
     private dataExplorer: DataExplorerService,
-    private security: SecurityService,
-    @Inject(DATA_EXPLORER_CONFIGURATION) private config: DataExplorerConfiguration
+    private security: SecurityService
   ) {}
 
   /**

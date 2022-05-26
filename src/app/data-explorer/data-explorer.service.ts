@@ -32,7 +32,6 @@ import { ApiPropertiesService } from '../mauro/api-properties.service';
 export const configurationKeys = {
   category: 'Mauro Data Explorer',
   rootDataModelPath: 'explorer.config.root_data_model_path',
-  rootRequestFolder: 'explorer.config.root_request_folder',
   profileNamespace: 'explorer.config.profile_namespace',
   profileServiceName: 'explorer.config.profile_service_name',
 };
@@ -49,7 +48,6 @@ const getExplorerApiProperty = (
 const getExplorerApiProperties = (props: ApiProperty[]) => {
   return {
     rootDataModelPath: getExplorerApiProperty(props, configurationKeys.rootDataModelPath),
-    rootRequestFolder: getExplorerApiProperty(props, configurationKeys.rootRequestFolder),
     profileNamespace: getExplorerApiProperty(props, configurationKeys.profileNamespace),
     profileServiceName: getExplorerApiProperty(
       props,
@@ -83,7 +81,6 @@ export class DataExplorerService {
 
         if (
           !explorerProps.rootDataModelPath ||
-          !explorerProps.rootRequestFolder ||
           !explorerProps.profileNamespace ||
           !explorerProps.profileServiceName
         ) {
@@ -97,7 +94,6 @@ export class DataExplorerService {
 
         this.config = {
           rootDataModelPath: explorerProps.rootDataModelPath.value,
-          rootRequestFolder: explorerProps.rootRequestFolder.value,
           profileNamespace: explorerProps.profileNamespace.value,
           profileServiceName: explorerProps.profileServiceName.value,
         };
