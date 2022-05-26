@@ -28,11 +28,11 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CatalogueUser, CatalogueUserPayload } from '../../mauro/catalogue-user.service';
 
 @Component({
-  selector: 'mdm-catalogue-user-form',
-  templateUrl: './catalogue-user-form.component.html',
-  styleUrls: ['./catalogue-user-form.component.scss'],
+  selector: 'mdm-catalogue-user-basic-form',
+  templateUrl: './catalogue-user-basic-form.component.html',
+  styleUrls: ['./catalogue-user-basic-form.component.scss'],
 })
-export class CatalogueUserFormComponent implements OnChanges {
+export class CatalogueUserBasicFormComponent implements OnChanges {
   @Input() user?: CatalogueUser;
 
   @Input() isBusy = false;

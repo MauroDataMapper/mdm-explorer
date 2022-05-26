@@ -21,7 +21,8 @@ import { SignInFormComponent } from './sign-in-form/sign-in-form.component';
 import { SharedModule } from '../shared/shared.module';
 import { OpenIdConnectAuthorizeComponent } from './open-id-connect-authorize/open-id-connect-authorize.component';
 import { ForgotPasswordFormComponent } from './forgot-password-form/forgot-password-form.component';
-import { CatalogueUserFormComponent } from './catalogue-user-form/catalogue-user-form.component';
+import { CatalogueUserBasicFormComponent } from './catalogue-user-basic-form/catalogue-user-basic-form.component';
+import { CatalogueUserContactFormComponent } from './catalogue-user-contact-form/catalogue-user-contact-form.component';
 import { CoreModule } from '../core/core.module';
 import { ChangePasswordFormComponent } from './change-password-form/change-password-form.component';
 
@@ -30,7 +31,8 @@ import { ChangePasswordFormComponent } from './change-password-form/change-passw
     SignInFormComponent,
     OpenIdConnectAuthorizeComponent,
     ForgotPasswordFormComponent,
-    CatalogueUserFormComponent,
+    CatalogueUserBasicFormComponent,
+    CatalogueUserContactFormComponent,
     ChangePasswordFormComponent,
   ],
   imports: [CoreModule, SharedModule],
@@ -38,7 +40,8 @@ import { ChangePasswordFormComponent } from './change-password-form/change-passw
     SignInFormComponent,
     OpenIdConnectAuthorizeComponent,
     ForgotPasswordFormComponent,
-    CatalogueUserFormComponent,
+    CatalogueUserBasicFormComponent,
+    CatalogueUserContactFormComponent,
     ChangePasswordFormComponent,
   ],
 })

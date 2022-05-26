@@ -19,6 +19,10 @@ SPDX-License-Identifier: Apache-2.0
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
+  ConfirmationDialogComponent,
+  ConfirmationDialogConfig,
+} from '../shared/confirmation-dialog/confirmation-dialog.component';
+import {
   CreateRequestDialogComponent,
   CreateRequestDialogResponse,
 } from './create-request-dialog/create-request-dialog.component';
@@ -79,6 +83,15 @@ export class DialogService {
     >(RequestUpdatedDialogComponent, {
       data,
     });
+  }
+
+  openConfirmation(data: ConfirmationDialogConfig) {
+    return this.matDialog.open<ConfirmationDialogComponent, ConfirmationDialogConfig>(
+      ConfirmationDialogComponent,
+      {
+        data,
+      }
+    );
   }
 
   openFeedbackForm() {

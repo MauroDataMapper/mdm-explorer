@@ -27,13 +27,13 @@ import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
-import { CatalogueUserFormComponent } from './catalogue-user-form.component';
+import { CatalogueUserBasicFormComponent } from './catalogue-user-basic-form.component';
 
-describe('CatalogueUserFormComponent', () => {
-  let harness: ComponentHarness<CatalogueUserFormComponent>;
+describe('CatalogueUserBasicFormComponent', () => {
+  let harness: ComponentHarness<CatalogueUserBasicFormComponent>;
 
   beforeEach(async () => {
-    harness = await setupTestModuleForComponent(CatalogueUserFormComponent, {
+    harness = await setupTestModuleForComponent(CatalogueUserBasicFormComponent, {
       declarations: [MockComponent(MatFormField), MockComponent(MatLabel)],
     });
   });
