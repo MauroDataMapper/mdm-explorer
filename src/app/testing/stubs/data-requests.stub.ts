@@ -29,7 +29,6 @@ import {
   DataElementBasic,
   DataElementMultipleOperationResult,
   DataRequest,
-  SelectableDataElementSearchResult,
 } from 'src/app/data-explorer/data-explorer.types';
 import { DataAccessRequestsSourceTargetIntersections } from 'src/app/data-explorer/data-requests.service';
 import { RequestCreatedAction } from 'src/app/data-explorer/request-created-dialog/request-created-dialog.component';

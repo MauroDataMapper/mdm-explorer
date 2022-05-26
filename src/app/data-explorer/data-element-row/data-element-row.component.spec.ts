@@ -34,7 +34,7 @@ import {
 
 import { DataElementRowComponent } from './data-element-row.component';
 
-//Test output emitters including interaction with DataElementInRequest component
+// Test output emitters including interaction with DataElementInRequest component
 describe('DataElementRowComponent_DataElementInRequest', () => {
   let harness: ComponentHarness<DataElementRowComponent>;
 
@@ -72,7 +72,7 @@ describe('DataElementRowComponent_DataElementInRequest', () => {
     const dom = harness.fixture.nativeElement;
     const dataElementComponent = dom.querySelector('mdm-data-element-in-request');
 
-    expect(dataElementComponent).toBeTruthy;
+    expect(dataElementComponent).toBeTruthy();
   });
 
   it('should raise a delete event when "Remove" button is clicked', () => {
@@ -84,7 +84,7 @@ describe('DataElementRowComponent_DataElementInRequest', () => {
       (de) => de.name === 'button' && de.nativeElement.innerHTML === ' Remove '
     );
     const event: DataElementDeleteEvent = {
-      item: component.item!,
+      item: component.item!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
     };
 
     button.triggerEventHandler('click', event);
@@ -104,14 +104,14 @@ describe('DataElementRowComponent_DataElementInRequest', () => {
     expect(component.item?.isSelected).toBe(false);
     checkboxElement.triggerEventHandler('change', event);
     expect(emitSpy).toHaveBeenCalledWith({ item: component.item, checked: true });
-    expect(component.item!.isSelected).toBe(true);
+    expect(component.item!.isSelected).toBe(true); // eslint-disable-line @typescript-eslint/no-non-null-assertion
 
     emitSpy.mockReset();
     event.checked = false;
     checkboxElement.nativeElement.value = false;
     checkboxElement.triggerEventHandler('change', event);
     expect(emitSpy).toHaveBeenCalledWith({ item: component.item, checked: false });
-    expect(component.item!.isSelected).toBe(false);
+    expect(component.item!.isSelected).toBe(false); // eslint-disable-line @typescript-eslint/no-non-null-assertion
   });
 
   it('should raise an event when data-element-in-request emits a requestAddDelete event', () => {
@@ -130,7 +130,7 @@ describe('DataElementRowComponent_DataElementInRequest', () => {
         label: 'label',
         containsElement: true,
       },
-      dataElement: component.item!,
+      dataElement: component.item!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
     };
     dataElementInRequestComponent.triggerEventHandler('requestAddDelete', event);
     expect(emitSpy).toHaveBeenCalledWith(event);
@@ -146,7 +146,7 @@ describe('DataElementRowComponent_DataElementInRequest', () => {
     );
     const emitSpy = jest.spyOn(component.requestCreated, 'emit');
     const event: CreateRequestEvent = {
-      item: component.item!,
+      item: component.item!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
     };
     dataElementInRequestComponent.triggerEventHandler('createRequestClicked', event);
     expect(emitSpy).toHaveBeenCalledWith(event);

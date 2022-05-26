@@ -24,7 +24,6 @@ import {
   Output,
 } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
-import { CreateRequestEvent } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
 import {
   DataElementBookmarkEvent,
   SelectableDataElementSearchResultCheckedEvent,

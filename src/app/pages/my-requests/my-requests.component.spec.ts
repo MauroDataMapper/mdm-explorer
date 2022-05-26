@@ -33,7 +33,6 @@ import { of, throwError } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import {
-  DataElementBasic,
   DataElementDeleteEvent,
   DataElementMultipleOperationResult,
   DataRequest,
@@ -55,7 +54,6 @@ import { createDataExplorerServiceStub } from 'src/app/testing/stubs/data-explor
 import { createDataModelServiceStub } from 'src/app/testing/stubs/data-model.stub';
 import {
   createDataRequestsServiceStub,
-  DeleteDataElementMultipleFn,
   // DataAccessRequestsSourceTargetIntersectionsFn,
 } from 'src/app/testing/stubs/data-requests.stub';
 import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
@@ -317,8 +315,8 @@ describe('MyRequestsComponent', () => {
         });
       });
 
-      dataModelsStub.elementsInAnotherModel.mockImplementationOnce((model, elements) =>
-        of(elements)
+      dataModelsStub.elementsInAnotherModel.mockImplementationOnce(
+        (model, innerElements) => of(innerElements)
       );
       dataModelsStub.dataElementToBasic.mockImplementation((element) => {
         return {
@@ -679,8 +677,8 @@ describe('MyRequestsComponent', () => {
         });
       });
 
-      dataModelsStub.elementsInAnotherModel.mockImplementation((model, elements) =>
-        of(elements)
+      dataModelsStub.elementsInAnotherModel.mockImplementation((model, innerElements) =>
+        of(innerElements)
       );
       dataModelsStub.dataElementToBasic.mockImplementation((element) => {
         return {
@@ -709,7 +707,7 @@ describe('MyRequestsComponent', () => {
     });
 
     it('Refresh request when data element is deleted via DataElementInRequest component', () => {
-      //pick the first row and trigger the RequestAddDelete event
+      // pick the first row and trigger the RequestAddDelete event
       const dataElementRow: DebugElement = dom.query(
         (de) => de.name === 'mdm-data-element-row'
       );
@@ -718,7 +716,7 @@ describe('MyRequestsComponent', () => {
         dataModel: requestMenuItem,
         dataElement: selectableElements()[0],
       };
-      //Pretend to delete 1 element
+      // Pretend to delete 1 element
       dataRequestsStub.listDataElements.mockImplementation((req) => {
         expect(req).toStrictEqual(request);
         expect(component.state).toBe('loading');
@@ -729,8 +727,8 @@ describe('MyRequestsComponent', () => {
       expect(component.requestElements).toStrictEqual(selectableElements().slice(0, 1));
     });
 
-    it("Don't refresh request when data element is deleted from a different request via DataElementInRequest component", () => {
-      //pick the first row and trigger the RequestAddDelete event
+    it('Don\'t refresh request when data element is deleted from a different request via DataElementInRequest component', () => {
+      // pick the first row and trigger the RequestAddDelete event
       const dataElementRow: DebugElement = dom.query(
         (de) => de.name === 'mdm-data-element-row'
       );
@@ -740,8 +738,8 @@ describe('MyRequestsComponent', () => {
         dataModel: requestMenuItem,
         dataElement: selectableElements()[0],
       };
-      //Pretend to delete 1 element
-      dataRequestsStub.listDataElements.mockImplementation((req) => {
+      // Pretend to delete 1 element
+      dataRequestsStub.listDataElements.mockImplementation(() => {
         return of(elements.slice(0, 1));
       });
       expect(component.requestElements).toStrictEqual(selectableElements());
@@ -750,7 +748,7 @@ describe('MyRequestsComponent', () => {
     });
 
     it('Refresh request when data element is added via DataElementInRequest component', () => {
-      //pick the first row and trigger the RequestAddDelete event
+      // pick the first row and trigger the RequestAddDelete event
       const dataElementRow: DebugElement = dom.query(
         (de) => de.name === 'mdm-data-element-row'
       );
@@ -760,7 +758,7 @@ describe('MyRequestsComponent', () => {
         dataModel: requestMenuItem,
         dataElement: selectableElements()[0],
       };
-      //Pretend to add 1 element
+      // Pretend to add 1 element
       elements.push({
         id: '3',
         label: 'element 3',
@@ -772,15 +770,15 @@ describe('MyRequestsComponent', () => {
         return of(elements);
       });
 
-      //expected elements are the original first 2 request elements
+      // expected elements are the original first 2 request elements
       expect(component.requestElements).toStrictEqual(selectableElements().slice(0, 2));
       dataElementRow.triggerEventHandler('requestAddDelete', requestAddDeleteEvent);
-      //after refresh, expected elements are all 3 of the request elements
+      // after refresh, expected elements are all 3 of the request elements
       expect(component.requestElements).toStrictEqual(selectableElements());
     });
 
     it('Should select all data elements when Select All is clicked', () => {
-      //Find the Select All checkbox
+      // Find the Select All checkbox
       const matCheckbox: DebugElement = dom.query(
         (de) => de.name === 'mat-checkbox' && de.nativeElement.innerHTML === 'Select all'
       );
@@ -788,7 +786,7 @@ describe('MyRequestsComponent', () => {
         source: {} as MatCheckbox,
         checked: true,
       };
-      //Should already be false, but this future-proofs against changes to setup
+      // Should already be false, but this future-proofs against changes to setup
       component.requestElements.forEach((element) => (element.isSelected = false));
       matCheckbox.triggerEventHandler('change', matCheckboxChange);
       expect(component.requestElements).toHaveLength(2);
@@ -818,20 +816,20 @@ describe('MyRequestsComponent', () => {
     });
 
     it('Should open OK/Cancel dialogue, show spinner, call into DataRequestsService.deleteDataElementMultiple with a single item and refresh the request list when Remove button is clicked', () => {
-      //Find any data element row from which to trigger an event
+      // Find any data element row from which to trigger an event
       const dataElementRow: DebugElement = dom.query(
         (de) => de.name === 'mdm-data-element-row'
       );
       const dataElementDeleteEvent: DataElementDeleteEvent = {
         item: selectableElements()[0],
       };
-      //spy on OK/Cancel, broadcast service .loading and DataRequestsService.deleteDataElementMultiple
+      // spy on OK/Cancel, broadcast service .loading and DataRequestsService.deleteDataElementMultiple
       dialogsStub.usage.afterClosed.mockReset();
-      const OkCancelResponse: OkCancelDialogResponse = {
+      const okCancelResponse: OkCancelDialogResponse = {
         result: true,
       };
       dialogsStub.open = jest.fn().mockReturnValue(dialogsStub.usage);
-      dialogsStub.usage.afterClosed.mockReturnValue(of(OkCancelResponse));
+      dialogsStub.usage.afterClosed.mockReturnValue(of(okCancelResponse));
       const deleteResult: DataElementMultipleOperationResult = {
         successes: [
           {
@@ -846,14 +844,14 @@ describe('MyRequestsComponent', () => {
       dataRequestsStub.deleteDataElementMultiple.mockReturnValue(of(deleteResult));
       broadcastStub.loading.mockReset();
 
-      //Pretend to delete first element
-      dataRequestsStub.listDataElements.mockImplementation((req) => {
+      // Pretend to delete first element
+      dataRequestsStub.listDataElements.mockImplementation(() => {
         return of(elements.slice(1, 2));
       });
-      //Raise the delete event
+      // Raise the delete event
       dataElementRow.triggerEventHandler('delete', dataElementDeleteEvent);
 
-      //check the fallout
+      // check the fallout
       expect(dialogsStub.open).toHaveBeenCalledTimes(1);
       expect(broadcastStub.loading).toHaveBeenCalledTimes(2);
       expect(dataRequestsStub.deleteDataElementMultiple).toHaveBeenCalledTimes(1);
@@ -871,20 +869,20 @@ describe('MyRequestsComponent', () => {
     });
 
     it('Should open OK/Cancel dialogue, show spinner, call into DataRequestsService.deleteDataElementMultiple with 2 items and refresh the request list when Remove Selected is clicked', () => {
-      //Find Remove Selected button to click for event trigger
+      // Find Remove Selected button to click for event trigger
       const dataElementRow: DebugElement = dom.query(
         (de) =>
           de.name === 'button' && de.nativeElement.innerHTML === ' Remove selected ... '
       );
-      //Select request elements
+      // Select request elements
       component.requestElements.forEach((el) => (el.isSelected = true));
-      //spy on OK/Cancel, broadcast service .loading and DataRequestsService.deleteDataElementMultiple
+      // spy on OK/Cancel, broadcast service .loading and DataRequestsService.deleteDataElementMultiple
       dialogsStub.usage.afterClosed.mockReset();
-      const OkCancelResponse: OkCancelDialogResponse = {
+      const okCancelResponse: OkCancelDialogResponse = {
         result: true,
       };
       dialogsStub.open = jest.fn().mockReturnValue(dialogsStub.usage);
-      dialogsStub.usage.afterClosed.mockReturnValue(of(OkCancelResponse));
+      dialogsStub.usage.afterClosed.mockReturnValue(of(okCancelResponse));
       const deleteResult: DataElementMultipleOperationResult = {
         successes: [
           {
@@ -899,14 +897,14 @@ describe('MyRequestsComponent', () => {
       dataRequestsStub.deleteDataElementMultiple.mockReturnValue(of(deleteResult));
       broadcastStub.loading.mockReset();
 
-      //Pretend to delete all elements
-      dataRequestsStub.listDataElements.mockImplementation((req) => {
+      // Pretend to delete all elements
+      dataRequestsStub.listDataElements.mockImplementation(() => {
         return of([]);
       });
-      //Raise the click event
+      // Raise the click event
       dataElementRow.triggerEventHandler('click', {});
 
-      //check the fallout
+      // check the fallout
       expect(dialogsStub.open).toHaveBeenCalledTimes(1);
       expect(broadcastStub.loading).toHaveBeenCalledTimes(2);
       expect(dataRequestsStub.deleteDataElementMultiple).toHaveBeenCalledTimes(1);
