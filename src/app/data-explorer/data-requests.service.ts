@@ -323,6 +323,16 @@ export class DataRequestsService {
     );
   }
 
+  /**
+   * Create a new data request via a user-interactive process to name the new request.
+   *
+   * @param getDataElements A callback function to retrieve the necessary data elements to include in the newly created request.
+   * @returns An observable returning the {@link RequestCreatedAction} that the user determined after the request was created. If the user
+   * cancelled the operation, then nothing further would happen.
+   *
+   * The callback provided must return an observable of {@link DataElementBasic[]} objects so that they can be passed to the
+   * {@link DataRequestsService.createFromDataElements()} function.
+   */
   createWithDialogs(
     getDataElements: () => Observable<DataElementBasic[]>
   ): Observable<RequestCreatedAction | undefined> {

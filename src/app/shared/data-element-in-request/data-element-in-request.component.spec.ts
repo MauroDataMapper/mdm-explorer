@@ -189,8 +189,10 @@ describe('DataElementInRequestComponent', () => {
       // Each item in the array is an array of arguments that were passed during the call. For example, createSpy.mock.calls[0][0]
       // gets the first argument of the first call to this mock function. In this case, this is the callback function used to retrieve
       // the Observable<DataElementBasic[]> containing the dataElements to be added to the new request.
+      const call = createSpy.mock.calls[0];
+      const callback = call[0];
       let returnedDataElements;
-      createSpy.mock.calls[0][0]().subscribe((items) => {
+      callback().subscribe((items) => {
         returnedDataElements = items;
       });
 
