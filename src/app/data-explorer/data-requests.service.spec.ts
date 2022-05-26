@@ -44,6 +44,14 @@ import { DataExplorerService } from './data-explorer.service';
 import { SecurityService } from '../security/security.service';
 import { ResearchPluginService } from '../mauro/research-plugin.service';
 import { createResearchPluginServiceStub } from '../testing/stubs/research-plugin.stub';
+import { of } from 'rxjs';
+import { CreateRequestDialogResponse } from './create-request-dialog/create-request-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { BroadcastService } from '../core/broadcast.service';
+import { ToastrService } from 'ngx-toastr';
+import { createMatDialogStub } from '../testing/stubs/mat-dialog.stub';
+import { createBroadcastServiceStub } from '../testing/stubs/broadcast.stub';
+import { createToastrServiceStub } from '../testing/stubs/toastr.stub';
 
 describe('DataRequestsService', () => {
   let service: DataRequestsService;
@@ -52,6 +60,9 @@ describe('DataRequestsService', () => {
   const dataExplorerStub = createDataExplorerServiceStub();
   const securityStub = createSecurityServiceStub();
   const researchPluginStub = createResearchPluginServiceStub();
+  const dialogStub = createMatDialogStub();
+  const broadcastStub = createBroadcastServiceStub();
+  const toastrStub = createToastrServiceStub();
 
   beforeEach(() => {
     service = setupTestModuleForService(DataRequestsService, {
@@ -75,6 +86,18 @@ describe('DataRequestsService', () => {
         {
           provide: SecurityService,
           useValue: securityStub,
+        },
+        {
+          provide: MatDialog,
+          useValue: dialogStub,
+        },
+        {
+          provide: BroadcastService,
+          useValue: broadcastStub,
+        },
+        {
+          provide: ToastrService,
+          useValue: toastrStub,
         },
       ],
     });
@@ -418,6 +441,115 @@ describe('DataRequestsService', () => {
       expect(actual$).toBeObservable(expected$);
 
       securityStub.getSignedInUser.mockClear();
+    });
+  });
+
+  describe('createWithDialogs', () => {
+    const dataElement1: DataElementBasic = {
+      id: '1',
+      dataClassId: '2',
+      dataModelId: '3',
+      label: 'element 1',
+      isBookmarked: false,
+    };
+
+    const dataElementsToAdd = [dataElement1];
+    const getDataElements = () => of(dataElementsToAdd);
+
+    const user: UserDetails = {
+      id: 'test',
+      firstName: 'test',
+      lastName: 'user',
+      email: 'test@test.com',
+    };
+    securityStub.getSignedInUser.mockImplementation(() => user);
+
+    const name = 'test request';
+    const description = 'test description';
+    const requestCreation: CreateRequestDialogResponse = { name, description };
+
+    dialogStub.usage.afterClosed.mockImplementation(() => of(requestCreation));
+
+    beforeEach(() => {
+      securityStub.getSignedInUser.mockClear();
+    });
+
+    it('should return a complete notification if no user signed in', () => {
+      // arrange
+      securityStub.getSignedInUser.mockImplementationOnce(() => null);
+      const expected$ = cold('|');
+
+      // act
+      const actual$ = service.createWithDialogs(getDataElements);
+
+      // assert
+      expect(actual$).toBeObservable(expected$);
+    });
+
+    it('should return a complete notification if response is undefined', () => {
+      // arrange
+      dialogStub.usage.afterClosed.mockImplementationOnce(() => of(undefined));
+      const expected$ = cold('|');
+
+      // act
+      const actual$ = service.createWithDialogs(getDataElements);
+
+      // assert
+      expect(actual$).toBeObservable(expected$);
+    });
+
+    it('should fire a loading broadcast if dialog response retrieved', () => {
+      // arrange
+      const loadingSpy = jest.spyOn(broadcastStub, 'loading');
+
+      // act
+      const actual$ = service.createWithDialogs(getDataElements);
+
+      // assert
+      expect(actual$).toSatisfyOnFlush(() => {
+        expect(loadingSpy).toHaveBeenCalledWith({
+          isLoading: true,
+          caption: 'Creating new request ...',
+        });
+      });
+    });
+
+    it('should display a toastr error and return a complete notification if createFromDataElements fails', () => {
+      // arrange
+      const toastrSpy = jest.spyOn(toastrStub, 'error');
+      const expected$ = cold('|');
+
+      // simulate a failure of createFromDataRequests. We are mocking this here because it's already
+      // been tested above.
+      service.createFromDataElements = jest.fn().mockReturnValueOnce(cold('#'));
+
+      // act
+      const actual$ = service.createWithDialogs(getDataElements);
+
+      // assert
+      expect(actual$).toBeObservable(expected$);
+
+      expect(actual$).toSatisfyOnFlush(() => {
+        expect(toastrSpy).toHaveBeenCalled();
+      });
+    });
+
+    it('should broadcast data-request-added if createFromDataElements succeeds', () => {
+      // arrange
+      const loadingSpy = jest.spyOn(broadcastStub, 'loading');
+
+      dialogStub.usage.afterClosed.mockImplementationOnce(() => of('continue'));
+      service.createFromDataElements = jest
+        .fn()
+        .mockReturnValueOnce(cold('a', { a: { id: '456' } as DataRequest }));
+
+      // act
+      const actual$ = service.createWithDialogs(getDataElements);
+
+      // assert
+      expect(actual$).toSatisfyOnFlush(() => {
+        expect(loadingSpy).toHaveBeenCalledWith({ isLoading: false });
+      });
     });
   });
 });

@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { DataModel, DataModelSubsetPayload } from '@maurodatamapper/mdm-resources';
-import { catchError, EMPTY, filter, finalize, Subject, switchMap } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import {
   DataAccessRequestsSourceTargetIntersections,
@@ -27,6 +27,7 @@ import {
 import { SecurityService } from 'src/app/security/security.service';
 import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
 import {
+  DataElementBasic,
   DataElementSearchResult,
   RemoveBookmarkEvent,
   SelectableDataElementSearchResult,
@@ -98,58 +99,26 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
   }
 
   onClickCreateRequest() {
-    if (this.dataElements && this.dataElements.length > 0) {
-      this.createRequest(this.dataElements);
-    }
+    if (this.dataElements.length === 0) return;
+
+    this.createRequest(this.dataElements);
   }
 
   createRequest(dataElements: SelectableDataElementSearchResult[]) {
-    this.dialogs
-      .openCreateRequest()
-      .afterClosed()
-      .pipe(
-        filter((response) => !!response),
-        switchMap((response) => {
-          if (!response || !this.user) {
-            return EMPTY;
-          }
+    if (!this.user) {
+      this.toastr.error('You must be signed-in in order to create data requests.');
+      return;
+    }
 
-          this.broadcast.loading({
-            isLoading: true,
-            caption: 'Creating new request ...',
-          });
+    const getDataElements = (): Observable<DataElementBasic[]> => {
+      return of(dataElements);
+    };
 
-          return this.dataRequests.createFromDataElements(
-            dataElements,
-            this.user,
-            response.name,
-            response.description
-          );
-        }),
-        catchError((error) => {
-          this.toastr.error(
-            `There was a problem creating your request. ${error}`,
-            'Request creation error'
-          );
-          return EMPTY;
-        }),
-        switchMap((dataRequest) => {
-          this.broadcast.dispatch('data-request-added');
-
-          return this.dialogs
-            .openRequestCreated({
-              request: dataRequest,
-              addedElements: dataElements,
-            })
-            .afterClosed();
-        }),
-        finalize(() => this.broadcast.loading({ isLoading: false }))
-      )
-      .subscribe((action) => {
-        if (action === 'view-requests') {
-          this.stateRouter.navigateToKnownPath('/requests');
-        }
-      });
+    this.dataRequests.createWithDialogs(getDataElements).subscribe((action) => {
+      if (action === 'view-requests') {
+        this.stateRouter.navigateToKnownPath('/requests');
+      }
+    });
   }
 
   /**

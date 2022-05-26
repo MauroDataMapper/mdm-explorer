@@ -26,8 +26,8 @@ import {
 import { catchError, map, Observable, of, switchMap, throwError } from 'rxjs';
 import { DataModelService } from '../mauro/data-model.service';
 import { ProfileService } from '../mauro/profile.service';
-import { DataExplorerConfiguration } from './data-explorer.types';
 import { ApiPropertiesService } from '../mauro/api-properties.service';
+import { DataExplorerConfiguration } from './data-explorer.types';
 
 export const configurationKeys = {
   category: 'Mauro Data Explorer',
