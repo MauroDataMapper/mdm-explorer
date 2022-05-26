@@ -42,7 +42,6 @@ describe('DataExplorerService', () => {
   const profilesStub = createProfileServiceStub();
 
   const config: DataExplorerConfiguration = {
-    rootRequestFolder: 'root-folder',
     rootDataModelPath: 'my test model',
     profileServiceName: 'Profile Service',
     profileNamespace: 'Profile Namespace',
@@ -115,11 +114,6 @@ describe('DataExplorerService', () => {
         },
         {
           category: configurationKeys.category,
-          key: configurationKeys.rootRequestFolder,
-          value: 'rootRequestFolder',
-        },
-        {
-          category: configurationKeys.category,
           key: configurationKeys.profileNamespace,
           value: 'profileNamespace',
         },
@@ -138,7 +132,6 @@ describe('DataExplorerService', () => {
 
       const expectedConfig: DataExplorerConfiguration = {
         rootDataModelPath: 'rootDataModelPath',
-        rootRequestFolder: 'rootRequestFolder',
         profileNamespace: 'profileNamespace',
         profileServiceName: 'profileServiceName',
       };
