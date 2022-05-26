@@ -1,4 +1,4 @@
-/*
+<!--
 Copyright 2022 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -15,40 +15,33 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
-*/
-@import "../../../styles/base/all";
-
-.mdm-my-account {
-  .heading-with-actions {
-    padding: 5em 0 1em;
-  }
-
-  section {
-    border: 1px solid $color-mauro-gold;
-    border-radius: $border-radius;
-    padding: 1em;
-    margin: 2em 0;
-
-    dt,
-    dd {
-      display: inline-block;
-
-      @include respond-to-mobile-xs {
-        display: block;
-      }
-    }
-
-    dt {
-      min-width: 200px;
-      font-weight: normal;
-      @include respond-to-mobile {
-        min-width: 100px;
-      }
-    }
-  }
-
-  &__desc-info {
-    border-bottom: 1px solid $color-description-info-underline;
-    margin: 1em 0;
-  }
-}
+-->
+<div class="modal-header">
+  <h2 class="modal-title marginless">{{ title }}</h2>
+</div>
+<div class="modal-body">
+  <span [innerHtml]="message"></span>
+</div>
+<div class="modal-footer">
+  <button
+    mat-button
+    data-cy="cancel"
+    color="primary"
+    *ngIf="cancelShown"
+    class="mr-1"
+    type="button"
+    d
+    (click)="cancel()"
+  >
+    {{ cancelTitle }}
+  </button>
+  <button
+    mat-flat-button
+    data-cy="continue"
+    color="{{ btnType }}"
+    type="button"
+    (click)="ok()"
+  >
+    {{ okTitle }}
+  </button>
+</div>

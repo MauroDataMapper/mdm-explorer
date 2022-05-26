@@ -16,7 +16,13 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { DataClass, DataElement, DataModel, Uuid } from '@maurodatamapper/mdm-resources';
+import {
+  DataClass,
+  DataElement,
+  DataModel,
+  FolderDetail,
+  Uuid,
+} from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
 import { DataElementBasic, DataRequest } from 'src/app/data-explorer/data-explorer.types';
 import { DataAccessRequestsSourceTargetIntersections } from 'src/app/data-explorer/data-requests.service';
@@ -41,12 +47,21 @@ export type DataRequestsCreateFromDataElementsFn = (
 export type DataAccessRequestsSourceTargetIntersectionsFn = (
   sourceDataModelId: Uuid
 ) => Observable<DataAccessRequestsSourceTargetIntersections>;
+export type DataRequestsUpdateRequestsFolderFn = (
+  folderId: Uuid,
+  label: string
+) => Observable<[DataModel, string[]]>;
+export type DataRequestGetRequestsFolderFn = () => Observable<FolderDetail>;
+export type DataRequestGetFolderNameFn = (userEmail: string) => string;
 
 export interface DataRequestsServiceStub {
   list: jest.MockedFunction<DataRequestsListFn>;
   listDataElements: jest.MockedFunction<DataRequestsListElementsFn>;
   createFromDataElements: jest.MockedFunction<DataRequestsCreateFromDataElementsFn>;
   getRequestsIntersections: jest.MockedFunction<DataAccessRequestsSourceTargetIntersectionsFn>;
+  updateRequestsFolder: jest.MockedFunction<DataRequestsUpdateRequestsFolderFn>;
+  getRequestsFolder: jest.MockedFunction<DataRequestGetRequestsFolderFn>;
+  getDataRequestsFolderName: jest.MockedFunction<DataRequestGetFolderNameFn>;
 }
 
 export const createDataRequestsServiceStub = (): DataRequestsServiceStub => {
@@ -57,5 +72,10 @@ export const createDataRequestsServiceStub = (): DataRequestsServiceStub => {
       jest.fn() as jest.MockedFunction<DataRequestsCreateFromDataElementsFn>,
     getRequestsIntersections:
       jest.fn() as jest.MockedFunction<DataAccessRequestsSourceTargetIntersectionsFn>,
+    updateRequestsFolder:
+      jest.fn() as jest.MockedFunction<DataRequestsUpdateRequestsFolderFn>,
+    getRequestsFolder: jest.fn() as jest.MockedFunction<DataRequestGetRequestsFolderFn>,
+    getDataRequestsFolderName:
+      jest.fn() as jest.MockedFunction<DataRequestGetFolderNameFn>,
   };
 };

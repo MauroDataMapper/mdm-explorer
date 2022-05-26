@@ -328,7 +328,7 @@ export class DataRequestsService {
    * @returns The input string with all instances of '@' replaced with
    * '[at]'
    */
-  private getDataRequestsFolderName(userEmail: string): string {
+  public getDataRequestsFolderName(userEmail: string): string {
     return userEmail.replace('@', '[at]');
   }
 }

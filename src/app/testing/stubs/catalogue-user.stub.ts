@@ -20,6 +20,7 @@ import { Uuid } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
 import {
   CatalogueUser,
+  CatalogueUserContactPayload,
   CatalogueUserPayload,
   ChangePasswordPayload,
 } from 'src/app/mauro/catalogue-user.service';
@@ -37,11 +38,18 @@ export type CatalogueUserChangePasswordFn = (
   id: Uuid,
   payload: ChangePasswordPayload
 ) => Observable<CatalogueUser>;
+export type CatalogueUserUpdateContactFn = (
+  id: Uuid,
+  payload: CatalogueUserContactPayload
+) => Observable<CatalogueUser>;
+export type CatalogueUserUpdateContactMockedFn =
+  jest.MockedFunction<CatalogueUserUpdateContactFn>;
 
 export interface CatalogueUserServiceStub {
   get: CatalogueUserGetMockedFn;
   update: CatalogueUserUpdateMockedFn;
   changePassword: jest.MockedFunction<CatalogueUserChangePasswordFn>;
+  updateContactInfo: CatalogueUserUpdateContactMockedFn;
 }
 
 export const createCatalogueUserServiceStub = (): CatalogueUserServiceStub => {
@@ -49,5 +57,6 @@ export const createCatalogueUserServiceStub = (): CatalogueUserServiceStub => {
     get: jest.fn() as CatalogueUserGetMockedFn,
     update: jest.fn() as CatalogueUserUpdateMockedFn,
     changePassword: jest.fn() as jest.MockedFunction<CatalogueUserChangePasswordFn>,
+    updateContactInfo: jest.fn() as CatalogueUserUpdateContactMockedFn,
   };
 };

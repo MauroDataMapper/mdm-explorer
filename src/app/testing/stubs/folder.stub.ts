@@ -17,29 +17,23 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import {
-  ContainerCreatePayload,
-  FolderDetailResponse,
+  ContainerUpdatePayload,
+  FolderDetail,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
 
-export type MdmFolderSaveFn = (
-  payload: ContainerCreatePayload
-) => Observable<FolderDetailResponse>;
-export type MdmFolderSaveMockedFn = jest.MockedFunction<MdmFolderSaveFn>;
-export type MdmFolderUpdateFn = (
-  folderId: Uuid,
-  payload: ContainerCreatePayload
-) => Observable<FolderDetailResponse>;
-export type MdmFolderUpdateMockedFn = jest.MockedFunction<MdmFolderUpdateFn>;
-export interface MdmFolderResourceStub {
-  save: MdmFolderSaveMockedFn;
-  update: MdmFolderUpdateMockedFn;
+export type FolderUpdateFn = (
+  id: Uuid,
+  payload: ContainerUpdatePayload
+) => Observable<FolderDetail>;
+
+export interface FolderServiceStub {
+  update: jest.MockedFunction<FolderUpdateFn>;
 }
 
-export const createFolderStub = (): MdmFolderResourceStub => {
+export const createFolderServiceStub = (): FolderServiceStub => {
   return {
-    save: jest.fn() as MdmFolderSaveMockedFn,
-    update: jest.fn() as MdmFolderUpdateMockedFn,
+    update: jest.fn() as jest.MockedFunction<FolderUpdateFn>,
   };
 };
