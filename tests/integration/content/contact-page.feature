@@ -19,7 +19,8 @@ Feature: Contact and support
   I want to submit a support request when I need assistance
 
   Background:
-    Given I go to the contact and support page
+    Given I am not signed in as a user
+    And I go to the contact and support page
 
   Scenario: Leave the support form empty
     When I enter no values in the request support form
