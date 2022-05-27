@@ -47,7 +47,9 @@ The current implementation considers user requests to be _data models_ in their 
 
 ## Requests Folder
 
-Every user who signs in to the Mauro Data Explorer will automatically be assigned a folder within the Mauro instance to collect their own requests in one place. This folder is located in Mauro where the `explorer.config.root_request_folder` is defined, and is named after the user's email address:
+Every user who signs in to the Mauro Data Explorer will automatically be assigned a folder within the Mauro instance to collect their own requests in one place. This folder is located in Mauro where the `explorer.config.root_request_folder` is defined, which is a [configuration key](SETUP.md#configuration-keys) provided by the `mdm-plugin-explorer`. A root request folder is automatically created by the `mdm-plugin-explorer` called "Explorer Content", though the API property can be changed to any other folder if required.
+
+The user's folder is named after the user's email address for uniqueness.
 
 > **Important:** due to some restrictions in Mauro catalogue item labels, the folder name will not _exactly_ be the same as an email address. This is because the "@" character is reserved for Mauro path syntax.
 >
@@ -57,7 +59,14 @@ Every user who signs in to the Mauro Data Explorer will automatically be assigne
 >
 > The user request folder will be located under `explorer.config.root_request_folder` and named `user[at]test.com`.
 
-This request folder is created along with a new user group containing that user. This group is then given the [editor role ](https://maurodatamapper.github.io/user-guides/permissions/permissions/#editor) to allow that user (normally with a read-only role) to create catalogue items underneath it.
+This request folder is created along with a new user group containing that user. This group is then assigned to the [editor role](https://maurodatamapper.github.io/user-guides/permissions/permissions/#editor) to allow that user (normally with a read-only role) to create catalogue items underneath it.
+
+Once created, the Mauro instance will contain a set of sub-folders similar to below, assuming the default root request folder is used:
+
+* Explorer Content
+    * user1[at]test.com
+    * user2[at]test.com
+    * etc
 
 ## Creating Requests
 
