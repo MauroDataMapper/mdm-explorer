@@ -25,7 +25,6 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox/checkbox';
-import { Bookmark } from '../bookmark.service';
 import {
   BookMarkCheckedEvent,
   AddToRequestEvent,
@@ -41,7 +40,7 @@ import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.se
   styleUrls: ['./bookmark-row.component.scss'],
 })
 export class BookmarkRowComponent implements OnChanges {
-  @Input() bookmark?: Bookmark;
+  @Input() bookmark?: DataElementSearchResult;
   @Input() openRequests: DataRequest[] = [];
   @Input() isChecked = false;
   @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;

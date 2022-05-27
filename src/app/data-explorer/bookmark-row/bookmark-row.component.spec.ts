@@ -23,10 +23,9 @@ import {
 } from 'src/app/testing/testing.helpers';
 
 import { BookmarkRowComponent } from './bookmark-row.component';
-import { Bookmark } from '../bookmark.service';
 import { MockComponent } from 'ng-mocks';
 import { MatMenu } from '@angular/material/menu';
-import { DataRequest } from '../data-explorer.types';
+import { DataElementSearchResult, DataRequest } from '../data-explorer.types';
 
 describe('BookmarkRowComponent', () => {
   let harness: ComponentHarness<BookmarkRowComponent>;
@@ -57,7 +56,7 @@ describe('BookmarkRowComponent', () => {
       (checked) => {
         const emitSpy = jest.spyOn(harness.component.checked, 'emit');
         const event = { checked } as MatCheckboxChange;
-        const item = { id: '1' } as Bookmark;
+        const item = { id: '1' } as DataElementSearchResult;
 
         harness.component.bookmark = item;
         harness.component.handleChecked(event);
@@ -78,7 +77,7 @@ describe('BookmarkRowComponent', () => {
     });
 
     it('should raise an event when a removal is requested and has an item', () => {
-      const item = { id: '1' } as Bookmark;
+      const item = { id: '1' } as DataElementSearchResult;
       const emitSpy = jest.spyOn(harness.component.remove, 'emit');
 
       harness.component.bookmark = item;
@@ -100,7 +99,7 @@ describe('BookmarkRowComponent', () => {
     });
 
     it('should raise event with the selected dataRequest if has item', () => {
-      const item = { id: '1' } as Bookmark;
+      const item = { id: '1' } as DataElementSearchResult;
       const dataRequest = { label: 'request', id: 'id' } as DataRequest;
       const emitSpy = jest.spyOn(harness.component.addToRequest, 'emit');
 

@@ -21,18 +21,16 @@ import {
   setupTestModuleForComponent,
 } from '../../testing/testing.helpers';
 import { MyBookmarksComponent } from './my-bookmarks.component';
-import {
-  Bookmark,
-  BookmarkService,
-  SelectableBookmark,
-} from 'src/app/data-explorer/bookmark.service';
+import { BookmarkService } from 'src/app/data-explorer/bookmark.service';
 import { createBookmarkServiceStub } from 'src/app/testing/stubs/bookmark.stub';
 import { createToastrServiceStub } from 'src/app/testing/stubs/toastr.stub';
 import { ToastrService } from 'ngx-toastr';
 import { of } from 'rxjs';
 import {
   BookMarkCheckedEvent,
+  DataElementSearchResult,
   RemoveBookmarkEvent,
+  SelectableDataElementSearchResult,
 } from 'src/app/data-explorer/data-explorer.types';
 import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
@@ -53,10 +51,10 @@ import {
 describe('MyBookmarkComponent', () => {
   let harness: ComponentHarness<MyBookmarksComponent>;
 
-  const b1 = { id: 'id-1', label: 'b1' } as Bookmark;
-  const b2 = { id: 'id-2', label: 'b2' } as Bookmark;
-  const bookmarks: Bookmark[] = [b1, b2];
-  const selectableBookmarks: SelectableBookmark[] = bookmarks.map((bm) => {
+  const b1 = { id: 'id-1', label: 'b1' } as DataElementSearchResult;
+  const b2 = { id: 'id-2', label: 'b2' } as DataElementSearchResult;
+  const bookmarks: DataElementSearchResult[] = [b1, b2];
+  const selectableBookmarks: SelectableDataElementSearchResult[] = bookmarks.map((bm) => {
     return { ...bm, isSelected: false };
   });
   const rootDataModel = { id: 'ID' } as DataModelDetail;
@@ -164,7 +162,7 @@ describe('MyBookmarkComponent', () => {
         const expected = [
           { ...b1, isSelected: checked },
           { ...b2, isSelected: false },
-        ] as SelectableBookmark[];
+        ] as SelectableDataElementSearchResult[];
 
         harness.component.onChecked(event);
 
@@ -176,7 +174,9 @@ describe('MyBookmarkComponent', () => {
   describe('remove bookmark', () => {
     it('should remove the bookmark from userBookmarks', () => {
       const event = { item: b1 } as RemoveBookmarkEvent;
-      const expected = [{ ...b2, isSelected: false }] as SelectableBookmark[];
+      const expected = [
+        { ...b2, isSelected: false },
+      ] as SelectableDataElementSearchResult[];
 
       bookmarkStub.remove.mockImplementationOnce(() => {
         return of([]);
@@ -196,7 +196,7 @@ describe('MyBookmarkComponent', () => {
       const expected = [
         { ...b1, isSelected: true },
         { ...b2, isSelected: true },
-      ] as SelectableBookmark[];
+      ] as SelectableDataElementSearchResult[];
 
       const event = { checked: true } as MatCheckboxChange;
 
@@ -210,7 +210,7 @@ describe('MyBookmarkComponent', () => {
       const expected = [
         { ...b1, isSelected: false },
         { ...b2, isSelected: false },
-      ] as SelectableBookmark[];
+      ] as SelectableDataElementSearchResult[];
 
       const event = { checked: false } as MatCheckboxChange;
 

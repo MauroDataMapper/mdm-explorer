@@ -34,10 +34,11 @@ import { ProfileService } from 'src/app/mauro/profile.service';
 import { BreadcrumbComponent } from 'src/app/data-explorer/breadcrumb/breadcrumb.component';
 import { BookmarkToggleComponent } from 'src/app/shared/bookmark-toggle/bookmark-toggle.component';
 import { DataModelService } from 'src/app/mauro/data-model.service';
-import { BookmarkService, Bookmark } from 'src/app/data-explorer/bookmark.service';
+import { BookmarkService } from 'src/app/data-explorer/bookmark.service';
 import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import {
+  DataElementSearchResult,
   DataExplorerConfiguration,
   DATA_EXPLORER_CONFIGURATION,
 } from 'src/app/data-explorer/data-explorer.types';
@@ -279,11 +280,19 @@ describe('DataElementComponent', () => {
 
   describe('toggleBookmark', () => {
     const dataElement = { id: '1', label: 'label-1' } as DataElementDetail;
-    const dataElementAsBookmark = {
+    const dataElementAsBookmarkAdded = {
       ...dataElement,
       dataModelId: '',
       dataClassId: '',
-    } as Bookmark;
+      isBookmarked: true,
+    } as DataElementSearchResult;
+
+    const dataElementAsBookmarkRemoved = {
+      ...dataElement,
+      dataModelId: '',
+      dataClassId: '',
+      isBookmarked: false,
+    } as DataElementSearchResult;
 
     it('should not call the bookmark service if there is no dataElement', () => {
       harness.component.dataElement = undefined;
@@ -304,7 +313,7 @@ describe('DataElementComponent', () => {
       });
 
       harness.component.toggleBookmark(selected);
-      expect(bookmarkStub.add).toHaveBeenCalledWith(dataElementAsBookmark);
+      expect(bookmarkStub.add).toHaveBeenCalledWith(dataElementAsBookmarkAdded);
       expect(toastrStub.success).toHaveBeenCalled();
     });
 
@@ -317,7 +326,7 @@ describe('DataElementComponent', () => {
       });
 
       harness.component.toggleBookmark(selected);
-      expect(bookmarkStub.remove).toHaveBeenCalledWith([dataElementAsBookmark]);
+      expect(bookmarkStub.remove).toHaveBeenCalledWith([dataElementAsBookmarkRemoved]);
       expect(toastrStub.success).toHaveBeenCalled();
     });
   });
