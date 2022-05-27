@@ -40,6 +40,11 @@
       "eachLine": {
         "prepend": "  "
       }
+    },
+    "feature": {
+      "eachLine": {
+        "prepend": "# "
+      }
     }
   },
   "trailingWhitespace": "TRIM"
