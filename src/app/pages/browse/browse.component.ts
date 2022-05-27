@@ -18,9 +18,9 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
 import { MatSelectionListChange } from '@angular/material/list';
-import { DataClass } from '@maurodatamapper/mdm-resources';
+import { DataClass, DataElement } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, filter, finalize, forkJoin, of, switchMap } from 'rxjs';
+import { catchError, EMPTY, of, switchMap } from 'rxjs';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import {
@@ -31,9 +31,7 @@ import {
 import { UserDetails } from 'src/app/security/user-details.service';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
-import { DialogService } from 'src/app/data-explorer/dialog.service';
 import { SecurityService } from 'src/app/security/security.service';
-import { BroadcastService } from 'src/app/core/broadcast.service';
 import { Uuid } from '@maurodatamapper/mdm-resources';
 
 @Component({
@@ -48,6 +46,7 @@ export class BrowseComponent implements OnInit {
   static readonly ChildDataClassParentClassSelectedLabel: string =
     'Please select a data class &hellip;';
   static readonly ChildDataClassSelectedLabel: string = 'Data classes';
+
   parentDataClasses: DataClass[] = [];
   childDataClasses: DataClass[] = [];
   selected?: DataClass;
@@ -59,9 +58,7 @@ export class BrowseComponent implements OnInit {
     private dataModels: DataModelService,
     private toastr: ToastrService,
     private stateRouter: StateRouterService,
-    private dialogs: DialogService,
-    security: SecurityService,
-    private broadcast: BroadcastService
+    security: SecurityService
   ) {
     this.user = security.getSignedInUser();
   }
@@ -93,74 +90,39 @@ export class BrowseComponent implements OnInit {
   }
 
   createRequest() {
-    this.dialogs
-      .openCreateRequest()
-      .afterClosed()
-      .pipe(
-        filter((response) => !!response),
-        switchMap((response) => {
-          if (!response || !this.selected) {
-            return EMPTY;
-          }
+    if (!this.user) {
+      this.toastr.error('You must be signed in in order to create data requests.');
+      return;
+    }
 
-          this.broadcast.loading({
-            isLoading: true,
-            caption: 'Creating new request ...',
-          });
+    if (!this.selected) {
+      this.toastr.error('You must have selected an element to create a request with.');
+      return;
+    }
 
-          return forkJoin([
-            of(response),
-            this.dataModels.getDataElementsForDataClass(this.selected),
-          ]);
-        }),
-        switchMap(([response, dataElements]) => {
-          if (!this.user) {
-            return EMPTY;
-          }
-
-          const items = dataElements.map<DataElementBasic>((de) => {
+    const getDataElements = () => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return this.dataModels.getDataElementsForDataClass(this.selected!).pipe(
+        switchMap((dataElements: DataElement[]) => {
+          const dataElementBasics = dataElements.map((de) => {
             return {
               id: de.id ?? '',
               label: de.label,
               dataModelId: de.model ?? '',
               dataClassId: de.dataClass ?? '',
               isBookmarked: false,
-            };
+            } as DataElementBasic;
           });
-
-          return this.dataRequests.createFromDataElements(
-            items,
-            this.user,
-            response.name,
-            response.description
-          );
-        }),
-        catchError((error) => {
-          this.toastr.error(
-            `There was a problem creating your request. ${error}`,
-            'Request creation error'
-          );
-          return EMPTY;
-        }),
-        switchMap((dataRequest) => {
-          this.broadcast.dispatch('data-request-added');
-
-          return this.dialogs
-            .openRequestCreated({
-              request: dataRequest,
-              addedClass: this.selected,
-            })
-            .afterClosed();
-        }),
-        finalize(() => {
-          this.broadcast.loading({ isLoading: false });
+          return of(dataElementBasics);
         })
-      )
-      .subscribe((action) => {
-        if (action === 'view-requests') {
-          this.stateRouter.navigateToKnownPath('/requests');
-        }
-      });
+      );
+    };
+
+    this.dataRequests.createWithDialogs(getDataElements).subscribe((action) => {
+      if (action === 'view-requests') {
+        this.stateRouter.navigateToKnownPath('/requests');
+      }
+    });
   }
 
   selectParentDataClass(event: MatSelectionListChange) {

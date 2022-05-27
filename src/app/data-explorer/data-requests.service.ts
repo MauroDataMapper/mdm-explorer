@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   DataElement,
   DataModel,
@@ -32,17 +32,17 @@ import {
 import {
   catchError,
   concatMap,
+  toArray,
   EMPTY,
   filter,
+  finalize,
   forkJoin,
-  from,
   map,
   Observable,
   of,
-  OperatorFunction,
   switchMap,
   throwError,
-  toArray,
+  from,
 } from 'rxjs';
 import { UserDetails } from '../security/user-details.service';
 import { DataModelService } from '../mauro/data-model.service';
@@ -52,14 +52,15 @@ import {
   DataElementMultipleOperationResult,
   DataElementOperationResult,
   mapToDataRequest,
-  DataExplorerConfiguration,
-  DATA_EXPLORER_CONFIGURATION,
 } from './data-explorer.types';
 import { DataRequest } from '../data-explorer/data-explorer.types';
 import { DataExplorerService } from './data-explorer.service';
 import { SecurityService } from '../security/security.service';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { ResearchPluginService } from '../mauro/research-plugin.service';
+import { RequestCreatedAction } from './request-created-dialog/request-created-dialog.component';
+import { ToastrService } from 'ngx-toastr';
+import { BroadcastService } from '../core/broadcast.service';
+import { DialogService } from './dialog.service';
 
 /**
  * A collection data access requests and their intersections with target models.
@@ -76,11 +77,12 @@ export interface DataAccessRequestsSourceTargetIntersections {
 export class DataRequestsService {
   constructor(
     private dataModels: DataModelService,
-    private pluginResearch: ResearchPluginService,
     private catalogueUser: CatalogueUserService,
     private dataExplorer: DataExplorerService,
     private security: SecurityService,
-    @Inject(DATA_EXPLORER_CONFIGURATION) private config: DataExplorerConfiguration
+    private toastr: ToastrService,
+    private broadcast: BroadcastService,
+    private dialogs: DialogService
   ) {}
 
   /**
@@ -160,11 +162,8 @@ export class DataRequestsService {
       switchMap((dataElements: DataElement[]) => {
         return this.dataModels.elementsInAnotherModel(targetModel, dataElements);
       }),
-      switchMap((dataElements: (DataElement | null)[]) => from(dataElements)),
-      filter((item) => item !== null) as OperatorFunction<
-        DataElement | null,
-        DataElement
-      >,
+      switchMap((dataElements: DataElement[]) => from(dataElements)),
+      filter((item) => item !== null),
       concatMap((item: DataElement) => {
         const dataElementBasic: DataElementBasic =
           this.dataModels.dataElementToBasic(item);
@@ -322,6 +321,71 @@ export class DataRequestsService {
       }),
       map((targetDataModel) => mapToDataRequest(targetDataModel))
     );
+  }
+
+  /**
+   * Create a new data request via a user-interactive process to name the new request.
+   *
+   * @param getDataElements A callback function to retrieve the necessary data elements to include in the newly created request.
+   * @returns An observable returning the {@link RequestCreatedAction} that the user determined after the request was created. If the user
+   * cancelled the operation, then nothing further would happen.
+   *
+   * The callback provided must return an observable of {@link DataElementBasic[]} objects so that they can be passed to the
+   * {@link DataRequestsService.createFromDataElements()} function.
+   */
+  createWithDialogs(
+    getDataElements: () => Observable<DataElementBasic[]>
+  ): Observable<RequestCreatedAction | undefined> {
+    const user = this.security.getSignedInUser();
+    if (!user) return EMPTY;
+
+    return this.dialogs
+      .openCreateRequest()
+      .afterClosed()
+      .pipe(
+        // Ensure we have a response.
+        filter((response) => !!response),
+        // Gather name, description, and elements to be added. And, begin loading spinner.
+        switchMap((response) => {
+          if (!response) return EMPTY;
+
+          this.broadcast.loading({
+            isLoading: true,
+            caption: 'Creating new request ...',
+          });
+          return forkJoin([of(response), getDataElements()]);
+        }),
+        // Attempt to create the dataRequest using the gathered data.
+        switchMap(([response, dataElements]) => {
+          return forkJoin([
+            this.createFromDataElements(
+              dataElements,
+              user,
+              response.name,
+              response.description
+            ),
+            of(dataElements),
+          ]);
+        }),
+        catchError((error) => {
+          this.toastr.error(
+            `There was a problem creating your request. ${error}`,
+            'Request creation error'
+          );
+          return EMPTY;
+        }),
+        switchMap(([dataRequest, dataElements]) => {
+          this.broadcast.dispatch('data-request-added');
+
+          return this.dialogs
+            .openRequestCreated({
+              request: dataRequest,
+              addedElements: dataElements,
+            })
+            .afterClosed();
+        }),
+        finalize(() => this.broadcast.loading({ isLoading: false }))
+      );
   }
 
   /**

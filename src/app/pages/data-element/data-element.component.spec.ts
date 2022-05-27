@@ -62,7 +62,6 @@ describe('DataElementComponent', () => {
   const dataRequestsStub = createDataRequestsServiceStub();
   const profileStub = createProfileServiceStub();
   const config: DataExplorerConfiguration = {
-    rootRequestFolder: 'root-folder',
     rootDataModelPath: 'my test model',
     profileServiceName: 'Profile Service',
     profileNamespace: 'Profile Namespace',

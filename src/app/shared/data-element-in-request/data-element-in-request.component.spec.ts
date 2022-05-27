@@ -44,10 +44,10 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { UserDetails } from 'src/app/security/user-details.service';
 import { DataElementSearchResult } from 'src/app/data-explorer/data-explorer.types';
-import { CreateRequestDialogResponse } from 'src/app/data-explorer/create-request-dialog/create-request-dialog.component';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { createBroadcastServiceStub } from 'src/app/testing/stubs/broadcast.stub';
 import { BroadcastService } from 'src/app/core/broadcast.service';
+import { RequestCreatedAction } from 'src/app/data-explorer/request-created-dialog/request-created-dialog.component';
 
 describe('DataElementInRequestComponent', () => {
   let harness: ComponentHarness<DataElementInRequestComponent>;
@@ -108,7 +108,7 @@ describe('DataElementInRequestComponent', () => {
     expect(harness?.isComponentCreated).toBeTruthy();
   });
 
-  describe('create request from single data element', () => {
+  describe('creating requests', () => {
     const dataElement: DataElementSearchResult = {
       id: '1',
       dataClassId: '2',
@@ -121,32 +121,82 @@ describe('DataElementInRequestComponent', () => {
       item: dataElement,
     };
 
+    const routerSpy = jest.spyOn(stateRouterStub, 'navigateToKnownPath');
+
     beforeEach(() => {
-      dataRequestsStub.createFromDataElements.mockClear();
+      dataRequestsStub.createWithDialogs.mockClear();
       broadcastStub.loading.mockClear();
+      routerSpy.mockClear();
     });
 
-    it('should create a new request', () => {
-      const requestCreation: CreateRequestDialogResponse = {
-        name: 'test request',
-        description: 'test description',
-      };
+    it('should not call create request if there are no data elements', () => {
+      harness.component.dataElement = undefined;
+      const spy = jest.spyOn(harness.component, 'createRequest');
 
-      matDialogStub.usage.afterClosed.mockImplementationOnce(() => of(requestCreation));
+      harness.component.onClickCreateRequest();
 
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should transition to requests page if RequestCreatedAction is \'view-requests\'', () => {
+      // arrange
+      dataRequestsStub.createWithDialogs.mockImplementationOnce(
+        (): Observable<RequestCreatedAction> => {
+          return of('view-requests');
+        }
+      );
+
+      // act
       harness.component.createRequest(event);
 
-      expect(dataRequestsStub.createFromDataElements).toHaveBeenCalledWith(
-        [dataElement],
-        user,
-        requestCreation.name,
-        requestCreation.description
+      // assert
+      expect(routerSpy).toHaveBeenCalledWith('/requests');
+    });
+
+    it('should not transition to requests page if RequestCreatedAction is \'continue\'', () => {
+      // arrange
+      dataRequestsStub.createWithDialogs.mockImplementationOnce(
+        (): Observable<RequestCreatedAction> => {
+          return of('continue');
+        }
       );
-      expect(broadcastStub.loading).toHaveBeenCalledWith({
-        isLoading: true,
-        caption: 'Creating new request ...',
+
+      // act
+      harness.component.createRequest(event);
+
+      // assert
+      expect(routerSpy).not.toHaveBeenCalled();
+    });
+
+    it('should use the provided callback function to retrieve the dataElements to add', () => {
+      // arrange
+      const createSpy = jest.spyOn(dataRequestsStub, 'createWithDialogs');
+      const callbackReturnValue = [event.item];
+
+      dataRequestsStub.createWithDialogs.mockImplementationOnce(
+        (): Observable<RequestCreatedAction> => {
+          return of('view-requests');
+        }
+      );
+
+      // act
+      harness.component.createRequest(event);
+
+      // assert
+
+      // Grab the callback method passed to createSpy and retrieve it's output to check its return value.
+      // createSpy.mock.calls is an array containing the call arguments of all calls that have been made to this mock function.
+      // Each item in the array is an array of arguments that were passed during the call. For example, createSpy.mock.calls[0][0]
+      // gets the first argument of the first call to this mock function. In this case, this is the callback function used to retrieve
+      // the Observable<DataElementBasic[]> containing the dataElements to be added to the new request.
+      const call = createSpy.mock.calls[0];
+      const callback = call[0];
+      let returnedDataElements;
+      callback().subscribe((items) => {
+        returnedDataElements = items;
       });
-      expect(broadcastStub.loading).toHaveBeenCalledWith({ isLoading: false });
+
+      expect(returnedDataElements).toStrictEqual(callbackReturnValue);
     });
   });
 });

@@ -41,10 +41,12 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { UserDetails } from 'src/app/security/user-details.service';
 import { SelectableDataElementSearchResult } from 'src/app/data-explorer/data-explorer.types';
-import { CreateRequestDialogResponse } from 'src/app/data-explorer/create-request-dialog/create-request-dialog.component';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { createBroadcastServiceStub } from 'src/app/testing/stubs/broadcast.stub';
 import { BroadcastService } from 'src/app/core/broadcast.service';
+import { ToastrService } from 'ngx-toastr';
+import { createToastrServiceStub } from 'src/app/testing/stubs/toastr.stub';
+import { RequestCreatedAction } from 'src/app/data-explorer/request-created-dialog/request-created-dialog.component';
 
 describe('DataElementMultiSelectComponent', () => {
   let harness: ComponentHarness<DataElementMultiSelectComponent>;
@@ -55,6 +57,7 @@ describe('DataElementMultiSelectComponent', () => {
   const endpointsStub: MdmEndpointsServiceStub = createMdmEndpointsStub();
   const matDialogStub = createMatDialogStub();
   const broadcastStub = createBroadcastServiceStub();
+  const toastrStub = createToastrServiceStub();
 
   const user: UserDetails = {
     id: '123',
@@ -97,6 +100,10 @@ describe('DataElementMultiSelectComponent', () => {
           provide: BroadcastService,
           useValue: broadcastStub,
         },
+        {
+          provide: ToastrService,
+          useValue: toastrStub,
+        },
       ],
     });
   });
@@ -105,7 +112,7 @@ describe('DataElementMultiSelectComponent', () => {
     expect(harness?.isComponentCreated).toBeTruthy();
   });
 
-  describe('create request with several data elements', () => {
+  describe('creating requests', () => {
     const dataElement1: SelectableDataElementSearchResult = {
       id: '1',
       dataClassId: '2',
@@ -124,32 +131,83 @@ describe('DataElementMultiSelectComponent', () => {
       isBookmarked: false,
     };
 
+    const dataElements = [dataElement1, dataElement2];
+
+    const routerSpy = jest.spyOn(stateRouterStub, 'navigateToKnownPath');
+
     beforeEach(() => {
-      dataRequestsStub.createFromDataElements.mockClear();
+      dataRequestsStub.createWithDialogs.mockClear();
       broadcastStub.loading.mockClear();
+      routerSpy.mockClear();
     });
 
-    it('should create a new request', () => {
-      const requestCreation: CreateRequestDialogResponse = {
-        name: 'test request',
-        description: 'test description',
-      };
+    it('should not call create request if there are no data elements', () => {
+      harness.component.dataElements = [];
+      const spy = jest.spyOn(harness.component, 'createRequest');
 
-      matDialogStub.usage.afterClosed.mockImplementationOnce(() => of(requestCreation));
+      harness.component.onClickCreateRequest();
 
-      harness.component.createRequest([dataElement1, dataElement2]);
+      expect(spy).not.toHaveBeenCalled();
+    });
 
-      expect(dataRequestsStub.createFromDataElements).toHaveBeenCalledWith(
-        [dataElement1, dataElement2],
-        user,
-        requestCreation.name,
-        requestCreation.description
+    it('should transition to requests page if RequestCreatedAction is \'view-requests\'', () => {
+      // arrange
+      dataRequestsStub.createWithDialogs.mockImplementationOnce(
+        (): Observable<RequestCreatedAction> => {
+          return of('view-requests');
+        }
       );
-      expect(broadcastStub.loading).toHaveBeenCalledWith({
-        isLoading: true,
-        caption: 'Creating new request ...',
+
+      // act
+      harness.component.createRequest(dataElements);
+
+      // assert
+      expect(routerSpy).toHaveBeenCalledWith('/requests');
+    });
+
+    it('should not transition to requests page if RequestCreatedAction is \'continue\'', () => {
+      // arrange
+      dataRequestsStub.createWithDialogs.mockImplementationOnce(
+        (): Observable<RequestCreatedAction> => {
+          return of('continue');
+        }
+      );
+
+      // act
+      harness.component.createRequest(dataElements);
+
+      // assert
+      expect(routerSpy).not.toHaveBeenCalled();
+    });
+
+    it('should use the provided callback function to retrieve the dataElements to add', () => {
+      // arrange
+      const createSpy = jest.spyOn(dataRequestsStub, 'createWithDialogs');
+
+      dataRequestsStub.createWithDialogs.mockImplementationOnce(
+        (): Observable<RequestCreatedAction> => {
+          return of('view-requests');
+        }
+      );
+
+      // act
+      harness.component.createRequest(dataElements);
+
+      // assert
+
+      // Grab the callback method passed to createSpy and retrieve it's output to check its return value.
+      // createSpy.mock.calls is an array containing the call arguments of all calls that have been made to this mock function.
+      // Each item in the array is an array of arguments that were passed during the call. For example, createSpy.mock.calls[0][0]
+      // gets the first argument of the first call to this mock function. In this case, this is the callback function used to retrieve
+      // the Observable<DataElementBasic[]> containing the dataElements to be added to the new request.
+      const call = createSpy.mock.calls[0];
+      const callback = call[0];
+      let returnedDataElements;
+      callback().subscribe((items) => {
+        returnedDataElements = items;
       });
-      expect(broadcastStub.loading).toHaveBeenCalledWith({ isLoading: false });
+
+      expect(returnedDataElements).toStrictEqual(dataElements);
     });
   });
 });
