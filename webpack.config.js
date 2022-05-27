@@ -31,7 +31,7 @@ module.exports = {
       //add some of these to do what we want
       //api location
       $ENV: {
-        themeName: JSON.stringify(process.env["MDM_UI_THEME_NAME"]),
+        apiEndpoint: JSON.stringify(process.env["MDM_UI_API_ENDPOINT"]),
       },
     }),
   ],

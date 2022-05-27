@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 export const environment = {
   production: true,
-  apiEndpoint: 'api',
+  apiEndpoint: $ENV.apiEndpoint ?? 'api',
   checkSessionExpiryTimeout: 300000,
   features: {
     useOpenIdConnect: true,
