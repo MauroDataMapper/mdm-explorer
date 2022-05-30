@@ -198,5 +198,30 @@ describe('DataElementInRequestComponent', () => {
 
       expect(returnedDataElements).toStrictEqual(callbackReturnValue);
     });
+
+    it('should emit event when create request button is clicked', () => {
+      // Create html dom
+      harness.detectChanges();
+      const dom = harness.fixture.debugElement;
+
+      // find 'create request' button, being the button that doesn't have the caption as the label
+      const button = dom.query(
+        (element) =>
+          element.name === 'button' &&
+          element.nativeElement.innerHTML.indexOf(harness.component.caption) === -1
+      );
+
+      // Setup the required mocks and values
+      const emitSpy = jest.spyOn(harness.component.createRequestClicked, 'emit');
+      dataRequestsStub.createWithDialogs.mockClear();
+      dataRequestsStub.createWithDialogs.mockReturnValue(of('continue'));
+      harness.component.dataElement = dataElement;
+
+      // fake a click event on the button
+      button.triggerEventHandler('click', event);
+
+      // check the result
+      expect(emitSpy).toHaveBeenCalledWith(event);
+    });
   });
 });
