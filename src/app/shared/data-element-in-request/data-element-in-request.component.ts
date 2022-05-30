@@ -202,6 +202,7 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
       if (action === 'view-requests') {
         this.stateRouter.navigateToKnownPath('/requests');
       }
+      this.createRequestClicked.emit(event);
     });
   }
 
