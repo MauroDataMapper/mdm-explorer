@@ -89,6 +89,28 @@ describe('DataElementSearchResultComponent', () => {
     expect(emitSpy).toHaveBeenCalledWith({ item, checked });
   });
 
+  it('should emit a checked event when the checkbox value changes', () => {
+    const item: SelectableDataElementSearchResult = {
+      id: '1',
+      label: 'test',
+      breadcrumbs: [],
+      dataClassId: '2',
+      dataModelId: '3',
+      isSelected: false,
+      isBookmarked: false,
+    };
+
+    harness.component.item = item;
+    harness.detectChanges();
+    const dom = harness.fixture.debugElement;
+    const checkbox = dom.query((el) => el.name === 'mat-checkbox');
+    const emitSpy = jest.spyOn(harness.component.checked, 'emit');
+    const event = { checked: true } as MatCheckboxChange;
+
+    checkbox.triggerEventHandler('change', event);
+    expect(emitSpy).toHaveBeenCalledWith({ item, checked: true });
+  });
+
   it('should not emit a bookmark event with no item', () => {
     const emitSpy = jest.spyOn(harness.component.bookmark, 'emit');
     harness.component.toggleBookmark(true);

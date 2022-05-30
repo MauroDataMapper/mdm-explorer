@@ -282,7 +282,7 @@ export class MyRequestsComponent implements OnInit {
 
   removeSelectedButtonDisabled(): boolean {
     const selectedItemList = this.requestElements.filter((item) => item.isSelected);
-    return !this.request || !this.requestElements || selectedItemList.length === 0;
+    return !this.request || selectedItemList.length === 0;
   }
 
   onSelectAll(event: MatCheckboxChange) {
