@@ -19,12 +19,12 @@ SPDX-License-Identifier: Apache-2.0
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DataClass, DataModel } from '@maurodatamapper/mdm-resources';
-import { DataElementBasic } from '../data-explorer.types';
+import { DataElementInstance } from '../data-explorer.types';
 
 export interface RequestUpdatedData {
   request: DataModel;
   addedClass?: DataClass;
-  addedElements?: DataElementBasic[];
+  addedElements?: DataElementInstance[];
 }
 
 export type RequestUpdatedAction = 'continue' | 'view-requests';

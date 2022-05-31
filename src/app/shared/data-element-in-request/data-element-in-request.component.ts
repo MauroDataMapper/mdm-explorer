@@ -29,7 +29,7 @@ import { SecurityService } from 'src/app/security/security.service';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
 import {
-  DataElementBasic,
+  DataElementInstance,
   DataElementSearchResult,
 } from 'src/app/data-explorer/data-explorer.types';
 import { UserDetails } from 'src/app/security/user-details.service';
@@ -43,7 +43,7 @@ export interface CreateRequestEvent {
 export interface RequestElementAddDeleteEvent {
   adding: boolean;
   dataModel: DataAccessRequestMenuItem;
-  dataElement: DataElementBasic;
+  dataElement: DataElementInstance;
 }
 
 interface DataAccessRequestMenuItem {
@@ -133,11 +133,7 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
       }
 
       this.endpoints.dataModel
-        .copySubset(
-          this.dataElement.dataModelId,
-          targetDataModelId,
-          datamodelSubsetPayload
-        )
+        .copySubset(this.dataElement.model, targetDataModelId, datamodelSubsetPayload)
         .subscribe(() => {
           this.toastr.success(
             `${this.dataElement?.label} ${
@@ -194,7 +190,7 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const getDataElements = (): Observable<DataElementBasic[]> => {
+    const getDataElements = (): Observable<DataElementInstance[]> => {
       return of([event.item]);
     };
 
@@ -202,7 +198,6 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
       if (action === 'view-requests') {
         this.stateRouter.navigateToKnownPath('/requests');
       }
-      this.createRequestClicked.emit(event);
     });
   }
 

@@ -23,7 +23,7 @@ import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { createMdmEndpointsStub } from '../testing/stubs/mdm-endpoints.stub';
 import { createSecurityServiceStub } from '../testing/stubs/security.stub';
 import { SecurityService } from '../security/security.service';
-import { DataElementBasic, DataElementSearchResult } from './data-explorer.types';
+import { DataElementInstance, DataElementSearchResult } from './data-explorer.types';
 import { UserDetails } from '../security/user-details.service';
 import { cold } from 'jest-marbles';
 
@@ -242,7 +242,7 @@ describe('BookmarkService', () => {
     it.each([true, false])(
       'should return %p if the user has bookmarked the supplied data element',
       (isBookmarked) => {
-        const dataElementToCheck = b2 as DataElementBasic;
+        const dataElementToCheck = b2 as DataElementInstance;
         const dataElementToCheckId = dataElementToCheck.id;
         const bookmarksDoesContain = [b1, b2];
         const bookmarksDoesNotContain = [b1];

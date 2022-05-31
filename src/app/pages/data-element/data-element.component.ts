@@ -104,8 +104,8 @@ export class DataElementComponent implements OnInit, OnDestroy {
           this.isBookmarked = isBookmarked;
           this.dataElementSearchResult = {
             id: dataElementDetail.id ?? '',
-            dataClassId: dataElementDetail.dataClass ?? '',
-            dataModelId: dataElementDetail.model ?? '',
+            dataClass: dataElementDetail.dataClass ?? '',
+            model: dataElementDetail.model ?? '',
             label: dataElementDetail.label,
             breadcrumbs: dataElementDetail.breadcrumbs,
             isBookmarked,
@@ -144,8 +144,8 @@ export class DataElementComponent implements OnInit, OnDestroy {
 
     const item: DataElementSearchResult = {
       id: this.dataElement.id ?? '',
-      dataModelId: this.dataElement.model ?? '',
-      dataClassId: this.dataElement.dataClass ?? '',
+      model: this.dataElement.model ?? '',
+      dataClass: this.dataElement.dataClass ?? '',
       label: this.dataElement.label,
       breadcrumbs: this.dataElement.breadcrumbs,
       description: this.dataElement.description,

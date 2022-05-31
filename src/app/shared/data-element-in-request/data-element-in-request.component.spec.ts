@@ -111,8 +111,8 @@ describe('DataElementInRequestComponent', () => {
   describe('creating requests', () => {
     const dataElement: DataElementSearchResult = {
       id: '1',
-      dataClassId: '2',
-      dataModelId: '3',
+      dataClass: '2',
+      model: '3',
       label: 'element 1',
       isBookmarked: false,
     };
@@ -138,7 +138,7 @@ describe('DataElementInRequestComponent', () => {
       expect(spy).not.toHaveBeenCalled();
     });
 
-    it('should transition to requests page if RequestCreatedAction is \'view-requests\'', () => {
+    it("should transition to requests page if RequestCreatedAction is 'view-requests'", () => {
       // arrange
       dataRequestsStub.createWithDialogs.mockImplementationOnce(
         (): Observable<RequestCreatedAction> => {
@@ -153,7 +153,7 @@ describe('DataElementInRequestComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith('/requests');
     });
 
-    it('should not transition to requests page if RequestCreatedAction is \'continue\'', () => {
+    it("should not transition to requests page if RequestCreatedAction is 'continue'", () => {
       // arrange
       dataRequestsStub.createWithDialogs.mockImplementationOnce(
         (): Observable<RequestCreatedAction> => {

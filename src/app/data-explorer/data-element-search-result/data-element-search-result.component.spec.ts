@@ -77,8 +77,8 @@ describe('DataElementSearchResultComponent', () => {
       id: '1',
       label: 'test',
       breadcrumbs: [],
-      dataClassId: '2',
-      dataModelId: '3',
+      dataClass: '2',
+      model: '3',
       isSelected: false,
       isBookmarked: false,
     };
@@ -94,8 +94,8 @@ describe('DataElementSearchResultComponent', () => {
       id: '1',
       label: 'test',
       breadcrumbs: [],
-      dataClassId: '2',
-      dataModelId: '3',
+      dataClass: '2',
+      model: '3',
       isSelected: false,
       isBookmarked: false,
     };
@@ -125,8 +125,8 @@ describe('DataElementSearchResultComponent', () => {
         id: '1',
         label: 'test',
         breadcrumbs: [],
-        dataClassId: '2',
-        dataModelId: '3',
+        dataClass: '2',
+        model: '3',
         isSelected: false,
         isBookmarked: false,
       };

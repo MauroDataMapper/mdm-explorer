@@ -18,7 +18,6 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
 import {
-  DataElement,
   DataModel,
   DataModelCreatePayload,
   DataModelDetail,
@@ -48,7 +47,8 @@ import { UserDetails } from '../security/user-details.service';
 import { DataModelService } from '../mauro/data-model.service';
 import { CatalogueUserService } from '../mauro/catalogue-user.service';
 import {
-  DataElementBasic,
+  DataElementDto,
+  DataElementInstance,
   DataElementMultipleOperationResult,
   DataElementOperationResult,
   mapToDataRequest,
@@ -123,7 +123,7 @@ export class DataRequestsService {
    * @param request The {@link DataRequest} (Data Model) that contains the elements.
    * @returns An observable containing the list of Data Elements.
    */
-  listDataElements(request: DataRequest): Observable<DataElement[]> {
+  listDataElements(request: DataRequest): Observable<DataElementDto[]> {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.dataModels.getDataModelHierarchy(request.id!).pipe(
       map((dataModel) => {
@@ -152,22 +152,21 @@ export class DataRequestsService {
    * @returns: Observable of DataElementMultipleOperationResult
    */
   deleteDataElementMultiple(
-    elements: DataElementBasic[],
+    elements: DataElementInstance[],
     targetModel: DataModelDetail
   ): Observable<DataElementMultipleOperationResult> {
-    const items: DataElement[] = elements.map((dataElementBasic) => {
-      return this.dataModels.dataElementFromBasic(dataElementBasic);
-    });
+    const items: DataElementDto[] = elements.map(
+      (dataElementInstance) => dataElementInstance as DataElementDto
+    );
     return of(items).pipe(
-      switchMap((dataElements: DataElement[]) => {
+      switchMap((dataElements: DataElementDto[]) => {
         return this.dataModels.elementsInAnotherModel(targetModel, dataElements);
       }),
-      switchMap((dataElements: DataElement[]) => from(dataElements)),
+      switchMap((dataElements: DataElementDto[]) => from(dataElements)),
       filter((item) => item !== null),
-      concatMap((item: DataElement) => {
-        const dataElementBasic: DataElementBasic =
-          this.dataModels.dataElementToBasic(item);
-        return this.deleteDataElement(dataElementBasic);
+      concatMap((item: DataElementDto) => {
+        const dataElementInstance = item as DataElementInstance;
+        return this.deleteDataElement(dataElementInstance);
       }),
       toArray(),
       switchMap((results: DataElementOperationResult[]) => {
@@ -189,7 +188,7 @@ export class DataRequestsService {
    *
    * @returns: Observable of DataElementOperationResult
    */
-  deleteDataElement(item: DataElementBasic): Observable<DataElementOperationResult> {
+  deleteDataElement(item: DataElementInstance): Observable<DataElementOperationResult> {
     return this.dataModels.deleteDataElement(item).pipe(
       map((response: HttpResponse<any>) => {
         if (response.status === 200 || response.status === 204) {
@@ -295,7 +294,7 @@ export class DataRequestsService {
    * @returns An observable containing the new {@link DataRequest}.
    */
   createFromDataElements(
-    elements: DataElementBasic[],
+    elements: DataElementInstance[],
     user: UserDetails,
     name: string,
     description?: string
@@ -334,7 +333,7 @@ export class DataRequestsService {
    * {@link DataRequestsService.createFromDataElements()} function.
    */
   createWithDialogs(
-    getDataElements: () => Observable<DataElementBasic[]>
+    getDataElements: () => Observable<DataElementInstance[]>
   ): Observable<RequestCreatedAction | undefined> {
     const user = this.security.getSignedInUser();
     if (!user) return EMPTY;

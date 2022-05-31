@@ -282,8 +282,8 @@ describe('DataElementComponent', () => {
     const dataElement = { id: '1', label: 'label-1' } as DataElementDetail;
     const dataElementAsBookmarkAdded = {
       ...dataElement,
-      dataModelId: '',
-      dataClassId: '',
+      model: '',
+      dataClass: '',
       isBookmarked: true,
     } as DataElementSearchResult;
 

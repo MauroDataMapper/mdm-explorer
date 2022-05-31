@@ -20,6 +20,8 @@ import { InjectionToken } from '@angular/core';
 import { ParamMap, Params } from '@angular/router';
 import {
   Breadcrumb,
+  CatalogueItemDomainType,
+  DataElement,
   DataModel,
   ProfileField,
   ProfileSearchResult,
@@ -172,7 +174,7 @@ export const PAGINATION_CONFIG = new InjectionToken<PaginationConfiguration>(
   'PaginationConfiguration'
 );
 
-export interface DataElementSearchResult extends DataElementBasic {
+export interface DataElementSearchResult extends DataElementInstance {
   description?: string;
   identifiableData?: string;
 }
@@ -191,7 +193,7 @@ export interface DataElementSearchResultSet {
 export interface DataElementOperationResult {
   success: boolean;
   message: string;
-  item: DataElementBasic;
+  item: DataElementInstance;
 }
 
 export interface DataElementMultipleOperationResult {
@@ -215,8 +217,8 @@ export const mapProfileSearchResult = (
 
   return {
     id: item.id ?? '',
-    dataModelId: item.model ?? '',
-    dataClassId,
+    model: item.model ?? '',
+    dataClass: dataClassId,
     label: item.label,
     description: item.description,
     breadcrumbs: item.breadcrumbs ?? [],
@@ -257,16 +259,20 @@ export const mapToDataRequest = (dataModel: DataModel): DataRequest => {
   };
 };
 
-export interface DataElementBasic extends IsBookmarkable {
+export interface DataElementDto extends DataElement {}
+
+export interface DataElementInstance extends IsBookmarkable {
+  [key: string]: any;
   id: Uuid;
-  dataModelId: Uuid;
-  dataClassId: Uuid;
+  model: Uuid;
+  dataClass: Uuid;
   label: string;
   breadcrumbs?: Breadcrumb[];
+  domainType?: CatalogueItemDomainType;
 }
 
 export interface DataElementCheckedEvent {
-  item: DataElementBasic;
+  item: DataElementInstance;
   checked: boolean;
 }
 

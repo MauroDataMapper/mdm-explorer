@@ -20,7 +20,6 @@ import {
   DataModel,
   FolderDetail,
   CatalogueItemDomainType,
-  DataElement,
   DataElementDetail,
   DataModelFull,
   SourceTargetIntersection,
@@ -28,7 +27,11 @@ import {
 } from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
 import { DataModelService } from '../mauro/data-model.service';
-import { DataElementBasic, DataRequest } from '../data-explorer/data-explorer.types';
+import {
+  DataElementDto,
+  DataElementInstance,
+  DataRequest,
+} from '../data-explorer/data-explorer.types';
 import { createDataModelServiceStub } from '../testing/stubs/data-model.stub';
 import { createSecurityServiceStub } from '../testing/stubs/security.stub';
 import { setupTestModuleForService } from '../testing/testing.helpers';
@@ -200,7 +203,7 @@ describe('DataRequestsService', () => {
         { id: '4' },
         { id: '5' },
         { id: '6' },
-      ] as DataElement[];
+      ] as DataElementDto[];
 
       const expectedDataElements: DataElementDetail[] = dataElements.map((de) => {
         return {
@@ -320,18 +323,18 @@ describe('DataRequestsService', () => {
 
     it('should create a new request and copy elements to it', () => {
       const rootDataModelId = '789';
-      const elements: DataElementBasic[] = [
+      const elements: DataElementInstance[] = [
         {
           id: '1',
-          dataModelId: '999',
-          dataClassId: '888',
+          model: '999',
+          dataClass: '888',
           label: 'element 1',
           isBookmarked: false,
         },
         {
           id: '2',
-          dataModelId: '999',
-          dataClassId: '888',
+          model: '999',
+          dataClass: '888',
           label: 'element 2',
           isBookmarked: false,
         },
@@ -445,10 +448,10 @@ describe('DataRequestsService', () => {
   });
 
   describe('createWithDialogs', () => {
-    const dataElement1: DataElementBasic = {
+    const dataElement1: DataElementInstance = {
       id: '1',
-      dataClassId: '2',
-      dataModelId: '3',
+      dataClass: '2',
+      model: '3',
       label: 'element 1',
       isBookmarked: false,
     };

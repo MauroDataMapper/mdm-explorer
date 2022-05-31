@@ -27,7 +27,6 @@ import {
   DataClassDetailResponse,
   DataClassIndexParameters,
   DataClassIndexResponse,
-  DataElement,
   DataElementDetail,
   DataElementIndexParameters,
   DataElementIndexResponse,
@@ -61,7 +60,10 @@ import {
   throwError,
   toArray,
 } from 'rxjs';
-import { DataElementBasic } from '../data-explorer/data-explorer.types';
+import {
+  DataElementDto,
+  DataElementInstance,
+} from '../data-explorer/data-explorer.types';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { DataClassIdentifier, isDataClass } from './mauro.types';
 
@@ -145,7 +147,7 @@ export class DataModelService {
   getDataElements(
     id: DataClassIdentifier,
     params?: DataElementIndexParameters
-  ): Observable<MdmIndexBody<DataElement>> {
+  ): Observable<MdmIndexBody<DataElementDto>> {
     return this.endpoints.dataElement
       .list(id.dataModelId, id.dataClassId, params)
       .pipe(map((response: DataElementIndexResponse) => response.body));
@@ -251,7 +253,7 @@ export class DataModelService {
    * @param dataClass The Data Class to inspect.
    * @returns A flattened array of {@link DataElement} objects.
    */
-  getDataElementsForDataClass(dataClass: DataClass): Observable<DataElement[]> {
+  getDataElementsForDataClass(dataClass: DataClass): Observable<DataElementDto[]> {
     return this.getDataClasses(dataClass).pipe(
       switchMap((childDataClasses: DataClass[]) => {
         // If this is a parent DataClass then fetch all DataElements in that plus every child DataClass
@@ -303,10 +305,10 @@ export class DataModelService {
       .pipe(map((response: SourceTargetIntersectionResponse) => response.body));
   }
 
-  deleteDataElement(dataElement: DataElementBasic): any {
+  deleteDataElement(dataElement: DataElementInstance): any {
     return this.endpoints.dataElement.remove(
-      dataElement.dataModelId,
-      dataElement.dataClassId,
+      dataElement.model,
+      dataElement.dataClass,
       dataElement.id
     );
   }
@@ -331,38 +333,46 @@ export class DataModelService {
       .pipe(map((response: DataModelDetailResponse) => response.body));
   }
 
-  dataElementToBasic(dataElement: DataElement, isBookmarked = false): DataElementBasic {
-    return {
-      id: dataElement.id ?? '',
-      dataModelId: dataElement.model ?? '',
-      dataClassId: dataElement.dataClass ?? '',
-      label: dataElement.label,
-      isBookmarked,
-      breadcrumbs: dataElement.breadcrumbs,
-    };
+  detb(dataElement: DataElementDto): DataElementInstance {
+    return dataElement as DataElementInstance;
   }
 
+  debt(dataElement: DataElementInstance): DataElementDto {
+    return dataElement as DataElementDto;
+  }
+
+  // dataElementToBasic(dataElement: DataElement, isBookmarked = false): DataElementBasic {
+  //   return {
+  //     id: dataElement.id ?? '',
+  //     model: dataElement.model ?? '',
+  //     dataClass: dataElement.dataClass ?? '',
+  //     label: dataElement.label,
+  //     isBookmarked,
+  //     breadcrumbs: dataElement.breadcrumbs,
+  //   };
+  // }
+
   dataElementFromBasic(
-    dataElementBasic: DataElementBasic,
+    dataElementInstance: DataElementInstance,
     description = ''
-  ): DataElement {
+  ): DataElementDto {
     return {
       domainType: CatalogueItemDomainType.DataElement,
-      label: dataElementBasic.label,
-      id: dataElementBasic.id,
+      label: dataElementInstance.label,
+      id: dataElementInstance.id,
       description,
-      model: dataElementBasic.dataModelId,
-      dataClass: dataElementBasic.dataClassId,
-      breadcrumbs: dataElementBasic.breadcrumbs,
+      model: dataElementInstance.model,
+      dataClass: dataElementInstance.dataClass,
+      breadcrumbs: dataElementInstance.breadcrumbs,
     };
   }
 
   elementsInAnotherModel(
     rootModel: DataModelDetail,
-    dataElements: DataElement[]
-  ): Observable<DataElement[]> {
+    dataElements: DataElementDto[]
+  ): Observable<DataElementDto[]> {
     return from(dataElements).pipe(
-      mergeMap((dataElement: DataElement) => {
+      mergeMap((dataElement: DataElementDto) => {
         let path = '';
         if (dataElement.breadcrumbs) {
           const bc = dataElement.breadcrumbs;
@@ -376,16 +386,16 @@ export class DataModelService {
           throw new Error('Path cannot be interpreted');
         } else {
           return this.endpoints.catalogueItem.getPath('dataModels', path) as Observable<
-            HttpResponse<DataElement>
+            HttpResponse<DataElementDto>
           >;
         }
       }),
-      map((response: HttpResponse<DataElement>) => {
+      map((response: HttpResponse<DataElementDto>) => {
         return response.body;
       }),
       filter((element) => element !== null) as OperatorFunction<
-        DataElement | null,
-        DataElement
+        DataElementDto | null,
+        DataElementDto
       >,
       toArray()
     );

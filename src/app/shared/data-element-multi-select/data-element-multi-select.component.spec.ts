@@ -115,8 +115,8 @@ describe('DataElementMultiSelectComponent', () => {
   describe('creating requests', () => {
     const dataElement1: SelectableDataElementSearchResult = {
       id: '1',
-      dataClassId: '2',
-      dataModelId: '3',
+      dataClass: '2',
+      model: '3',
       label: 'element 1',
       isSelected: true,
       isBookmarked: false,
@@ -124,8 +124,8 @@ describe('DataElementMultiSelectComponent', () => {
 
     const dataElement2: SelectableDataElementSearchResult = {
       id: '2',
-      dataClassId: '2',
-      dataModelId: '3',
+      dataClass: '2',
+      model: '3',
       label: 'element 2',
       isSelected: true,
       isBookmarked: false,
@@ -150,7 +150,7 @@ describe('DataElementMultiSelectComponent', () => {
       expect(spy).not.toHaveBeenCalled();
     });
 
-    it('should transition to requests page if RequestCreatedAction is \'view-requests\'', () => {
+    it("should transition to requests page if RequestCreatedAction is 'view-requests'", () => {
       // arrange
       dataRequestsStub.createWithDialogs.mockImplementationOnce(
         (): Observable<RequestCreatedAction> => {
@@ -165,7 +165,7 @@ describe('DataElementMultiSelectComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith('/requests');
     });
 
-    it('should not transition to requests page if RequestCreatedAction is \'continue\'', () => {
+    it("should not transition to requests page if RequestCreatedAction is 'continue'", () => {
       // arrange
       dataRequestsStub.createWithDialogs.mockImplementationOnce(
         (): Observable<RequestCreatedAction> => {

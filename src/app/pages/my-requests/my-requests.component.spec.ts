@@ -23,8 +23,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSelectionListChange } from '@angular/material/list';
 import {
   CatalogueItemDomainType,
-  DataElement,
-  // DataElement,
   DataModel,
   DataModelDetail,
 } from '@maurodatamapper/mdm-resources';
@@ -34,6 +32,7 @@ import { BroadcastService } from 'src/app/core/broadcast.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import {
   DataElementDeleteEvent,
+  DataElementDto,
   DataElementMultipleOperationResult,
   DataRequest,
   DataRequestStatus,
@@ -253,7 +252,7 @@ describe('MyRequestsComponent', () => {
     });
 
     it('should select the chosen request', () => {
-      const elements: DataElement[] = [
+      const elements: DataElementDto[] = [
         {
           id: '1',
           label: 'element 1',
@@ -321,8 +320,8 @@ describe('MyRequestsComponent', () => {
       dataModelsStub.dataElementToBasic.mockImplementation((element) => {
         return {
           id: element.id ?? '',
-          dataClassId: element.dataClass ?? '',
-          dataModelId: element.model ?? '',
+          dataClass: element.dataClass ?? '',
+          model: element.model ?? '',
           label: element.label,
           isBookmarked: false,
           breadcrumbs: element.breadcrumbs,
@@ -603,7 +602,7 @@ describe('MyRequestsComponent', () => {
   });
 
   describe('remove elements from requests', () => {
-    let elements: DataElement[];
+    let elements: DataElementDto[];
     let selectableElements: () => SelectableDataElementSearchResult[];
     let request: DataRequest;
     let requestMenuItem = { id: '', label: '', containsElement: false };
@@ -683,8 +682,8 @@ describe('MyRequestsComponent', () => {
       dataModelsStub.dataElementToBasic.mockImplementation((element) => {
         return {
           id: element.id ?? '',
-          dataClassId: element.dataClass ?? '',
-          dataModelId: element.model ?? '',
+          dataClass: element.dataClass ?? '',
+          model: element.model ?? '',
           label: element.label,
           isBookmarked: false,
           breadcrumbs: element.breadcrumbs,
@@ -727,7 +726,7 @@ describe('MyRequestsComponent', () => {
       expect(component.requestElements).toStrictEqual(selectableElements().slice(0, 1));
     });
 
-    it('Don\'t refresh request when data element is deleted from a different request via DataElementInRequest component', () => {
+    it("Don't refresh request when data element is deleted from a different request via DataElementInRequest component", () => {
       // pick the first row and trigger the RequestAddDelete event
       const dataElementRow: DebugElement = dom.query(
         (de) => de.name === 'mdm-data-element-row'

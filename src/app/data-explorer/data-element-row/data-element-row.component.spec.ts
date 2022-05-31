@@ -44,8 +44,8 @@ describe('DataElementRowComponent_DataElementInRequest', () => {
     component.item = {
       isSelected: false,
       id: 'Id',
-      dataModelId: 'ModelId',
-      dataClassId: 'ClassId',
+      model: 'ModelId',
+      dataClass: 'ClassId',
       label: 'Label',
       isBookmarked: false,
     };
@@ -179,8 +179,8 @@ describe('DataElementRowComponent', () => {
       const event = { checked } as MatCheckboxChange;
       const item: SelectableDataElementSearchResult = {
         id: '1',
-        dataModelId: '2',
-        dataClassId: '3',
+        model: '2',
+        dataClass: '3',
         label: 'test',
         isBookmarked: false,
         isSelected: false,

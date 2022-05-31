@@ -20,7 +20,6 @@ import {
   CatalogueItemSearchResult,
   DataClass,
   DataClassDetail,
-  DataElement,
   DataElementDetail,
   DataModel,
   DataModelCreatePayload,
@@ -34,7 +33,11 @@ import {
 } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
 import { DataClassIdentifier } from 'src/app/mauro/mauro.types';
-import { DataElementBasic, DataRequest } from 'src/app/data-explorer/data-explorer.types';
+import {
+  DataElementDto,
+  DataElementInstance,
+  DataRequest,
+} from 'src/app/data-explorer/data-explorer.types';
 
 export type DataModelGetDataModelFn = (path: string) => Observable<DataModelDetail>;
 export type DataModelGetDataClassesFn = (
@@ -45,7 +48,7 @@ export type DataModelGetDataClassFn = (
 ) => Observable<DataClassDetail>;
 export type DataModelGetDataElementsFn = (
   id: DataClassIdentifier
-) => Observable<MdmIndexBody<DataElement>>;
+) => Observable<MdmIndexBody<DataElementDto>>;
 export type DataModelGetDataElementFn = (
   id: DataClassIdentifier
 ) => Observable<DataElementDetail>;
@@ -54,7 +57,9 @@ export type DataModelSearchDataModelFn = (
   params: SearchQueryParameters
 ) => Observable<MdmIndexBody<CatalogueItemSearchResult>>;
 export type DataModelListInFolderFn = (folderId: Uuid) => Observable<DataModel[]>;
-export type DataModelGetHierarchyFn = (request: DataRequest) => Observable<DataElement[]>;
+export type DataModelGetHierarchyFn = (
+  request: DataRequest
+) => Observable<DataElementDto[]>;
 export type DataModelAddToFolderFn = (
   folderId: Uuid,
   payload: DataModelCreatePayload
@@ -66,7 +71,7 @@ export type DataModelCopySubsetFn = (
 ) => Observable<DataModelDetail>;
 export type DataModelElementsForClassFn = (
   dataClass: DataClass
-) => Observable<DataElement[]>;
+) => Observable<DataElementDto[]>;
 export type DataModelGetIntersectionManyFn = (
   sourceId: Uuid,
   data: SourceTargetIntersectionPayload
@@ -74,10 +79,14 @@ export type DataModelGetIntersectionManyFn = (
 export type DataModeNextVersionFn = (model: DataModel) => Observable<DataModel>;
 export type DataModelElementsInAnotherModelFn = (
   model: DataModelDetail,
-  elements: DataElement[]
-) => Observable<DataElement[]>;
-export type DataModelDataElementToBasicFn = (element: DataElement) => DataElementBasic;
-export type DataModelDataElementFromBasicFn = (element: DataElementBasic) => DataElement;
+  elements: DataElementDto[]
+) => Observable<DataElementDto[]>;
+export type DataModelDataElementToBasicFn = (
+  element: DataElementDto
+) => DataElementInstance;
+export type DataModelDataElementFromBasicFn = (
+  element: DataElementInstance
+) => DataElementDto;
 
 export interface DataModelServiceStub {
   getDataModel: jest.MockedFunction<DataModelGetDataModelFn>;

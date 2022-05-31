@@ -22,7 +22,6 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { MatSelectionListChange } from '@angular/material/list';
 import {
   CatalogueItemDomainType,
-  DataElement,
   DataModelDetail,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
@@ -39,7 +38,7 @@ import {
 } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import {
-  DataElementBasic,
+  DataElementInstance,
   DataElementDeleteEvent,
   DataElementMultipleOperationResult,
   DataElementOperationResult,
@@ -48,6 +47,7 @@ import {
   DataRequestStatus,
   mapToDataRequest,
   SelectableDataElementSearchResult,
+  DataElementDto,
 } from 'src/app/data-explorer/data-explorer.types';
 import {
   DataAccessRequestsSourceTargetIntersections,
@@ -385,19 +385,19 @@ export class MyRequestsComponent implements OnInit {
       this.explorer.getRootDataModel(),
     ])
       .pipe(
-        switchMap(([dataElements, rootModel]: [DataElement[], DataModelDetail]) => {
+        switchMap(([dataElements, rootModel]: [DataElementDto[], DataModelDetail]) => {
           if (this.request?.id && rootModel?.id) {
             return this.dataModels.elementsInAnotherModel(rootModel, dataElements);
           }
           throw new Error('Id cannot be found for user request or root data model');
         }),
-        switchMap((dataElements: (DataElement | null)[]) => {
+        switchMap((dataElements: (DataElementDto | null)[]) => {
           return of(
             dataElements.map((element) => {
               return (
                 element
                   ? {
-                      ...this.dataModels.dataElementToBasic(element),
+                      ...element,
                       isSelected: false,
                       isBookmarked: false,
                     }
@@ -431,7 +431,7 @@ export class MyRequestsComponent implements OnInit {
       });
   }
 
-  private loadIntersections(elements: DataElementBasic[]) {
+  private loadIntersections(elements: DataElementInstance[]) {
     const dataElementIds: Uuid[] = [];
 
     if (elements) {

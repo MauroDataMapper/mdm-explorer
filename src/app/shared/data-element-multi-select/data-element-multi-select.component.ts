@@ -27,7 +27,7 @@ import {
 import { SecurityService } from 'src/app/security/security.service';
 import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
 import {
-  DataElementBasic,
+  DataElementInstance,
   DataElementSearchResult,
   RemoveBookmarkEvent,
   SelectableDataElementSearchResult,
@@ -110,7 +110,7 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const getDataElements = (): Observable<DataElementBasic[]> => {
+    const getDataElements = (): Observable<DataElementInstance[]> => {
       return of(dataElements);
     };
 
@@ -130,7 +130,7 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
     // If there are any selected data elements then they should all be from the same source data model.
     // So pick the first and use that
     const sourceDataModelId =
-      this.dataElements.length > 0 ? this.dataElements[0].dataModelId : null;
+      this.dataElements.length > 0 ? this.dataElements[0].model : null;
 
     // The target data model (aka request)
     const targetDataModelId = item.id;
@@ -174,8 +174,8 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
       const bookmark: DataElementSearchResult = {
         id: de.id,
         label: de.label,
-        dataModelId: de.dataModelId,
-        dataClassId: de.dataClassId,
+        model: de.model,
+        dataClass: de.dataClass,
         isBookmarked
       };
 
