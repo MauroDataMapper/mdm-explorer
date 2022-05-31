@@ -46,7 +46,7 @@ import {
   SortOrder,
 } from 'src/app/data-explorer/data-explorer.types';
 import { DataElementBookmarkEvent } from 'src/app/data-explorer/data-explorer.types';
-import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
+import { BookmarkService } from 'src/app/data-explorer/bookmark.service';
 import { SortByOption } from 'src/app/data-explorer/sort-by/sort-by.component';
 import {
   DataRequestsService,
@@ -88,7 +88,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
   searchTerms?: string;
   resultSet?: DataElementSearchResultSet;
   selectedElements: SelectableDataElementSearchResult[] = [];
-  userBookmarks: Bookmark[] = [];
+  userBookmarks: DataElementSearchResult[] = [];
   sortBy?: SortByOption;
   sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 

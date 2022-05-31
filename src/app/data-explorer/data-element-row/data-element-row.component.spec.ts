@@ -16,14 +16,142 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { DebugElement } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { CatalogueItemDomainType } from '@maurodatamapper/mdm-resources';
+import {
+  CreateRequestEvent,
+  RequestElementAddDeleteEvent,
+} from 'src/app/shared/data-element-in-request/data-element-in-request.component';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
-import { SelectableDataElementSearchResult } from '../data-explorer.types';
+import {
+  DataElementDeleteEvent,
+  SelectableDataElementSearchResult,
+} from '../data-explorer.types';
 
 import { DataElementRowComponent } from './data-element-row.component';
+
+// Test output emitters including interaction with DataElementInRequest component
+describe('DataElementRowComponent_DataElementInRequest', () => {
+  let harness: ComponentHarness<DataElementRowComponent>;
+
+  beforeEach(async () => {
+    harness = await setupTestModuleForComponent(DataElementRowComponent);
+    const component = harness.component;
+    component.item = {
+      isSelected: false,
+      id: 'Id',
+      dataModelId: 'ModelId',
+      dataClassId: 'ClassId',
+      label: 'Label',
+      isBookmarked: false,
+    };
+    component.sourceTargetIntersections = {
+      dataAccessRequests: [
+        {
+          id: 'Access Request Id',
+          label: 'My Request',
+          domainType: CatalogueItemDomainType.DataModel,
+        },
+      ],
+      sourceTargetIntersections: [
+        {
+          sourceDataModelId: 'DataModelId',
+          targetDataModelId: 'Access Request Id',
+          intersects: ['Id'],
+        },
+      ],
+    };
+  });
+
+  it('should initialise', () => {
+    harness.detectChanges();
+    const dom = harness.fixture.nativeElement;
+    const dataElementComponent = dom.querySelector('mdm-data-element-in-request');
+
+    expect(dataElementComponent).toBeTruthy();
+  });
+
+  it('should raise a delete event when "Remove" button is clicked', () => {
+    const component = harness.component;
+    const emitSpy = jest.spyOn(component.delete, 'emit');
+    const dom = harness.fixture.debugElement;
+    harness.detectChanges();
+    const button: DebugElement = dom.query(
+      (de) => de.name === 'button' && de.nativeElement.innerHTML === ' Remove '
+    );
+    const event: DataElementDeleteEvent = {
+      item: component.item!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+    };
+
+    button.triggerEventHandler('click', event);
+    expect(emitSpy).toHaveBeenCalledWith(event);
+  });
+
+  it('should raise a checked event when checkbox is checked', () => {
+    const component = harness.component;
+    const emitSpy = jest.spyOn(component.checked, 'emit');
+    const dom = harness.fixture.debugElement;
+    harness.detectChanges();
+    const checkboxElement = dom.query((de) => de.name === 'mat-checkbox');
+    const event: MatCheckboxChange = {
+      source: checkboxElement.nativeElement,
+      checked: true,
+    };
+    expect(component.item?.isSelected).toBe(false);
+    checkboxElement.triggerEventHandler('change', event);
+    expect(emitSpy).toHaveBeenCalledWith({ item: component.item, checked: true });
+    expect(component.item!.isSelected).toBe(true); // eslint-disable-line @typescript-eslint/no-non-null-assertion
+
+    emitSpy.mockReset();
+    event.checked = false;
+    checkboxElement.nativeElement.value = false;
+    checkboxElement.triggerEventHandler('change', event);
+    expect(emitSpy).toHaveBeenCalledWith({ item: component.item, checked: false });
+    expect(component.item!.isSelected).toBe(false); // eslint-disable-line @typescript-eslint/no-non-null-assertion
+  });
+
+  it('should raise an event when data-element-in-request emits a requestAddDelete event', () => {
+    const component = harness.component;
+
+    harness.detectChanges();
+    const dom = harness.fixture.debugElement;
+    const dataElementInRequestComponent = dom.query(
+      (de) => de.name === 'mdm-data-element-in-request'
+    );
+    const emitSpy = jest.spyOn(component.requestAddDelete, 'emit');
+    const event: RequestElementAddDeleteEvent = {
+      adding: false,
+      dataModel: {
+        id: 'id',
+        label: 'label',
+        containsElement: true,
+      },
+      dataElement: component.item!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+    };
+    dataElementInRequestComponent.triggerEventHandler('requestAddDelete', event);
+    expect(emitSpy).toHaveBeenCalledWith(event);
+  });
+
+  it('should raise an event when data-element-in-request emits a createRequestClicked event', () => {
+    const component = harness.component;
+
+    harness.detectChanges();
+    const dom = harness.fixture.debugElement;
+    const dataElementInRequestComponent = dom.query(
+      (de) => de.name === 'mdm-data-element-in-request'
+    );
+    const emitSpy = jest.spyOn(component.requestCreated, 'emit');
+    const event: CreateRequestEvent = {
+      item: component.item!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+    };
+    dataElementInRequestComponent.triggerEventHandler('createRequestClicked', event);
+    expect(emitSpy).toHaveBeenCalledWith(event);
+  });
+});
 
 describe('DataElementRowComponent', () => {
   let harness: ComponentHarness<DataElementRowComponent>;

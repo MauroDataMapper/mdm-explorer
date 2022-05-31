@@ -1,3 +1,6 @@
+import { Observable, of } from 'rxjs';
+import { BroadcastEvent } from 'src/app/core/broadcast.service';
+
 /*
 Copyright 2022 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
@@ -16,14 +19,18 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+export type OnFn<TPayload> = (event: BroadcastEvent) => Observable<TPayload>;
+
 export interface BroadcastServiceStub {
   dispatch: jest.Mock;
   loading: jest.Mock;
+  on: OnFn<any>;
 }
 
 export const createBroadcastServiceStub = (): BroadcastServiceStub => {
   return {
     dispatch: jest.fn(),
     loading: jest.fn(),
+    on: jest.fn((result) => of(result)),
   };
 };

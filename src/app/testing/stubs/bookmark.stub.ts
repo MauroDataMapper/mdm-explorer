@@ -16,14 +16,14 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Bookmark } from 'src/app/data-explorer/bookmark.service';
 import { Observable } from 'rxjs';
+import { DataElementSearchResult } from 'src/app/data-explorer/data-explorer.types';
 
 export type BookmarkIndexFn = () => Observable<any>;
 export type BookmarkIndexMockedFn = jest.MockedFunction<BookmarkIndexFn>;
-export type BookmarkAddFn = (bookmark: Bookmark) => Observable<any>;
+export type BookmarkAddFn = (bookmark: DataElementSearchResult) => Observable<any>;
 export type BookmarkAddMockedFn = jest.MockedFunction<BookmarkAddFn>;
-export type BookmarkRemoveFn = (bookmarks: Bookmark[]) => Observable<any>;
+export type BookmarkRemoveFn = (bookmarks: DataElementSearchResult[]) => Observable<any>;
 export type BookmarkRemoveMockedFn = jest.MockedFunction<BookmarkRemoveFn>;
 export type IsBookmarkedFn = (dataElementId: string) => Observable<boolean>;
 export type IsBookmarkedMockedFn = jest.MockedFunction<IsBookmarkedFn>;

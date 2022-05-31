@@ -20,18 +20,19 @@ SPDX-License-Identifier: Apache-2.0
   <div class="main-row hero">
     <h1>Bookmarks</h1>
   </div>
-  <div class="mdm-my-bookmarks">
-    <mdm-bookmark-row
-      *ngFor="let bookmark of userBookmarks"
-      [bookmark]="bookmark"
-      [isChecked]="bookmark.isSelected"
-      [openRequests]="openDataRequests"
-      (checked)="onChecked($event)"
-      (remove)="onRemove($event)"
-      (addToRequest)="onAddToRequest($event)"
-      [sourceTargetIntersections]="sourceTargetIntersections"
-    >
-    </mdm-bookmark-row>
+  <div class="row">
+    <div class="col-12">
+      <mdm-data-element-search-result
+        *ngFor="let bookmark of userBookmarks"
+        [item]="bookmark"
+        [showBreadcrumb]="false"
+        [isBookmarked]="bookmark.isBookmarked"
+        (checked)="onChecked($event)"
+        (bookmark)="onRemove($event)"
+        [sourceTargetIntersections]="sourceTargetIntersections"
+      >
+      </mdm-data-element-search-result>
+    </div>
   </div>
   <ng-container *ngIf="userBookmarks.length > 0">
     <div class="mt-4">

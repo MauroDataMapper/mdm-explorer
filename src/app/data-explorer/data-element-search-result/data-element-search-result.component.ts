@@ -24,7 +24,6 @@ import {
   Output,
 } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
-import { CreateRequestEvent } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
 import {
   DataElementBookmarkEvent,
   SelectableDataElementSearchResultCheckedEvent,
@@ -51,8 +50,6 @@ export class DataElementSearchResultComponent {
 
   @Output() bookmark = new EventEmitter<DataElementBookmarkEvent>();
 
-  @Output() createRequestClicked = new EventEmitter<CreateRequestEvent>();
-
   bookmarked = false;
 
   constructor() {
@@ -76,12 +73,5 @@ export class DataElementSearchResultComponent {
     }
 
     this.bookmark.emit({ item: this.item, selected });
-  }
-
-  createRequest() {
-    const event: CreateRequestEvent = {
-      item: this.item!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-    };
-    this.createRequestClicked.emit(event);
   }
 }

@@ -41,7 +41,12 @@ describe('OkCancelDialogComponent', () => {
         },
         {
           provide: MAT_DIALOG_DATA,
-          useValue: {},
+          useValue: {
+            heading: 'Heading',
+            content: 'Content',
+            okLabel: 'OKLabel',
+            cancelLabel: 'CancelLabel',
+          },
         },
       ],
     });
@@ -49,5 +54,42 @@ describe('OkCancelDialogComponent', () => {
 
   it('should create', () => {
     expect(harness.isComponentCreated).toBeTruthy();
+  });
+
+  it('should initialise', () => {
+    harness.detectChanges();
+    const component = harness.component;
+    const htmlMatchString = `.*<h1.*${component.heading}.*</h1.*<mat-dialog-content.*${component.content}.*<mat-dialog-actions.*<button mat-stroked-button.*${component.cancelLabel}.*<button mat-flat-button.*${component.okLabel}.*`;
+    const re = new RegExp(htmlMatchString, 's');
+    expect(harness.fixture.nativeElement.innerHTML).toMatch(re);
+  });
+
+  it('should call dialogRef.close with true on click OK', () => {
+    harness.detectChanges();
+    const component = harness.component;
+    const dom = harness.fixture.debugElement;
+    const okButton = dom.query(
+      (el) =>
+        el.name === 'button' && el.nativeElement.innerHTML.indexOf(component.okLabel) > -1
+    );
+    dialogRefStub.close.mockReset();
+    okButton.triggerEventHandler('click', {});
+    expect(dialogRefStub.close).toBeCalledTimes(1);
+    expect(dialogRefStub.close.mock.calls[0][0]).toStrictEqual({ result: true });
+  });
+
+  it('should call dialogRef.close with false on click Cancel', () => {
+    harness.detectChanges();
+    const component = harness.component;
+    const dom = harness.fixture.debugElement;
+    const okButton = dom.query(
+      (el) =>
+        el.name === 'button' &&
+        el.nativeElement.innerHTML.indexOf(component.cancelLabel) > -1
+    );
+    dialogRefStub.close.mockReset();
+    okButton.triggerEventHandler('click', {});
+    expect(dialogRefStub.close).toBeCalledTimes(1);
+    expect(dialogRefStub.close.mock.calls[0][0]).toStrictEqual({ result: false });
   });
 });
