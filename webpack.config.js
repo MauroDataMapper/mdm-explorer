@@ -19,7 +19,6 @@ SPDX-License-Identifier: Apache-2.0
 const webpack = require("webpack");
 const MiniCssExtractPlugin = require("./node_modules/mini-css-extract-plugin");
 
-//todo, figure out what this does
 module.exports = {
   module: {
     rules: [
@@ -43,11 +42,8 @@ module.exports = {
       },
     ],
   },
-  //confirm this is where env variables are fetched into something we can consume
   plugins: [
     new webpack.DefinePlugin({
-      //add some of these to do what we want
-      //api location
       $ENV: {
         apiEndpoint: JSON.stringify(process.env["MDM_UI_API_ENDPOINT"]),
       },
