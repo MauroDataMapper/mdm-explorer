@@ -496,14 +496,7 @@ describe('SearchListingComponent', () => {
     };
 
     const dataElementBookmarkAddEvent: DataElementBookmarkEvent = {
-      item: {
-        id: dataElementSearchResult.id,
-        dataModelId: dataElementSearchResult.dataModelId,
-        dataClassId: dataElementSearchResult.dataClassId,
-        label: dataElementSearchResult.label,
-        isBookmarked: dataElementSearchResult.isBookmarked,
-      },
-      // item: dataElementSearchResult,
+      item: dataElementSearchResult,
       selected: true,
     };
 

@@ -22,10 +22,7 @@ import { Uuid } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { forkJoin, of, Subject, switchMap, takeUntil, throwError } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
-import {
-  BookmarkService,
-  SelectableBookmark,
-} from 'src/app/data-explorer/bookmark.service';
+import { BookmarkService } from 'src/app/data-explorer/bookmark.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import {
   AddToRequestEvent,
@@ -46,7 +43,7 @@ import { SecurityService } from 'src/app/security/security.service';
   styleUrls: ['./my-bookmarks.component.scss'],
 })
 export class MyBookmarksComponent implements OnInit, OnDestroy {
-  userBookmarks: SelectableBookmark[] = [];
+  userBookmarks: SelectableDataElementSearchResult[] = [];
   selectedElements: SelectableDataElementSearchResult[] = [];
   openDataRequests: DataRequest[] = [];
   sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
@@ -150,14 +147,14 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
       .index()
       .pipe(
         switchMap((bookmarks) => {
-          const selectableBookmarks: SelectableBookmark[] = [];
+          const selectableBookmarks: SelectableDataElementSearchResult[] = [];
           bookmarks.forEach((bookmark) => {
             selectableBookmarks.push({ ...bookmark, isSelected: false });
           });
 
           return of(selectableBookmarks);
         }),
-        switchMap((bookmarks: SelectableBookmark[]) => {
+        switchMap((bookmarks: SelectableDataElementSearchResult[]) => {
           return forkJoin([this.loadIntersections(bookmarks), of(bookmarks)]);
         })
       )
@@ -170,11 +167,13 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
       });
   }
 
-  private loadIntersections(dataElements: SelectableBookmark[] | undefined) {
+  private loadIntersections(
+    dataElements: SelectableDataElementSearchResult[] | undefined
+  ) {
     const dataElementIds: Uuid[] = [];
 
     if (dataElements) {
-      dataElements.forEach((item: SelectableBookmark) => {
+      dataElements.forEach((item: SelectableDataElementSearchResult) => {
         dataElementIds.push(item.id);
       });
     }

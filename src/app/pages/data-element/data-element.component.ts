@@ -27,7 +27,7 @@ import {
 import { ProfileService } from 'src/app/mauro/profile.service';
 import { ToastrService } from 'ngx-toastr';
 import { switchMap, forkJoin, catchError, EMPTY, Subject, takeUntil } from 'rxjs';
-import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
+import { BookmarkService } from 'src/app/data-explorer/bookmark.service';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import {
   DataExplorerConfiguration,
@@ -142,11 +142,15 @@ export class DataElementComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const item: Bookmark = {
+    const item: DataElementSearchResult = {
       id: this.dataElement.id ?? '',
       dataModelId: this.dataElement.model ?? '',
       dataClassId: this.dataElement.dataClass ?? '',
       label: this.dataElement.label,
+      breadcrumbs: this.dataElement.breadcrumbs,
+      description: this.dataElement.description,
+      isBookmarked: selected,
+      identifiableData: this.identifiableData,
     };
 
     if (selected) {

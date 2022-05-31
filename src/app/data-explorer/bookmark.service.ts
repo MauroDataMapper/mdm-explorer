@@ -19,8 +19,8 @@ SPDX-License-Identifier: Apache-2.0
 import { Injectable } from '@angular/core';
 import { map, switchMap, Observable, throwError, of } from 'rxjs';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
-import { Uuid } from '@maurodatamapper/mdm-resources';
 import { SecurityService } from '../security/security.service';
+import { DataElementSearchResult } from './data-explorer.types';
 
 @Injectable({
   providedIn: 'root',
@@ -41,9 +41,10 @@ export class BookmarkService {
    * @param bookmark the bookmark to be added.
    * @returns the users bookmarks after the addition.
    */
-  public add(bookmark: Bookmark): Observable<Bookmark[]> {
+  public add(bookmark: DataElementSearchResult): Observable<DataElementSearchResult[]> {
+    bookmark.isBookmarked = true;
     return this.index().pipe(
-      switchMap((userBookmarks: Bookmark[]) => {
+      switchMap((userBookmarks: DataElementSearchResult[]) => {
         if (!userBookmarks.some((bm) => bm.id === bookmark.id)) {
           userBookmarks.push(bookmark);
         }
@@ -55,13 +56,15 @@ export class BookmarkService {
   /**
    * Remove a Bookmark from the list of bookmarks stored in User Preferences.
    *
-   * @param bookmarks Bookmark[]
+   * @param bookmarks DataElementSearchResult[]
    * @returns the users bookmarks after the removal.
    */
-  public remove(bookmarks: Bookmark[]): Observable<Bookmark[]> {
+  public remove(
+    bookmarks: DataElementSearchResult[]
+  ): Observable<DataElementSearchResult[]> {
     const idsToRemove = bookmarks.map((bookmark) => bookmark.id);
     return this.index().pipe(
-      switchMap((userBookmarks: Bookmark[]) => {
+      switchMap((userBookmarks: DataElementSearchResult[]) => {
         const filteredBookmarks = userBookmarks.filter(
           (bm) => !idsToRemove.includes(bm.id)
         );
@@ -75,7 +78,7 @@ export class BookmarkService {
    *
    * @returns - an observable containing a list of bookmarks
    */
-  public index(): Observable<Bookmark[]> {
+  public index(): Observable<DataElementSearchResult[]> {
     const userDetails = this.security.getSignedInUser();
     return userDetails
       ? this.getBookmarksFromUserPreferences(userDetails.id)
@@ -89,7 +92,7 @@ export class BookmarkService {
    */
   public isBookmarked(dataElementId: string): Observable<boolean> {
     return this.index().pipe(
-      switchMap((userBookmarks: Bookmark[]) => {
+      switchMap((userBookmarks: DataElementSearchResult[]) => {
         return of(userBookmarks.some((bookmark) => bookmark.id === dataElementId));
       })
     );
@@ -100,7 +103,9 @@ export class BookmarkService {
    *
    * @param bookmarks the array of bookmarks to replace the existing bookmarks
    */
-  private save(bookmarks: Bookmark[]): Observable<Bookmark[]> {
+  private save(
+    bookmarks: DataElementSearchResult[]
+  ): Observable<DataElementSearchResult[]> {
     const userDetails = this.security.getSignedInUser();
     if (userDetails) {
       return this.getPreferences(userDetails.id).pipe(
@@ -125,7 +130,9 @@ export class BookmarkService {
    * @param userId
    * @returns just the bookmarks property on userPreferences, or [] if there is no such property.
    */
-  private getBookmarksFromUserPreferences(userId: string): Observable<Bookmark[]> {
+  private getBookmarksFromUserPreferences(
+    userId: string
+  ): Observable<DataElementSearchResult[]> {
     return this.getPreferences(userId).pipe(
       map((data: UserPreferences) => (data && data.bookmarks ? data.bookmarks : []))
     );
@@ -155,17 +162,7 @@ export class BookmarkService {
   }
 }
 
-export interface Bookmark {
-  id: Uuid;
-  dataModelId: Uuid;
-  dataClassId: Uuid;
-  label: string;
-}
-
-export interface SelectableBookmark extends Bookmark {
-  isSelected: boolean;
-}
 export interface UserPreferences {
   [key: string]: any;
-  bookmarks?: Bookmark[];
+  bookmarks?: DataElementSearchResult[];
 }
