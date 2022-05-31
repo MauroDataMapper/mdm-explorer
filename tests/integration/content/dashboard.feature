@@ -43,11 +43,12 @@ Feature: Dashboard
     Then I go to the requests help page
 
   Scenario: Manage my requests
+    Given I have 1 or more data requests
     When I click on the button "Manage my requests"
     Then I go to the requests page
 
   Scenario: Scroll through my requests
-    Given I have 3 or more data requests
+    Given I have 4 or more data requests
     When I click the arrow buttons in the requests scroll area
     Then The requests scroll to show more
 
