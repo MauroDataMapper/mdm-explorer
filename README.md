@@ -137,3 +137,26 @@ check if `mdm-resources` is currently linked to `mdm-research-browser`.
 
 We recommend installing this globally with `npm install -g symlinked` then you can call it
 inside `mdm-research-browser` using `symlinked names`.
+
+## Using enviroment variables to set an alternate api root
+The enviroment service will take an set enviroment key and expose a class with an api root value that is then consumed in build. This allows you to set a value in your enviroment (terminal or container) to use in production builds. There is a possiblity of expanding this for other options.
+
+Current enviroment keys:
+`MDM_EXPLORER_API_ENDPOINT` - the api web root
+
+Example setup for a unix terminal:
+
+Set the api root in the enviroment
+`expose MDM_EXPLORER_API_ENDPOINT="MyTestEndpoint`
+
+create a distribution with the custom api set 
+`npm run dist`
+
+OPTIONAL - you can check `root/dist/yourSnapshotName/main.*` and note apiEndpoint to see if it took
+
+deploy your distribution to a httpserver
+install the httpserver `npm install --global http-server`
+run the dist  `http-server dist/yourSnapshotName`
+
+
+

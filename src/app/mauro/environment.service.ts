@@ -16,11 +16,13 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-export const environment = {
-  production: true,
-  apiEndpoint: $ENV.apiEndpoint ?? 'api',
-  checkSessionExpiryTimeout: 300000,
-  features: {
-    useOpenIdConnect: true,
-  },
-};
+import { Injectable } from '@angular/core';
+import { environment } from 'src/environments/environment.prod';
+
+// reads env variables and exposes a class with them as properties.
+@Injectable({
+  providedIn: 'root',
+})
+export class EnvironmentService {
+  readonly apiEndpoint?: string = environment?.apiEndpoint;
+}

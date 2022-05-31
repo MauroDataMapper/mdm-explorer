@@ -16,11 +16,35 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-export const environment = {
-  production: true,
-  apiEndpoint: $ENV.apiEndpoint ?? 'api',
-  checkSessionExpiryTimeout: 300000,
-  features: {
-    useOpenIdConnect: true,
+const webpack = require("webpack");
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /(node_modules)/,
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: ["@babel/preset-env"],
+          },
+        },
+      },
+      {
+        test: /\.(ttf|eot|svg|gif|woff|woff2)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        use: [
+          {
+            loader: "file-loader",
+          },
+        ],
+      },
+    ],
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      $ENV: {
+        apiEndpoint: JSON.stringify(process.env["MDM_EXPLORER_API_ENDPOINT"]),
+      },
+    }),
+  ],
 };

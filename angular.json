@@ -21,8 +21,11 @@
       "prefix": "mdm",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-builders/custom-webpack:browser",
           "options": {
+            "customWebpackConfig": {
+              "path": "webpack.config.js"
+            },
             "outputPath": "dist/mdm-explorer",
             "index": "src/index.html",
             "main": "src/main.ts",
