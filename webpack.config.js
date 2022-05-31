@@ -17,8 +17,6 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 const webpack = require("webpack");
-const MiniCssExtractPlugin = require("./node_modules/mini-css-extract-plugin");
-
 module.exports = {
   module: {
     rules: [
@@ -45,7 +43,7 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({
       $ENV: {
-        apiEndpoint: JSON.stringify(process.env["MDM_UI_API_ENDPOINT"]),
+        apiEndpoint: JSON.stringify(process.env["MDM_EXPLORER_API_ENDPOINT"]),
       },
     }),
   ],
