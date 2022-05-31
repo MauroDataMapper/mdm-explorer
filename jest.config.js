@@ -17,47 +17,48 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 module.exports = {
-  preset: 'jest-preset-angular',
-  testEnvironment: 'jsdom',
-  setupFilesAfterEnv: [
-    '<rootDir>/src/setupJest.ts'
-  ],
+  preset: "jest-preset-angular",
+  testEnvironment: "jsdom",
+  setupFilesAfterEnv: ["<rootDir>/src/setupJest.ts"],
   coveragePathIgnorePatterns: [
-    '<rootDir>/jestSetup.ts',
-    '<rootDir>/node_modules/',
-    '.module.ts',
-    '.html'
+    "<rootDir>/jestSetup.ts",
+    "<rootDir>/node_modules/",
+    ".module.ts",
+    ".html",
   ],
   transform: {
-    '^.+\\.(ts|html)$': 'ts-jest'
+    "^.+\\.(ts|html)$": "ts-jest",
   },
   globals: {
-    'ts - jest': {
-      tsconfig: 'tsconfig.spec.json',
-      stringifyContentPathRegex: '\\.html'
-    }
+    "ts - jest": {
+      tsconfig: "tsconfig.spec.json",
+      stringifyContentPathRegex: "\\.html",
+    },
+    $ENV: {
+      apiEndpoint: "test-endpoint",
+    },
   },
   moduleNameMapper: {
-    '^src/app/(.*)$': '<rootDir>/src/app/$1',
-    '^src/environments/(.*)$': '<rootDir>/src/environments/$1'
+    "^src/app/(.*)$": "<rootDir>/src/app/$1",
+    "^src/environments/(.*)$": "<rootDir>/src/environments/$1",
   },
   reporters: [
-    'default',
-    ['jest-junit',{outputDirectory: 'test-report'}],
-    ['jest-html-reporter', {
-      pageTitle: 'Mauro Data Explorer: Test Report',
-      outputPath: 'test-report/index.html',
-      includeFailureMsg: true
-    }],
-    ['jest-sonar', {outputDirectory: 'test-report'}]
+    "default",
+    ["jest-junit", { outputDirectory: "test-report" }],
+    [
+      "jest-html-reporter",
+      {
+        pageTitle: "Mauro Data Explorer: Test Report",
+        outputPath: "test-report/index.html",
+        includeFailureMsg: true,
+      },
+    ],
+    ["jest-sonar", { outputDirectory: "test-report" }],
   ],
-  watchPathIgnorePatterns: [
-    'test-report/',
-    'junit.xml'
-  ],
+  watchPathIgnorePatterns: ["test-report/", "junit.xml"],
   transformIgnorePatterns: [
-    'node_modules/(?!@ngrx|(?!deck.gl)|ng-dynamic)' // Ignore files inside node_modules folder
+    "node_modules/(?!@ngrx|(?!deck.gl)|ng-dynamic)", // Ignore files inside node_modules folder
   ],
-  cacheDirectory: '/tmp/jest_'+ (process.env.JOB_BASE_NAME || 'cache'),
-  coverageReporters: ['clover', 'json', 'lcov', 'text', 'cobertura']
+  cacheDirectory: "/tmp/jest_" + (process.env.JOB_BASE_NAME || "cache"),
+  coverageReporters: ["clover", "json", "lcov", "text", "cobertura"],
 };
