@@ -256,7 +256,7 @@ export const mapToDataRequest = (dataModel: DataModel): DataRequest => {
   };
 };
 
-export interface DataElementDto extends DataElement {}
+export type DataElementDto = DataElement;
 
 export interface BookmarkDto {
   id?: Uuid;

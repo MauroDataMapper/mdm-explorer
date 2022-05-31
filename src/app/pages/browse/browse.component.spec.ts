@@ -434,7 +434,7 @@ describe('BrowseComponent', () => {
       );
     });
 
-    it("should transition to requests page if RequestCreatedAction is 'view-requests'", () => {
+    it('should transition to requests page if RequestCreatedAction is \'view-requests\'', () => {
       // act
       harness.component.createRequest();
 
@@ -442,7 +442,7 @@ describe('BrowseComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith('/requests');
     });
 
-    it("should not transition to requests page if RequestCreatedAction is 'continue'", () => {
+    it('should not transition to requests page if RequestCreatedAction is \'continue\'', () => {
       // arrange
       dataRequestsStub.createWithDialogs.mockImplementationOnce(
         (): Observable<RequestCreatedAction> => {

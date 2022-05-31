@@ -718,7 +718,7 @@ describe('MyRequestsComponent', () => {
       expect(component.requestElements).toStrictEqual(selectableElements().slice(0, 1));
     });
 
-    it("Don't refresh request when data element is deleted from a different request via DataElementInRequest component", () => {
+    it('Don\'t refresh request when data element is deleted from a different request via DataElementInRequest component', () => {
       // pick the first row and trigger the RequestAddDelete event
       const dataElementRow: DebugElement = dom.query(
         (de) => de.name === 'mdm-data-element-row'

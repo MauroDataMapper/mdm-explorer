@@ -36,7 +36,7 @@ import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.se
 })
 export class DataElementRowComponent {
   @Input() item?: DataElementSearchResult;
-  @Input() suppressViewRequestsDialogButton: boolean = false;
+  @Input() suppressViewRequestsDialogButton = false;
   @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 
   @Output() checked = new EventEmitter<DataElementCheckedEvent>();

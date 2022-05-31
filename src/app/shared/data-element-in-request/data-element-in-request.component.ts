@@ -62,7 +62,7 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
   @Input() caption = 'Add to request';
 
   @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
-  @Input() suppressViewRequestsDialogButton: boolean = false;
+  @Input() suppressViewRequestsDialogButton = false;
 
   @Output() createRequestClicked = new EventEmitter<CreateRequestEvent>();
   @Output() requestAddDelete = new EventEmitter<RequestElementAddDeleteEvent>();

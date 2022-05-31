@@ -164,7 +164,7 @@ export class DataElementComponent implements OnInit, OnDestroy {
     return this.dataModels
       .getDataElement(this.dataModelId, this.dataClassId, this.dataElementId)
       .pipe(
-        catchError((err) => {
+        catchError(() => {
           this.toastr.error('Unable to retrieve the chosen Data Element.');
           return EMPTY;
         })

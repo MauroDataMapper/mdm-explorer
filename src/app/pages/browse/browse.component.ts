@@ -47,7 +47,7 @@ export class BrowseComponent implements OnInit {
   static readonly ChildDataClassParentClassSelectedLabel: string =
     'Please select a data class &hellip;';
   static readonly ChildDataClassSelectedLabel: string = 'Data classes';
-  @Input() suppressViewRequestsDialogButton: boolean = false;
+  @Input() suppressViewRequestsDialogButton = false;
   parentDataClasses: DataClass[] = [];
   childDataClasses: DataClass[] = [];
   selected?: DataClass;

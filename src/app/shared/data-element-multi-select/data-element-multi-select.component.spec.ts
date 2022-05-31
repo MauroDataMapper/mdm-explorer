@@ -150,7 +150,7 @@ describe('DataElementMultiSelectComponent', () => {
       expect(spy).not.toHaveBeenCalled();
     });
 
-    it("should transition to requests page if RequestCreatedAction is 'view-requests'", () => {
+    it('should transition to requests page if RequestCreatedAction is \'view-requests\'', () => {
       // arrange
       dataRequestsStub.createWithDialogs.mockImplementationOnce(
         (): Observable<RequestCreatedAction> => {
@@ -165,7 +165,7 @@ describe('DataElementMultiSelectComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith('/requests');
     });
 
-    it("should not transition to requests page if RequestCreatedAction is 'continue'", () => {
+    it('should not transition to requests page if RequestCreatedAction is \'continue\'', () => {
       // arrange
       dataRequestsStub.createWithDialogs.mockImplementationOnce(
         (): Observable<RequestCreatedAction> => {

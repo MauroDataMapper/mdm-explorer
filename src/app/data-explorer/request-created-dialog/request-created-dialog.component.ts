@@ -39,7 +39,7 @@ export class RequestCreatedDialogComponent implements OnInit {
   name = '';
   subHeading = '';
   items: string[] = [];
-  hideViewRequestsButton: boolean = false;
+  hideViewRequestsButton = false;
 
   constructor(
     private dialogRef: MatDialogRef<RequestCreatedDialogComponent, RequestCreatedAction>,
