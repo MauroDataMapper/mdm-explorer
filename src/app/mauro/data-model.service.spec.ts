@@ -21,7 +21,6 @@ import {
   CatalogueItemSearchResult,
   DataClass,
   DataClassDetail,
-  DataElementDto,
   DataModel,
   DataModelCreatePayload,
   DataModelDetail,
@@ -30,6 +29,7 @@ import {
   SearchQueryParameters,
 } from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
+import { DataElementDto } from '../data-explorer/data-explorer.types';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { createMdmEndpointsStub } from '../testing/stubs/mdm-endpoints.stub';
 import { setupTestModuleForService } from '../testing/testing.helpers';

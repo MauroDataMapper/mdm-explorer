@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { MatSelectionListChange } from '@angular/material/list';
 import { DataClass } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
@@ -47,7 +47,7 @@ export class BrowseComponent implements OnInit {
   static readonly ChildDataClassParentClassSelectedLabel: string =
     'Please select a data class &hellip;';
   static readonly ChildDataClassSelectedLabel: string = 'Data classes';
-
+  @Input() suppressViewRequestsDialogButton: boolean = false;
   parentDataClasses: DataClass[] = [];
   childDataClasses: DataClass[] = [];
   selected?: DataClass;
@@ -116,11 +116,13 @@ export class BrowseComponent implements OnInit {
       );
     };
 
-    this.dataRequests.createWithDialogs(getDataElements).subscribe((action) => {
-      if (action === 'view-requests') {
-        this.stateRouter.navigateToKnownPath('/requests');
-      }
-    });
+    this.dataRequests
+      .createWithDialogs(getDataElements, this.suppressViewRequestsDialogButton)
+      .subscribe((action) => {
+        if (action === 'view-requests') {
+          this.stateRouter.navigateToKnownPath('/requests');
+        }
+      });
   }
 
   selectParentDataClass(event: MatSelectionListChange) {

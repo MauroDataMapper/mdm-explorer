@@ -177,9 +177,6 @@ export const PAGINATION_CONFIG = new InjectionToken<PaginationConfiguration>(
 export interface DataElementSearchResult extends DataElementInstance {
   description?: string;
   identifiableData?: string;
-}
-
-export interface SelectableDataElementSearchResult extends DataElementSearchResult {
   isSelected: boolean;
 }
 
@@ -187,7 +184,7 @@ export interface DataElementSearchResultSet {
   totalResults: number;
   pageSize: number;
   page: number;
-  items: SelectableDataElementSearchResult[];
+  items: DataElementSearchResult[];
 }
 
 export interface DataElementOperationResult {
@@ -203,7 +200,7 @@ export interface DataElementMultipleOperationResult {
 
 export const mapProfileSearchResult = (
   item: ProfileSearchResult
-): SelectableDataElementSearchResult => {
+): DataElementSearchResult => {
   // Note: Assumption that the the last breadcrumb is the data class containing the data element
   const dataClassId =
     item.breadcrumbs && item.breadcrumbs.length > 0
@@ -261,6 +258,14 @@ export const mapToDataRequest = (dataModel: DataModel): DataRequest => {
 
 export interface DataElementDto extends DataElement {}
 
+export interface BookmarkDto {
+  id?: Uuid;
+  dataModelId?: Uuid;
+  dataClassId?: Uuid;
+  label: string;
+  breadcrumbs: Breadcrumb[];
+}
+
 export interface DataElementInstance extends IsBookmarkable {
   [key: string]: any;
   id: Uuid;
@@ -277,7 +282,7 @@ export interface DataElementCheckedEvent {
 }
 
 export interface SelectableDataElementSearchResultCheckedEvent {
-  item: SelectableDataElementSearchResult;
+  item: DataElementSearchResult;
   checked: boolean;
 }
 
@@ -305,5 +310,5 @@ export interface IsBookmarkable {
 }
 
 export interface DataElementDeleteEvent {
-  item: SelectableDataElementSearchResult;
+  item: DataElementSearchResult;
 }

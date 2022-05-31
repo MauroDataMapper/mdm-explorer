@@ -25,6 +25,7 @@ export interface RequestUpdatedData {
   request: DataModel;
   addedClass?: DataClass;
   addedElements?: DataElementInstance[];
+  suppressViewRequests?: boolean;
 }
 
 export type RequestUpdatedAction = 'continue' | 'view-requests';

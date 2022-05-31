@@ -45,7 +45,7 @@ SPDX-License-Identifier: Apache-2.0
     {{ item.description }}
   </div>
   <div class="mdm-data-element-search-result__footer">
-    <a [routerLink]="['/dataElement', item.dataModelId, item.dataClassId, item.id]"
+    <a [routerLink]="['/dataElement', item.model, item.dataClass, item.id]"
       >View Details</a
     >
     <mdm-identifiable-data-icon

@@ -46,7 +46,6 @@ import {
   DataRequest,
   DataRequestStatus,
   mapToDataRequest,
-  SelectableDataElementSearchResult,
   DataElementDto,
 } from 'src/app/data-explorer/data-explorer.types';
 import {
@@ -74,7 +73,7 @@ export class MyRequestsComponent implements OnInit {
   filteredRequests: DataRequest[] = [];
   statusFilters: DataRequestStatus[] = [];
   request?: DataRequest;
-  requestElements: SelectableDataElementSearchResult[] = [];
+  requestElements: DataElementSearchResult[] = [];
   state: 'idle' | 'loading' = 'idle';
   creatingNextVersion = false;
   sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
@@ -343,7 +342,7 @@ export class MyRequestsComponent implements OnInit {
   }
 
   private okCancelItemList(
-    itemList: SelectableDataElementSearchResult[]
+    itemList: DataElementSearchResult[]
   ): MatDialogRef<OkCancelDialogData> {
     return this.dialogs.openOkCancel({
       heading: 'Remove selected data elements',
@@ -353,9 +352,7 @@ export class MyRequestsComponent implements OnInit {
     });
   }
 
-  private okCancelItem(
-    item: SelectableDataElementSearchResult
-  ): MatDialogRef<OkCancelDialogData> {
+  private okCancelItem(item: DataElementSearchResult): MatDialogRef<OkCancelDialogData> {
     return this.dialogs.openOkCancel({
       heading: 'Remove data element',
       content: `Are you sure you want to remove data element "${item.label}" from request "${this.request?.label}"?`,
@@ -402,19 +399,16 @@ export class MyRequestsComponent implements OnInit {
                       isBookmarked: false,
                     }
                   : null
-              ) as SelectableDataElementSearchResult;
+              ) as DataElementSearchResult;
             })
           );
         }),
-        switchMap((dataElements: SelectableDataElementSearchResult[]) => {
+        switchMap((dataElements: DataElementSearchResult[]) => {
           return forkJoin([
             of(dataElements),
             this.loadIntersections(dataElements),
           ]) as Observable<
-            [
-              SelectableDataElementSearchResult[],
-              DataAccessRequestsSourceTargetIntersections
-            ]
+            [DataElementSearchResult[], DataAccessRequestsSourceTargetIntersections]
           >;
         }),
         catchError(() => {
@@ -435,7 +429,7 @@ export class MyRequestsComponent implements OnInit {
     const dataElementIds: Uuid[] = [];
 
     if (elements) {
-      elements.forEach((item: DataElementSearchResult) => {
+      elements.forEach((item: DataElementInstance) => {
         dataElementIds.push(item.id);
       });
     }

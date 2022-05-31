@@ -25,6 +25,7 @@ export interface RequestCreatedData {
   request: DataModel;
   addedClass?: DataClass;
   addedElements?: DataElementInstance[];
+  suppressViewRequests?: boolean;
 }
 
 export type RequestCreatedAction = 'continue' | 'view-requests';
@@ -38,6 +39,7 @@ export class RequestCreatedDialogComponent implements OnInit {
   name = '';
   subHeading = '';
   items: string[] = [];
+  hideViewRequestsButton: boolean = false;
 
   constructor(
     private dialogRef: MatDialogRef<RequestCreatedDialogComponent, RequestCreatedAction>,
@@ -46,6 +48,8 @@ export class RequestCreatedDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.name = this.data.request.label;
+
+    this.hideViewRequestsButton = !!this.data.suppressViewRequests;
 
     if (this.data.addedClass) {
       this.subHeading = `1 class with all elements added to '${this.name}'`;

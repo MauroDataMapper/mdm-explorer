@@ -109,6 +109,7 @@ export class DataElementComponent implements OnInit, OnDestroy {
             label: dataElementDetail.label,
             breadcrumbs: dataElementDetail.breadcrumbs,
             isBookmarked,
+            isSelected: false,
           };
           this.researchProfile = profile;
           this.sourceTargetIntersections = sourceTargetIntersections;
@@ -143,15 +144,10 @@ export class DataElementComponent implements OnInit, OnDestroy {
     }
 
     const item: DataElementSearchResult = {
-      id: this.dataElement.id ?? '',
-      model: this.dataElement.model ?? '',
-      dataClass: this.dataElement.dataClass ?? '',
-      label: this.dataElement.label,
-      breadcrumbs: this.dataElement.breadcrumbs,
-      description: this.dataElement.description,
+      ...this.dataElement,
       isBookmarked: selected,
-      identifiableData: this.identifiableData,
-    };
+      isSelected: false,
+    } as DataElementSearchResult;
 
     if (selected) {
       this.bookmarks.add(item).subscribe(() => {
@@ -168,7 +164,7 @@ export class DataElementComponent implements OnInit, OnDestroy {
     return this.dataModels
       .getDataElement(this.dataModelId, this.dataClassId, this.dataElementId)
       .pipe(
-        catchError(() => {
+        catchError((err) => {
           this.toastr.error('Unable to retrieve the chosen Data Element.');
           return EMPTY;
         })

@@ -333,7 +333,8 @@ export class DataRequestsService {
    * {@link DataRequestsService.createFromDataElements()} function.
    */
   createWithDialogs(
-    getDataElements: () => Observable<DataElementInstance[]>
+    getDataElements: () => Observable<DataElementInstance[]>,
+    suppressViewRequestsDialogButton: boolean = false
   ): Observable<RequestCreatedAction | undefined> {
     const user = this.security.getSignedInUser();
     if (!user) return EMPTY;
@@ -380,6 +381,7 @@ export class DataRequestsService {
             .openRequestCreated({
               request: dataRequest,
               addedElements: dataElements,
+              suppressViewRequests: suppressViewRequestsDialogButton,
             })
             .afterClosed();
         }),

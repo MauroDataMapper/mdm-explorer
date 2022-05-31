@@ -462,12 +462,9 @@ describe('BrowseComponent', () => {
       const createSpy = jest.spyOn(dataRequestsStub, 'createWithDialogs');
       const expectedDataElements = dataElements.map<DataElementInstance>((de) => {
         return {
-          id: de.id ?? '',
-          model: de.model ?? '',
-          dataClass: de.dataClass ?? '',
-          label: de.label,
+          ...de,
           isBookmarked: false,
-        };
+        } as DataElementInstance;
       });
 
       dataRequestsStub.createWithDialogs.mockImplementationOnce(

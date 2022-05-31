@@ -36,7 +36,7 @@ import {
   DataElementMultipleOperationResult,
   DataRequest,
   DataRequestStatus,
-  SelectableDataElementSearchResult,
+  DataElementSearchResult,
 } from 'src/app/data-explorer/data-explorer.types';
 import {
   DataAccessRequestsSourceTargetIntersections,
@@ -265,16 +265,12 @@ describe('MyRequestsComponent', () => {
         },
       ];
 
-      const expectedElements: SelectableDataElementSearchResult[] = elements.map((e) => {
+      const expectedElements: DataElementSearchResult[] = elements.map((e) => {
         return {
-          id: e.id ?? '',
-          dataModelId: e.model ?? '',
-          dataClassId: e.dataClass ?? '',
-          label: e.label,
-          breadcrumbs: e.breadcrumbs,
+          ...e,
           isBookmarked: false,
           isSelected: false,
-        };
+        } as DataElementSearchResult;
       });
 
       const request = { id: '1', status: 'unsent' } as DataRequest;
@@ -603,7 +599,7 @@ describe('MyRequestsComponent', () => {
 
   describe('remove elements from requests', () => {
     let elements: DataElementDto[];
-    let selectableElements: () => SelectableDataElementSearchResult[];
+    let selectableElements: () => DataElementSearchResult[];
     let request: DataRequest;
     let requestMenuItem = { id: '', label: '', containsElement: false };
     let intersections = {} as DataAccessRequestsSourceTargetIntersections;
@@ -629,14 +625,10 @@ describe('MyRequestsComponent', () => {
       selectableElements = () => {
         return elements.map((e) => {
           return {
-            id: e.id ?? '',
-            dataModelId: e.model ?? '',
-            dataClassId: e.dataClass ?? '',
-            label: e.label,
-            breadcrumbs: e.breadcrumbs,
-            isBookmarked: false,
+            ...e,
             isSelected: false,
-          };
+            isBookmarked: false,
+          } as DataElementSearchResult;
         });
       };
 

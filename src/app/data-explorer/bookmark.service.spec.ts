@@ -17,13 +17,17 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { setupTestModuleForService } from '../testing/testing.helpers';
-import { BookmarkService, UserPreferences } from './bookmark.service';
+import { BookmarkService, UserPreferences, UserPreferencesDto } from './bookmark.service';
 import { of } from 'rxjs';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { createMdmEndpointsStub } from '../testing/stubs/mdm-endpoints.stub';
 import { createSecurityServiceStub } from '../testing/stubs/security.stub';
 import { SecurityService } from '../security/security.service';
-import { DataElementInstance, DataElementSearchResult } from './data-explorer.types';
+import {
+  BookmarkDto,
+  DataElementInstance,
+  DataElementSearchResult,
+} from './data-explorer.types';
 import { UserDetails } from '../security/user-details.service';
 import { cold } from 'jest-marbles';
 
@@ -123,7 +127,17 @@ describe('BookmarkService', () => {
     });
     it('should not add the bookmark if element is already bookmarked', () => {
       const bookmarkToAdd = b1;
-      const userPrefsAfter: UserPreferences = { bookmarks: userBookmarks };
+      const userPrefsAfter: UserPreferencesDto = {
+        bookmarks: userBookmarks.map((bookmark: DataElementSearchResult) => {
+          return {
+            id: bookmark.id,
+            dataClassId: bookmark.dataClass,
+            dataModelId: bookmark.model,
+            label: bookmark.label,
+            breadcrumbs: bookmark.breadcrumbs,
+          } as BookmarkDto;
+        }),
+      };
 
       const expected$ = cold('---a', { a: userBookmarks });
       const saveSpy = jest.spyOn(endpointsStub.catalogueUser, 'updateUserPreferences');
@@ -149,7 +163,17 @@ describe('BookmarkService', () => {
       const userBookmarksBefore = [b1];
       const userBookmarksAfter = [b1, b2];
       const userPrefsBefore: UserPreferences = { bookmarks: userBookmarksBefore };
-      const userPrefsAfter: UserPreferences = { bookmarks: userBookmarksAfter };
+      const userPrefsAfter: UserPreferencesDto = {
+        bookmarks: userBookmarksAfter.map((bookmark: DataElementSearchResult) => {
+          return {
+            id: bookmark.id,
+            dataClassId: bookmark.dataClass,
+            dataModelId: bookmark.model,
+            label: bookmark.label,
+            breadcrumbs: bookmark.breadcrumbs,
+          } as BookmarkDto;
+        }),
+      };
 
       const expected$ = cold('---a', { a: userBookmarksAfter });
       const saveSpy = jest.spyOn(endpointsStub.catalogueUser, 'updateUserPreferences');
@@ -183,7 +207,17 @@ describe('BookmarkService', () => {
 
     it('should not do anything if the supplied item is not in the users bookmarks', () => {
       const bookmarkToRemove = { id: '3', label: 'not-in' } as DataElementSearchResult;
-      const userPrefsAfter: UserPreferences = { bookmarks: userBookmarks };
+      const userPrefsAfter: UserPreferencesDto = {
+        bookmarks: userBookmarks.map((bookmark: DataElementSearchResult) => {
+          return {
+            id: bookmark.id,
+            dataClassId: bookmark.dataClass,
+            dataModelId: bookmark.model,
+            label: bookmark.label,
+            breadcrumbs: bookmark.breadcrumbs,
+          } as BookmarkDto;
+        }),
+      };
 
       const expected$ = cold('---a', { a: userBookmarks });
       const saveSpy = jest.spyOn(endpointsStub.catalogueUser, 'updateUserPreferences');
@@ -209,7 +243,17 @@ describe('BookmarkService', () => {
       const userBookmarksBefore = [b1, b2];
       const userBookmarksAfter = [b1];
       const userPrefsBefore: UserPreferences = { bookmarks: userBookmarksBefore };
-      const userPrefsAfter: UserPreferences = { bookmarks: userBookmarksAfter };
+      const userPrefsAfter: UserPreferencesDto = {
+        bookmarks: userBookmarksAfter.map((bookmark: DataElementSearchResult) => {
+          return {
+            id: bookmark.id,
+            dataClassId: bookmark.dataClass,
+            dataModelId: bookmark.model,
+            label: bookmark.label,
+            breadcrumbs: bookmark.breadcrumbs,
+          } as BookmarkDto;
+        }),
+      };
 
       const expected$ = cold('---a', { a: userBookmarksAfter });
       const saveSpy = jest.spyOn(endpointsStub.catalogueUser, 'updateUserPreferences');

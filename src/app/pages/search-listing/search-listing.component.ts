@@ -41,7 +41,6 @@ import {
   DataElementSearchResultSet,
   mapParamMapToSearchParameters,
   mapSearchParametersToParams,
-  SelectableDataElementSearchResult,
   SelectableDataElementSearchResultCheckedEvent,
   SortOrder,
 } from 'src/app/data-explorer/data-explorer.types';
@@ -87,7 +86,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
   root?: DataClassDetail;
   searchTerms?: string;
   resultSet?: DataElementSearchResultSet;
-  selectedElements: SelectableDataElementSearchResult[] = [];
+  selectedElements: DataElementSearchResult[] = [];
   userBookmarks: DataElementSearchResult[] = [];
   sortBy?: SortByOption;
   sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;

@@ -25,7 +25,7 @@ import {
 import {
   DataElementCheckedEvent,
   DataElementDeleteEvent,
-  SelectableDataElementSearchResult,
+  DataElementSearchResult,
 } from '../data-explorer.types';
 import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.service';
 
@@ -35,7 +35,8 @@ import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.se
   styleUrls: ['./data-element-row.component.scss'],
 })
 export class DataElementRowComponent {
-  @Input() item?: SelectableDataElementSearchResult;
+  @Input() item?: DataElementSearchResult;
+  @Input() suppressViewRequestsDialogButton: boolean = false;
   @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 
   @Output() checked = new EventEmitter<DataElementCheckedEvent>();

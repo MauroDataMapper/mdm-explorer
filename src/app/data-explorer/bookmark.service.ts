@@ -20,7 +20,7 @@ import { Injectable } from '@angular/core';
 import { map, switchMap, Observable, throwError, of } from 'rxjs';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { SecurityService } from '../security/security.service';
-import { DataElementSearchResult } from './data-explorer.types';
+import { BookmarkDto, DataElementSearchResult } from './data-explorer.types';
 
 @Injectable({
   providedIn: 'root',
@@ -144,9 +144,24 @@ export class BookmarkService {
    * @returns the full userPrefs object associated with the given userId
    */
   private getPreferences(userId: string): Observable<UserPreferences> {
-    return this.endpoints.catalogueUser
-      .userPreferences(userId)
-      .pipe(map((response: any) => response.body));
+    return this.endpoints.catalogueUser.userPreferences(userId).pipe(
+      map((response: any) => {
+        if (response.body && response.body.bookmarks) {
+          response.body.bookmarks = response.body.bookmarks.map(
+            (nativeBookmark: BookmarkDto) => {
+              return {
+                id: nativeBookmark.id,
+                dataClass: nativeBookmark.dataClassId,
+                model: nativeBookmark.dataModelId,
+                label: nativeBookmark.label,
+                breadcrumbs: nativeBookmark.breadcrumbs,
+              };
+            }
+          );
+        }
+        return response.body;
+      })
+    );
   }
 
   /**
@@ -156,10 +171,27 @@ export class BookmarkService {
    * @returns the newly saved userPreferences object
    */
   private savePreferences(userId: string, data: any): Observable<UserPreferences> {
+    const payload: UserPreferencesDto = {
+      bookmarks: [],
+    };
+    payload.bookmarks = data.bookmarks.map((bookmark: DataElementSearchResult) => {
+      return {
+        id: bookmark.id,
+        dataClassId: bookmark.dataClass,
+        dataModelId: bookmark.model,
+        label: bookmark.label,
+        breadcrumbs: bookmark.breadcrumbs,
+      };
+    });
     return this.endpoints.catalogueUser
-      .updateUserPreferences(userId, data)
+      .updateUserPreferences(userId, payload)
       .pipe(map((response: any) => response.body));
   }
+}
+
+export interface UserPreferencesDto {
+  [key: string]: any;
+  bookmarks?: BookmarkDto[];
 }
 
 export interface UserPreferences {

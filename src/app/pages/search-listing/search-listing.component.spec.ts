@@ -493,6 +493,7 @@ describe('SearchListingComponent', () => {
       dataClass: '2',
       model: '3',
       isBookmarked: false,
+      isSelected: false,
     };
 
     const dataElementBookmarkAddEvent: DataElementBookmarkEvent = {
@@ -508,6 +509,7 @@ describe('SearchListingComponent', () => {
         dataClass: dataElementSearchResult.dataClass,
         label: dataElementSearchResult.label,
         isBookmarked: dataElementSearchResult.isBookmarked,
+        isSelected: dataElementSearchResult.isSelected,
       },
       selected: false,
     };

@@ -62,6 +62,7 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
   @Input() caption = 'Add to request';
 
   @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
+  @Input() suppressViewRequestsDialogButton: boolean = false;
 
   @Output() createRequestClicked = new EventEmitter<CreateRequestEvent>();
   @Output() requestAddDelete = new EventEmitter<RequestElementAddDeleteEvent>();
@@ -194,11 +195,14 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
       return of([event.item]);
     };
 
-    this.dataRequests.createWithDialogs(getDataElements).subscribe((action) => {
-      if (action === 'view-requests') {
-        this.stateRouter.navigateToKnownPath('/requests');
-      }
-    });
+    this.dataRequests
+      .createWithDialogs(getDataElements, this.suppressViewRequestsDialogButton)
+      .subscribe((action) => {
+        if (action === 'view-requests') {
+          this.stateRouter.navigateToKnownPath('/requests');
+        }
+        this.createRequestClicked.emit(event);
+      });
   }
 
   /**

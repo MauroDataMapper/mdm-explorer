@@ -29,7 +29,7 @@ import {
   BookMarkCheckedEvent as BookmarkCheckedEvent,
   DataRequest,
   RemoveBookmarkEvent,
-  SelectableDataElementSearchResult,
+  DataElementSearchResult,
 } from 'src/app/data-explorer/data-explorer.types';
 import {
   DataAccessRequestsSourceTargetIntersections,
@@ -43,8 +43,8 @@ import { SecurityService } from 'src/app/security/security.service';
   styleUrls: ['./my-bookmarks.component.scss'],
 })
 export class MyBookmarksComponent implements OnInit, OnDestroy {
-  userBookmarks: SelectableDataElementSearchResult[] = [];
-  selectedElements: SelectableDataElementSearchResult[] = [];
+  userBookmarks: DataElementSearchResult[] = [];
+  selectedElements: DataElementSearchResult[] = [];
   openDataRequests: DataRequest[] = [];
   sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 
@@ -147,14 +147,14 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
       .index()
       .pipe(
         switchMap((bookmarks) => {
-          const selectableBookmarks: SelectableDataElementSearchResult[] = [];
+          const selectableBookmarks: DataElementSearchResult[] = [];
           bookmarks.forEach((bookmark) => {
             selectableBookmarks.push({ ...bookmark, isSelected: false });
           });
 
           return of(selectableBookmarks);
         }),
-        switchMap((bookmarks: SelectableDataElementSearchResult[]) => {
+        switchMap((bookmarks: DataElementSearchResult[]) => {
           return forkJoin([this.loadIntersections(bookmarks), of(bookmarks)]);
         })
       )
@@ -167,13 +167,11 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
       });
   }
 
-  private loadIntersections(
-    dataElements: SelectableDataElementSearchResult[] | undefined
-  ) {
+  private loadIntersections(dataElements: DataElementSearchResult[] | undefined) {
     const dataElementIds: Uuid[] = [];
 
     if (dataElements) {
-      dataElements.forEach((item: SelectableDataElementSearchResult) => {
+      dataElements.forEach((item: DataElementSearchResult) => {
         dataElementIds.push(item.id);
       });
     }

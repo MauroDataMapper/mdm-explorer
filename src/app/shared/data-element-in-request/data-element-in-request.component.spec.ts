@@ -115,6 +115,7 @@ describe('DataElementInRequestComponent', () => {
       model: '3',
       label: 'element 1',
       isBookmarked: false,
+      isSelected: false,
     };
 
     const event: CreateRequestEvent = {
