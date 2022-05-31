@@ -36,7 +36,7 @@ import { DialogService } from 'src/app/data-explorer/dialog.service';
 import { UserDetails } from 'src/app/security/user-details.service';
 import { ToastrService } from 'ngx-toastr';
 import { BroadcastService } from 'src/app/core/broadcast.service';
-import { Bookmark, BookmarkService } from 'src/app/data-explorer/bookmark.service';
+import { BookmarkService } from 'src/app/data-explorer/bookmark.service';
 
 export interface CreateRequestEvent {
   item: DataElementSearchResult;
@@ -168,18 +168,21 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
    *
    */
   onClickRemoveSelectedFromBookmarks() {
-    let bookmarks: Bookmark[] = [];
+    let bookmarks: DataElementSearchResult[] = [];
 
-    bookmarks = this.dataElements.map((de) => {
-      const bookmark: Bookmark = {
+    /* bookmarks = this.dataElements.map((de) => {
+      const bookmark: DataElementSearchResult = {
         id: de.id,
         label: de.label,
         dataModelId: de.dataModelId,
         dataClassId: de.dataClassId,
+        isBookmarked
       };
 
       return bookmark;
-    });
+    });*/
+
+    bookmarks = this.dataElements;
 
     if (bookmarks.length > 0) {
       this.bookmarks.remove(bookmarks).subscribe(() => {

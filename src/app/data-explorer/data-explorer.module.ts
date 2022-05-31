@@ -32,7 +32,6 @@ import { CreateRequestDialogComponent } from './create-request-dialog/create-req
 import { RequestCreatedDialogComponent } from './request-created-dialog/request-created-dialog.component';
 import { RequestUpdatedDialogComponent } from './request-updated-dialog/request-updated-dialog.component';
 import { SuccessDialogComponent } from './success-dialog/success-dialog.component';
-import { BookmarkRowComponent } from './bookmark-row/bookmark-row.component';
 import { IdentifiableDataIconComponent } from './identifiable-data-icon/identifiable-data-icon.component';
 import { SearchFiltersComponent } from './search-filters/search-filters.component';
 import { CatalogueSearchFormComponent } from './catalogue-search-form/catalogue-search-form.component';
@@ -52,7 +51,6 @@ import { OkCancelDialogComponent } from './ok-cancel-dialog/ok-cancel-dialog.com
     RequestCreatedDialogComponent,
     RequestUpdatedDialogComponent,
     SuccessDialogComponent,
-    BookmarkRowComponent,
     IdentifiableDataIconComponent,
     SearchFiltersComponent,
     CatalogueSearchFormComponent,
@@ -68,7 +66,6 @@ import { OkCancelDialogComponent } from './ok-cancel-dialog/ok-cancel-dialog.com
     FeedbackDialogComponent,
     RequestStatusChipComponent,
     BreadcrumbComponent,
-    BookmarkRowComponent,
     IdentifiableDataIconComponent,
     SearchFiltersComponent,
     CatalogueSearchFormComponent,

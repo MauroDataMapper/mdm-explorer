@@ -17,13 +17,13 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { setupTestModuleForService } from '../testing/testing.helpers';
-import { Bookmark, BookmarkService, UserPreferences } from './bookmark.service';
+import { BookmarkService, UserPreferences } from './bookmark.service';
 import { of } from 'rxjs';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { createMdmEndpointsStub } from '../testing/stubs/mdm-endpoints.stub';
 import { createSecurityServiceStub } from '../testing/stubs/security.stub';
 import { SecurityService } from '../security/security.service';
-import { DataElementBasic } from './data-explorer.types';
+import { DataElementBasic, DataElementSearchResult } from './data-explorer.types';
 import { UserDetails } from '../security/user-details.service';
 import { cold } from 'jest-marbles';
 
@@ -35,9 +35,9 @@ describe('BookmarkService', () => {
   const userDetails = { id: 'userId' } as UserDetails;
   securityServiceStub.getSignedInUser.mockReturnValue(userDetails);
 
-  const b1 = { id: '1', label: 'label-1' } as Bookmark;
-  const b2 = { id: '2', label: 'label-2' } as Bookmark;
-  const userBookmarks: Bookmark[] = [b1, b2];
+  const b1 = { id: '1', label: 'label-1' } as DataElementSearchResult;
+  const b2 = { id: '2', label: 'label-2' } as DataElementSearchResult;
+  const userBookmarks: DataElementSearchResult[] = [b1, b2];
 
   beforeEach(() => {
     // Default endpoint call
@@ -182,7 +182,7 @@ describe('BookmarkService', () => {
     });
 
     it('should not do anything if the supplied item is not in the users bookmarks', () => {
-      const bookmarkToRemove = { id: '3', label: 'not-in' } as Bookmark;
+      const bookmarkToRemove = { id: '3', label: 'not-in' } as DataElementSearchResult;
       const userPrefsAfter: UserPreferences = { bookmarks: userBookmarks };
 
       const expected$ = cold('---a', { a: userBookmarks });

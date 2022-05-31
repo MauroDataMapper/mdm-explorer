@@ -3,6 +3,10 @@
 A web application to browse a Mauro metadata catalogue and request access to particular
 data via the organisation.
 
+It is useful to get an overview of the [high-level concepts](docs/CONCEPTS.md) of the
+Mauro Data Explorer before diving in. Once you have some familiarity, please follow the
+installation and setup instructions below to get started.
+
 # License
 
 All source code under this repository is provided under an Apache 2.0 license under
@@ -25,6 +29,11 @@ Also, you will need a Mauro backend instance running to communicate data between
 server and this web application. Please use
 [mdm-application-build](https://github.com/MauroDataMapper/mdm-application-build) as a
 development backend.
+
+# Setup and Configuration
+
+Please read the [setup guide](docs/SETUP.md) to correctly configure your Mauro instance to
+use the Mauro Data Explorer.
 
 # Installation
 
@@ -58,7 +67,7 @@ npm run test:watch
 
 ```bash
 # Build the project artefacts for distribution. Will output to dist/mdm-research-browser
-npm run build
+npm run dist
 
 # Run linting on the code
 npm run eslint
@@ -68,6 +77,9 @@ npm run license-check check
 
 # Add missing license headers
 npm run license-check add
+
+# Useful command that encapsulates license header checks, linting and testing in one go. Helpful when preparing for submitting pull requests
+npm run pr-checks
 ```
 
 # Code scaffolding
