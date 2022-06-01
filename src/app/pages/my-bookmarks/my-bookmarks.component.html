@@ -25,8 +25,8 @@ SPDX-License-Identifier: Apache-2.0
       <mdm-data-element-search-result
         *ngFor="let bookmark of userBookmarks"
         [item]="bookmark"
-        [showBreadcrumb]="false"
-        [isBookmarked]="bookmark.isBookmarked"
+        [showBreadcrumb]="true"
+        [isBookmarked]="true"
         (checked)="onChecked($event)"
         (bookmark)="onRemove($event)"
         [sourceTargetIntersections]="sourceTargetIntersections"
@@ -34,7 +34,7 @@ SPDX-License-Identifier: Apache-2.0
       </mdm-data-element-search-result>
     </div>
   </div>
-  <ng-container *ngIf="userBookmarks.length > 0">
+  <ng-container *ngIf="isReady && userBookmarks.length > 0">
     <div class="mt-4">
       <mat-checkbox (change)="onSelectAll($event)">Select all</mat-checkbox>
       <mdm-data-element-multi-select
@@ -42,6 +42,13 @@ SPDX-License-Identifier: Apache-2.0
         [dataElements]="selectedElements"
         [showRemoveFromBookmarks]="true"
       ></mdm-data-element-multi-select>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="isReady && userBookmarks.length == 0">
+    <div class="mt-4 alert alert-info">
+      You don't have any bookmarks at the moment. <a routerLink="/search">Search</a> or
+      <a routerLink="/browse">browse</a> our catalogue to identify data points of
+      interest.
     </div>
   </ng-container>
 </div>
