@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { DataModel, DataModelSubsetPayload } from '@maurodatamapper/mdm-resources';
-import { Observable, of, Subject } from 'rxjs';
+import { EMPTY, filter, Observable, of, Subject, switchMap } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import {
   DataAccessRequestsSourceTargetIntersections,
@@ -175,13 +175,27 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
    *
    */
   onClickRemoveSelectedFromBookmarks() {
-    let bookmarks: DataElementSearchResult[] = [];
-    bookmarks = this.dataElements;
+    this.dialogs
+      .openConfirmation({
+        title: 'Remove bookmarks',
+        message: 'Are you sure you want to remove the selected bookmarks?',
+        okBtnTitle: 'Yes',
+        cancelBtnTitle: 'No',
+      })
+      .afterClosed()
+      .pipe(
+        filter((response) => response?.status === 'ok'),
+        switchMap(() => {
+          const bookmarks = this.dataElements;
+          if (bookmarks.length > 0) {
+            return this.bookmarks.remove(bookmarks);
+          }
 
-    if (bookmarks.length > 0) {
-      this.bookmarks.remove(bookmarks).subscribe(() => {
+          return EMPTY;
+        })
+      )
+      .subscribe(() => {
         this.broadcast.dispatch('data-bookmarks-refreshed');
       });
-    }
   }
 }

@@ -17,6 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit, Inject } from '@angular/core';
+import { ThemePalette } from '@angular/material/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DialogStatus } from '../types/shared.types';
 
@@ -26,7 +27,7 @@ export interface ConfirmationDialogConfig {
   okBtnTitle?: string;
   cancelBtnTitle?: string;
   cancelShown?: boolean;
-  btnType?: string;
+  btnType?: ThemePalette;
 }
 
 export interface DialogResult {
@@ -44,7 +45,7 @@ export class ConfirmationDialogComponent implements OnInit {
   okTitle = '';
   cancelTitle = '';
   cancelShown = false;
-  btnType = '';
+  btnType: ThemePalette = 'primary';
 
   constructor(
     private dialogRef: MatDialogRef<ConfirmationDialogComponent, DialogResult>,
