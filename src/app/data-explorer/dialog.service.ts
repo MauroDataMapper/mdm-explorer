@@ -21,6 +21,7 @@ import { MatDialog } from '@angular/material/dialog';
 import {
   ConfirmationDialogComponent,
   ConfirmationDialogConfig,
+  DialogResult,
 } from '../shared/confirmation-dialog/confirmation-dialog.component';
 import {
   CreateRequestDialogComponent,
@@ -86,12 +87,13 @@ export class DialogService {
   }
 
   openConfirmation(data: ConfirmationDialogConfig) {
-    return this.matDialog.open<ConfirmationDialogComponent, ConfirmationDialogConfig>(
+    return this.matDialog.open<
       ConfirmationDialogComponent,
-      {
-        data,
-      }
-    );
+      ConfirmationDialogConfig,
+      DialogResult
+    >(ConfirmationDialogComponent, {
+      data,
+    });
   }
 
   openFeedbackForm() {
