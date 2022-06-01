@@ -64,6 +64,7 @@ export class DataElementSearchResultComponent {
       return;
     }
 
+    this.item.isSelected = !this.item?.isSelected ?? false;
     this.checked.emit({ item: this.item, checked: event.checked });
   }
 
