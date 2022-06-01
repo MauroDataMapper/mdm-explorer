@@ -18,7 +18,6 @@ SPDX-License-Identifier: Apache-2.0
 */
 import {
   DataClass,
-  DataElement,
   DataModel,
   DataModelDetail,
   FolderDetail,
@@ -26,7 +25,8 @@ import {
 } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
 import {
-  DataElementBasic,
+  DataElementDto,
+  DataElementInstance,
   DataElementMultipleOperationResult,
   DataRequest,
 } from 'src/app/data-explorer/data-explorer.types';
@@ -37,7 +37,7 @@ import { UserDetails } from 'src/app/security/user-details.service';
 export type DataRequestsListFn = (username: string) => Observable<DataModel[]>;
 export type DataRequestsListElementsFn = (
   request: DataRequest
-) => Observable<DataElement[]>;
+) => Observable<DataElementDto[]>;
 export type DataRequestsCreateFromDataClassFn = (
   requestName: string,
   requestDescription: string,
@@ -45,19 +45,19 @@ export type DataRequestsCreateFromDataClassFn = (
   dataClass: DataClass
 ) => Observable<[DataModel, string[]]>;
 export type DataRequestsCreateFromDataElementsFn = (
-  elements: DataElementBasic[],
+  elements: DataElementInstance[],
   user: UserDetails,
   name: string,
   description: string
 ) => Observable<DataRequest>;
 export type CreateFromDialogsFn = (
-  callback: () => Observable<DataElementBasic[]>
+  callback: () => Observable<DataElementInstance[]>
 ) => Observable<RequestCreatedAction | undefined>;
 export type DataAccessRequestsSourceTargetIntersectionsFn = (
   sourceDataModelId: Uuid
 ) => Observable<DataAccessRequestsSourceTargetIntersections>;
 export type DeleteDataElementMultipleFn = (
-  elements: [DataElementBasic],
+  elements: [DataElementInstance],
   targetModel: DataModelDetail
 ) => Observable<DataElementMultipleOperationResult>;
 export type DataRequestsUpdateRequestsFolderFn = (

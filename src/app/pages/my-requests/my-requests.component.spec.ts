@@ -23,8 +23,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSelectionListChange } from '@angular/material/list';
 import {
   CatalogueItemDomainType,
-  DataElement,
-  // DataElement,
   DataModel,
   DataModelDetail,
 } from '@maurodatamapper/mdm-resources';
@@ -34,10 +32,11 @@ import { BroadcastService } from 'src/app/core/broadcast.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import {
   DataElementDeleteEvent,
+  DataElementDto,
   DataElementMultipleOperationResult,
   DataRequest,
   DataRequestStatus,
-  SelectableDataElementSearchResult,
+  DataElementSearchResult,
 } from 'src/app/data-explorer/data-explorer.types';
 import {
   DataAccessRequestsSourceTargetIntersections,
@@ -253,7 +252,7 @@ describe('MyRequestsComponent', () => {
     });
 
     it('should select the chosen request', () => {
-      const elements: DataElement[] = [
+      const elements: DataElementDto[] = [
         {
           id: '1',
           label: 'element 1',
@@ -266,16 +265,12 @@ describe('MyRequestsComponent', () => {
         },
       ];
 
-      const expectedElements: SelectableDataElementSearchResult[] = elements.map((e) => {
+      const expectedElements: DataElementSearchResult[] = elements.map((e) => {
         return {
-          id: e.id ?? '',
-          dataModelId: e.model ?? '',
-          dataClassId: e.dataClass ?? '',
-          label: e.label,
-          breadcrumbs: e.breadcrumbs,
+          ...e,
           isBookmarked: false,
           isSelected: false,
-        };
+        } as DataElementSearchResult;
       });
 
       const request = { id: '1', status: 'unsent' } as DataRequest;
@@ -321,8 +316,8 @@ describe('MyRequestsComponent', () => {
       dataModelsStub.dataElementToBasic.mockImplementation((element) => {
         return {
           id: element.id ?? '',
-          dataClassId: element.dataClass ?? '',
-          dataModelId: element.model ?? '',
+          dataClass: element.dataClass ?? '',
+          model: element.model ?? '',
           label: element.label,
           isBookmarked: false,
           breadcrumbs: element.breadcrumbs,
@@ -603,8 +598,8 @@ describe('MyRequestsComponent', () => {
   });
 
   describe('remove elements from requests', () => {
-    let elements: DataElement[];
-    let selectableElements: () => SelectableDataElementSearchResult[];
+    let elements: DataElementDto[];
+    let selectableElements: () => DataElementSearchResult[];
     let request: DataRequest;
     let requestMenuItem = { id: '', label: '', containsElement: false };
     let intersections = {} as DataAccessRequestsSourceTargetIntersections;
@@ -630,14 +625,10 @@ describe('MyRequestsComponent', () => {
       selectableElements = () => {
         return elements.map((e) => {
           return {
-            id: e.id ?? '',
-            dataModelId: e.model ?? '',
-            dataClassId: e.dataClass ?? '',
-            label: e.label,
-            breadcrumbs: e.breadcrumbs,
-            isBookmarked: false,
+            ...e,
             isSelected: false,
-          };
+            isBookmarked: false,
+          } as DataElementSearchResult;
         });
       };
 
@@ -683,8 +674,8 @@ describe('MyRequestsComponent', () => {
       dataModelsStub.dataElementToBasic.mockImplementation((element) => {
         return {
           id: element.id ?? '',
-          dataClassId: element.dataClass ?? '',
-          dataModelId: element.model ?? '',
+          dataClass: element.dataClass ?? '',
+          model: element.model ?? '',
           label: element.label,
           isBookmarked: false,
           breadcrumbs: element.breadcrumbs,

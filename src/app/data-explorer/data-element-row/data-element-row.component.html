@@ -49,13 +49,14 @@ SPDX-License-Identifier: Apache-2.0
         [dataElement]="item"
         [sourceTargetIntersections]="sourceTargetIntersections"
         [caption]="'Add to other requests'"
+        [suppressViewRequestsDialogButton]="suppressViewRequestsDialogButton"
         (requestAddDelete)="handleRequestAddDelete($event)"
         (createRequestClicked)="handleCreateRequest($event)"
       ></mdm-data-element-in-request>
     </span>
   </div>
   <div class="mdm-data-element-row__footer">
-    <a [routerLink]="['/dataElement', item.dataModelId, item.dataClassId, item.id]"
+    <a [routerLink]="['/dataElement', item.model, item.dataClass, item.id]"
       >View Details</a
     >
   </div>

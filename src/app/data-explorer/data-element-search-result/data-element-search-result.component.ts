@@ -27,7 +27,7 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 import {
   DataElementBookmarkEvent,
   SelectableDataElementSearchResultCheckedEvent,
-  SelectableDataElementSearchResult,
+  DataElementSearchResult,
 } from '../data-explorer.types';
 import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.service';
 
@@ -38,7 +38,7 @@ import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.se
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DataElementSearchResultComponent {
-  @Input() item?: SelectableDataElementSearchResult;
+  @Input() item?: DataElementSearchResult;
 
   @Input() showBreadcrumb = false;
 

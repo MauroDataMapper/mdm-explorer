@@ -27,10 +27,9 @@ import {
 import { SecurityService } from 'src/app/security/security.service';
 import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
 import {
-  DataElementBasic,
+  DataElementInstance,
   DataElementSearchResult,
   RemoveBookmarkEvent,
-  SelectableDataElementSearchResult,
 } from 'src/app/data-explorer/data-explorer.types';
 import { DialogService } from 'src/app/data-explorer/dialog.service';
 import { UserDetails } from 'src/app/security/user-details.service';
@@ -50,9 +49,10 @@ export interface CreateRequestEvent {
 export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
   @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 
-  @Input() dataElements: SelectableDataElementSearchResult[] = [];
+  @Input() dataElements: DataElementSearchResult[] = [];
 
   @Input() showRemoveFromBookmarks = false;
+  @Input() suppressViewRequestsDialogButton = false;
 
   @Output() createRequestClicked = new EventEmitter<CreateRequestEvent>();
 
@@ -104,21 +104,23 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
     this.createRequest(this.dataElements);
   }
 
-  createRequest(dataElements: SelectableDataElementSearchResult[]) {
+  createRequest(dataElements: DataElementSearchResult[]) {
     if (!this.user) {
       this.toastr.error('You must be signed-in in order to create data requests.');
       return;
     }
 
-    const getDataElements = (): Observable<DataElementBasic[]> => {
+    const getDataElements = (): Observable<DataElementInstance[]> => {
       return of(dataElements);
     };
 
-    this.dataRequests.createWithDialogs(getDataElements).subscribe((action) => {
-      if (action === 'view-requests') {
-        this.stateRouter.navigateToKnownPath('/requests');
-      }
-    });
+    this.dataRequests
+      .createWithDialogs(getDataElements, this.suppressViewRequestsDialogButton)
+      .subscribe((action) => {
+        if (action === 'view-requests') {
+          this.stateRouter.navigateToKnownPath('/requests');
+        }
+      });
   }
 
   /**
@@ -130,7 +132,7 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
     // If there are any selected data elements then they should all be from the same source data model.
     // So pick the first and use that
     const sourceDataModelId =
-      this.dataElements.length > 0 ? this.dataElements[0].dataModelId : null;
+      this.dataElements.length > 0 ? this.dataElements[0].model : null;
 
     // The target data model (aka request)
     const targetDataModelId = item.id;
@@ -158,7 +160,12 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
               request: item,
               addedElements: this.dataElements,
             })
-            .afterClosed();
+            .afterClosed()
+            .subscribe((action) => {
+              if (action === 'view-requests') {
+                this.stateRouter.navigateToKnownPath('/requests');
+              }
+            });
         }); // eslint-disable-line @typescript-eslint/no-unsafe-argument
     }
   }
@@ -169,19 +176,6 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
    */
   onClickRemoveSelectedFromBookmarks() {
     let bookmarks: DataElementSearchResult[] = [];
-
-    /* bookmarks = this.dataElements.map((de) => {
-      const bookmark: DataElementSearchResult = {
-        id: de.id,
-        label: de.label,
-        dataModelId: de.dataModelId,
-        dataClassId: de.dataClassId,
-        isBookmarked
-      };
-
-      return bookmark;
-    });*/
-
     bookmarks = this.dataElements;
 
     if (bookmarks.length > 0) {

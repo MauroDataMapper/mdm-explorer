@@ -20,6 +20,8 @@ import { InjectionToken } from '@angular/core';
 import { ParamMap, Params } from '@angular/router';
 import {
   Breadcrumb,
+  CatalogueItemDomainType,
+  DataElement,
   DataModel,
   ProfileField,
   ProfileSearchResult,
@@ -172,12 +174,9 @@ export const PAGINATION_CONFIG = new InjectionToken<PaginationConfiguration>(
   'PaginationConfiguration'
 );
 
-export interface DataElementSearchResult extends DataElementBasic {
+export interface DataElementSearchResult extends DataElementInstance {
   description?: string;
   identifiableData?: string;
-}
-
-export interface SelectableDataElementSearchResult extends DataElementSearchResult {
   isSelected: boolean;
 }
 
@@ -185,13 +184,13 @@ export interface DataElementSearchResultSet {
   totalResults: number;
   pageSize: number;
   page: number;
-  items: SelectableDataElementSearchResult[];
+  items: DataElementSearchResult[];
 }
 
 export interface DataElementOperationResult {
   success: boolean;
   message: string;
-  item: DataElementBasic;
+  item: DataElementInstance;
 }
 
 export interface DataElementMultipleOperationResult {
@@ -201,7 +200,7 @@ export interface DataElementMultipleOperationResult {
 
 export const mapProfileSearchResult = (
   item: ProfileSearchResult
-): SelectableDataElementSearchResult => {
+): DataElementSearchResult => {
   // Note: Assumption that the the last breadcrumb is the data class containing the data element
   const dataClassId =
     item.breadcrumbs && item.breadcrumbs.length > 0
@@ -215,8 +214,8 @@ export const mapProfileSearchResult = (
 
   return {
     id: item.id ?? '',
-    dataModelId: item.model ?? '',
-    dataClassId,
+    model: item.model ?? '',
+    dataClass: dataClassId,
     label: item.label,
     description: item.description,
     breadcrumbs: item.breadcrumbs ?? [],
@@ -257,21 +256,42 @@ export const mapToDataRequest = (dataModel: DataModel): DataRequest => {
   };
 };
 
-export interface DataElementBasic extends IsBookmarkable {
+export type DataElementDto = DataElement;
+
+export interface BookmarkDto {
+  id?: Uuid;
+  dataModelId?: Uuid;
+  dataClassId?: Uuid;
+  label: string;
+  breadcrumbs: Breadcrumb[];
+}
+
+export interface DataElementInstance extends IsBookmarkable {
+  [key: string]: any;
+  /**
+   * The unique ID of the data element.
+   */
   id: Uuid;
-  dataModelId: Uuid;
-  dataClassId: Uuid;
+  /**
+   * The unique ID of the parent data model the data element belongs under.
+   */
+  model: Uuid;
+  /**
+   * The unique ID of the parent data class the data element belongs under.
+   */
+  dataClass: Uuid;
   label: string;
   breadcrumbs?: Breadcrumb[];
+  domainType?: CatalogueItemDomainType;
 }
 
 export interface DataElementCheckedEvent {
-  item: DataElementBasic;
+  item: DataElementInstance;
   checked: boolean;
 }
 
 export interface SelectableDataElementSearchResultCheckedEvent {
-  item: SelectableDataElementSearchResult;
+  item: DataElementSearchResult;
   checked: boolean;
 }
 
@@ -299,5 +319,5 @@ export interface IsBookmarkable {
 }
 
 export interface DataElementDeleteEvent {
-  item: SelectableDataElementSearchResult;
+  item: DataElementSearchResult;
 }

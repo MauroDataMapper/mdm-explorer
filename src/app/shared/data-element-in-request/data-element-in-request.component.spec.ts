@@ -111,10 +111,11 @@ describe('DataElementInRequestComponent', () => {
   describe('creating requests', () => {
     const dataElement: DataElementSearchResult = {
       id: '1',
-      dataClassId: '2',
-      dataModelId: '3',
+      dataClass: '2',
+      model: '3',
       label: 'element 1',
       isBookmarked: false,
+      isSelected: false,
     };
 
     const event: CreateRequestEvent = {

@@ -40,7 +40,7 @@ import {
 } from 'src/app/testing/stubs/mdm-endpoints.stub';
 import { MatDialog } from '@angular/material/dialog';
 import { UserDetails } from 'src/app/security/user-details.service';
-import { SelectableDataElementSearchResult } from 'src/app/data-explorer/data-explorer.types';
+import { DataElementSearchResult } from 'src/app/data-explorer/data-explorer.types';
 import { Observable, of } from 'rxjs';
 import { createBroadcastServiceStub } from 'src/app/testing/stubs/broadcast.stub';
 import { BroadcastService } from 'src/app/core/broadcast.service';
@@ -113,19 +113,19 @@ describe('DataElementMultiSelectComponent', () => {
   });
 
   describe('creating requests', () => {
-    const dataElement1: SelectableDataElementSearchResult = {
+    const dataElement1: DataElementSearchResult = {
       id: '1',
-      dataClassId: '2',
-      dataModelId: '3',
+      dataClass: '2',
+      model: '3',
       label: 'element 1',
       isSelected: true,
       isBookmarked: false,
     };
 
-    const dataElement2: SelectableDataElementSearchResult = {
+    const dataElement2: DataElementSearchResult = {
       id: '2',
-      dataClassId: '2',
-      dataModelId: '3',
+      dataClass: '2',
+      model: '3',
       label: 'element 2',
       isSelected: true,
       isBookmarked: false,

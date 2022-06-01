@@ -21,7 +21,6 @@ import { MatSelectionList, MatSelectionListChange } from '@angular/material/list
 import {
   CatalogueItemDomainType,
   DataClass,
-  DataElement,
   DataModelDetail,
 } from '@maurodatamapper/mdm-resources';
 import { MockComponent } from 'ng-mocks';
@@ -47,7 +46,10 @@ import { DataRequestsService } from 'src/app/data-explorer/data-requests.service
 import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { SecurityService } from 'src/app/security/security.service';
 import { UserDetails } from 'src/app/security/user-details.service';
-import { DataElementBasic } from 'src/app/data-explorer/data-explorer.types';
+import {
+  DataElementDto,
+  DataElementInstance,
+} from 'src/app/data-explorer/data-explorer.types';
 import { createBroadcastServiceStub } from 'src/app/testing/stubs/broadcast.stub';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { RequestCreatedAction } from 'src/app/data-explorer/request-created-dialog/request-created-dialog.component';
@@ -383,7 +385,7 @@ describe('BrowseComponent', () => {
       label: 'test class',
     } as DataClass;
 
-    const dataElements: DataElement[] = [
+    const dataElements: DataElementDto[] = [
       {
         id: '1',
         label: 'element 1',
@@ -458,14 +460,11 @@ describe('BrowseComponent', () => {
     it('should use the provided callback function to retrieve the dataElements to add', () => {
       // arrange
       const createSpy = jest.spyOn(dataRequestsStub, 'createWithDialogs');
-      const expectedDataElements = dataElements.map<DataElementBasic>((de) => {
+      const expectedDataElements = dataElements.map<DataElementInstance>((de) => {
         return {
-          id: de.id ?? '',
-          dataModelId: de.model ?? '',
-          dataClassId: de.dataClass ?? '',
-          label: de.label,
+          ...de,
           isBookmarked: false,
-        };
+        } as DataElementInstance;
       });
 
       dataRequestsStub.createWithDialogs.mockImplementationOnce(

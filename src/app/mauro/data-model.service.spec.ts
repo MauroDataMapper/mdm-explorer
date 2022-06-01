@@ -21,7 +21,6 @@ import {
   CatalogueItemSearchResult,
   DataClass,
   DataClassDetail,
-  DataElement,
   DataModel,
   DataModelCreatePayload,
   DataModelDetail,
@@ -30,6 +29,7 @@ import {
   SearchQueryParameters,
 } from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
+import { DataElementDto } from '../data-explorer/data-explorer.types';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { createMdmEndpointsStub } from '../testing/stubs/mdm-endpoints.stub';
 import { setupTestModuleForService } from '../testing/testing.helpers';
@@ -256,7 +256,7 @@ describe('DataModelService', () => {
         dataClassId: '2',
       };
 
-      const expectedElements: DataElement[] = [
+      const expectedElements: DataElementDto[] = [
         {
           id: '1',
           label: 'element 1',
@@ -489,7 +489,7 @@ describe('DataModelService', () => {
       );
     };
 
-    const mockImplementReturnDataElements = (dataElements: DataElement[]) => {
+    const mockImplementReturnDataElements = (dataElements: DataElementDto[]) => {
       endpointsStub.dataElement.list.mockImplementationOnce(() => {
         return cold('-a|', {
           a: {
@@ -503,7 +503,7 @@ describe('DataModelService', () => {
     };
 
     it('should return data elements for a single child data class', () => {
-      const dataElements: DataElement[] = [
+      const dataElements: DataElementDto[] = [
         {
           id: '1',
           label: 'element 1',
@@ -536,7 +536,7 @@ describe('DataModelService', () => {
 
       mockImplementReturnChildDataClasses([childDataClass]);
 
-      const dataElementsForClass1: DataElement[] = [
+      const dataElementsForClass1: DataElementDto[] = [
         {
           id: '1',
           label: 'element 1',
@@ -549,7 +549,7 @@ describe('DataModelService', () => {
         },
       ];
 
-      const dataElementsForClass2: DataElement[] = [
+      const dataElementsForClass2: DataElementDto[] = [
         {
           id: '3',
           label: 'element 3',

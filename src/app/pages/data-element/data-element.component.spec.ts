@@ -282,16 +282,14 @@ describe('DataElementComponent', () => {
     const dataElement = { id: '1', label: 'label-1' } as DataElementDetail;
     const dataElementAsBookmarkAdded = {
       ...dataElement,
-      dataModelId: '',
-      dataClassId: '',
       isBookmarked: true,
+      isSelected: false,
     } as DataElementSearchResult;
 
     const dataElementAsBookmarkRemoved = {
       ...dataElement,
-      dataModelId: '',
-      dataClassId: '',
       isBookmarked: false,
+      isSelected: false,
     } as DataElementSearchResult;
 
     it('should not call the bookmark service if there is no dataElement', () => {

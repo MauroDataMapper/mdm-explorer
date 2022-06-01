@@ -19,12 +19,13 @@ SPDX-License-Identifier: Apache-2.0
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DataClass, DataModel } from '@maurodatamapper/mdm-resources';
-import { DataElementBasic } from '../data-explorer.types';
+import { DataElementInstance } from '../data-explorer.types';
 
 export interface RequestCreatedData {
   request: DataModel;
   addedClass?: DataClass;
-  addedElements?: DataElementBasic[];
+  addedElements?: DataElementInstance[];
+  suppressViewRequests?: boolean;
 }
 
 export type RequestCreatedAction = 'continue' | 'view-requests';
@@ -38,6 +39,7 @@ export class RequestCreatedDialogComponent implements OnInit {
   name = '';
   subHeading = '';
   items: string[] = [];
+  hideViewRequestsButton = false;
 
   constructor(
     private dialogRef: MatDialogRef<RequestCreatedDialogComponent, RequestCreatedAction>,
@@ -46,6 +48,8 @@ export class RequestCreatedDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.name = this.data.request.label;
+
+    this.hideViewRequestsButton = !!this.data.suppressViewRequests;
 
     if (this.data.addedClass) {
       this.subHeading = `1 class with all elements added to '${this.name}'`;

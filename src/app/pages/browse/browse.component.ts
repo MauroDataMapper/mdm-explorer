@@ -18,13 +18,14 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
 import { MatSelectionListChange } from '@angular/material/list';
-import { DataClass, DataElement } from '@maurodatamapper/mdm-resources';
+import { DataClass } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY, of, switchMap } from 'rxjs';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import {
-  DataElementBasic,
+  DataElementDto,
+  DataElementInstance,
   DataElementSearchParameters,
   mapSearchParametersToParams,
 } from 'src/app/data-explorer/data-explorer.types';
@@ -46,7 +47,7 @@ export class BrowseComponent implements OnInit {
   static readonly ChildDataClassParentClassSelectedLabel: string =
     'Please select a data class &hellip;';
   static readonly ChildDataClassSelectedLabel: string = 'Data classes';
-
+  readonly suppressViewRequestsDialogButton = false;
   parentDataClasses: DataClass[] = [];
   childDataClasses: DataClass[] = [];
   selected?: DataClass;
@@ -103,26 +104,25 @@ export class BrowseComponent implements OnInit {
     const getDataElements = () => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return this.dataModels.getDataElementsForDataClass(this.selected!).pipe(
-        switchMap((dataElements: DataElement[]) => {
-          const dataElementBasics = dataElements.map((de) => {
+        switchMap((dataElements: DataElementDto[]) => {
+          const dataElementInstances = dataElements.map((de) => {
             return {
-              id: de.id ?? '',
-              label: de.label,
-              dataModelId: de.model ?? '',
-              dataClassId: de.dataClass ?? '',
+              ...de,
               isBookmarked: false,
-            } as DataElementBasic;
+            } as DataElementInstance;
           });
-          return of(dataElementBasics);
+          return of(dataElementInstances);
         })
       );
     };
 
-    this.dataRequests.createWithDialogs(getDataElements).subscribe((action) => {
-      if (action === 'view-requests') {
-        this.stateRouter.navigateToKnownPath('/requests');
-      }
-    });
+    this.dataRequests
+      .createWithDialogs(getDataElements, this.suppressViewRequestsDialogButton)
+      .subscribe((action) => {
+        if (action === 'view-requests') {
+          this.stateRouter.navigateToKnownPath('/requests');
+        }
+      });
   }
 
   selectParentDataClass(event: MatSelectionListChange) {

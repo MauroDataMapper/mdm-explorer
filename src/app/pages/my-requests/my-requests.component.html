@@ -125,6 +125,7 @@ SPDX-License-Identifier: Apache-2.0
               [item]="element"
               (delete)="removeItem($event)"
               [sourceTargetIntersections]="sourceTargetIntersections"
+              [suppressViewRequestsDialogButton]="true"
               (requestAddDelete)="handlePossibleSelfDelete($event)"
               (requestCreated)="refreshRequests()"
             >

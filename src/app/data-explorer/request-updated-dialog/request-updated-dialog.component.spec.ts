@@ -28,7 +28,7 @@ import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
-import { DataElementBasic } from '../data-explorer.types';
+import { DataElementInstance } from '../data-explorer.types';
 import {
   RequestUpdatedAction,
   RequestUpdatedData,
@@ -82,10 +82,10 @@ describe('RequestUpdatedDialogComponent', () => {
   });
 
   it('should initialise with provided Data Elements', async () => {
-    const dataElements: DataElementBasic[] = [
-      { label: 'element 1' } as DataElementBasic,
-      { label: 'element 2' } as DataElementBasic,
-      { label: 'element 3' } as DataElementBasic,
+    const dataElements: DataElementInstance[] = [
+      { label: 'element 1' } as DataElementInstance,
+      { label: 'element 2' } as DataElementInstance,
+      { label: 'element 3' } as DataElementInstance,
     ];
 
     await setupTestbed({ request, addedElements: dataElements });

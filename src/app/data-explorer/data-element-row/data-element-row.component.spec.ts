@@ -27,10 +27,7 @@ import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
-import {
-  DataElementDeleteEvent,
-  SelectableDataElementSearchResult,
-} from '../data-explorer.types';
+import { DataElementDeleteEvent, DataElementSearchResult } from '../data-explorer.types';
 
 import { DataElementRowComponent } from './data-element-row.component';
 
@@ -44,8 +41,8 @@ describe('DataElementRowComponent_DataElementInRequest', () => {
     component.item = {
       isSelected: false,
       id: 'Id',
-      dataModelId: 'ModelId',
-      dataClassId: 'ClassId',
+      model: 'ModelId',
+      dataClass: 'ClassId',
       label: 'Label',
       isBookmarked: false,
     };
@@ -177,10 +174,10 @@ describe('DataElementRowComponent', () => {
     (checked) => {
       const emitSpy = jest.spyOn(harness.component.checked, 'emit');
       const event = { checked } as MatCheckboxChange;
-      const item: SelectableDataElementSearchResult = {
+      const item: DataElementSearchResult = {
         id: '1',
-        dataModelId: '2',
-        dataClassId: '3',
+        model: '2',
+        dataClass: '3',
         label: 'test',
         isBookmarked: false,
         isSelected: false,
