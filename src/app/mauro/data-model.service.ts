@@ -333,40 +333,6 @@ export class DataModelService {
       .pipe(map((response: DataModelDetailResponse) => response.body));
   }
 
-  detb(dataElement: DataElementDto): DataElementInstance {
-    return dataElement as DataElementInstance;
-  }
-
-  debt(dataElement: DataElementInstance): DataElementDto {
-    return dataElement as DataElementDto;
-  }
-
-  // dataElementToBasic(dataElement: DataElement, isBookmarked = false): DataElementBasic {
-  //   return {
-  //     id: dataElement.id ?? '',
-  //     model: dataElement.model ?? '',
-  //     dataClass: dataElement.dataClass ?? '',
-  //     label: dataElement.label,
-  //     isBookmarked,
-  //     breadcrumbs: dataElement.breadcrumbs,
-  //   };
-  // }
-
-  dataElementFromBasic(
-    dataElementInstance: DataElementInstance,
-    description = ''
-  ): DataElementDto {
-    return {
-      domainType: CatalogueItemDomainType.DataElement,
-      label: dataElementInstance.label,
-      id: dataElementInstance.id,
-      description,
-      model: dataElementInstance.model,
-      dataClass: dataElementInstance.dataClass,
-      breadcrumbs: dataElementInstance.breadcrumbs,
-    };
-  }
-
   elementsInAnotherModel(
     rootModel: DataModelDetail,
     dataElements: DataElementDto[]

@@ -17,6 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
+import { MdmResponse } from '@maurodatamapper/mdm-resources';
 import { map, switchMap, Observable, throwError, of } from 'rxjs';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { SecurityService } from '../security/security.service';
@@ -145,7 +146,7 @@ export class BookmarkService {
    */
   private getPreferences(userId: string): Observable<UserPreferences> {
     return this.endpoints.catalogueUser.userPreferences(userId).pipe(
-      map((response: any) => {
+      map((response: MdmResponse<UserPreferencesDto>) => {
         if (response.body && response.body.bookmarks) {
           response.body.bookmarks = response.body.bookmarks.map(
             (nativeBookmark: BookmarkDto) => {

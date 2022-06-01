@@ -268,8 +268,17 @@ export interface BookmarkDto {
 
 export interface DataElementInstance extends IsBookmarkable {
   [key: string]: any;
+  /**
+   * The unique ID of the data element.
+   */
   id: Uuid;
+  /**
+   * The unique ID of the parent data model the data element belongs under.
+   */
   model: Uuid;
+  /**
+   * The unique ID of the parent data class the data element belongs under.
+   */
   dataClass: Uuid;
   label: string;
   breadcrumbs?: Breadcrumb[];

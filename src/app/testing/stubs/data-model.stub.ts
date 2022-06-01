@@ -84,9 +84,6 @@ export type DataModelElementsInAnotherModelFn = (
 export type DataModelDataElementToBasicFn = (
   element: DataElementDto
 ) => DataElementInstance;
-export type DataModelDataElementFromBasicFn = (
-  element: DataElementInstance
-) => DataElementDto;
 
 export interface DataModelServiceStub {
   getDataModel: jest.MockedFunction<DataModelGetDataModelFn>;
@@ -104,7 +101,6 @@ export interface DataModelServiceStub {
   createNextVersion: jest.MockedFunction<DataModeNextVersionFn>;
   elementsInAnotherModel: jest.MockedFunction<DataModelElementsInAnotherModelFn>;
   dataElementToBasic: jest.MockedFunction<DataModelDataElementToBasicFn>;
-  dataElementFromBasic: jest.MockedFunction<DataModelDataElementFromBasicFn>;
 }
 
 export const createDataModelServiceStub = (): DataModelServiceStub => {
@@ -126,7 +122,5 @@ export const createDataModelServiceStub = (): DataModelServiceStub => {
     elementsInAnotherModel:
       jest.fn() as jest.MockedFunction<DataModelElementsInAnotherModelFn>,
     dataElementToBasic: jest.fn() as jest.MockedFunction<DataModelDataElementToBasicFn>,
-    dataElementFromBasic:
-      jest.fn() as jest.MockedFunction<DataModelDataElementFromBasicFn>,
   };
 };
