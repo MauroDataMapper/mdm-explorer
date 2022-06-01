@@ -17,39 +17,24 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { MatCheckboxChange } from '@angular/material/checkbox';
 import {
   CreateRequestEvent,
   RequestElementAddDeleteEvent,
 } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
-import {
-  DataElementCheckedEvent,
-  DataElementDeleteEvent,
-  DataElementSearchResult,
-} from '../data-explorer.types';
-import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.service';
+import { DataElementSearchResultComponent } from '../data-element-search-result/data-element-search-result.component';
+import { DataElementDeleteEvent } from '../data-explorer.types';
 
 @Component({
   selector: 'mdm-data-element-row',
   templateUrl: './data-element-row.component.html',
   styleUrls: ['./data-element-row.component.scss'],
 })
-export class DataElementRowComponent {
-  @Input() item?: DataElementSearchResult;
+export class DataElementRowComponent extends DataElementSearchResultComponent {
   @Input() suppressViewRequestsDialogButton = false;
-  @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 
-  @Output() checked = new EventEmitter<DataElementCheckedEvent>();
   @Output() delete = new EventEmitter<DataElementDeleteEvent>();
   @Output() requestAddDelete = new EventEmitter<RequestElementAddDeleteEvent>();
   @Output() requestCreated = new EventEmitter<CreateRequestEvent>();
-
-  constructor() {
-    this.sourceTargetIntersections = {
-      dataAccessRequests: [],
-      sourceTargetIntersections: [],
-    };
-  }
 
   handleRequestAddDelete(event: RequestElementAddDeleteEvent) {
     this.requestAddDelete.emit(event);
@@ -57,15 +42,6 @@ export class DataElementRowComponent {
 
   handleCreateRequest(event: CreateRequestEvent) {
     this.requestCreated.emit(event);
-  }
-
-  itemChecked(event: MatCheckboxChange) {
-    if (!this.item) {
-      return;
-    }
-
-    this.item.isSelected = !this.item?.isSelected ?? false;
-    this.checked.emit({ item: this.item, checked: event.checked });
   }
 
   removeElement() {
