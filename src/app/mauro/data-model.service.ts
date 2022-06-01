@@ -19,7 +19,6 @@ SPDX-License-Identifier: Apache-2.0
 import { HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
-  CatalogueItemDomainType,
   CatalogueItemSearchResponse,
   CatalogueItemSearchResult,
   DataClass,
