@@ -601,7 +601,10 @@ describe('MyRequestsComponent', () => {
     let elements: DataElementDto[];
     let selectableElements: () => DataElementSearchResult[];
     let request: DataRequest;
-    let requestMenuItem = { id: '', label: '', containsElement: false };
+    const requestMenuItem = {
+      dataModel: { id: '', label: '', domainType: CatalogueItemDomainType.DataModel },
+      containsElement: false,
+    };
     let intersections = {} as DataAccessRequestsSourceTargetIntersections;
     let matSelectionListChangeevent: MatSelectionListChange;
     let component: MyRequestsComponent;
@@ -633,7 +636,6 @@ describe('MyRequestsComponent', () => {
       };
 
       request = { id: '1', status: 'unsent', label: 'request 1' } as DataRequest;
-      requestMenuItem = { id: '1', label: 'request', containsElement: true };
 
       dataRequestsStub.listDataElements.mockImplementation((req) => {
         expect(req).toStrictEqual(request);
@@ -704,7 +706,7 @@ describe('MyRequestsComponent', () => {
       );
       const requestAddDeleteEvent: RequestElementAddDeleteEvent = {
         adding: false,
-        dataModel: requestMenuItem,
+        dataModel: requestMenuItem.dataModel,
         dataElement: selectableElements()[0],
       };
       // Pretend to delete 1 element
@@ -723,10 +725,11 @@ describe('MyRequestsComponent', () => {
       const dataElementRow: DebugElement = dom.query(
         (de) => de.name === 'mdm-data-element-row'
       );
-      requestMenuItem.id = 'A different id';
+
+      requestMenuItem.dataModel.id = 'A different id';
       const requestAddDeleteEvent: RequestElementAddDeleteEvent = {
         adding: false,
-        dataModel: requestMenuItem,
+        dataModel: requestMenuItem.dataModel,
         dataElement: selectableElements()[0],
       };
       // Pretend to delete 1 element
@@ -746,7 +749,7 @@ describe('MyRequestsComponent', () => {
       requestMenuItem.containsElement = false;
       const requestAddDeleteEvent: RequestElementAddDeleteEvent = {
         adding: true,
-        dataModel: requestMenuItem,
+        dataModel: requestMenuItem.dataModel,
         dataElement: selectableElements()[0],
       };
       // Pretend to add 1 element

@@ -25,6 +25,7 @@ export interface RequestUpdatedData {
   request: DataModel;
   addedClass?: DataClass;
   addedElements?: DataElementInstance[];
+  removedElements?: DataElementInstance[];
   suppressViewRequests?: boolean;
 }
 
@@ -56,6 +57,11 @@ export class RequestUpdatedDialogComponent implements OnInit {
     if (this.data.addedElements) {
       this.subHeading = `The following elements were added to '${this.name}'`;
       this.items = this.data.addedElements.map((de) => de.label);
+    }
+
+    if (this.data.removedElements) {
+      this.subHeading = `The following elements were removed from '${this.name}'`;
+      this.items = this.data.removedElements.map((de) => de.label);
     }
   }
 
