@@ -47,6 +47,7 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
   selectedElements: DataElementSearchResult[] = [];
   openDataRequests: DataRequest[] = [];
   sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
+  isReady = false;
 
   /**
    * Signal to attach to subscriptions to trigger when they should be unsubscribed.
@@ -161,6 +162,7 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
       .subscribe(([intersections, bookmarks]) => {
         this.sourceTargetIntersections = intersections;
         this.subscribeDataRequestChanges();
+        this.isReady = true;
         // userBookmarks must be the last property set as this triggers rendering of the
         // bookmarks list.
         this.userBookmarks = bookmarks;
