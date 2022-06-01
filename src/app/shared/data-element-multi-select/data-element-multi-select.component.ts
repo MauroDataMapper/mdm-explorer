@@ -18,14 +18,13 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { DataModel, DataModelSubsetPayload } from '@maurodatamapper/mdm-resources';
-import { EMPTY, filter, Observable, of, Subject, switchMap } from 'rxjs';
+import { EMPTY, filter, finalize, Observable, of, Subject, switchMap } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import {
   DataAccessRequestsSourceTargetIntersections,
   DataRequestsService,
 } from 'src/app/data-explorer/data-requests.service';
 import { SecurityService } from 'src/app/security/security.service';
-import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
 import {
   DataElementInstance,
   DataElementSearchResult,
@@ -36,6 +35,7 @@ import { UserDetails } from 'src/app/security/user-details.service';
 import { ToastrService } from 'ngx-toastr';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { BookmarkService } from 'src/app/data-explorer/bookmark.service';
+import { DataModelService } from 'src/app/mauro/data-model.service';
 
 export interface CreateRequestEvent {
   item: DataElementSearchResult;
@@ -71,7 +71,7 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
     security: SecurityService,
     private stateRouter: StateRouterService,
     private dataRequests: DataRequestsService,
-    private endpoints: MdmEndpointsService,
+    private dataModels: DataModelService,
     private dialogs: DialogService,
     private toastr: ToastrService,
     private broadcast: BroadcastService,
@@ -148,8 +148,11 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
       targetDataModelId &&
       datamodelSubsetPayload.additions.length > 0
     ) {
-      this.endpoints.dataModel
+      this.broadcast.loading({ isLoading: true, caption: 'Updating your request...' });
+
+      this.dataModels
         .copySubset(sourceDataModelId, targetDataModelId, datamodelSubsetPayload)
+        .pipe(finalize(() => this.broadcast.loading({ isLoading: false })))
         .subscribe(() => {
           // Really this is an update rather than add, but broadcasting data-request-added has the effect we want
           // i.e. forcing intersections to be refreshed
