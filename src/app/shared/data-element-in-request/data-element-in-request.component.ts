@@ -17,14 +17,13 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { DataModelSubsetPayload } from '@maurodatamapper/mdm-resources';
+import { DataModel, DataModelSubsetPayload } from '@maurodatamapper/mdm-resources';
 import { Observable, of, Subject, takeUntil } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import {
   DataAccessRequestsSourceTargetIntersections,
   DataRequestsService,
 } from 'src/app/data-explorer/data-requests.service';
-import { Uuid } from '@maurodatamapper/mdm-resources';
 import { SecurityService } from 'src/app/security/security.service';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
@@ -35,6 +34,8 @@ import {
 import { UserDetails } from 'src/app/security/user-details.service';
 import { ToastrService } from 'ngx-toastr';
 import { BroadcastService } from 'src/app/core/broadcast.service';
+import { DialogService } from 'src/app/data-explorer/dialog.service';
+import { RequestUpdatedData } from 'src/app/data-explorer/request-updated-dialog/request-updated-dialog.component';
 
 export interface CreateRequestEvent {
   item: DataElementSearchResult;
@@ -42,16 +43,14 @@ export interface CreateRequestEvent {
 
 export interface RequestElementAddDeleteEvent {
   adding: boolean;
-  dataModel: DataAccessRequestMenuItem;
+  dataModel: DataModel;
   dataElement: DataElementInstance;
 }
 
-interface DataAccessRequestMenuItem {
-  id: Uuid;
-  label: string;
+export interface DataAccessRequestMenuItem {
+  dataModel: DataModel;
   containsElement: boolean;
 }
-
 @Component({
   selector: 'mdm-data-element-in-request',
   templateUrl: './data-element-in-request.component.html',
@@ -84,6 +83,7 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
     private stateRouter: StateRouterService,
     private dataRequests: DataRequestsService,
     private endpoints: MdmEndpointsService,
+    private dialogs: DialogService,
     private toastr: ToastrService,
     private broadcast: BroadcastService
   ) {
@@ -100,9 +100,8 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.refreshDataRequestMenuItems();
-
     this.subscribeIntersectionsRefreshed();
+    this.refreshDataRequestMenuItems();
 
     this.ready = true;
   }
@@ -118,7 +117,7 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
    *
    * @param event
    */
-  changed(event: MatCheckboxChange, item: DataAccessRequestMenuItem) {
+  changed(event: MatCheckboxChange, item: DataModel) {
     if (this.dataElement) {
       const targetDataModelId = event.source.value;
       const datamodelSubsetPayload: DataModelSubsetPayload = {
@@ -136,11 +135,6 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
       this.endpoints.dataModel
         .copySubset(this.dataElement.model, targetDataModelId, datamodelSubsetPayload)
         .subscribe(() => {
-          this.toastr.success(
-            `${this.dataElement?.label} ${
-              event.checked ? 'added to' : 'removed from'
-            } request`
-          );
           // Communicate change to the outside world
           if (this.dataElement) {
             const addDeleteEventData: RequestElementAddDeleteEvent = {
@@ -150,6 +144,28 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
             };
             this.requestAddDelete.emit(addDeleteEventData);
           }
+
+          const de: DataElementInstance = {
+            id: this.dataElement?.id ?? '',
+            model: this.dataElement?.model ?? '',
+            dataClass: this.dataElement?.dataClass ?? '',
+            label: this.dataElement?.label ?? '',
+            isBookmarked: this.dataElement?.isBookmarked ?? false,
+          };
+
+          const requestUpdatedData: RequestUpdatedData = {
+            request: item,
+            addedElements: event.checked ? [de] : [],
+            removedElements: !event.checked ? [de] : [],
+          };
+          return this.dialogs
+            .openRequestUpdated(requestUpdatedData)
+            .afterClosed()
+            .subscribe((action) => {
+              if (action === 'view-requests') {
+                this.stateRouter.navigateToKnownPath('/requests');
+              }
+            });
         }); // eslint-disable-line @typescript-eslint/no-unsafe-argument
     }
   }
@@ -168,8 +184,7 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
     this.dataRequestMenuItems = this.sourceTargetIntersections.dataAccessRequests.map(
       (req) => {
         return {
-          id: req.id ?? '',
-          label: req.label,
+          dataModel: req,
           containsElement: idsOfRequestsContainingElement.includes(req.id ?? ''),
         };
       }
@@ -206,7 +221,7 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * When intersections are refreshed (which happens after a data request has been added) recache this.inRequests
+   * When intersections are refreshed (which happens after a data request has been added by another row) make a note for this row
    */
   private subscribeIntersectionsRefreshed(): void {
     this.broadcast

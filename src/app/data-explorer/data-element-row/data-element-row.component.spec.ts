@@ -125,7 +125,7 @@ describe('DataElementRowComponent_DataElementInRequest', () => {
       dataModel: {
         id: 'id',
         label: 'label',
-        containsElement: true,
+        domainType: CatalogueItemDomainType.DataModel,
       },
       dataElement: component.item!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
     };
