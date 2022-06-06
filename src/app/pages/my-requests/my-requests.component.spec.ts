@@ -601,7 +601,7 @@ describe('MyRequestsComponent', () => {
     let elements: DataElementDto[];
     let selectableElements: () => DataElementSearchResult[];
     let request: DataRequest;
-    const requestMenuItem = {
+    let requestMenuItem = {
       dataModel: { id: '', label: '', domainType: CatalogueItemDomainType.DataModel },
       containsElement: false,
     };
@@ -636,6 +636,14 @@ describe('MyRequestsComponent', () => {
       };
 
       request = { id: '1', status: 'unsent', label: 'request 1' } as DataRequest;
+      requestMenuItem = {
+        dataModel: {
+          id: '1',
+          label: 'request 1',
+          domainType: CatalogueItemDomainType.DataModel,
+        },
+        containsElement: true,
+      };
 
       dataRequestsStub.listDataElements.mockImplementation((req) => {
         expect(req).toStrictEqual(request);
