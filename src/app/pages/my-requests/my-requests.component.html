@@ -128,6 +128,7 @@ SPDX-License-Identifier: Apache-2.0
               [suppressViewRequestsDialogButton]="true"
               (requestAddDelete)="handlePossibleSelfDelete($event)"
               (requestCreated)="refreshRequests()"
+              (checked)="onSelectElement($event)"
             >
             </mdm-data-element-row>
           </div>
@@ -145,7 +146,7 @@ SPDX-License-Identifier: Apache-2.0
                 class="ms-4"
                 mat-raised-button
                 color="primary"
-                [disabled]="removeSelectedButtonDisabled()"
+                [disabled]="removeSelectedButtonDisabled"
                 (click)="removeSelected()"
               >
                 Remove selected ...
