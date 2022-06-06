@@ -38,7 +38,7 @@ SPDX-License-Identifier: Apache-2.0
   <button
     mat-flat-button
     data-cy="continue"
-    color="{{ btnType }}"
+    [color]="btnType"
     type="button"
     (click)="ok()"
   >

@@ -48,10 +48,11 @@ SPDX-License-Identifier: Apache-2.0
       </section>
       <mat-divider *ngIf="ready"></mat-divider>
     </ng-container>
+    <p class="text-center">or</p>
     <section>
       <button
         class="w-100"
-        mat-stroked-button
+        mat-flat-button
         color="primary"
         (click)="onClickCreateRequest()"
         clickable
@@ -64,7 +65,7 @@ SPDX-License-Identifier: Apache-2.0
         <button
           class="w-100"
           mat-stroked-button
-          color="primary"
+          color="warn"
           (click)="onClickRemoveSelectedFromBookmarks()"
           clickable
         >
