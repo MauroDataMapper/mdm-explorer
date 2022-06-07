@@ -39,7 +39,7 @@ use the Mauro Data Explorer.
 
 ```bash
 # Clone repo
-git clone https://github.com/MauroDataMapper/mdm-research-browser.git
+git clone https://github.com/MauroDataMapper/mdm-explorer.git
 
 # Install Angular CLI
 npm install -g @angular/cli
@@ -66,7 +66,7 @@ npm run test:watch
 # Other commands
 
 ```bash
-# Build the project artefacts for distribution. Will output to dist/mdm-research-browser
+# Build the project artefacts for distribution. Will output to dist/mdm-explorer
 npm run dist
 
 # Run linting on the code
@@ -98,17 +98,17 @@ know there are changes which have not yet been released you will need to do the 
 
 1. Clone the `mdm-resources` repository
 2. Link the `mdm-resources` repository into your global npm
-3. Link `mdm-resources` into mdm-research-browser`
+3. Link `mdm-resources` into `mdm-explorer`
 
 Once you have linked the `mdm-resources` repo into the global npm it will remain there
 until you unlink it, you will have to re-build (`npm run build`) `mdm-resources` with each
-change for those changes to be picked up by `mdm-research-browser`, however you dont have
+change for those changes to be picked up by `mdm-explorer`, however you don't have
 to re-link after the rebuild.
 
 ## Linking to mdm-resources
 
 If you run `npm install` inside this repo you will have to re-run the final link step
-below to re-link mdm-resources into mdm-ui.
+below to re-link mdm-resources into mdm-explorer.
 
 ```bash
 # Clone mdm-resources
@@ -120,8 +120,8 @@ npm install
 npm run build
 npm link
 
-# Link mdm-resources into mdm-research-browser
-cd mdm-research-browser
+# Link mdm-resources into mdm-explorer
+cd mdm-explorer
 npm link @maurodatamapper/mdm-resources
 ```
 
@@ -133,13 +133,13 @@ Simply run `npm install` or `npm ci` to remove previous links.
 
 There is a useful npm package ([symlinked](https://www.npmjs.com/package/symlinked)) which
 can list what modules are linked into your repository. This is helpful if you want to
-check if `mdm-resources` is currently linked to `mdm-research-browser`.
+check if `mdm-resources` is currently linked to `mdm-explorer`.
 
 We recommend installing this globally with `npm install -g symlinked` then you can call it
-inside `mdm-research-browser` using `symlinked names`.
+inside `mdm-explorer` using `symlinked names`.
 
 ## Using enviroment variables to set an alternate api root
-The enviroment service will take an set enviroment key and expose a class with an api root value that is then consumed in build. This allows you to set a value in your enviroment (terminal or container) to use in production builds. There is a possiblity of expanding this for other options.
+The enviroment service will take a set enviroment key and expose a class with an api root value that is then consumed in build. This allows you to set a value in your enviroment (terminal or container) to use in production builds. There is a possiblity of expanding this for other options.
 
 Current enviroment keys:
 `MDM_EXPLORER_API_ENDPOINT` - the api web root
