@@ -29,10 +29,10 @@ SPDX-License-Identifier: Apache-2.0
               #menuItems
               color="primary"
               [checked]="dataRequest.containsElement"
-              [value]="dataRequest.id"
+              [value]="dataRequest.dataModel.id ?? ''"
               (click)="$event.stopPropagation()"
-              (change)="changed($event, dataRequest)"
-              >{{ dataRequest.label }}</mat-checkbox
+              (change)="changed($event, dataRequest.dataModel)"
+              >{{ dataRequest.dataModel.label }}</mat-checkbox
             >
           </li>
         </ul>
