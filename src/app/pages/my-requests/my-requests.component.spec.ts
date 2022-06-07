@@ -803,18 +803,20 @@ describe('MyRequestsComponent', () => {
       component.request = undefined;
       component.requestElements = [];
 
-      expect(component.removeSelectedButtonDisabled()).toBeTruthy();
+      expect(component.removeSelectedButtonDisabled).toBeTruthy();
 
       component.request = savRequest;
-      expect(component.removeSelectedButtonDisabled()).toBeTruthy();
+      expect(component.removeSelectedButtonDisabled).toBeTruthy();
       component.requestElements = savRequestElements;
-      expect(component.removeSelectedButtonDisabled()).toBeTruthy();
-      component.requestElements[0].isSelected = true;
-      expect(component.removeSelectedButtonDisabled()).toBeFalsy();
-      component.requestElements[1].isSelected = true;
-      expect(component.removeSelectedButtonDisabled()).toBeFalsy();
-      component.requestElements[0].isSelected = false;
-      expect(component.removeSelectedButtonDisabled()).toBeFalsy();
+      expect(component.removeSelectedButtonDisabled).toBeTruthy();
+      component.onSelectElement({ item: component.requestElements[0], checked: true });
+      expect(component.removeSelectedButtonDisabled).toBeFalsy();
+      component.onSelectElement({ item: component.requestElements[1], checked: true });
+      expect(component.removeSelectedButtonDisabled).toBeFalsy();
+      component.onSelectElement({ item: component.requestElements[0], checked: false });
+      expect(component.removeSelectedButtonDisabled).toBeFalsy();
+      component.onSelectElement({ item: component.requestElements[1], checked: false });
+      expect(component.removeSelectedButtonDisabled).toBeTruthy();
     });
 
     it('Should open OK/Cancel dialogue, show spinner, call into DataRequestsService.deleteDataElementMultiple with a single item and refresh the request list when Remove button is clicked', () => {
