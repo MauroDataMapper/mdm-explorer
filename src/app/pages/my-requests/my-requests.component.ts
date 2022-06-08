@@ -35,6 +35,7 @@ import {
   switchMap,
   throwError,
   Observable,
+  filter,
 } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import {
@@ -154,7 +155,7 @@ export class MyRequestsComponent implements OnInit {
       });
   }
 
-  createNextVersion() {
+  copyRequest() {
     if (
       !this.request ||
       !this.request.id ||
@@ -164,14 +165,21 @@ export class MyRequestsComponent implements OnInit {
       return;
     }
 
-    this.broadcast.loading({
-      isLoading: true,
-      caption: 'Creating next version of your request...',
-    });
-
-    this.dataModels
-      .createNextVersion(this.request)
+    this.dialogs
+      .openCreateRequest({ showDescription: false })
+      .afterClosed()
       .pipe(
+        filter((response) => !!response),
+        switchMap((response) => {
+          if (!response || !this.request) return EMPTY;
+
+          this.broadcast.loading({
+            isLoading: true,
+            caption: 'Creating new request ...',
+          });
+
+          return this.dataModels.createFork(this.request, { label: response.name });
+        }),
         catchError(() => {
           this.toastr.error(
             'There was a problem creating your request. Please try again or contact us for support.',

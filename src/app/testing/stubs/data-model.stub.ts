@@ -25,6 +25,7 @@ import {
   DataModelCreatePayload,
   DataModelDetail,
   DataModelSubsetPayload,
+  ForkModelPayload,
   MdmIndexBody,
   SearchQueryParameters,
   SourceTargetIntersection,
@@ -77,6 +78,10 @@ export type DataModelGetIntersectionManyFn = (
   data: SourceTargetIntersectionPayload
 ) => Observable<MdmIndexBody<SourceTargetIntersection>>;
 export type DataModeNextVersionFn = (model: DataModel) => Observable<DataModel>;
+export type DataModelForkFn = (
+  model: DataModel,
+  payload: ForkModelPayload
+) => Observable<DataModel>;
 export type DataModelElementsInAnotherModelFn = (
   model: DataModelDetail,
   elements: DataElementDto[]
@@ -99,6 +104,7 @@ export interface DataModelServiceStub {
   getDataElementsForDataClass: jest.MockedFunction<DataModelElementsForClassFn>;
   getIntersectionMany: jest.MockedFunction<DataModelGetIntersectionManyFn>;
   createNextVersion: jest.MockedFunction<DataModeNextVersionFn>;
+  createFork: jest.MockedFunction<DataModelForkFn>;
   elementsInAnotherModel: jest.MockedFunction<DataModelElementsInAnotherModelFn>;
   dataElementToBasic: jest.MockedFunction<DataModelDataElementToBasicFn>;
 }
@@ -119,6 +125,7 @@ export const createDataModelServiceStub = (): DataModelServiceStub => {
       jest.fn() as jest.MockedFunction<DataModelElementsForClassFn>,
     getIntersectionMany: jest.fn() as jest.MockedFunction<DataModelGetIntersectionManyFn>,
     createNextVersion: jest.fn() as jest.MockedFunction<DataModeNextVersionFn>,
+    createFork: jest.fn() as jest.MockedFunction<DataModelForkFn>,
     elementsInAnotherModel:
       jest.fn() as jest.MockedFunction<DataModelElementsInAnotherModelFn>,
     dataElementToBasic: jest.fn() as jest.MockedFunction<DataModelDataElementToBasicFn>,

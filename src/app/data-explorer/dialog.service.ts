@@ -25,6 +25,7 @@ import {
 } from '../shared/confirmation-dialog/confirmation-dialog.component';
 import {
   CreateRequestDialogComponent,
+  CreateRequestDialogOptions,
   CreateRequestDialogResponse,
 } from './create-request-dialog/create-request-dialog.component';
 import {
@@ -56,13 +57,14 @@ import {
 export class DialogService {
   constructor(private matDialog: MatDialog) {}
 
-  openCreateRequest() {
+  openCreateRequest(data?: CreateRequestDialogOptions) {
     return this.matDialog.open<
       CreateRequestDialogComponent,
-      any,
+      CreateRequestDialogOptions,
       CreateRequestDialogResponse
     >(CreateRequestDialogComponent, {
       minWidth: 500,
+      data,
     });
   }
 

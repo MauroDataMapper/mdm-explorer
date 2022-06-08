@@ -33,7 +33,7 @@ SPDX-License-Identifier: Apache-2.0
         </mat-error>
       </mat-form-field>
     </div>
-    <div class="form-input">
+    <div *ngIf="showDescription" class="form-input">
       <mat-label>Description</mat-label>
       <mat-form-field appearance="outline">
         <textarea

@@ -16,9 +16,13 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, Optional } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+
+export interface CreateRequestDialogOptions {
+  showDescription?: boolean;
+}
 
 export interface CreateRequestDialogResponse {
   name: string;
@@ -32,12 +36,14 @@ export interface CreateRequestDialogResponse {
 })
 export class CreateRequestDialogComponent implements OnInit {
   requestForm!: FormGroup;
+  showDescription = true;
 
   constructor(
     public dialogRef: MatDialogRef<
       CreateRequestDialogComponent,
       CreateRequestDialogResponse
-    >
+    >,
+    @Inject(MAT_DIALOG_DATA) @Optional() private data: CreateRequestDialogOptions
   ) {}
 
   get name() {
@@ -49,6 +55,8 @@ export class CreateRequestDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.showDescription = this.data?.showDescription ?? true;
+
     this.requestForm = new FormGroup({
       name: new FormControl('', [
         Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
