@@ -23,7 +23,6 @@ import {
   setupTestModuleForComponent,
 } from '../../testing/testing.helpers';
 import { DataElementMultiSelectComponent } from './data-element-multi-select.component';
-import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
 import { SecurityService } from 'src/app/security/security.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { DataModelService } from 'src/app/mauro/data-model.service';
@@ -34,10 +33,6 @@ import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { createStateRouterStub } from 'src/app/testing/stubs/state-router.stub';
 import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
 
-import {
-  createMdmEndpointsStub,
-  MdmEndpointsServiceStub,
-} from 'src/app/testing/stubs/mdm-endpoints.stub';
 import { MatDialog } from '@angular/material/dialog';
 import { UserDetails } from 'src/app/security/user-details.service';
 import { DataElementSearchResult } from 'src/app/data-explorer/data-explorer.types';
@@ -47,6 +42,9 @@ import { BroadcastService } from 'src/app/core/broadcast.service';
 import { ToastrService } from 'ngx-toastr';
 import { createToastrServiceStub } from 'src/app/testing/stubs/toastr.stub';
 import { RequestCreatedAction } from 'src/app/data-explorer/request-created-dialog/request-created-dialog.component';
+import { CatalogueItemDomainType, DataModel } from '@maurodatamapper/mdm-resources';
+import { createMdmEndpointsStub } from 'src/app/testing/stubs/mdm-endpoints.stub';
+import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
 
 describe('DataElementMultiSelectComponent', () => {
   let harness: ComponentHarness<DataElementMultiSelectComponent>;
@@ -54,10 +52,10 @@ describe('DataElementMultiSelectComponent', () => {
   const dataRequestsStub = createDataRequestsServiceStub();
   const securityStub = createSecurityServiceStub();
   const stateRouterStub = createStateRouterStub();
-  const endpointsStub: MdmEndpointsServiceStub = createMdmEndpointsStub();
   const matDialogStub = createMatDialogStub();
   const broadcastStub = createBroadcastServiceStub();
   const toastrStub = createToastrServiceStub();
+  const endpointsStub = createMdmEndpointsStub();
 
   const user: UserDetails = {
     id: '123',
@@ -81,10 +79,6 @@ describe('DataElementMultiSelectComponent', () => {
           useValue: dataRequestsStub,
         },
         {
-          provide: MdmEndpointsService,
-          useValue: endpointsStub,
-        },
-        {
           provide: StateRouterService,
           useValue: stateRouterStub,
         },
@@ -103,6 +97,10 @@ describe('DataElementMultiSelectComponent', () => {
         {
           provide: ToastrService,
           useValue: toastrStub,
+        },
+        {
+          provide: MdmEndpointsService,
+          useValue: endpointsStub,
         },
       ],
     });
@@ -208,6 +206,56 @@ describe('DataElementMultiSelectComponent', () => {
       });
 
       expect(returnedDataElements).toStrictEqual(dataElements);
+    });
+  });
+
+  describe('add to existing requests', () => {
+    beforeEach(() => {
+      broadcastStub.dispatch.mockClear();
+      broadcastStub.loading.mockClear();
+    });
+
+    it('should add expected data elements to a data request', () => {
+      const sourceDataModelId = '123';
+      const targetDataModelId = '456';
+
+      const dataElements: DataElementSearchResult[] = [...Array(10).keys()].map((i) => {
+        return {
+          id: i.toString(),
+          model: sourceDataModelId,
+          dataClass: '2',
+          label: `element ${i}`,
+          isBookmarked: false,
+          isSelected: true,
+        };
+      });
+
+      harness.component.dataElements = dataElements;
+
+      const request: DataModel = {
+        id: targetDataModelId,
+        label: 'request',
+        domainType: CatalogueItemDomainType.DataModel,
+      };
+
+      dataModelsStub.copySubset.mockImplementationOnce((sId, tId, pl) => {
+        expect(sId).toBe(sourceDataModelId);
+        expect(tId).toBe(targetDataModelId);
+        expect(pl).toStrictEqual({
+          additions: dataElements.map((de) => de.id),
+          deletions: [],
+        });
+        return of({ ...request, availableActions: [], finalised: false });
+      });
+
+      harness.component.onClickAddSelectedToRequest(request);
+
+      expect(broadcastStub.dispatch).toHaveBeenCalledWith('data-request-added');
+      expect(broadcastStub.loading).toHaveBeenCalledWith({
+        isLoading: true,
+        caption: 'Updating your request...',
+      });
+      expect(broadcastStub.loading).toHaveBeenCalledWith({ isLoading: false });
     });
   });
 });

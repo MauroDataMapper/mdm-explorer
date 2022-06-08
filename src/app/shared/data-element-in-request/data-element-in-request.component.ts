@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { DataModel, DataModelSubsetPayload } from '@maurodatamapper/mdm-resources';
-import { Observable, of, Subject, takeUntil } from 'rxjs';
+import { finalize, Observable, of, Subject, takeUntil } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import {
   DataAccessRequestsSourceTargetIntersections,
@@ -132,8 +132,15 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
         datamodelSubsetPayload.deletions = [this.dataElement.id];
       }
 
+      this.broadcast.loading({ isLoading: true, caption: 'Updating your request...' });
+
       this.endpoints.dataModel
         .copySubset(this.dataElement.model, targetDataModelId, datamodelSubsetPayload)
+        .pipe(
+          finalize(() => {
+            this.broadcast.loading({ isLoading: false });
+          })
+        )
         .subscribe(() => {
           // Communicate change to the outside world
           if (this.dataElement) {
