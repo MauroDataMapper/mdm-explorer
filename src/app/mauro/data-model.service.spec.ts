@@ -632,4 +632,72 @@ describe('DataModelService', () => {
       expect(actual$).toBeObservable(expected$);
     });
   });
+
+  describe('create fork', () => {
+    it('should throw an error if no model id is provided', () => {
+      const expected$ = cold('#', null, new Error());
+      const actual$ = service.createFork(
+        {
+          label: 'test',
+          domainType: CatalogueItemDomainType.DataModel,
+        },
+        { label: 'next' }
+      );
+      expect(actual$).toBeObservable(expected$);
+    });
+
+    it('should throw an error if the model is not finalised', () => {
+      const expected$ = cold('#', null, new Error());
+      const actual$ = service.createFork(
+        {
+          id: '123',
+          label: 'test',
+          domainType: CatalogueItemDomainType.DataModel,
+        },
+        { label: 'next' }
+      );
+      expect(actual$).toBeObservable(expected$);
+    });
+
+    it('should return a new draft model', () => {
+      const currentModel: DataModel = {
+        id: '123',
+        label: 'test',
+        domainType: CatalogueItemDomainType.DataModel,
+        modelVersion: '1.0.0',
+      };
+
+      const nextModel: DataModel = {
+        ...currentModel,
+        id: '456',
+        label: 'next',
+        modelVersion: undefined,
+      };
+
+      endpointsStub.dataModel.newForkModel.mockImplementationOnce((id, payload) => {
+        expect(id).toBe(currentModel.id);
+        expect(payload).toStrictEqual({ label: nextModel.label });
+        return cold('--a|', {
+          a: {
+            body: nextModel,
+          },
+        });
+      });
+
+      const expected$ = cold('--a|', {
+        a: nextModel,
+      });
+
+      const actual$ = service.createFork(
+        {
+          id: '123',
+          label: 'test',
+          domainType: CatalogueItemDomainType.DataModel,
+          modelVersion: '1.0.0',
+        },
+        { label: nextModel.label }
+      );
+      expect(actual$).toBeObservable(expected$);
+    });
+  });
 });

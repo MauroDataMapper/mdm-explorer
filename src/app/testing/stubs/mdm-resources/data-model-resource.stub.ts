@@ -25,6 +25,7 @@ import {
   DataModelFullResponse,
   DataModelIndexResponse,
   DataModelSubsetPayload,
+  ForkModelPayload,
   Payload,
   SearchQueryParameters,
   Uuid,
@@ -60,6 +61,11 @@ export type DataModelBranchVersionFn = (
   data: Payload | BranchModelPayload
 ) => Observable<DataModelDetailResponse>;
 
+export type DataModelForkVersionFn = (
+  id: Uuid,
+  payload: ForkModelPayload
+) => Observable<DataModelDetailResponse>;
+
 export interface MdmDataModelResourcesStub {
   get: jest.MockedFunction<DataModelGetFn>;
   search: jest.MockedFunction<DataModelSearchFn>;
@@ -68,6 +74,7 @@ export interface MdmDataModelResourcesStub {
   addToFolder: jest.MockedFunction<DataModelAddToFolderFn>;
   copySubset: jest.MockedFunction<DataModelCopySubsetFn>;
   newBranchModelVersion: jest.MockedFunction<DataModelBranchVersionFn>;
+  newForkModel: jest.MockedFunction<DataModelForkVersionFn>;
 }
 
 export const createDataModelStub = (): MdmDataModelResourcesStub => {
@@ -79,5 +86,6 @@ export const createDataModelStub = (): MdmDataModelResourcesStub => {
     addToFolder: jest.fn() as jest.MockedFunction<DataModelAddToFolderFn>,
     copySubset: jest.fn() as jest.MockedFunction<DataModelCopySubsetFn>,
     newBranchModelVersion: jest.fn() as jest.MockedFunction<DataModelBranchVersionFn>,
+    newForkModel: jest.fn() as jest.MockedFunction<DataModelForkVersionFn>,
   };
 };

@@ -51,10 +51,7 @@ import { RequestElementAddDeleteEvent } from 'src/app/shared/data-element-in-req
 import { createBroadcastServiceStub } from 'src/app/testing/stubs/broadcast.stub';
 import { createDataExplorerServiceStub } from 'src/app/testing/stubs/data-explorer.stub';
 import { createDataModelServiceStub } from 'src/app/testing/stubs/data-model.stub';
-import {
-  createDataRequestsServiceStub,
-  // DataAccessRequestsSourceTargetIntersectionsFn,
-} from 'src/app/testing/stubs/data-requests.stub';
+import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
 import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
 import { createResearchPluginServiceStub } from 'src/app/testing/stubs/research-plugin.stub';
 import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
@@ -510,7 +507,7 @@ describe('MyRequestsComponent', () => {
     });
   });
 
-  describe('create next version', () => {
+  describe('copy request', () => {
     const request: DataRequest = {
       id: '123',
       label: 'request',
@@ -520,15 +517,15 @@ describe('MyRequestsComponent', () => {
     };
 
     beforeEach(() => {
-      dataModelsStub.createNextVersion.mockClear();
+      dataModelsStub.createFork.mockClear();
       toastrStub.error.mockClear();
       broadcastStub.loading.mockClear();
     });
 
     it('should do nothing if there is no request', () => {
-      harness.component.createNextVersion();
+      harness.component.copyRequest();
 
-      expect(dataModelsStub.createNextVersion).not.toHaveBeenCalled();
+      expect(dataModelsStub.createFork).not.toHaveBeenCalled();
     });
 
     it('should do nothing if current request is not in submitted state', () => {
@@ -537,9 +534,9 @@ describe('MyRequestsComponent', () => {
         status: 'unsent',
       };
 
-      harness.component.createNextVersion();
+      harness.component.copyRequest();
 
-      expect(dataModelsStub.createNextVersion).not.toHaveBeenCalled();
+      expect(dataModelsStub.createFork).not.toHaveBeenCalled();
     });
 
     it('should do nothing if current request is not finalised', () => {
@@ -548,25 +545,38 @@ describe('MyRequestsComponent', () => {
         modelVersion: undefined,
       };
 
-      harness.component.createNextVersion();
+      harness.component.copyRequest();
 
-      expect(dataModelsStub.createNextVersion).not.toHaveBeenCalled();
+      expect(dataModelsStub.createFork).not.toHaveBeenCalled();
+    });
+
+    it('should do nothing if create request dialog was cancelled', () => {
+      dialogsStub.usage.afterClosed.mockImplementationOnce(() => of(undefined));
+
+      harness.component.request = request;
+      harness.component.copyRequest();
+
+      expect(dataModelsStub.createFork).not.toHaveBeenCalled();
     });
 
     it('should raise error if failed to create', () => {
-      dataModelsStub.createNextVersion.mockImplementationOnce((model) => {
+      dialogsStub.usage.afterClosed.mockImplementationOnce(() =>
+        of({ name: 'new request' })
+      );
+
+      dataModelsStub.createFork.mockImplementationOnce((model) => {
         expect(model.id).toBe(request.id);
         return throwError(() => new Error());
       });
 
       harness.component.request = request;
-      harness.component.createNextVersion();
+      harness.component.copyRequest();
 
-      expect(dataModelsStub.createNextVersion).toHaveBeenCalled();
+      expect(dataModelsStub.createFork).toHaveBeenCalled();
       expect(toastrStub.error).toHaveBeenCalled();
     });
 
-    it('should create new draft version of request', fakeAsync(() => {
+    it('should create new draft copy of request', fakeAsync(() => {
       const nextDataModel: DataModel = {
         ...request,
         modelVersion: undefined,
@@ -574,7 +584,11 @@ describe('MyRequestsComponent', () => {
 
       mockSignedInUser();
 
-      dataModelsStub.createNextVersion.mockImplementationOnce((model) => {
+      dialogsStub.usage.afterClosed.mockImplementationOnce(() =>
+        of({ name: 'new request' })
+      );
+
+      dataModelsStub.createFork.mockImplementationOnce((model) => {
         expect(model.id).toBe(request.id);
         return of(nextDataModel);
       });
@@ -583,15 +597,15 @@ describe('MyRequestsComponent', () => {
       dataRequestsStub.listDataElements.mockImplementationOnce(() => of([]));
 
       harness.component.request = request;
-      harness.component.createNextVersion();
+      harness.component.copyRequest();
 
       tick();
 
-      expect(dataModelsStub.createNextVersion).toHaveBeenCalled();
+      expect(dataModelsStub.createFork).toHaveBeenCalled();
       expect(harness.component.request.status).toBe('unsent');
       expect(broadcastStub.loading).toHaveBeenCalledWith({
         isLoading: true,
-        caption: 'Creating next version of your request...',
+        caption: 'Creating new request ...',
       });
       expect(broadcastStub.loading).toHaveBeenCalledWith({ isLoading: false });
     }));

@@ -76,9 +76,6 @@ SPDX-License-Identifier: Apache-2.0
                 }}</span>
                 <mdm-request-status-chip [status]="req.status"></mdm-request-status-chip>
               </p>
-              <p *ngIf="req.modelVersion">
-                <small>{{ req.modelVersion }}</small>
-              </p>
             </mat-list-option>
           </mat-selection-list>
         </div>
@@ -103,9 +100,9 @@ SPDX-License-Identifier: Apache-2.0
                   *ngIf="request.status === 'submitted'"
                   mat-raised-button
                   matTooltip="Create a new request based on this one and make modifications."
-                  (click)="createNextVersion()"
+                  (click)="copyRequest()"
                 >
-                  Create new version
+                  Copy
                 </button>
               </div>
               <div
