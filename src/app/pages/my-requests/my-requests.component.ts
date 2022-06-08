@@ -47,6 +47,7 @@ import {
   DataRequestStatus,
   mapToDataRequest,
   DataElementDto,
+  SelectableDataElementSearchResultCheckedEvent,
 } from 'src/app/data-explorer/data-explorer.types';
 import {
   DataAccessRequestsSourceTargetIntersections,
@@ -77,6 +78,7 @@ export class MyRequestsComponent implements OnInit {
   state: 'idle' | 'loading' = 'idle';
   creatingNextVersion = false;
   sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
+  removeSelectedButtonDisabled = true;
 
   constructor(
     private security: SecurityService,
@@ -107,6 +109,7 @@ export class MyRequestsComponent implements OnInit {
   selectRequest(event: MatSelectionListChange) {
     const selected = event.options[0].value as DataRequest;
     this.setRequest(selected);
+    this.setRemoveSelectedButtonDisabled();
   }
 
   filterByStatus(event: MatCheckboxChange) {
@@ -279,9 +282,9 @@ export class MyRequestsComponent implements OnInit {
       });
   }
 
-  removeSelectedButtonDisabled(): boolean {
-    const selectedItemList = this.requestElements.filter((item) => item.isSelected);
-    return !this.request || selectedItemList.length === 0;
+  onSelectElement(event: SelectableDataElementSearchResultCheckedEvent) {
+    event.item.isSelected = event.checked;
+    this.setRemoveSelectedButtonDisabled();
   }
 
   onSelectAll(event: MatCheckboxChange) {
@@ -290,6 +293,8 @@ export class MyRequestsComponent implements OnInit {
         return { ...item, isSelected: event.checked };
       });
     }
+
+    this.setRemoveSelectedButtonDisabled();
   }
 
   handlePossibleSelfDelete(event: RequestElementAddDeleteEvent) {
@@ -449,5 +454,13 @@ export class MyRequestsComponent implements OnInit {
     const index = this.allRequests.findIndex((req) => req.id === request.id);
     this.allRequests[index] = request;
     this.filterRequests();
+  }
+
+  /**
+   * Disable the 'Remove Selected' button unless some elements are selected in the current request
+   */
+  private setRemoveSelectedButtonDisabled() {
+    const selectedItemList = this.requestElements.filter((item) => item.isSelected);
+    this.removeSelectedButtonDisabled = !this.request || selectedItemList.length === 0;
   }
 }

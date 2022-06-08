@@ -210,7 +210,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
       ...this.parameters,
       page,
     };
-
+    this.clearSelected();
     const params = mapSearchParametersToParams(next);
     this.stateRouter.navigateToKnownPath('/search/listing', params);
   }
@@ -419,5 +419,9 @@ export class SearchListingComponent implements OnInit, OnDestroy {
 
   private getOrderFromSortByOptionString(sortBy: string) {
     return sortBy.split('-')[1] as SortOrder;
+  }
+
+  private clearSelected() {
+    this.selectedElements = [];
   }
 }
