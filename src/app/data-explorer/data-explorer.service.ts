@@ -84,12 +84,18 @@ export class DataExplorerService {
           !explorerProps.profileNamespace ||
           !explorerProps.profileServiceName
         ) {
-          return throwError(
-            () =>
-              new Error(
-                `Cannot find all configuration keys in Mauro API properties. Check all required properties are listed under the '${configurationKeys.category}' section and have values.`
-              )
-          );
+          return throwError(() => {
+            const lines = [
+              'Cannot find all configuration keys in Mauro API properties',
+              `Check all required properties are listed under the '${configurationKeys.category}' section and have values.`,
+              'The following API properties are required:',
+              '\n',
+              configurationKeys.profileNamespace,
+              configurationKeys.profileServiceName,
+              configurationKeys.rootDataModelPath,
+            ];
+            return new Error(lines.join('\n'));
+          });
         }
 
         this.config = {
