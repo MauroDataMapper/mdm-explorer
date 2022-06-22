@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { NgModule } from '@angular/core';
+import { ErrorHandler, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -38,6 +38,9 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatPasswordStrengthModule } from '@angular-material-extensions/password-strength';
+import { AppErrorHandlerService } from './app-error-handler.service';
+import { AppErrorDialogComponent } from './app-error-dialog/app-error-dialog.component';
+import { OverlayContainer } from '@angular/cdk/overlay';
 
 const angularModules = [CommonModule, FormsModule, ReactiveFormsModule, RouterModule];
 const primeNgModules = [CarouselModule];
@@ -63,8 +66,23 @@ const materialModules = [
 ];
 
 @NgModule({
-  declarations: [],
+  declarations: [AppErrorDialogComponent],
   imports: [...angularModules, ...materialModules, ...primeNgModules],
   exports: [...angularModules, ...materialModules, ...primeNgModules],
+  providers: [
+    {
+      provide: ErrorHandler,
+      useClass: AppErrorHandlerService,
+    },
+  ],
 })
-export class CoreModule {}
+export class CoreModule {
+  themeCssSelector = 'default-theme';
+
+  constructor(overlayContainer: OverlayContainer) {
+    // Material theme is wrapped inside a CSS class but the overlay container is not part of Angular
+    // Material. Have to manually set the correct theme class to this container too
+    overlayContainer.getContainerElement().classList.add(this.themeCssSelector);
+    overlayContainer.getContainerElement().classList.add('overlay-container');
+  }
+}

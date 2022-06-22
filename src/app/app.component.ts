@@ -30,7 +30,6 @@ import { SecurityService } from './security/security.service';
 import { UserDetails, UserDetailsService } from './security/user-details.service';
 import { FooterLink } from './shared/footer/footer.component';
 import { HeaderImageLink, HeaderLink } from './shared/header/header.component';
-import { OverlayContainer } from '@angular/cdk/overlay';
 import { UserIdleService } from './external/user-idle.service';
 
 @Component({
@@ -40,8 +39,6 @@ import { UserIdleService } from './external/user-idle.service';
 })
 export class AppComponent implements OnInit, OnDestroy {
   title = 'mdm-explorer';
-
-  themeCssSelector = 'default-theme';
 
   isLoading = false;
   loadingCaption = '';
@@ -164,8 +161,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private stateRouter: StateRouterService,
     private toastr: ToastrService,
     private userIdle: UserIdleService,
-    private error: ErrorService,
-    private overlayContainer: OverlayContainer
+    private error: ErrorService
   ) {}
 
   @HostListener('window:mousemove', ['$event'])
@@ -174,8 +170,6 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.setTheme();
-
     this.broadcast
       .on<HttpErrorResponse>('http-application-offline')
       .pipe(takeUntil(this.unsubscribe$))
@@ -339,12 +333,5 @@ export class AppComponent implements OnInit, OnDestroy {
         this.toastr.info('Your session has expired! Please sign in.');
         this.signOutUser();
       });
-  }
-
-  private setTheme() {
-    // Material theme is wrapped inside a CSS class but the overlay container is not part of Angular
-    // Material. Have to manually set the correct theme class to this container too
-    this.overlayContainer.getContainerElement().classList.add(this.themeCssSelector);
-    this.overlayContainer.getContainerElement().classList.add('overlay-container');
   }
 }
