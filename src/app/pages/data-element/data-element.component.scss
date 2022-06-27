@@ -27,6 +27,11 @@ $detail-content-padding: 1.2em 1.2em;
 
 $detail-identifiable-background-color: $color-mauro-gold;
 
+h1 {
+  line-height: 120%;
+  font-size: 280%;
+}
+
 .mdm-data-element-detail {
   @include respond-to-mobile {
     padding: 0;
