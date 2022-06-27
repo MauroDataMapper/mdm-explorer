@@ -207,3 +207,11 @@ Highlights a box area behind other page components, e.g. a form
   top: 8em;
   right: 3em;
 }
+
+.column {
+  text-align: center;
+  img {
+    width: 75%;
+    margin: 1em;
+  }
+}
