@@ -35,7 +35,7 @@ SPDX-License-Identifier: Apache-2.0
       <ng-container *ngFor="let profileField of profileSection.fields">
         <tr>
           <th scope="row" class="w-25">{{ profileField.fieldName }}</th>
-          <td>{{ profileField.currentValue }}</td>
+          <td [innerHtml]="profileField.currentValue"></td>
         </tr>
       </ng-container>
     </ng-container>

@@ -26,7 +26,7 @@ export const environment = {
   checkSessionExpiryTimeout: 300000,
   features: {
     useOpenIdConnect: true,
-  },
+  }
 };
 
 /*
