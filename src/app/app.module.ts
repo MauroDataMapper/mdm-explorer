@@ -139,7 +139,7 @@ const getOpenIdAuthorizeUrl = () => {
     {
       provide: STATIC_CONTENT_CONFIGURATION,
       useValue: {
-        contentLocation: '/assets/content',
+        contentLocation: 'assets/content',
       },
     },
     {
