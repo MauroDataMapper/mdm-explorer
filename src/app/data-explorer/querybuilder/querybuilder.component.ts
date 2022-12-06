@@ -16,8 +16,9 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-//Query builder source: https://github.com/zebzhao/Angular-QueryBuilder
-
+/*
+Query builder source: https://github.com/zebzhao/Angular-QueryBuilder
+*/
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { QueryBuilderConfig } from 'angular2-query-builder';
 import { DataType } from '@maurodatamapper/mdm-resources';
