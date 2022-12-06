@@ -16,22 +16,15 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-@import "~ngx-toastr/toastr.css";
-@import "~@angular/material/theming";
+@import "./base/all";
 
-// Include the common styles for Angular Material. Only required to include this once!
-@include mat-core();
+.query-builder {
+  .mat-form-field {
+    margin: 0 5px; /* Add a space before the next control*/
+    height: 45px;
+  }
 
-/*
-Themes
-Import more theme SASS files here to make them available to the app
-*/
-@import "styles/themes/default";
-
-@import "styles/base/all";
-@import "styles/resets";
-@import "styles/layout";
-@import "styles/icons";
-@import "styles/forms";
-@import "styles/home";
-@import "styles/querybuilder";
+  .mat-form-field-appearance-outline .mat-form-field-infix {
+    padding-top: 1px !important;
+  }
+}

@@ -428,11 +428,20 @@ export class MyRequestsComponent implements OnInit {
           this.toastr.error('There was a problem locating your request details.');
           return EMPTY;
         }),
-        finalize(() => (this.state = 'idle'))
+        finalize(() => {
+          this.state = 'idle';
+        })
       )
       .subscribe({
         next: ([dataElements, intersections]) => {
           this.requestElements = dataElements;
+          /*
+          // Fudge to refresh component
+          this.requestElements = [];
+          dataElements.forEach((val) =>
+            this.requestElements.push(Object.assign({}, val))
+          );*/
+
           this.sourceTargetIntersections = intersections;
         },
       });

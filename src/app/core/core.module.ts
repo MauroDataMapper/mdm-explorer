@@ -21,6 +21,8 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -36,6 +38,7 @@ import { RouterModule } from '@angular/router';
 import { CarouselModule } from 'primeng/carousel';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatRadioModule } from '@angular/material/radio';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatPasswordStrengthModule } from '@angular-material-extensions/password-strength';
 import { AppErrorHandlerService } from './app-error-handler.service';
@@ -49,6 +52,9 @@ const materialModules = [
   MatButtonModule,
   MatCardModule,
   MatChipsModule,
+  MatNativeDateModule,
+  MatDatepickerModule,
+  MatRadioModule,
   MatIconModule,
   MatInputModule,
   MatFormFieldModule,

@@ -21,6 +21,7 @@ import { ActivatedRoute } from '@angular/router';
 import {
   CatalogueItemDomainType,
   DataElementDetail,
+  DataType,
   Profile,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
@@ -107,6 +108,7 @@ export class DataElementComponent implements OnInit, OnDestroy {
             dataClass: dataElementDetail.dataClass ?? '',
             model: dataElementDetail.model ?? '',
             label: dataElementDetail.label,
+            dataType: dataElementDetail.dataType as DataType,
             breadcrumbs: dataElementDetail.breadcrumbs,
             isBookmarked,
             isSelected: false,
