@@ -428,7 +428,9 @@ export class MyRequestsComponent implements OnInit {
           this.toastr.error('There was a problem locating your request details.');
           return EMPTY;
         }),
-        finalize(() => (this.state = 'idle'))
+        finalize(() => {
+          this.state = 'idle';
+        })
       )
       .subscribe({
         next: ([dataElements, intersections]) => {

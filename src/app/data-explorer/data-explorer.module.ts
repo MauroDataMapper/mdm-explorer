@@ -36,6 +36,9 @@ import { IdentifiableDataIconComponent } from './identifiable-data-icon/identifi
 import { SearchFiltersComponent } from './search-filters/search-filters.component';
 import { CatalogueSearchFormComponent } from './catalogue-search-form/catalogue-search-form.component';
 import { OkCancelDialogComponent } from './ok-cancel-dialog/ok-cancel-dialog.component';
+import { QueryBuilderComponent } from '../data-explorer/querybuilder/querybuilder.component';
+import { QueryBuilderModule } from 'angular2-query-builder';
+import { MeqlPipe } from 'src/app/pipes/meql.pipe';
 
 @NgModule({
   declarations: [
@@ -55,8 +58,10 @@ import { OkCancelDialogComponent } from './ok-cancel-dialog/ok-cancel-dialog.com
     SearchFiltersComponent,
     CatalogueSearchFormComponent,
     OkCancelDialogComponent,
+    QueryBuilderComponent,
+    MeqlPipe,
   ],
-  imports: [CoreModule, SharedModule],
+  imports: [CoreModule, SharedModule, QueryBuilderModule],
   exports: [
     DataElementSearchResultComponent,
     DataElementRowComponent,
@@ -69,6 +74,7 @@ import { OkCancelDialogComponent } from './ok-cancel-dialog/ok-cancel-dialog.com
     IdentifiableDataIconComponent,
     SearchFiltersComponent,
     CatalogueSearchFormComponent,
+    QueryBuilderComponent,
   ],
   providers: [
     {

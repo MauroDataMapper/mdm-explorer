@@ -23,6 +23,7 @@ import {
   CatalogueItemDomainType,
   DataElement,
   DataModel,
+  DataType,
   ProfileField,
   ProfileSearchResult,
   ProfileSearchResultField,
@@ -280,6 +281,7 @@ export interface DataElementInstance extends IsBookmarkable {
    * The unique ID of the parent data class the data element belongs under.
    */
   dataClass: Uuid;
+  dataType?: DataType;
   label: string;
   breadcrumbs?: Breadcrumb[];
   domainType?: CatalogueItemDomainType;

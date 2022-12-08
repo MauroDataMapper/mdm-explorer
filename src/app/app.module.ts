@@ -40,6 +40,9 @@ import { NgChartsModule } from 'ng2-charts';
 import { DataExplorerService } from './data-explorer/data-explorer.service';
 import { Observable } from 'rxjs';
 import { USER_IDLE_CONFIGURATION } from './external/user-idle.service';
+import { LOCALE_ID } from '@angular/core';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MomentDateAdapter } from '@angular/material-moment-adapter';
 
 /**
  * Factory function for app initialization.
@@ -94,6 +97,19 @@ const getOpenIdAuthorizeUrl = () => {
   const authorizationUrl = '/redirects/open-id-connect-redirect.html';
   const baseUrl = window.location.href.slice(0, window.location.href.indexOf('/#/'));
   return new URL(baseUrl + authorizationUrl).toString();
+};
+
+// Work around to display and validate dates in gb format
+export const DATE_FORMATS = {
+  parse: {
+    dateInput: 'DD/MM/YYYY',
+  },
+  display: {
+    dateInput: 'DD/MM/YYYY',
+    monthYearLabel: 'MMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
 };
 
 @NgModule({
@@ -152,6 +168,19 @@ const getOpenIdAuthorizeUrl = () => {
       provide: DATA_EXPLORER_CONFIGURATION,
       useFactory: dataExplorerConfigurationFactory,
       deps: [DataExplorerService],
+    },
+    {
+      provide: DateAdapter,
+      useClass: MomentDateAdapter,
+      deps: [MAT_DATE_LOCALE],
+    },
+    {
+      provide: MAT_DATE_FORMATS,
+      useValue: DATE_FORMATS,
+    },
+    {
+      provide: LOCALE_ID,
+      useValue: 'en-GB',
     },
   ],
   bootstrap: [AppComponent],
