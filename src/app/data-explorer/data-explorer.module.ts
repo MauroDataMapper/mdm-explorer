@@ -38,7 +38,7 @@ import { CatalogueSearchFormComponent } from './catalogue-search-form/catalogue-
 import { OkCancelDialogComponent } from './ok-cancel-dialog/ok-cancel-dialog.component';
 import { QueryBuilderComponent } from '../data-explorer/querybuilder/querybuilder.component';
 import { QueryBuilderModule } from 'angular2-query-builder';
-import { JqlPipe } from 'src/app/pipes/jql.pipe';
+import { MeqlPipe } from 'src/app/pipes/meql.pipe';
 
 @NgModule({
   declarations: [
@@ -59,7 +59,7 @@ import { JqlPipe } from 'src/app/pipes/jql.pipe';
     CatalogueSearchFormComponent,
     OkCancelDialogComponent,
     QueryBuilderComponent,
-    JqlPipe,
+    MeqlPipe,
   ],
   imports: [CoreModule, SharedModule, QueryBuilderModule],
   exports: [

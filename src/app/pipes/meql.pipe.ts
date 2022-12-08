@@ -20,15 +20,15 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import moment from 'moment';
 
-@Pipe({ name: 'jql', pure: false })
-export class JqlPipe implements PipeTransform {
+@Pipe({ name: 'meql', pure: false })
+export class MeqlPipe implements PipeTransform {
   private _date: DatePipe = new DatePipe('en-GB');
 
   transform(value: any): string {
     return this.parseQuery(value);
   }
 
-  private jqlConnective(connective: string) {
+  private meqlConnective(connective: string) {
     switch (connective.toLowerCase()) {
       case 'and':
         return 'and';
@@ -65,13 +65,13 @@ export class JqlPipe implements PipeTransform {
     firstRule: boolean = true,
     lastRule: boolean = true
   ) {
-    let jql = firstRule && !(connective === '') ? '(' : '';
+    let meql = firstRule && !(connective === '') ? '(' : '';
     if (depth > 0) {
-      jql += '\r\n';
+      meql += '\r\n';
     }
     let closingTabs = '';
     for (let i = 0; i < depth; i++) {
-      jql += '\t';
+      meql += '\t';
       if (i < depth - 1) {
         closingTabs += '\t';
       }
@@ -80,7 +80,7 @@ export class JqlPipe implements PipeTransform {
     let nextConnective = '';
 
     if (connective !== '' && !firstRule) {
-      jql += ' ' + this.jqlConnective(connective) + ' ';
+      meql += ' ' + this.meqlConnective(connective) + ' ';
     }
 
     for (const key in value) {
@@ -91,7 +91,7 @@ export class JqlPipe implements PipeTransform {
           break;
         case 'rules':
           for (let i = 0; i < rules.length; i++) {
-            jql += this.parseQuery(
+            meql += this.parseQuery(
               rules[i],
               nextConnective,
               depth + 1,
@@ -102,18 +102,18 @@ export class JqlPipe implements PipeTransform {
           break;
         case 'field':
         case 'value':
-          jql += this.formattedValue(value[key], true) + ' ';
+          meql += this.formattedValue(value[key], true) + ' ';
           break;
         case 'operator':
-          jql += this.formattedValue(value[key]) + ' ';
+          meql += this.formattedValue(value[key]) + ' ';
           break;
       }
     }
 
     if (lastRule && !(connective === '')) {
-      jql += '\r\n' + closingTabs + ')';
+      meql += '\r\n' + closingTabs + ')';
     }
 
-    return jql;
+    return meql;
   }
 }

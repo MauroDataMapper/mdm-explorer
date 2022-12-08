@@ -19,7 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { QueryBuilderComponent } from './querybuilder.component';
-import { JqlPipe } from 'src/app/pipes/jql.pipe';
+import { MeqlPipe } from 'src/app/pipes/meql.pipe';
 
 describe('QueryBuilderComponent', () => {
   let component: QueryBuilderComponent;
@@ -27,7 +27,7 @@ describe('QueryBuilderComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [QueryBuilderComponent, JqlPipe],
+      declarations: [QueryBuilderComponent, MeqlPipe],
     }).compileComponents();
   });
 

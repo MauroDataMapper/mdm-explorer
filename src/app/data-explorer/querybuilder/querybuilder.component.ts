@@ -19,7 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 /*
 Query builder source: https://github.com/zebzhao/Angular-QueryBuilder
 */
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { QueryBuilderConfig } from 'angular2-query-builder';
 import { DataType } from '@maurodatamapper/mdm-resources';
 import { DataElementSearchResult } from 'src/app/data-explorer/data-explorer.types';
@@ -28,7 +28,6 @@ import { DataElementSearchResult } from 'src/app/data-explorer/data-explorer.typ
   selector: 'mdm-querybuilder',
   templateUrl: './querybuilder.component.html',
   styleUrls: ['./querybuilder.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QueryBuilderComponent {
   // Query Builder Configuration Begin
@@ -42,43 +41,52 @@ export class QueryBuilderComponent {
   };
 
   allowRuleset = true;
-  allowCollapse = true;
-  persistValueOnFieldChange = false;
 
   query = {
     condition: 'and',
     rules: [],
   };
-  // Query Builder Configuration End
 
-  private _title = 'Query Builder';
-  private showQueryBuilderText: string = 'Show ' + this._title + ' Editor';
-  private hideQueryBuilderText: string = 'Hide ' + this._title + ' Editor';
-  private showQueryBuilderIcon = 'arrow_drop_down';
-  private hideQueryBuilderIcon = 'arrow_drop_up';
-
-  @Input() set dataElements(value: DataElementSearchResult[]) {
-    this.setupConfig(value);
-  }
-  @Input() set title(value: string) {
-    this._title = value;
-    this.showQueryBuilderText = 'Show ' + this._title + ' Editor';
-    this.hideQueryBuilderText = 'Hide ' + this._title + ' Editor';
-    this.setToggleQueryBuilderText();
-  }
-  get title(): string {
-    return this._title;
-  }
-
-  constructor() {}
-
-  // Show / Hide query builder configuration begin
   qbController = {
     showQueryBuilder: false,
     toggleQueryBuilderText: this.showQueryBuilderText,
     toggleQueryBuilderIcon: this.hideQueryBuilderIcon,
   };
 
+  // Query Builder Configuration End
+
+  private _title = 'Query Builder';
+
+  get showQueryBuilderText() {
+    return `Show ${this._title} Editor`;
+  }
+
+  get hideQueryBuilderText() {
+    return `Hide ${this._title} Editor`;
+  }
+
+  get showQueryBuilderIcon() {
+    return 'arrow_drop_down';
+  }
+
+  get hideQueryBuilderIcon() {
+    return 'arrow_drop_up';
+  }
+
+  get title(): string {
+    return this._title;
+  }
+
+  @Input() set title(value: string) {
+    this._title = value;
+    this.setToggleQueryBuilderText();
+  }
+
+  @Input() set dataElements(value: DataElementSearchResult[]) {
+    this.setupConfig(value);
+  }
+
+  // Show / Hide query builder configuration begin
   setToggleQueryBuilderText() {
     if (this.qbController.showQueryBuilder) {
       this.qbController.toggleQueryBuilderText = this.hideQueryBuilderText;
@@ -95,20 +103,13 @@ export class QueryBuilderComponent {
   }
   // Show / Hide query builder configuration end
 
-  private queryBuilderDataType(dataType: DataType | undefined) {
-    const dataTypeString = dataType?.label ? dataType?.label : '';
-
-    if (dataTypeString !== '') {
-      const enumLength = dataType?.enumerationValues?.length
-        ? dataType?.enumerationValues?.length
-        : 0;
-      if (enumLength > 0) {
-        return 'category';
-      }
+  private queryBuilderDataType(dataType?: DataType) {
+    if (dataType?.enumerationValues?.length ?? 0 > 0) {
+      return 'category';
     }
 
-    // This should not be hard coded and managed elsewhere.
-    switch (dataTypeString.toLowerCase()) {
+    // This should not be hard coded and managed elsewhere. gh-171 has been raised to address this.
+    switch (dataType?.label?.toLowerCase()) {
       // strings
       case 'char':
       case 'char[n]':
@@ -181,19 +182,6 @@ export class QueryBuilderComponent {
     }
   }
 
-  private getOptions(dataType: DataType | undefined) {
-    const options: any[] = [];
-    const enumValues = dataType?.enumerationValues ? dataType?.enumerationValues : [];
-    enumValues.forEach((dataOption) => {
-      const option = {
-        ['name']: dataOption.key,
-        ['value']: dataOption.value,
-      };
-      options.push(option);
-    });
-    return options;
-  }
-
   private getDefaultValue(dataType: DataType | undefined) {
     const dataTypeString = this.queryBuilderDataType(dataType);
     if (dataTypeString.toLowerCase() === 'number') {
@@ -204,7 +192,6 @@ export class QueryBuilderComponent {
   }
 
   private setupConfig(dataElements: DataElementSearchResult[]) {
-    // Sort the elements
     const sortedDataElements: DataElementSearchResult[] = dataElements.sort((n1, n2) => {
       if (n1.label > n2.label) {
         return 1;
@@ -232,7 +219,12 @@ export class QueryBuilderComponent {
         this.config.fields[dataElement.label] = {
           name: dataElement.label + ' (' + dataTypeString + ')',
           type: dataTypeString,
-          options: this.getOptions(dataElement.dataType),
+          options: (dataElement.dataType?.enumerationValues ?? []).map((dataOption) => {
+            return {
+              name: dataOption.key,
+              value: dataOption.value,
+            };
+          }),
           defaultValue: this.getDefaultValue(dataElement.dataType),
         };
       }

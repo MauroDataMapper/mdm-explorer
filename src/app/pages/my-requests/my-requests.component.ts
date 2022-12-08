@@ -435,13 +435,6 @@ export class MyRequestsComponent implements OnInit {
       .subscribe({
         next: ([dataElements, intersections]) => {
           this.requestElements = dataElements;
-          /*
-          // Fudge to refresh component
-          this.requestElements = [];
-          dataElements.forEach((val) =>
-            this.requestElements.push(Object.assign({}, val))
-          );*/
-
           this.sourceTargetIntersections = intersections;
         },
       });

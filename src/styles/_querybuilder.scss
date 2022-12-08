@@ -21,10 +21,35 @@ SPDX-License-Identifier: Apache-2.0
 .query-builder {
   .mat-form-field {
     margin: 0 5px; /* Add a space before the next control*/
-    height: 45px;
+    height: 45px !important; /* Set the control height */
   }
 
-  .mat-form-field-appearance-outline .mat-form-field-infix {
-    padding-top: 1px !important;
+  .mat-form-field-infix {
+    padding-top: 0px !important; /* Further height adjustments */
+    transform: translateY(
+      5%
+    ) !important; /* Set the position of the text inside the control so it is vertically in the middle. */
+  }
+
+  /* Set the position of the dropdown arrow so it is is vertically in the middle. */
+  .mat-select-arrow-wrapper {
+    transform: translateY(10%) !important;
+  }
+
+  /* Make sure the Date field is the same height as the combo boxes. */
+  .mat-form-field:not(.mat-form-field-appearance-legacy)
+    .mat-form-field-suffix
+    .mat-icon-button {
+    height: 0em !important;
+  }
+
+  /* Position the date picker button centrally */
+  .mat-datepicker-toggle-default-icon {
+    transform: translateY(20%) !important;
+  }
+
+  /* Set the space between radio buttons */
+  .mat-radio-button {
+    padding: 10px;
   }
 }

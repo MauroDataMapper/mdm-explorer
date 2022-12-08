@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 -->
 <div class="query-builder">
   <p>{{ title }}</p>
-  <textarea readonly class="output">{{ query | jql }}</textarea>
+  <textarea readonly class="output">{{ query | meql }}</textarea>
   <div class="toggle-query-builder-div">
     <button
       class="toggle-query-builder-button"
@@ -31,7 +31,7 @@ SPDX-License-Identifier: Apache-2.0
       {{ qbController.toggleQueryBuilderText }}
     </button>
   </div>
-  <!--<div *ngIf="qbController.showQueryBuilder">-->
+
   <div class="box" [class.opened]="qbController.showQueryBuilder">
     <mat-card class="mdm-data-element-card">
       <query-builder
@@ -80,10 +80,6 @@ SPDX-License-Identifier: Apache-2.0
             <mat-icon>remove_circle_outline</mat-icon>
           </button>
         </ng-container>
-        <!--  -->
-        <ng-container *queryArrowIcon>
-          <mat-icon ngClass="mat-arrow-icon">chevron_right</mat-icon>
-        </ng-container>
         <!-- Remove Rule Button -->
         <ng-container *queryRemoveButton="let rule; let removeRule = removeRule">
           <button type="button" mat-icon-button color="accent" (click)="removeRule(rule)">
@@ -97,27 +93,9 @@ SPDX-License-Identifier: Apache-2.0
             [(ngModel)]="ruleset.condition"
             (ngModelChange)="onChange($event)"
           >
-            <mat-radio-button [style.padding.px]="10" value="and">AND</mat-radio-button>
-            <mat-radio-button [style.padding.px]="10" value="or">OR</mat-radio-button>
+            <mat-radio-button value="and">AND</mat-radio-button>
+            <mat-radio-button value="or">OR</mat-radio-button>
           </mat-radio-group>
-        </ng-container>
-        <!--  -->
-        <ng-container
-          *queryEntity="let rule; let entities = entities; let onChange = onChange"
-        >
-          <mat-form-field
-            appearance="outline"
-            class="query-builder-field mat-form-field-no-padding"
-          >
-            <mat-select
-              [(ngModel)]="rule.entity"
-              (ngModelChange)="onChange($event, rule)"
-            >
-              <mat-option *ngFor="let entity of entities" [value]="entity.value">
-                {{ entity.name }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
         </ng-container>
         <!-- Field Selector -->
         <ng-container
@@ -224,7 +202,7 @@ SPDX-License-Identifier: Apache-2.0
             let onChange = onChange
           "
         >
-          <mat-form-field appearance="outline" [style.width.px]="150">
+          <mat-form-field appearance="outline" class="query-builder-number">
             <input
               matInput
               [(ngModel)]="rule.value"

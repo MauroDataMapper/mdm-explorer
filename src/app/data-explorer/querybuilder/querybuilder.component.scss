@@ -24,6 +24,12 @@ SPDX-License-Identifier: Apache-2.0
   box-sizing: border-box; /* Opera/IE 8+ */
 }
 
+/* 
+  Note: Css for setting the height of controls in the query builder
+        can be found in _querybuilder.scss.
+*/
+
+/* Set the query builder controls lengths. */
 .query-builder-field {
   width: 400px !important;
 }
@@ -36,24 +42,23 @@ SPDX-License-Identifier: Apache-2.0
   width: 300px !important;
 }
 
+.query-builder-number {
+  width: 150px !important;
+}
+
+/* Handle the displaying of the "Show x Editor" / "Hide x Editor" button. */
 .toggle-query-builder-div {
   width: 100%;
+  text-align: right;
 }
 
 .toggle-query-builder-button {
-  justify-content: flex-end;
+  width: 214px; /* This has been optimised so that the dropdown arrow aligns with the + icon below. */
+  text-align: left;
 }
 
-.box-opener {
-  background-color: #f1e0b8;
-  border: 1px solid #ffcc55;
-  cursor: pointer;
-  padding: 16px;
-  user-select: none;
-}
-
+/* Allow the query builder to slide in and out of view. */
 .box {
-  background-color: #ffcc55;
   max-height: 0px;
   overflow-y: hidden;
   transition: ease-in-out 400ms max-height;
