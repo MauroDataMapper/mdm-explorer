@@ -16,7 +16,18 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { MdmResponse, PathableDomainType, Uuid } from '@maurodatamapper/mdm-resources';
+import {
+  MdmResponse,
+  PathableDomainType,
+  RuleDomainType,
+  RuleIndexResponse,
+  RulePayload,
+  RuleRepresentationIndexResponse,
+  RuleRepresentationPayload,
+  RuleRepresentationResponse,
+  RuleResponse,
+  Uuid,
+} from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
 
 export type CatalogueItemGetPathFn = (
@@ -36,11 +47,145 @@ export type CatalogueItemGetPathFromParentMockedFn =
 export interface MdmCatalogueItemResourceStub {
   getPath: CatalogueItemGetPathMockedFn;
   getPathFromParent: CatalogueItemGetPathFromParentMockedFn;
+
+  listRules: jest.MockedFunction<
+    (domain: RuleDomainType, id: Uuid) => Observable<RuleIndexResponse>
+  >;
+
+  getRule: jest.MockedFunction<
+    (domain: RuleDomainType, itemId: Uuid, ruleId: Uuid) => Observable<RuleResponse>
+  >;
+
+  saveRule: jest.MockedFunction<
+    (domain: RuleDomainType, itemId: Uuid, data: RulePayload) => Observable<RuleResponse>
+  >;
+
+  updateRule: jest.MockedFunction<
+    (
+      domain: RuleDomainType,
+      itemId: Uuid,
+      ruleId: Uuid,
+      data: RulePayload
+    ) => Observable<RuleResponse>
+  >;
+
+  removeRule: jest.MockedFunction<
+    (domain: RuleDomainType, itemId: Uuid, ruleId: Uuid) => Observable<any>
+  >;
+
+  listRuleRepresentations: jest.MockedFunction<
+    (
+      domain: RuleDomainType,
+      itemId: Uuid,
+      ruleId: Uuid
+    ) => Observable<RuleRepresentationIndexResponse>
+  >;
+
+  getRuleRepresentation: jest.MockedFunction<
+    (
+      domain: RuleDomainType,
+      itemId: Uuid,
+      ruleId: Uuid,
+      representationId: Uuid
+    ) => Observable<RuleRepresentationResponse>
+  >;
+
+  saveRuleRepresentation: jest.MockedFunction<
+    (
+      domain: RuleDomainType,
+      itemId: Uuid,
+      ruleId: Uuid,
+      data: RuleRepresentationPayload
+    ) => Observable<RuleRepresentationResponse>
+  >;
+
+  updateRuleRepresentation: jest.MockedFunction<
+    (
+      domain: RuleDomainType,
+      itemId: Uuid,
+      ruleId: Uuid,
+      representationId: Uuid,
+      data: RuleRepresentationPayload
+    ) => Observable<RuleRepresentationResponse>
+  >;
+
+  removeRuleRepresentation: jest.MockedFunction<
+    (
+      domain: RuleDomainType,
+      itemId: Uuid,
+      ruleId: Uuid,
+      representationId: Uuid
+    ) => Observable<any>
+  >;
 }
 
 export const createCatalogueItemStub = (): MdmCatalogueItemResourceStub => {
   return {
     getPath: jest.fn() as CatalogueItemGetPathMockedFn,
     getPathFromParent: jest.fn() as CatalogueItemGetPathFromParentMockedFn,
+    listRules: jest.fn() as jest.MockedFunction<
+      (domain: RuleDomainType, id: Uuid) => Observable<RuleIndexResponse>
+    >,
+    getRule: jest.fn() as jest.MockedFunction<
+      (domain: RuleDomainType, itemId: Uuid, ruleId: Uuid) => Observable<RuleResponse>
+    >,
+    saveRule: jest.fn() as jest.MockedFunction<
+      (
+        domain: RuleDomainType,
+        itemId: Uuid,
+        data: RulePayload
+      ) => Observable<RuleResponse>
+    >,
+    updateRule: jest.fn() as jest.MockedFunction<
+      (
+        domain: RuleDomainType,
+        itemId: Uuid,
+        ruleId: Uuid,
+        data: RulePayload
+      ) => Observable<RuleResponse>
+    >,
+    removeRule: jest.fn() as jest.MockedFunction<
+      (domain: RuleDomainType, itemId: Uuid, ruleId: Uuid) => Observable<any>
+    >,
+    listRuleRepresentations: jest.fn() as jest.MockedFunction<
+      (
+        domain: RuleDomainType,
+        itemId: Uuid,
+        ruleId: Uuid
+      ) => Observable<RuleRepresentationIndexResponse>
+    >,
+    getRuleRepresentation: jest.fn() as jest.MockedFunction<
+      (
+        domain: RuleDomainType,
+        itemId: Uuid,
+        ruleId: Uuid,
+        representationId: Uuid
+      ) => Observable<RuleRepresentationResponse>
+    >,
+    saveRuleRepresentation: jest.fn() as jest.MockedFunction<
+      (
+        domain: RuleDomainType,
+        itemId: Uuid,
+        ruleId: Uuid,
+        data: RuleRepresentationPayload
+      ) => Observable<RuleRepresentationResponse>
+    >,
+    updateRuleRepresentation: jest.fn() as jest.MockedFunction<
+      (
+        domain: RuleDomainType,
+        itemId: Uuid,
+        ruleId: Uuid,
+        representationId: Uuid,
+        data: RuleRepresentationPayload
+      ) => Observable<RuleRepresentationResponse>
+    >,
+    removeRuleRepresentation: jest.fn() as jest.MockedFunction<
+      (
+        domain: RuleDomainType,
+        itemId: Uuid,
+        ruleId: Uuid,
+        representationId: Uuid
+      ) => Observable<any>
+    >,
   };
 };

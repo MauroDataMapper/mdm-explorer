@@ -19,18 +19,30 @@ SPDX-License-Identifier: Apache-2.0
 /*
 Query builder source: https://github.com/zebzhao/Angular-QueryBuilder
 */
-import { Component, Input } from '@angular/core';
-import { QueryBuilderConfig } from 'angular2-query-builder';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { QueryBuilderConfig, RuleSet } from 'angular2-query-builder';
 import { DataType } from '@maurodatamapper/mdm-resources';
-import { DataElementSearchResult } from 'src/app/data-explorer/data-explorer.types';
+import {
+  DataElementSearchResult,
+  QueryCondition,
+} from 'src/app/data-explorer/data-explorer.types';
+import { ThemePalette } from '@angular/material/core';
 
 @Component({
   selector: 'mdm-querybuilder',
   templateUrl: './querybuilder.component.html',
   styleUrls: ['./querybuilder.component.scss'],
 })
-export class QueryBuilderComponent {
-  // Query Builder Configuration Begin
+export class QueryBuilderComponent implements OnInit {
+  @Input() dataElements: DataElementSearchResult[] = [];
+  @Input() color: ThemePalette = 'primary';
+  @Input() query: QueryCondition = {
+    condition: 'and',
+    rules: [],
+  };
+
+  @Output() queryChange = new EventEmitter<QueryCondition>();
+
   config: QueryBuilderConfig = {
     fields: {},
   };
@@ -42,66 +54,13 @@ export class QueryBuilderComponent {
 
   allowRuleset = true;
 
-  query = {
-    condition: 'and',
-    rules: [],
-  };
-
-  qbController = {
-    showQueryBuilder: false,
-    toggleQueryBuilderText: this.showQueryBuilderText,
-    toggleQueryBuilderIcon: this.hideQueryBuilderIcon,
-  };
-
-  // Query Builder Configuration End
-
-  private _title = 'Query Builder';
-
-  get showQueryBuilderText() {
-    return `Show ${this._title} Editor`;
+  ngOnInit(): void {
+    this.setupConfig();
   }
 
-  get hideQueryBuilderText() {
-    return `Hide ${this._title} Editor`;
+  modelChanged(value: RuleSet) {
+    this.queryChange.emit(value as QueryCondition);
   }
-
-  get showQueryBuilderIcon() {
-    return 'arrow_drop_down';
-  }
-
-  get hideQueryBuilderIcon() {
-    return 'arrow_drop_up';
-  }
-
-  get title(): string {
-    return this._title;
-  }
-
-  @Input() set title(value: string) {
-    this._title = value;
-    this.setToggleQueryBuilderText();
-  }
-
-  @Input() set dataElements(value: DataElementSearchResult[]) {
-    this.setupConfig(value);
-  }
-
-  // Show / Hide query builder configuration begin
-  setToggleQueryBuilderText() {
-    if (this.qbController.showQueryBuilder) {
-      this.qbController.toggleQueryBuilderText = this.hideQueryBuilderText;
-      this.qbController.toggleQueryBuilderIcon = this.hideQueryBuilderIcon;
-    } else {
-      this.qbController.toggleQueryBuilderText = this.showQueryBuilderText;
-      this.qbController.toggleQueryBuilderIcon = this.showQueryBuilderIcon;
-    }
-  }
-
-  toggleQueryBuilder() {
-    this.qbController.showQueryBuilder = !this.qbController.showQueryBuilder;
-    this.setToggleQueryBuilderText();
-  }
-  // Show / Hide query builder configuration end
 
   private queryBuilderDataType(dataType?: DataType) {
     if (dataType?.enumerationValues?.length ?? 0 > 0) {
@@ -191,21 +150,10 @@ export class QueryBuilderComponent {
     }
   }
 
-  private setupConfig(dataElements: DataElementSearchResult[]) {
-    const sortedDataElements: DataElementSearchResult[] = dataElements.sort((n1, n2) => {
-      if (n1.label > n2.label) {
-        return 1;
-      }
-
-      if (n1.label < n2.label) {
-        return -1;
-      }
-
-      return 0;
-    });
-
-    // Clear the query list otherwise errors about missing fields can occur.
-    this.query.rules = [];
+  private setupConfig() {
+    const sortedDataElements: DataElementSearchResult[] = this.dataElements.sort(
+      (n1, n2) => n1.label.localeCompare(n2.label)
+    );
 
     // Reinitialise the object so that the screen will update.
     this.config = {

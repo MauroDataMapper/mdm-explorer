@@ -1,4 +1,4 @@
-/*
+<!--
 Copyright 2022 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -15,17 +15,5 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
-*/
-
-export type DialogStatus = 'ok' | 'cancel' | 'close';
-
-/**
- * Represents a page that represents a model or data to modify.
- */
-export interface IModelPage {
-  /**
-   * Determine if the current state of the page is "dirty", or contains changes which have
-   * not been committed.
-   */
-  isDirty(): boolean;
-}
+-->
+<textarea *ngIf="query" readonly class="output">{{ query | meql }}</textarea>

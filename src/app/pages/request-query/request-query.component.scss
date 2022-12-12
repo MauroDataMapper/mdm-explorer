@@ -16,16 +16,48 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+@import "../../../styles/base/all";
 
-export type DialogStatus = 'ok' | 'cancel' | 'close';
+$back-link-color: $color-mauro-dark-green;
 
-/**
- * Represents a page that represents a model or data to modify.
- */
-export interface IModelPage {
-  /**
-   * Determine if the current state of the page is "dirty", or contains changes which have
-   * not been committed.
-   */
-  isDirty(): boolean;
+.mdm-request-query {
+  &__back-link {
+    margin: 1em 0;
+    display: flex;
+    justify-content: space-between;
+
+    a {
+      text-decoration: none;
+      font-weight: 500;
+      color: $back-link-color;
+    }
+  }
+
+  &__header {
+    margin-bottom: 1.5em;
+  }
+
+  &__description {
+    margin: 1em 0;
+  }
+
+  &__loading {
+    mat-spinner {
+      margin: 2em auto;
+    }
+  }
+
+  &__error {
+    padding: 2em 3em;
+    text-align: center;
+  }
+
+  &__query-header {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__modified {
+    font-size: 14px;
+  }
 }

@@ -43,6 +43,7 @@ import { ServerErrorComponent } from './error/server-error/server-error.componen
 import { DataElementProfileComponent } from './data-element/data-element-profile/data-element-profile.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ChangePasswordComponent } from './change-password/change-password.component';
+import { RequestQueryComponent } from './request-query/request-query.component';
 
 @NgModule({
   declarations: [
@@ -66,6 +67,7 @@ import { ChangePasswordComponent } from './change-password/change-password.compo
     ContactSupportComponent,
     MyRequestsComponent,
     ChangePasswordComponent,
+    RequestQueryComponent,
   ],
   imports: [
     CoreModule,

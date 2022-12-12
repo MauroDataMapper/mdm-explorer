@@ -36,6 +36,8 @@ import { ServerErrorComponent } from './error/server-error/server-error.componen
 import { NotFoundComponent } from './error/not-found/not-found.component';
 import { MyRequestsComponent } from './my-requests/my-requests.component';
 import { ChangePasswordComponent } from './change-password/change-password.component';
+import { RequestQueryComponent } from './request-query/request-query.component';
+import { ModelPageDirtyGuard } from '../shared/guards/model-page-dirty.guard';
 
 export const buildStaticContentRoute = (path: string, staticAssetPath: string): Route => {
   return {
@@ -155,5 +157,11 @@ export const routes: Route[] = [
     path: 'requests',
     component: MyRequestsComponent,
     canActivate: [AuthorizedGuard],
+  },
+  {
+    path: 'requests/:requestId/queries/:queryType',
+    component: RequestQueryComponent,
+    canActivate: [AuthorizedGuard],
+    canDeactivate: [ModelPageDirtyGuard],
   },
 ];

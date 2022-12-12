@@ -38,7 +38,8 @@ import { CatalogueSearchFormComponent } from './catalogue-search-form/catalogue-
 import { OkCancelDialogComponent } from './ok-cancel-dialog/ok-cancel-dialog.component';
 import { QueryBuilderComponent } from '../data-explorer/querybuilder/querybuilder.component';
 import { QueryBuilderModule } from 'angular2-query-builder';
-import { MeqlPipe } from 'src/app/pipes/meql.pipe';
+import { MeqlPipe } from './pipes/meql.pipe';
+import { MeqlOutputComponent } from './meql-output/meql-output.component';
 
 @NgModule({
   declarations: [
@@ -60,6 +61,7 @@ import { MeqlPipe } from 'src/app/pipes/meql.pipe';
     OkCancelDialogComponent,
     QueryBuilderComponent,
     MeqlPipe,
+    MeqlOutputComponent,
   ],
   imports: [CoreModule, SharedModule, QueryBuilderModule],
   exports: [
@@ -75,6 +77,7 @@ import { MeqlPipe } from 'src/app/pipes/meql.pipe';
     SearchFiltersComponent,
     CatalogueSearchFormComponent,
     QueryBuilderComponent,
+    MeqlOutputComponent,
   ],
   providers: [
     {

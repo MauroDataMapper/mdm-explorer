@@ -77,6 +77,18 @@ export class DataModelService {
   constructor(private endpoints: MdmEndpointsService) {}
 
   /**
+   * Gets a Data Model based on the ID of the model in the catalogue.
+   *
+   * @param id The unique identifier of the data model.
+   * @returns An observable which returns a {@link DataModelDetail}.
+   */
+  getDataModelById(id: Uuid): Observable<DataModelDetail> {
+    return this.endpoints.dataModel
+      .get(id)
+      .pipe(map((response: DataModelDetailResponse) => response.body));
+  }
+
+  /**
    * Gets a Data Model based on the full path to the model in the catalogue.
    *
    * @param path The full path to the data model.

@@ -16,15 +16,8 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-.output {
-  width: 100%;
-  height: 120px;
-  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-  -moz-box-sizing: border-box; /* Firefox, other Gecko */
-  box-sizing: border-box; /* Opera/IE 8+ */
-}
 
-/* 
+/*
   Note: Css for setting the height of controls in the query builder
         can be found in _querybuilder.scss.
 */
@@ -44,27 +37,4 @@ SPDX-License-Identifier: Apache-2.0
 
 .query-builder-number {
   width: 150px !important;
-}
-
-/* Handle the displaying of the "Show x Editor" / "Hide x Editor" button. */
-.toggle-query-builder-div {
-  width: 100%;
-  text-align: right;
-}
-
-.toggle-query-builder-button {
-  width: 214px; /* This has been optimised so that the dropdown arrow aligns with the + icon below. */
-  text-align: left;
-}
-
-/* Allow the query builder to slide in and out of view. */
-.box {
-  max-height: 0px;
-  overflow-y: hidden;
-  transition: ease-in-out 400ms max-height;
-}
-
-.box.opened {
-  max-height: 500px;
-  transition: ease-in-out 600ms max-height;
 }

@@ -19,22 +19,10 @@ SPDX-License-Identifier: Apache-2.0
 import { MeqlPipe } from './meql.pipe';
 import { TestBed } from '@angular/core/testing';
 import moment from 'moment';
+import { QueryCondition, QueryExpression } from '../data-explorer.types';
 
 const newline = '\r\n';
 const tab = '\t';
-
-interface Expression {
-  field: string;
-  operator: '=' | '!='; /* We don't need to test every type of operator. */
-  value: string;
-}
-
-interface Condition {
-  condition: 'and' | 'or';
-  rules: Rule[];
-}
-
-type Rule = Expression | Condition;
 
 describe('MeqlPipe', () => {
   let pipe: MeqlPipe;
@@ -57,29 +45,26 @@ describe('MeqlPipe', () => {
       ['transforms field not equal to string', 'Simple String Field', '!=', 'Some Text'],
       ['transforms field equal to number', 'Simple String Field', '=', 0],
       ['transforms field not equal to number', 'Simple String Field', '!=', 99],
-    ])
-    (
-     '%s',
-     (testname, field, operator, value) => {
-        /*
+    ])('%s', (testname, field, operator, value) => {
+      /*
           Expected example:
 
           (
             "Field" = "Value"
           )
         */
-        const query = {
-          condition: 'and',
-          rules: [{ field, operator, value }],
-        };
-        const line1 = `(${newline}`;
-        const line2 = `${tab}"${query.rules[0].field}" ${query.rules[0].operator} "${query.rules[0].value}"${newline}`;
-        const line3 = ')';
+      const query = {
+        condition: 'and',
+        rules: [{ field, operator, value }],
+      };
+      const line1 = `(${newline}`;
+      const line2 = `${tab}"${query.rules[0].field}" ${query.rules[0].operator} "${query.rules[0].value}"${newline}`;
+      const line3 = ')';
 
-        const actual =  pipe.transform(query);
-        const expected = `${line1}${line2}${line3}`;
-        expect(actual).toBe(expected);
-     });
+      const actual = pipe.transform(query);
+      const expected = `${line1}${line2}${line3}`;
+      expect(actual).toBe(expected);
+    });
   });
 
   describe('Double Condition Tests', () => {
@@ -100,7 +85,7 @@ describe('MeqlPipe', () => {
               value: 'String 2',
             },
           ],
-        }
+        },
       ],
       [
         'transforms and uses "or" condition',
@@ -118,13 +103,10 @@ describe('MeqlPipe', () => {
               value: 'String 2',
             },
           ],
-        }
+        },
       ],
-    ])
-    (
-     '%s',
-     (testname, query) => {
-        /*
+    ])('%s', (testname, query) => {
+      /*
         Expected example:
 
         (
@@ -132,19 +114,19 @@ describe('MeqlPipe', () => {
           and "Field2" = "Value2"
         )
         */
-        const line1 = `(${newline}`;
-        const line2 = `${tab}"${query.rules[0].field}" ${query.rules[0].operator} "${query.rules[0].value}"${newline}`;
-        const line3 = `${tab}${query.condition} "${query.rules[1].field}" ${query.rules[1].operator} "${query.rules[1].value}"${newline}`;
-        const line4 = ')';
+      const line1 = `(${newline}`;
+      const line2 = `${tab}"${query.rules[0].field}" ${query.rules[0].operator} "${query.rules[0].value}"${newline}`;
+      const line3 = `${tab}${query.condition} "${query.rules[1].field}" ${query.rules[1].operator} "${query.rules[1].value}"${newline}`;
+      const line4 = ')';
 
-        const actual =  pipe.transform(query);
-        const expected = `${line1}${line2}${line3}${line4}`;
-        expect(actual).toBe(expected);
-     });
+      const actual = pipe.transform(query);
+      const expected = `${line1}${line2}${line3}${line4}`;
+      expect(actual).toBe(expected);
+    });
   });
 
   describe('Double Ruleset Tests', () => {
-    it.each<[string, Condition]>([
+    it.each<[string, QueryCondition]>([
       [
         'transforms and uses "and" and "or" conditions',
         {
@@ -176,7 +158,7 @@ describe('MeqlPipe', () => {
               ],
             },
           ],
-        }
+        },
       ],
       [
         'transforms and uses "or" and "and" conditions',
@@ -209,7 +191,7 @@ describe('MeqlPipe', () => {
               ],
             },
           ],
-        }
+        },
       ],
       [
         'transforms and uses "or" and "or" conditions',
@@ -242,7 +224,7 @@ describe('MeqlPipe', () => {
               ],
             },
           ],
-        }
+        },
       ],
       [
         'transforms and uses "and" and "and" conditions',
@@ -275,13 +257,10 @@ describe('MeqlPipe', () => {
               ],
             },
           ],
-        }
-      ]
-    ])
-    (
-     '%s',
-     (testname, query) => {
-        /*
+        },
+      ],
+    ])('%s', (testname, query) => {
+      /*
         Expected example:
 
         (
@@ -293,19 +272,33 @@ describe('MeqlPipe', () => {
           )
         )
         */
-        const line1 = `(${newline}`;
-        const line2 = `${tab}"${(query.rules[0] as Expression).field}" ${(query.rules[0] as Expression).operator} "${(query.rules[0] as Expression).value}"${newline}`;
-        const line3 = `${tab}${query.condition} "${(query.rules[1] as Expression).field}" ${(query.rules[1] as Expression).operator} "${(query.rules[1] as Expression).value}"${newline}`;
-        const line4 = `${tab}${query.condition} (${newline}`;
-        const line5 = `${tab}${tab}"${((query.rules[2] as Condition).rules[0] as Expression).field}" ${((query.rules[2] as Condition).rules[0] as Expression).operator} "${((query.rules[2] as Condition).rules[0] as Expression).value}"${newline}`;
-        const line6 = `${tab}${tab}${(query.rules[2] as Condition).condition} "${((query.rules[2] as Condition).rules[1] as Expression).field}" ${((query.rules[2] as Condition).rules[1] as Expression).operator} "${((query.rules[2] as Condition).rules[1] as Expression).value}"${newline}`;
-        const line7 = `${tab})${newline}`;
-        const line8 = ')';
+      const line1 = `(${newline}`;
+      const line2 = `${tab}"${(query.rules[0] as QueryExpression).field}" ${
+        (query.rules[0] as QueryExpression).operator
+      } "${(query.rules[0] as QueryExpression).value}"${newline}`;
+      const line3 = `${tab}${query.condition} "${
+        (query.rules[1] as QueryExpression).field
+      }" ${(query.rules[1] as QueryExpression).operator} "${
+        (query.rules[1] as QueryExpression).value
+      }"${newline}`;
+      const line4 = `${tab}${query.condition} (${newline}`;
+      const line5 = `${tab}${tab}"${
+        ((query.rules[2] as QueryCondition).rules[0] as QueryExpression).field
+      }" ${((query.rules[2] as QueryCondition).rules[0] as QueryExpression).operator} "${
+        ((query.rules[2] as QueryCondition).rules[0] as QueryExpression).value
+      }"${newline}`;
+      const line6 = `${tab}${tab}${(query.rules[2] as QueryCondition).condition} "${
+        ((query.rules[2] as QueryCondition).rules[1] as QueryExpression).field
+      }" ${((query.rules[2] as QueryCondition).rules[1] as QueryExpression).operator} "${
+        ((query.rules[2] as QueryCondition).rules[1] as QueryExpression).value
+      }"${newline}`;
+      const line7 = `${tab})${newline}`;
+      const line8 = ')';
 
-        const expected = `${line1}${line2}${line3}${line4}${line5}${line6}${line7}${line8}`;
-        const actual = pipe.transform(query);
-        expect(actual).toBe(expected);
-      });
+      const expected = `${line1}${line2}${line3}${line4}${line5}${line6}${line7}${line8}`;
+      const actual = pipe.transform(query);
+      expect(actual).toBe(expected);
+    });
   });
 
   describe('Date Tests', () => {
