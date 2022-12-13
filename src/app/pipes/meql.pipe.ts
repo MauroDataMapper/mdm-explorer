@@ -80,7 +80,7 @@ export class MeqlPipe implements PipeTransform {
     let nextConnective = '';
 
     if (connective !== '' && !firstRule) {
-      meql += ' ' + this.meqlConnective(connective) + ' ';
+      meql += this.meqlConnective(connective) + ' ';
     }
 
     for (const key in value) {
@@ -101,8 +101,10 @@ export class MeqlPipe implements PipeTransform {
           }
           break;
         case 'field':
-        case 'value':
           meql += this.formattedValue(value[key], true) + ' ';
+          break;
+        case 'value':
+          meql += this.formattedValue(value[key], true);
           break;
         case 'operator':
           meql += this.formattedValue(value[key]) + ' ';
