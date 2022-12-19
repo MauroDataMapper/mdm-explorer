@@ -29,6 +29,9 @@ import {
   DataElementInstance,
   DataElementMultipleOperationResult,
   DataRequest,
+  DataRequestQuery,
+  DataRequestQueryPayload,
+  DataRequestQueryType,
 } from 'src/app/data-explorer/data-explorer.types';
 import { DataAccessRequestsSourceTargetIntersections } from 'src/app/data-explorer/data-requests.service';
 import { RequestCreatedAction } from 'src/app/data-explorer/request-created-dialog/request-created-dialog.component';
@@ -68,6 +71,7 @@ export type DataRequestGetRequestsFolderFn = () => Observable<FolderDetail>;
 export type DataRequestGetFolderNameFn = (userEmail: string) => string;
 
 export interface DataRequestsServiceStub {
+  get: jest.MockedFunction<(id: Uuid) => Observable<DataRequest>>;
   list: jest.MockedFunction<DataRequestsListFn>;
   listDataElements: jest.MockedFunction<DataRequestsListElementsFn>;
   createFromDataElements: jest.MockedFunction<DataRequestsCreateFromDataElementsFn>;
@@ -77,10 +81,17 @@ export interface DataRequestsServiceStub {
   updateRequestsFolder: jest.MockedFunction<DataRequestsUpdateRequestsFolderFn>;
   getRequestsFolder: jest.MockedFunction<DataRequestGetRequestsFolderFn>;
   getDataRequestsFolderName: jest.MockedFunction<DataRequestGetFolderNameFn>;
+  getQuery: jest.MockedFunction<
+    (id: Uuid, type: DataRequestQueryType) => Observable<DataRequestQuery | undefined>
+  >;
+  createOrUpdateQuery: jest.MockedFunction<
+    (requestId: string, payload: DataRequestQueryPayload) => Observable<DataRequestQuery>
+  >;
 }
 
 export const createDataRequestsServiceStub = (): DataRequestsServiceStub => {
   return {
+    get: jest.fn(),
     list: jest.fn() as jest.MockedFunction<DataRequestsListFn>,
     listDataElements: jest.fn() as jest.MockedFunction<DataRequestsListElementsFn>,
     createFromDataElements:
@@ -95,5 +106,7 @@ export const createDataRequestsServiceStub = (): DataRequestsServiceStub => {
     getRequestsFolder: jest.fn() as jest.MockedFunction<DataRequestGetRequestsFolderFn>,
     getDataRequestsFolderName:
       jest.fn() as jest.MockedFunction<DataRequestGetFolderNameFn>,
+    getQuery: jest.fn(),
+    createOrUpdateQuery: jest.fn(),
   };
 };

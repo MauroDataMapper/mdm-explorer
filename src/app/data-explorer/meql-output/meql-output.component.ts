@@ -16,16 +16,20 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
-export type DialogStatus = 'ok' | 'cancel' | 'close';
+@Component({
+  selector: 'mdm-meql-output',
+  templateUrl: './meql-output.component.html',
+  styleUrls: ['./meql-output.component.scss'],
+})
+export class MeqlOutputComponent implements OnChanges {
+  @Input() content?: string;
+  @Input() query?: any;
 
-/**
- * Represents a page that represents a model or data to modify.
- */
-export interface IModelPage {
-  /**
-   * Determine if the current state of the page is "dirty", or contains changes which have
-   * not been committed.
-   */
-  isDirty(): boolean;
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.content && this.content) {
+      this.query = JSON.parse(this.content);
+    }
+  }
 }

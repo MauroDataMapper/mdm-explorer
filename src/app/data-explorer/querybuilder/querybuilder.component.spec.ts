@@ -17,9 +17,9 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MeqlPipe } from '../pipes/meql.pipe';
 
 import { QueryBuilderComponent } from './querybuilder.component';
-import { MeqlPipe } from 'src/app/pipes/meql.pipe';
 
 describe('QueryBuilderComponent', () => {
   let component: QueryBuilderComponent;

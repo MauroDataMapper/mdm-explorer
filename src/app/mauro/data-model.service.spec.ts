@@ -55,6 +55,29 @@ describe('DataModelService', () => {
     expect(service).toBeTruthy();
   });
 
+  it('should return a data model by id', () => {
+    const expectedModel: DataModelDetail = {
+      id: '1',
+      label: 'test model',
+      domainType: CatalogueItemDomainType.DataModel,
+      availableActions: ['show'],
+      finalised: true,
+    };
+
+    endpointsStub.dataModel.get.mockImplementationOnce((id) => {
+      expect(id).toBe(expectedModel.id);
+      return cold('--a|', {
+        a: {
+          body: expectedModel,
+        },
+      });
+    });
+
+    const expected$ = cold('--a|', { a: expectedModel });
+    const actual$ = service.getDataModelById(expectedModel.id!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
+    expect(actual$).toBeObservable(expected$);
+  });
+
   it('should return a data model by path', () => {
     const expectedModel: DataModelDetail = {
       id: '1',
