@@ -129,11 +129,15 @@ SPDX-License-Identifier: Apache-2.0
       </ng-container>
       <!-- Boolean -->
       <ng-container *queryInput="let rule; type: 'boolean'; let onChange = onChange">
-        <mat-checkbox
-          [color]="color"
-          [(ngModel)]="rule.value"
-          (ngModelChange)="onChange()"
-        ></mat-checkbox>
+        <mat-form-field
+          appearance="outline"
+          class="query-builder-input mat-form-field-no-padding"
+        >
+          <mat-select [(ngModel)]="rule.value" (ngModelChange)="onChange()">
+            <mat-option [value]="false">False</mat-option>
+            <mat-option [value]="true">True</mat-option>
+          </mat-select>
+        </mat-form-field>
       </ng-container>
       <!-- Category -->
       <ng-container

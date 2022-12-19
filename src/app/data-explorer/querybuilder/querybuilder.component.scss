@@ -24,17 +24,15 @@ SPDX-License-Identifier: Apache-2.0
 
 /* Set the query builder controls lengths. */
 .query-builder-field {
-  width: 400px !important;
+  width: 40%;
 }
 
 .query-builder-operator {
-  width: 160px !important;
+  width: 10%;
+  min-width: 120px;
 }
 
-.query-builder-input {
-  width: 300px !important;
-}
-
+.query-builder-input,
 .query-builder-number {
-  width: 150px !important;
+  width: 30%;
 }
