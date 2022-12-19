@@ -290,6 +290,7 @@ describe('RequestQueryComponent', () => {
       harness.component.queryType = type;
       harness.component.query = query;
       harness.component.condition = query.condition;
+      harness.component.dirty = true;
     });
 
     it('should save a query to the data request', fakeAsync(() => {
@@ -310,6 +311,7 @@ describe('RequestQueryComponent', () => {
       tick();
 
       expect(toastrSpy).toHaveBeenCalled();
+      expect(harness.component.dirty).toBeFalsy();
     }));
 
     it('should show an error when query failed to save', fakeAsync(() => {
@@ -328,6 +330,7 @@ describe('RequestQueryComponent', () => {
       tick();
 
       expect(toastrSpy).toHaveBeenCalled();
+      expect(harness.component.dirty).toBeTruthy();
     }));
   });
 });

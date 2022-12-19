@@ -134,10 +134,11 @@ export class RequestQueryComponent implements OnInit, IModelPage {
       )
       .subscribe((submitted) => {
         this.toastr.success(`Your ${this.queryType} query was saved successfully.`);
-        // TODO: change below to a redirect
         this.query = submitted;
         if (this.query) {
           this.condition = this.query.condition;
+          this.original = JSON.stringify(this.condition);
+          this.dirty = false;
         }
       });
   }
