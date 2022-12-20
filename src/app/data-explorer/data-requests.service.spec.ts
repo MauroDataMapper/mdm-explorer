@@ -24,6 +24,10 @@ import {
   DataModelFull,
   SourceTargetIntersection,
   MdmIndexBody,
+  DataModelDetail,
+  Uuid,
+  Rule,
+  RuleRepresentation,
 } from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
 import { DataModelService } from '../mauro/data-model.service';
@@ -31,6 +35,11 @@ import {
   DataElementDto,
   DataElementInstance,
   DataRequest,
+  DataRequestQuery,
+  dataRequestQueryLanguage,
+  DataRequestQueryPayload,
+  DataRequestQueryType,
+  QueryCondition,
 } from '../data-explorer/data-explorer.types';
 import { createDataModelServiceStub } from '../testing/stubs/data-model.stub';
 import { createSecurityServiceStub } from '../testing/stubs/security.stub';
@@ -55,6 +64,8 @@ import { ToastrService } from 'ngx-toastr';
 import { createMatDialogStub } from '../testing/stubs/mat-dialog.stub';
 import { createBroadcastServiceStub } from '../testing/stubs/broadcast.stub';
 import { createToastrServiceStub } from '../testing/stubs/toastr.stub';
+import { createRulesServiceStub } from '../testing/stubs/rules.stub';
+import { RulesService } from '../mauro/rules.service';
 
 describe('DataRequestsService', () => {
   let service: DataRequestsService;
@@ -66,6 +77,7 @@ describe('DataRequestsService', () => {
   const dialogStub = createMatDialogStub();
   const broadcastStub = createBroadcastServiceStub();
   const toastrStub = createToastrServiceStub();
+  const rulesStub = createRulesServiceStub();
 
   beforeEach(() => {
     service = setupTestModuleForService(DataRequestsService, {
@@ -101,6 +113,10 @@ describe('DataRequestsService', () => {
         {
           provide: ToastrService,
           useValue: toastrStub,
+        },
+        {
+          provide: RulesService,
+          useValue: rulesStub,
         },
       ],
     });
@@ -141,6 +157,29 @@ describe('DataRequestsService', () => {
       });
 
       // Assert
+      expect(actual$).toBeObservable(expected$);
+    });
+  });
+
+  describe('get', () => {
+    it('should get a data request', () => {
+      const expectedModel: DataModelDetail = {
+        id: '1',
+        label: 'test model',
+        domainType: CatalogueItemDomainType.DataModel,
+        availableActions: ['show'],
+        finalised: false,
+      };
+
+      dataModelsStub.getDataModelById.mockImplementationOnce((id) => {
+        expect(id).toBe(expectedModel.id);
+        return cold('--a|', {
+          a: expectedModel,
+        });
+      });
+
+      const expected$ = cold('--a|', { a: { ...expectedModel, status: 'unsent' } });
+      const actual$ = service.get(expectedModel.id!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
       expect(actual$).toBeObservable(expected$);
     });
   });
@@ -553,6 +592,223 @@ describe('DataRequestsService', () => {
       expect(actual$).toSatisfyOnFlush(() => {
         expect(loadingSpy).toHaveBeenCalledWith({ isLoading: false });
       });
+    });
+  });
+
+  describe('getQuery', () => {
+    const requestId: Uuid = '1234';
+    const queryTypes: DataRequestQueryType[] = ['cohort', 'data'];
+
+    it('should return nothing when no rules exist', () => {
+      rulesStub.list.mockImplementationOnce((dt, id) => {
+        expect(dt).toBe('dataModels');
+        expect(id).toBe(requestId);
+        return cold('--a|', { a: [] });
+      });
+
+      const expected$ = cold('--a|', { a: undefined });
+      const actual$ = service.getQuery(requestId, 'cohort');
+      expect(actual$).toBeObservable(expected$);
+    });
+
+    it.each(queryTypes)(
+      'should return nothing when no matching %p rule found',
+      (type) => {
+        rulesStub.list.mockImplementationOnce((dt, id) => {
+          expect(dt).toBe('dataModels');
+          expect(id).toBe(requestId);
+          return cold('--a|', {
+            a: [
+              {
+                name: 'test',
+              },
+            ],
+          });
+        });
+
+        const expected$ = cold('--a|', { a: undefined });
+        const actual$ = service.getQuery(requestId, type);
+        expect(actual$).toBeObservable(expected$);
+      }
+    );
+
+    it.each(queryTypes)(
+      'should return nothing when no representation found for %p rule',
+      (type) => {
+        rulesStub.list.mockImplementationOnce((dt, id) => {
+          expect(dt).toBe('dataModels');
+          expect(id).toBe(requestId);
+          return cold('--a|', {
+            a: [
+              {
+                name: type,
+                ruleRepresentations: [],
+              },
+            ],
+          });
+        });
+
+        const expected$ = cold('--a|', { a: undefined });
+        const actual$ = service.getQuery(requestId, type);
+        expect(actual$).toBeObservable(expected$);
+      }
+    );
+
+    it.each(queryTypes)('should return query for %p rule', (type) => {
+      const condition = [1, 2, 3];
+      const rule: Rule = {
+        id: '456',
+        name: type,
+        ruleRepresentations: [
+          {
+            id: '789',
+            language: dataRequestQueryLanguage,
+            representation: JSON.stringify(condition),
+          },
+        ],
+      };
+
+      rulesStub.list.mockImplementationOnce((dt, id) => {
+        expect(dt).toBe('dataModels');
+        expect(id).toBe(requestId);
+        return cold('--a|', {
+          a: [rule],
+        });
+      });
+
+      const expected$ = cold('--a|', {
+        a: {
+          ruleId: rule.id,
+          representationId: rule.ruleRepresentations[0].id,
+          type,
+          condition,
+        },
+      });
+      const actual$ = service.getQuery(requestId, type);
+      expect(actual$).toBeObservable(expected$);
+    });
+  });
+
+  describe('createOrUpdateQuery', () => {
+    const requestId: Uuid = '1234';
+    const queryTypes: DataRequestQueryType[] = ['cohort', 'data'];
+    const condition: QueryCondition = { condition: 'and', rules: [] };
+
+    const representation: RuleRepresentation = {
+      id: '789',
+      language: dataRequestQueryLanguage,
+      representation: JSON.stringify(condition, null, 2),
+    };
+    const rule: Rule = {
+      id: '456',
+      name: 'temp',
+      ruleRepresentations: [representation],
+    };
+
+    it.each(queryTypes)('should create a %p rule when it is missing', (type) => {
+      const payload: DataRequestQueryPayload = {
+        type,
+        condition,
+      };
+
+      const expected: DataRequestQuery = {
+        ruleId: rule.id,
+        representationId: representation.id,
+        ...payload,
+      };
+
+      rulesStub.create.mockImplementationOnce((dt, id, rpl) => {
+        expect(dt).toBe('dataModels');
+        expect(id).toBe(requestId);
+        expect(rpl.name).toBe(type);
+        return cold('-a|', { a: rule });
+      });
+
+      rulesStub.createRepresentation.mockImplementationOnce((dt, id, rid, rrpl) => {
+        expect(dt).toBe('dataModels');
+        expect(id).toBe(requestId);
+        expect(rid).toBe(rule.id);
+        expect(rrpl.language).toBe(dataRequestQueryLanguage);
+        expect(rrpl.representation).toBe(representation.representation);
+        return cold('-a|', { a: representation });
+      });
+
+      const expected$ = cold('---(a|)', { a: expected });
+      const actual$ = service.createOrUpdateQuery(requestId, payload);
+      expect(actual$).toBeObservable(expected$);
+    });
+
+    it.each(queryTypes)(
+      'should use an existing %p rule and create a representation',
+      (type) => {
+        const payload: DataRequestQueryPayload = {
+          ruleId: rule.id,
+          type,
+          condition,
+        };
+
+        const expected: DataRequestQuery = {
+          ruleId: rule.id,
+          representationId: representation.id,
+          ...payload,
+        };
+
+        rulesStub.get.mockImplementationOnce((dt, id, rid) => {
+          expect(dt).toBe('dataModels');
+          expect(id).toBe(requestId);
+          expect(rid).toBe(rid);
+          return cold('-a|', { a: rule });
+        });
+
+        rulesStub.createRepresentation.mockImplementationOnce((dt, id, rid, rrpl) => {
+          expect(dt).toBe('dataModels');
+          expect(id).toBe(requestId);
+          expect(rid).toBe(rule.id);
+          expect(rrpl.language).toBe(dataRequestQueryLanguage);
+          expect(rrpl.representation).toBe(representation.representation);
+          return cold('-a|', { a: representation });
+        });
+
+        const expected$ = cold('---(a|)', { a: expected });
+        const actual$ = service.createOrUpdateQuery(requestId, payload);
+        expect(actual$).toBeObservable(expected$);
+      }
+    );
+
+    it.each(queryTypes)('should update a representation for a %p rule', (type) => {
+      const payload: DataRequestQueryPayload = {
+        ruleId: rule.id,
+        representationId: representation.id,
+        type,
+        condition,
+      };
+
+      const expected: DataRequestQuery = {
+        ruleId: rule.id,
+        representationId: representation.id,
+        ...payload,
+      };
+
+      rulesStub.get.mockImplementationOnce((dt, id, rid) => {
+        expect(dt).toBe('dataModels');
+        expect(id).toBe(requestId);
+        expect(rid).toBe(rid);
+        return cold('-a|', { a: rule });
+      });
+
+      rulesStub.updateRepresentation.mockImplementationOnce((dt, id, rid, rrid, rrpl) => {
+        expect(dt).toBe('dataModels');
+        expect(id).toBe(requestId);
+        expect(rid).toBe(rule.id);
+        expect(rrid).toBe(representation.id);
+        expect(rrpl.language).toBe(dataRequestQueryLanguage);
+        expect(rrpl.representation).toBe(representation.representation);
+        return cold('-a|', { a: representation });
+      });
+
+      const expected$ = cold('---(a|)', { a: expected });
+      const actual$ = service.createOrUpdateQuery(requestId, payload);
+      expect(actual$).toBeObservable(expected$);
     });
   });
 });

@@ -16,16 +16,10 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-
-export type DialogStatus = 'ok' | 'cancel' | 'close';
-
-/**
- * Represents a page that represents a model or data to modify.
- */
-export interface IModelPage {
-  /**
-   * Determine if the current state of the page is "dirty", or contains changes which have
-   * not been committed.
-   */
-  isDirty(): boolean;
+.output {
+  width: 100%;
+  height: 120px;
+  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+  -moz-box-sizing: border-box; /* Firefox, other Gecko */
+  box-sizing: border-box; /* Opera/IE 8+ */
 }

@@ -21,6 +21,7 @@ import {
   DataModel,
   DataModelCreatePayload,
   DataModelDetail,
+  RuleRepresentationPayload,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import {
@@ -51,6 +52,10 @@ import {
   DataElementInstance,
   DataElementMultipleOperationResult,
   DataElementOperationResult,
+  DataRequestQuery,
+  dataRequestQueryLanguage,
+  DataRequestQueryPayload,
+  DataRequestQueryType,
   mapToDataRequest,
 } from './data-explorer.types';
 import { DataRequest } from '../data-explorer/data-explorer.types';
@@ -61,6 +66,7 @@ import { RequestCreatedAction } from './request-created-dialog/request-created-d
 import { ToastrService } from 'ngx-toastr';
 import { BroadcastService } from '../core/broadcast.service';
 import { DialogService } from './dialog.service';
+import { RulesService } from '../mauro/rules.service';
 
 /**
  * A collection data access requests and their intersections with target models.
@@ -82,7 +88,8 @@ export class DataRequestsService {
     private security: SecurityService,
     private toastr: ToastrService,
     private broadcast: BroadcastService,
-    private dialogs: DialogService
+    private dialogs: DialogService,
+    private rules: RulesService
   ) {}
 
   /**
@@ -101,6 +108,18 @@ export class DataRequestsService {
     } else {
       return EMPTY;
     }
+  }
+
+  /**
+   * Gets a single data requests as a {@link DataRequest} object.
+   *
+   * @param id The unique identifier of the data request.
+   * @returns an observable containing an array of data requests
+   */
+  get(id: Uuid): Observable<DataRequest> {
+    return this.dataModels
+      .getDataModelById(id)
+      .pipe(map((dataModel) => mapToDataRequest(dataModel)));
   }
 
   /**
@@ -398,5 +417,93 @@ export class DataRequestsService {
    */
   public getDataRequestsFolderName(userEmail: string): string {
     return userEmail.replace('@', '[at]');
+  }
+
+  /**
+   * Get a query from a data request.
+   *
+   * @param requestId The unique identifier of the data request.
+   * @param type The type of query to get.
+   * @returns A {@link DataRequestQuery} containing the query content, or undefined if one cannot be found.
+   */
+  getQuery(
+    requestId: Uuid,
+    type: DataRequestQueryType
+  ): Observable<DataRequestQuery | undefined> {
+    return this.rules.list('dataModels', requestId).pipe(
+      map((rules) => {
+        const rule = rules.find((r) => r.name === type);
+        if (!rule) {
+          return undefined;
+        }
+
+        const representation = rule?.ruleRepresentations.find(
+          (rr) => rr.language === dataRequestQueryLanguage
+        );
+        if (!representation) {
+          return undefined;
+        }
+
+        return {
+          ruleId: rule.id,
+          representationId: representation.id,
+          type,
+          condition: JSON.parse(representation.representation),
+        };
+      })
+    );
+  }
+
+  createOrUpdateQuery(
+    requestId: Uuid,
+    payload: DataRequestQueryPayload
+  ): Observable<DataRequestQuery> {
+    const rule$ = payload.ruleId
+      ? this.rules.get('dataModels', requestId, payload.ruleId)
+      : this.rules.create('dataModels', requestId, { name: payload.type });
+
+    return rule$.pipe(
+      catchError(() => {
+        this.toastr.error('There was a problem getting the rule for your query.');
+        return EMPTY;
+      }),
+      switchMap((rule) => {
+        const representation: RuleRepresentationPayload = {
+          language: dataRequestQueryLanguage,
+          representation: JSON.stringify(payload.condition, null, 2),
+        };
+
+        const representation$ = payload.representationId
+          ? this.rules.updateRepresentation(
+              'dataModels',
+              requestId,
+              rule.id,
+              payload.representationId,
+              representation
+            )
+          : this.rules.createRepresentation(
+              'dataModels',
+              requestId,
+              rule.id,
+              representation
+            );
+
+        return forkJoin([of(rule), representation$]);
+      }),
+      catchError(() => {
+        this.toastr.error(
+          'There was a problem getting the representation for your query.'
+        );
+        return EMPTY;
+      }),
+      map(([rule, representation]) => {
+        return {
+          ruleId: rule.id,
+          representationId: representation.id,
+          type: payload.type,
+          condition: JSON.parse(representation.representation),
+        };
+      })
+    );
   }
 }

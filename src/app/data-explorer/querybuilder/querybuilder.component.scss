@@ -17,15 +17,24 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 
-export type DialogStatus = 'ok' | 'cancel' | 'close';
+/*
+  Note: Css for setting the height of controls in the query builder
+        can be found in _querybuilder.scss.
+*/
 
-/**
- * Represents a page that represents a model or data to modify.
- */
-export interface IModelPage {
-  /**
-   * Determine if the current state of the page is "dirty", or contains changes which have
-   * not been committed.
-   */
-  isDirty(): boolean;
+/* Set the query builder controls lengths. */
+.query-builder-field {
+  width: 400px !important;
+}
+
+.query-builder-operator {
+  width: 160px !important;
+}
+
+.query-builder-input {
+  width: 300px !important;
+}
+
+.query-builder-number {
+  width: 150px !important;
 }

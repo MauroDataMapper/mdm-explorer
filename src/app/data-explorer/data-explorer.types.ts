@@ -23,6 +23,7 @@ import {
   CatalogueItemDomainType,
   DataElement,
   DataModel,
+  DataType,
   ProfileField,
   ProfileSearchResult,
   ProfileSearchResultField,
@@ -280,6 +281,7 @@ export interface DataElementInstance extends IsBookmarkable {
    * The unique ID of the parent data class the data element belongs under.
    */
   dataClass: Uuid;
+  dataType?: DataType;
   label: string;
   breadcrumbs?: Breadcrumb[];
   domainType?: CatalogueItemDomainType;
@@ -321,3 +323,39 @@ export interface IsBookmarkable {
 export interface DataElementDeleteEvent {
   item: DataElementSearchResult;
 }
+
+export type DataRequestQueryType = 'none' | 'cohort' | 'data';
+
+export const dataRequestQueryLanguage = 'json-meql';
+
+export interface DataRequestQueryPayload {
+  ruleId?: Uuid;
+  representationId?: Uuid;
+  type: DataRequestQueryType;
+  condition: QueryCondition;
+}
+
+export type DataRequestQuery = Required<DataRequestQueryPayload>;
+
+export interface QueryExpression {
+  field: string;
+  operator:
+    | '='
+    | '!='
+    | '<'
+    | '<='
+    | '>'
+    | '>='
+    | 'contains'
+    | 'like'
+    | 'startswith'
+    | 'endswith';
+  value: string;
+}
+
+export interface QueryCondition {
+  condition: 'and' | 'or';
+  rules: QueryRule[];
+}
+
+export type QueryRule = QueryExpression | QueryCondition;

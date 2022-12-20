@@ -91,6 +91,7 @@ export type DataModelDataElementToBasicFn = (
 ) => DataElementInstance;
 
 export interface DataModelServiceStub {
+  getDataModelById: jest.MockedFunction<(id: Uuid) => Observable<DataModelDetail>>;
   getDataModel: jest.MockedFunction<DataModelGetDataModelFn>;
   getDataClasses: jest.MockedFunction<DataModelGetDataClassesFn>;
   getDataClass: jest.MockedFunction<DataModelGetDataClassFn>;
@@ -111,6 +112,9 @@ export interface DataModelServiceStub {
 
 export const createDataModelServiceStub = (): DataModelServiceStub => {
   return {
+    getDataModelById: jest.fn() as jest.MockedFunction<
+      (id: Uuid) => Observable<DataModelDetail>
+    >,
     getDataModel: jest.fn() as jest.MockedFunction<DataModelGetDataModelFn>,
     getDataClasses: jest.fn() as jest.MockedFunction<DataModelGetDataClassesFn>,
     getDataClass: jest.fn() as jest.MockedFunction<DataModelGetDataClassFn>,

@@ -1,0 +1,235 @@
+<!--
+Copyright 2022 University of Oxford
+and Health and Social Care Information Centre, also known as NHS Digital
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+SPDX-License-Identifier: Apache-2.0
+-->
+<div class="query-builder">
+  <mdm-meql-output [query]="query"></mdm-meql-output>
+
+  <mat-card class="mdm-data-element-card">
+    <query-builder
+      [(ngModel)]="query"
+      (ngModelChange)="modelChanged($event)"
+      [config]="config"
+      [operatorMap]="operatorMap"
+      [allowRuleset]="allowRuleset"
+    >
+      <!-- Add/Remove rule and ruleset buttons -->
+      <ng-container
+        *queryButtonGroup="
+          let ruleset;
+          let addRule = addRule;
+          let addRuleSet = addRuleSet;
+          let removeRuleSet = removeRuleSet
+        "
+      >
+        <button
+          class="add-rule-button"
+          type="button"
+          mat-button
+          [color]="color"
+          (click)="addRule()"
+        >
+          <mat-icon>add</mat-icon>
+          Rule
+        </button>
+        <button
+          class="add-rule-button"
+          type="button"
+          mat-button
+          [color]="color"
+          *ngIf="addRuleSet"
+          (click)="addRuleSet()"
+        >
+          <mat-icon>add_circle_outline</mat-icon>
+          Rule Set
+        </button>
+        <button
+          type="button"
+          mat-button
+          matTooltip="Remove Rule Set"
+          [color]="color"
+          *ngIf="removeRuleSet"
+          (click)="removeRuleSet()"
+        >
+          <mat-icon>remove_circle_outline</mat-icon>
+        </button>
+      </ng-container>
+      <!-- Remove Rule Button -->
+      <ng-container *queryRemoveButton="let rule; let removeRule = removeRule">
+        <button
+          type="button"
+          mat-icon-button
+          matTooltip="Remove Rule"
+          [color]="color"
+          (click)="removeRule(rule)"
+        >
+          <mat-icon>remove</mat-icon>
+        </button>
+      </ng-container>
+      <!--  AND / OR group-->
+      <ng-container *querySwitchGroup="let ruleset; let onChange = onChange">
+        <mat-radio-group
+          *ngIf="ruleset"
+          [color]="color"
+          [(ngModel)]="ruleset.condition"
+          (ngModelChange)="onChange($event)"
+        >
+          <mat-radio-button value="and">AND</mat-radio-button>
+          <mat-radio-button value="or">OR</mat-radio-button>
+        </mat-radio-group>
+      </ng-container>
+      <!-- Field Selector -->
+      <ng-container
+        *queryField="
+          let rule;
+          let fields = fields;
+          let onChange = onChange;
+          let getFields = getFields
+        "
+      >
+        <mat-form-field
+          appearance="outline"
+          class="query-builder-field mat-form-field-no-padding"
+        >
+          <mat-select [(ngModel)]="rule.field" (ngModelChange)="onChange($event, rule)">
+            <mat-option
+              *ngFor="let field of getFields(rule.entity)"
+              [value]="field.value"
+            >
+              {{ field.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <!-- Operator -->
+      <ng-container
+        *queryOperator="let rule; let operators = operators; let onChange = onChange"
+      >
+        <mat-form-field appearance="outline" class="query-builder-operator">
+          <mat-select [(ngModel)]="rule.operator" (ngModelChange)="onChange(rule)">
+            <mat-option *ngFor="let value of operators" [value]="value">
+              {{ value }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <!-- Boolean -->
+      <ng-container *queryInput="let rule; type: 'boolean'; let onChange = onChange">
+        <mat-checkbox
+          [color]="color"
+          [(ngModel)]="rule.value"
+          (ngModelChange)="onChange()"
+        ></mat-checkbox>
+      </ng-container>
+      <!-- Category -->
+      <ng-container
+        *queryInput="
+          let rule;
+          let field = field;
+          let options = options;
+          type: 'category';
+          let onChange = onChange
+        "
+      >
+        <mat-form-field
+          appearance="outline"
+          class="query-builder-input mat-form-field-no-padding"
+        >
+          <mat-select [(ngModel)]="rule.value" (ngModelChange)="onChange()">
+            <mat-option *ngFor="let opt of options" [value]="opt.value">
+              {{ opt.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <!-- Date -->
+      <ng-container *queryInput="let rule; type: 'date'; let onChange = onChange">
+        <mat-form-field
+          appearance="outline"
+          class="query-builder-input mat-form-field-no-padding"
+        >
+          <input
+            matInput
+            [matDatepicker]="picker"
+            [(ngModel)]="rule.value"
+            (ngModelChange)="onChange()"
+          />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </ng-container>
+      <!-- Multiselect -->
+      <ng-container
+        *queryInput="
+          let rule;
+          let options = options;
+          type: 'multiselect';
+          let onChange = onChange
+        "
+      >
+        <mat-form-field appearance="outline" class="query-builder-input">
+          <mat-select [(ngModel)]="rule.value" multiple (ngModelChange)="onChange()">
+            <mat-option *ngFor="let opt of options" [value]="opt.value">
+              {{ opt.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <!-- Number -->
+      <ng-container
+        *queryInput="let rule; let field = field; type: 'number'; let onChange = onChange"
+      >
+        <mat-form-field appearance="outline" class="query-builder-number">
+          <input
+            matInput
+            [(ngModel)]="rule.value"
+            type="number"
+            (ngModelChange)="onChange()"
+          />
+        </mat-form-field>
+      </ng-container>
+      <!-- String -->
+      <ng-container
+        *queryInput="let rule; let field = field; type: 'string'; let onChange = onChange"
+      >
+        <mat-form-field
+          appearance="outline"
+          class="query-builder-input mat-form-field-no-padding"
+        >
+          <input matInput [(ngModel)]="rule.value" (ngModelChange)="onChange()" />
+        </mat-form-field>
+      </ng-container>
+      <!-- Text Area -->
+      <ng-container
+        *queryInput="
+          let rule;
+          let field = field;
+          type: 'textarea';
+          let onChange = onChange
+        "
+      >
+        <mat-form-field
+          appearance="outline"
+          class="query-builder-input mat-form-field-no-padding"
+        >
+          <textarea matInput [(ngModel)]="rule.value" (ngModelChange)="onChange()">
+          </textarea>
+        </mat-form-field>
+      </ng-container>
+    </query-builder>
+  </mat-card>
+</div>
