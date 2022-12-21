@@ -19,7 +19,16 @@ SPDX-License-Identifier: Apache-2.0
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, filter, finalize, map, Subject, takeUntil } from 'rxjs';
+import {
+  catchError,
+  EMPTY,
+  filter,
+  finalize,
+  map,
+  Subject,
+  switchMap,
+  takeUntil,
+} from 'rxjs';
 import { environment } from '../environments/environment';
 import { BroadcastEvent, BroadcastService } from './core/broadcast.service';
 import { StateRouterService } from './core/state-router.service';
@@ -181,11 +190,15 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this.broadcast
       .onUserSignedIn()
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe((userSignedIn) => {
-        this.setupSignedInUser(userSignedIn);
-        this.getRequestsInfo();
-      });
+      .pipe(
+        takeUntil(this.unsubscribe$),
+        switchMap((userSignedIn) => {
+          this.setupSignedInUser(userSignedIn);
+          return this.getUnsentRequestCount();
+        }),
+        map((unsentRequestsCount) => (this.unsentRequestsCount = unsentRequestsCount))
+      )
+      .subscribe(() => {});
 
     this.broadcast
       .on('sign-out-user')
@@ -195,7 +208,9 @@ export class AppComponent implements OnInit, OnDestroy {
     const user = this.userDetails.get();
     if (user) {
       this.setupSignedInUser(user);
-      this.getRequestsInfo();
+      this.getUnsentRequestCount().subscribe(
+        (unsentRequestsCount) => (this.unsentRequestsCount = unsentRequestsCount)
+      );
     }
 
     this.signedInUser = user;
@@ -264,38 +279,36 @@ export class AppComponent implements OnInit, OnDestroy {
       : undefined;
   }
 
-  /**
-   * Check how many current requests user has pending.
-   */
-  private getRequestsInfo() {
-    this.dataRequests
-      .list()
-      .pipe(
-        catchError(() => {
-          this.toastr.error('There was a problem locating your current requests.');
-          return EMPTY;
-        }),
-        map((requests) => {
-          return requests.filter((req) => req.status === 'unsent').length;
-        })
-      )
-      .subscribe((unsentRequestsCount) => {
-        this.unsentRequestsCount = unsentRequestsCount;
-      });
+  private getUnsentRequestCount() {
+    return this.dataRequests.list().pipe(
+      catchError(() => {
+        this.toastr.error('There was a problem locating your current requests.');
+        return EMPTY;
+      }),
+      map((requests) => {
+        return requests.filter((req) => req.status === 'unsent').length;
+      })
+    );
   }
 
   private subscribeDataRequestChanges() {
     this.broadcast
       .on('data-request-added')
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(() => this.unsentRequestsCount++);
+      .pipe(
+        takeUntil(this.unsubscribe$),
+        switchMap(() => this.getUnsentRequestCount()),
+        map((unsentRequestsCount) => (this.unsentRequestsCount = unsentRequestsCount))
+      )
+      .subscribe(() => {});
 
     this.broadcast
       .on('data-request-submitted')
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(
-        () => (this.unsentRequestsCount = Math.max(0, this.unsentRequestsCount - 1))
-      );
+      .pipe(
+        takeUntil(this.unsubscribe$),
+        switchMap(() => this.getUnsentRequestCount()),
+        map((unsentRequestsCount) => (this.unsentRequestsCount = unsentRequestsCount))
+      )
+      .subscribe(() => {});
   }
 
   private setupIdleTimer() {
