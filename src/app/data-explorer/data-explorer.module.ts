@@ -84,7 +84,7 @@ import { MeqlOutputComponent } from './meql-output/meql-output.component';
       provide: PAGINATION_CONFIG,
       useValue: {
         defaultPageSize: 10,
-        maxPagesToShow: 10,
+        maxPagesToShow: 5,
       },
     },
   ],

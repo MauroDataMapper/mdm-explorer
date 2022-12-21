@@ -71,4 +71,11 @@ $no-results-background-color: $color-mauro-light-gold;
     padding: 2em 3em;
     border-radius: 4px;
   }
+
+  &__footer-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1em;
+  }
 }
