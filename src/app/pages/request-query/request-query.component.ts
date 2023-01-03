@@ -32,7 +32,7 @@ import {
   QueryCondition,
 } from 'src/app/data-explorer/data-explorer.types';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
-import { QueryBuilderService } from 'src/app/mauro/query-builder.service';
+import { QueryBuilderService } from 'src/app/data-explorer/query-builder.service';
 import { IModelPage } from 'src/app/shared/types/shared.types';
 
 const defaultQueryCondition: QueryCondition = {

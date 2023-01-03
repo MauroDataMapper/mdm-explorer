@@ -36,6 +36,8 @@ export class AppErrorHandlerService implements ErrorHandler {
       error = error.rejection;
     }
 
+    console.error(error);
+
     this.dialog.open(AppErrorDialogComponent, {
       data: {
         error,

@@ -36,6 +36,7 @@ import {
   MdmSessionResource,
   MdmSummaryMetadataResource,
   MdmTerminologyResource,
+  MdmTermResource,
 } from '@maurodatamapper/mdm-resources';
 import { MdmHttpClientService } from './mdm-http-client.service';
 import { MdmPluginResearchResource } from './plugins/plugin-research.resource';
@@ -64,6 +65,7 @@ export class MdmEndpointsService {
   security = new MdmSecurityResource(this.configuration, this.httpClient);
   session = new MdmSessionResource(this.configuration, this.httpClient);
   summaryMetadata = new MdmSummaryMetadataResource(this.configuration, this.httpClient);
+  term = new MdmTermResource(this.configuration, this.httpClient);
   terminology = new MdmTerminologyResource(this.configuration, this.httpClient);
 
   constructor(

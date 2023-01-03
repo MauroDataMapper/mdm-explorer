@@ -16,19 +16,21 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-@import "./base/all";
+import {
+  FilterQueryParameters,
+  TermIndexResponse,
+  Uuid,
+} from '@maurodatamapper/mdm-resources';
+import { Observable } from 'rxjs';
 
-.query-builder {
-  .mat-form-field {
-    margin: 0 5px; /* Add a space before the next control*/
-  }
-
-  .mat-form-field-wrapper {
-    padding-bottom: 0;
-  }
-
-  /* Set the space between radio buttons */
-  .mat-radio-button {
-    padding: 10px;
-  }
+export interface MdmTermResourceStub {
+  list: jest.MockedFunction<
+    (id: Uuid, query?: FilterQueryParameters) => Observable<TermIndexResponse>
+  >;
 }
+
+export const createTermStub = (): MdmTermResourceStub => {
+  return {
+    list: jest.fn(),
+  };
+};

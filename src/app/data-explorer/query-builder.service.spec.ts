@@ -16,33 +16,17 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-/*
-Copyright 2022 University of Oxford
-and Health and Social Care Information Centre, also known as NHS Digital
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+/* eslint-disable @typescript-eslint/member-ordering */
 
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-SPDX-License-Identifier: Apache-2.0
-*/
 import {
   CatalogueItemDomainType,
   DataType,
-  MdmResourcesConfiguration,
   Profile,
 } from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
 import { setupTestModuleForService } from '../testing/testing.helpers';
-import { ProfileService } from './profile.service';
+import { ProfileService } from '../mauro/profile.service';
 import { QueryBuilderService, QueryConfiguration } from './query-builder.service';
 import {
   DataElementSearchResult,
@@ -103,6 +87,22 @@ abstract class testHelper {
     id: 'dt-time',
     domainType: CatalogueItemDomainType.ReferenceType,
     label: 'time',
+  };
+
+  public static dataType_modelDataTypeTerminology: DataType = {
+    id: 'dt-model-terminology',
+    domainType: CatalogueItemDomainType.ModelDataType,
+    label: 'terminology-dt',
+    modelResourceDomainType: CatalogueItemDomainType.Terminology,
+    modelResourceId: 'tm-123',
+  };
+
+  public static dataType_modelDataTypeCodeset: DataType = {
+    id: 'dt-model-codeset',
+    domainType: CatalogueItemDomainType.ModelDataType,
+    label: 'codeset-dt',
+    modelResourceDomainType: CatalogueItemDomainType.CodeSet,
+    modelResourceId: 'cs-123',
   };
 
   public static expectedProfilesStubGet = (
@@ -167,10 +167,6 @@ describe('QueryBuilderService', () => {
         {
           provide: ProfileService,
           useValue: profilesStub,
-        },
-        {
-          provide: MdmResourcesConfiguration,
-          useValue: {},
         },
       ],
     });
@@ -333,118 +329,134 @@ describe('QueryBuilderService', () => {
         true,
         'string',
       ],
-    ])(
-      '%s',
-      (testname, dataType, mappedType, isReferencedInQuery, expectedMappedType) => {
-        const isMapped = mappedType !== undefined;
+      [
+        'finds terminology when data type is model data type',
+        testHelper.dataType_modelDataTypeTerminology,
+        undefined,
+        false,
+        'terminology',
+      ],
+      [
+        'finds codeset when data type is model data type',
+        testHelper.dataType_modelDataTypeCodeset,
+        undefined,
+        false,
+        'terminology',
+      ],
+    ])('%s', (_, dataType, mappedType, isReferencedInQuery, expectedMappedType) => {
+      const isMapped = mappedType !== undefined;
 
-        const expectedDataElementSearchResult: DataElementSearchResult[] = [
-          {
-            id: 'f-1',
-            label: 'field',
-            dataType,
-          } as DataElementSearchResult,
-        ];
+      const expectedDataElementSearchResult: DataElementSearchResult[] = [
+        {
+          id: 'f-1',
+          label: 'field',
+          dataType,
+        } as DataElementSearchResult,
+      ];
 
-        const expectedQuery: DataRequestQueryPayload | undefined = isReferencedInQuery
-          ? ({
-              condition: {
-                condition: 'and',
-                rules: [
-                  {
-                    field: `field (${expectedMappedType})`,
-                    operator: '=',
-                    value: 'value-1',
-                  },
-                ],
-              },
-            } as DataRequestQueryPayload)
-          : undefined;
-
-        const expectedQueryBuilderConfig: QueryBuilderConfig = {
-          fields:
-            expectedMappedType !== undefined
-              ? {
-                  field: {
-                    defaultValue:
-                      expectedMappedType === 'number'
-                        ? 0
-                        : expectedMappedType === 'string'
-                        ? ''
-                        : expectedMappedType === 'boolean'
-                        ? false
-                        : null,
-                    name: `field (${expectedMappedType})`,
-                    options:
-                      expectedMappedType === 'category'
-                        ? [
-                            { name: 'Option 1', value: 'Option 1' },
-                            { name: 'Option 2', value: 'Option 2' },
-                          ]
-                        : [],
-                    type: expectedMappedType,
-                  },
-                }
-              : ({} as any),
-        };
-
-        const profiles: Profile[] = isMapped
-          ? dataType.domainType !== CatalogueItemDomainType.PrimitiveType
-            ? [testHelper.createMappingProfile(dataType, mappedType)]
-            : [
-                testHelper.createMappingProfile(
-                  dataType,
-                  mappedType,
-                  CatalogueItemDomainType.ReferenceType
-                ),
-              ]
-          : [];
-
-        const mockProfile = (profile: Profile[]) => {
-          profilesStub.get.mockImplementationOnce(
-            (catalogueItemDomainType, catalogueItemId, profileNamespace, profileName) => {
-              testHelper.expectedProfilesStubGet(
-                catalogueItemDomainType,
-                catalogueItemId,
-                profileNamespace,
-                profileName,
-                dataType.id ?? ''
-              );
-              return cold(
-                dataType.domainType !== CatalogueItemDomainType.PrimitiveType
-                  ? 'a|'
-                  : '--a|',
+      const expectedQuery: DataRequestQueryPayload | undefined = isReferencedInQuery
+        ? ({
+            condition: {
+              condition: 'and',
+              rules: [
                 {
-                  a: testHelper.getProfile(profile, dataType.label),
-                }
-              );
-            }
-          );
-        };
+                  field: `field (${expectedMappedType})`,
+                  operator: '=',
+                  value: 'value-1',
+                },
+              ],
+            },
+          } as DataRequestQueryPayload)
+        : undefined;
 
-        const expectedResult: QueryConfiguration = {
-          dataElementSearchResult: expectedDataElementSearchResult,
-          dataRequestQueryPayload: expectedQuery as Required<DataRequestQueryPayload>,
-          config: expectedQueryBuilderConfig,
-        };
+      const expectedQueryBuilderConfig: QueryBuilderConfig = {
+        fields:
+          expectedMappedType !== undefined
+            ? {
+                field: {
+                  defaultValue:
+                    expectedMappedType === 'number'
+                      ? 0
+                      : expectedMappedType === 'string'
+                      ? ''
+                      : expectedMappedType === 'boolean'
+                      ? false
+                      : null,
+                  name: `field (${expectedMappedType})`,
+                  options:
+                    expectedMappedType === 'category'
+                      ? [
+                          { name: 'Option 1', value: 'Option 1' },
+                          { name: 'Option 2', value: 'Option 2' },
+                        ]
+                      : expectedMappedType === 'terminology'
+                      ? [
+                          {
+                            name: 'modelResourceDomainType',
+                            value: dataType.modelResourceDomainType,
+                          },
+                          { name: 'modelResourceId', value: dataType.modelResourceId },
+                        ]
+                      : [],
+                  type: expectedMappedType,
+                },
+              }
+            : ({} as any),
+      };
 
-        mockProfile(profiles);
+      const profiles: Profile[] = isMapped
+        ? dataType.domainType !== CatalogueItemDomainType.PrimitiveType
+          ? [testHelper.createMappingProfile(dataType, mappedType)]
+          : [
+              testHelper.createMappingProfile(
+                dataType,
+                mappedType,
+                CatalogueItemDomainType.ReferenceType
+              ),
+            ]
+        : [];
 
-        const expected$ = cold(
-          dataType.domainType !== CatalogueItemDomainType.PrimitiveType
-            ? '(a|)'
-            : '---(a|)',
-          {
-            a: expectedResult,
+      const mockProfile = (profile: Profile[]) => {
+        profilesStub.get.mockImplementationOnce(
+          (catalogueItemDomainType, catalogueItemId, profileNamespace, profileName) => {
+            testHelper.expectedProfilesStubGet(
+              catalogueItemDomainType,
+              catalogueItemId,
+              profileNamespace,
+              profileName,
+              dataType.id ?? ''
+            );
+            return cold(
+              dataType.domainType !== CatalogueItemDomainType.PrimitiveType
+                ? 'a|'
+                : '--a|',
+              {
+                a: testHelper.getProfile(profile, dataType.label),
+              }
+            );
           }
         );
-        const actual$ = service.setupConfig(
-          expectedDataElementSearchResult,
-          expectedQuery
-        );
+      };
 
-        expect(actual$).toBeObservable(expected$);
-      }
-    );
+      const expectedResult: QueryConfiguration = {
+        dataElementSearchResult: expectedDataElementSearchResult,
+        dataRequestQueryPayload: expectedQuery as Required<DataRequestQueryPayload>,
+        config: expectedQueryBuilderConfig,
+      };
+
+      mockProfile(profiles);
+
+      const expected$ = cold(
+        dataType.domainType !== CatalogueItemDomainType.PrimitiveType
+          ? '(a|)'
+          : '---(a|)',
+        {
+          a: expectedResult,
+        }
+      );
+      const actual$ = service.setupConfig(expectedDataElementSearchResult, expectedQuery);
+
+      expect(actual$).toBeObservable(expected$);
+    });
   });
 });

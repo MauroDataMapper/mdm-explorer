@@ -337,20 +337,24 @@ export interface DataRequestQueryPayload {
 
 export type DataRequestQuery = Required<DataRequestQueryPayload>;
 
+export type QueryOperator =
+  | '='
+  | '!='
+  | '<'
+  | '<='
+  | '>'
+  | '>='
+  | 'contains'
+  | 'like'
+  | 'startswith'
+  | 'endswith'
+  | 'in'
+  | 'not in';
+
 export interface QueryExpression {
   field: string;
-  operator:
-    | '='
-    | '!='
-    | '<'
-    | '<='
-    | '>'
-    | '>='
-    | 'contains'
-    | 'like'
-    | 'startswith'
-    | 'endswith';
-  value: string;
+  operator: QueryOperator;
+  value: any;
 }
 
 export interface QueryCondition {
