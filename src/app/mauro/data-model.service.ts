@@ -100,6 +100,11 @@ export class DataModelService {
       .pipe(map((response: DataModelDetailResponse) => response.body));
   }
 
+  getDataModelById(id: Uuid): Observable<DataModelDetail> {
+    return this.endpoints.dataModel.get(id)
+      .pipe(map((response: DataModelDetailResponse) => response.body));
+  }
+
   /**
    * Gets a collection of Data Classes from a parent catalogue item.
    * The parent could be either a Data Model or parent Data Class.

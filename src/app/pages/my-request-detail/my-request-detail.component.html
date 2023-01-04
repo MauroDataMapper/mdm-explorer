@@ -1,0 +1,55 @@
+<div *ngIf="request">
+  <div class="main-row hero">
+    <h1>{{ request.label }}</h1>
+  </div>
+  <div class="container hero-top-spacer">
+    <div *ngIf="state === 'loading'" class="mdm-my-request__progress">
+      <mat-progress-bar color="primary" mode="indeterminate"></mat-progress-bar>
+    </div>
+    <div class="col">
+      <div class="mdm-my-request__request-header">
+        <div class="mdm-my-request__request-header-title">
+          <div class="mdm-my-request__request-header--name">
+            <mdm-request-status-chip [status]="request.status"></mdm-request-status-chip>
+          </div>
+          <button
+            *ngIf="request.status === 'unsent'"
+            mat-raised-button
+            (click)="submitRequest()"
+          >
+            Submit request
+          </button>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="request.description" class="mdm-my-request__request-description">
+      <p>{{ request.description }}</p>
+    </div>
+    <div
+      class="mdm-my-request__request-elements"
+      *ngIf="sourceTargetIntersections.dataAccessRequests.length > 0"
+    >
+      <mdm-data-element-row
+        *ngFor="let element of requestElements"
+        [item]="element"
+        (delete)="removeItem($event)"
+        [sourceTargetIntersections]="sourceTargetIntersections"
+        [suppressViewRequestsDialogButton]="true"
+        (requestAddDelete)="handlePossibleSelfDelete($event)"
+        (checked)="onSelectElement($event)"
+      >
+      </mdm-data-element-row>
+    </div>
+    <mat-checkbox (change)="onSelectAll($event)">Select all</mat-checkbox>
+    <button
+      class="ms-4"
+      mat-raised-button
+      color="primary"
+      [disabled]="removeSelectedButtonDisabled"
+      (click)="removeSelected()"
+    >
+      Remove selected ...
+    </button>
+    <div class="float-start mdm-my-request__request-elements-footer"></div>
+  </div>
+</div>

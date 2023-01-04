@@ -38,6 +38,7 @@ import { MyRequestsComponent } from './my-requests/my-requests.component';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { RequestQueryComponent } from './request-query/request-query.component';
 import { ModelPageDirtyGuard } from '../shared/guards/model-page-dirty.guard';
+import { MyRequestDetailComponent } from './my-request-detail/my-request-detail.component';
 
 export const buildStaticContentRoute = (path: string, staticAssetPath: string): Route => {
   return {
@@ -163,5 +164,10 @@ export const routes: Route[] = [
     component: RequestQueryComponent,
     canActivate: [AuthorizedGuard],
     canDeactivate: [ModelPageDirtyGuard],
+  },
+  {
+    path: 'requests/:requestId',
+    component: MyRequestDetailComponent,
+    canActivate: [AuthorizedGuard],
   },
 ];

@@ -29,12 +29,11 @@ $request-header-padding: 0.5em 1.2em;
 
 $request-elements-max-height: 500px;
 $row-footer-content-color: $color-mauro-light-gold;
-
-.mdm-my-requests {
+.mdm-my-request {
   border: $header-border;
   border-radius: $header-border-radius;
 
-  &__request-row__footer {
+  &__request-description {
     padding: 0.75em 1.2em;
     background-color: $row-footer-content-color;
     button {
@@ -49,6 +48,28 @@ $row-footer-content-color: $color-mauro-light-gold;
 
     h1 {
       margin: 0;
+    }
+  }
+
+  &__filter {
+    display: inline-block;
+    margin: $header-filter-margin;
+
+    label {
+      margin-left: 0.5em;
+    }
+  }
+
+  &__progress {
+    margin: 0 0 1em 0;
+  }
+
+  &__list {
+    overflow-y: scroll;
+    max-height: $request-elements-max-height;
+
+    .mat-list-option {
+      height: auto;
     }
   }
 
@@ -79,5 +100,14 @@ $row-footer-content-color: $color-mauro-light-gold;
   &__request-header-title {
     display: flex;
     justify-content: space-between;
+  }
+
+  &__request-elements {
+    max-height: $request-elements-max-height;
+    width: 100%;
+  }
+
+  &__request-elements-footer {
+    padding: 0.75em 1.2em;
   }
 }

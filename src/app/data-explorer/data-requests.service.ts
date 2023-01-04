@@ -136,6 +136,12 @@ export class DataRequestsService {
     );
   }
 
+  get(id: Uuid): Observable<DataRequest> {
+    return this.dataModels
+      .getDataModelById(id)
+      .pipe(map((dataModel) => mapToDataRequest(dataModel)));
+  }
+
   /**
    * Gets all Data Elements within a given Data Request, flattened into a single list.
    *

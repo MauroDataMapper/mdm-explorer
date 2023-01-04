@@ -16,144 +16,44 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
+<div class="main-row hero">
+  <h1>My Requests</h1>
+</div>
 <div class="container hero-top-spacer">
-  <div class="mdm-my-requests">
-    <div class="container">
-      <div class="row">
-        <div class="highlight-box mdm-my-requests__header">
-          <div class="container">
-            <div class="row">
-              <div class="col-md-3">
-                <h1>My Requests</h1>
-              </div>
-              <div
-                *ngIf="hasMultipleRequestStatus && filteredRequests.length > 0"
-                class="col-md-9"
-              >
-                <div class="mdm-my-requests__filter">
-                  <mat-checkbox
-                    color="primary"
-                    value="submitted"
-                    (change)="filterByStatus($event)"
-                  ></mat-checkbox>
-                  <label>submitted</label>
-                </div>
-                <div class="mdm-my-requests__filter">
-                  <mat-checkbox
-                    color="primary"
-                    value="unsent"
-                    (change)="filterByStatus($event)"
-                  ></mat-checkbox>
-                  <label>unsent</label>
-                </div>
-              </div>
+  <div *ngIf="state === 'loading'" class="mdm-my-requests__progress">
+    <mat-progress-bar color="primary" mode="indeterminate"></mat-progress-bar>
+  </div>
+  <div *ngIf="!allRequests || allRequests.length === 0" class="row">
+    <p class="text-center">
+      You currently have no requests. Try
+      <a routerLink="/search">searching</a> or <a routerLink="/browse">browsing</a> our
+      catalogue and start creating some.
+    </p>
+  </div>
+  <div *ngIf="allRequests && allRequests.length > 0" class="row">
+    <div *ngFor="let request of filteredRequests">
+      <div class="col">
+        <div class="mdm-my-requests__request-header">
+          <div class="mdm-my-requests__request-header-title">
+            <p>{{ request.label }}</p>
+            <div class="mdm-my-requests__request-header--name">
+              <mdm-request-status-chip
+                [status]="request.status"
+              ></mdm-request-status-chip>
             </div>
           </div>
         </div>
-      </div>
-      <div class="container">
-        <div *ngIf="state === 'loading'" class="mdm-my-requests__progress">
-          <mat-progress-bar color="primary" mode="indeterminate"></mat-progress-bar>
-        </div>
-        <div *ngIf="!allRequests || allRequests.length === 0" class="row">
-          <p class="text-center">
-            You currently have no requests. Try <a routerLink="/search">searching</a> or
-            <a routerLink="/browse">browsing</a> our catalogue and start creating some.
-          </p>
-        </div>
-        <div *ngIf="allRequests && allRequests.length > 0" class="row">
-          <div class="col-md-3 mdm-my-requests__list">
-            <mat-selection-list
-              multiple="false"
-              (selectionChange)="selectRequest($event)"
+        <div class="mdm-my-requests__request-row__footer">
+          <div>
+            <a [routerLink]="['/requests', request.id]"
+              ><button mat-raised-button>View details</button></a
             >
-              <mat-list-option
-                *ngFor="let req of filteredRequests"
-                [value]="req"
-                [selected]="req === request"
-              >
-                <p>
-                  <span class="mdm-my-requests__request-name" title="{{ req.label }}">{{
-                    req.label
-                  }}</span>
-                  <mdm-request-status-chip
-                    [status]="req.status"
-                  ></mdm-request-status-chip>
-                </p>
-              </mat-list-option>
-            </mat-selection-list>
           </div>
-          <div class="col-md-9">
-            <div *ngIf="request">
-              <div class="mdm-my-requests__request-header">
-                <div class="mdm-my-requests__request-header-title">
-                  <div class="mdm-my-requests__request-header--name">
-                    {{ request.label }}
-                    <mdm-request-status-chip
-                      [status]="request.status"
-                    ></mdm-request-status-chip>
-                  </div>
-                  <button
-                    *ngIf="request.status === 'unsent'"
-                    mat-raised-button
-                    (click)="submitRequest()"
-                  >
-                    Submit request
-                  </button>
-                  <button
-                    *ngIf="request.status === 'submitted'"
-                    mat-raised-button
-                    matTooltip="Create a new request based on this one and make modifications."
-                    (click)="copyRequest()"
-                  >
-                    Copy
-                  </button>
-                </div>
-                <div
-                  *ngIf="request.description"
-                  class="mdm-my-requests__request-header--info"
-                >
-                  <p>{{ request.description }}</p>
-                </div>
-              </div>
-            </div>
-            <div
-              class="mdm-my-requests__request-elements"
-              *ngIf="sourceTargetIntersections.dataAccessRequests.length > 0"
-            >
-              <mdm-data-element-row
-                *ngFor="let element of requestElements"
-                [item]="element"
-                (delete)="removeItem($event)"
-                [sourceTargetIntersections]="sourceTargetIntersections"
-                [suppressViewRequestsDialogButton]="true"
-                (requestAddDelete)="handlePossibleSelfDelete($event)"
-                (requestCreated)="refreshRequests()"
-                (checked)="onSelectElement($event)"
-              >
-              </mdm-data-element-row>
-            </div>
-            <ng-container
-              *ngIf="
-                allRequests &&
-                allRequests.length > 0 &&
-                requestElements &&
-                requestElements.length > 0
-              "
-            >
-              <div class="float-start mdm-my-requests__request-elements-footer">
-                <mat-checkbox (change)="onSelectAll($event)">Select all</mat-checkbox>
-                <button
-                  class="ms-4"
-                  mat-raised-button
-                  color="primary"
-                  [disabled]="removeSelectedButtonDisabled"
-                  (click)="removeSelected()"
-                >
-                  Remove selected ...
-                </button>
-              </div>
-            </ng-container>
+          <div *ngIf="request.description">
+            <p>{{ request.description }}</p>
+          </div>
+          <div *ngIf="!request.description">
+            <p>No description provided</p>
           </div>
         </div>
       </div>
