@@ -28,6 +28,7 @@ import {
   ProfileSearchResponse,
   ProfileDefinition,
   ProfileDefinitionResponse,
+  RequestSettings,
 } from '@maurodatamapper/mdm-resources';
 import { map, Observable } from 'rxjs';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
@@ -54,10 +55,11 @@ export class ProfileService {
     catalogueItemDomainType: CatalogueItemDomainType,
     catalogueItemId: Uuid,
     profileNamespace: string,
-    profileName: string
+    profileName: string,
+    options?: RequestSettings,
   ): Observable<Profile> {
     return this.endpoints.profile
-      .profile(catalogueItemDomainType, catalogueItemId, profileNamespace, profileName)
+      .profile(catalogueItemDomainType, catalogueItemId, profileNamespace, profileName, undefined, undefined, options)
       .pipe(map((response: Profile) => response.body));
   }
 

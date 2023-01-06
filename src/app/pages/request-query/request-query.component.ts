@@ -19,6 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DataElement, Uuid } from '@maurodatamapper/mdm-resources';
+import { QueryBuilderConfig } from 'angular2-query-builder';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY, finalize, forkJoin, switchMap } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
@@ -31,6 +32,7 @@ import {
   QueryCondition,
 } from 'src/app/data-explorer/data-explorer.types';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { QueryBuilderService } from 'src/app/mauro/query-builder.service';
 import { IModelPage } from 'src/app/shared/types/shared.types';
 
 const defaultQueryCondition: QueryCondition = {
@@ -47,6 +49,9 @@ export class RequestQueryComponent implements OnInit, IModelPage {
   dataRequest?: DataRequest;
   queryType: DataRequestQueryType = 'none';
   dataElements?: DataElementSearchResult[];
+  config: QueryBuilderConfig = {
+    fields: {},
+  };
   query?: DataRequestQuery;
   condition: QueryCondition = defaultQueryCondition;
   status: 'init' | 'loading' | 'ready' | 'error' = 'init';
@@ -57,11 +62,18 @@ export class RequestQueryComponent implements OnInit, IModelPage {
     private route: ActivatedRoute,
     private dataRequests: DataRequestsService,
     private toastr: ToastrService,
-    private broadcast: BroadcastService
+    private broadcast: BroadcastService,
+    private queryBuilderService: QueryBuilderService
   ) {}
 
   isDirty(): boolean {
     return this.dirty;
+  }
+
+  private errorResponse(errorMessage: string) {
+    this.toastr.error(errorMessage);
+    this.status = 'error';
+    return EMPTY;
   }
 
   ngOnInit(): void {
@@ -75,9 +87,7 @@ export class RequestQueryComponent implements OnInit, IModelPage {
           return this.dataRequests.get(requestId);
         }),
         catchError(() => {
-          this.toastr.error('There was a problem finding your request.');
-          this.status = 'error';
-          return EMPTY;
+          return this.errorResponse('There was a problem finding your request.');
         }),
         switchMap((dataRequest) => {
           if (!dataRequest || !dataRequest.id) {
@@ -91,13 +101,23 @@ export class RequestQueryComponent implements OnInit, IModelPage {
           ]);
         }),
         catchError(() => {
-          this.toastr.error('There was a problem finding your request queries.');
-          this.status = 'error';
-          return EMPTY;
+          return this.errorResponse('There was a problem finding your request queries.');
+        }),
+        switchMap(([dataElements, query]) => {
+          return this.queryBuilderService.setupConfig(
+            this.mapDataElements(dataElements),
+            query
+          );
+        }),
+        catchError(() => {
+          return this.errorResponse(
+            'There was a problem configuring your request queries.'
+          );
         })
       )
-      .subscribe(([dataElements, query]) => {
-        this.dataElements = this.mapDataElements(dataElements);
+      .subscribe(([dataElements, query, config]) => {
+        this.dataElements = dataElements;
+        this.config = config;
         this.query = query;
         this.condition = this.query ? this.query.condition : defaultQueryCondition;
         this.original = JSON.stringify(this.condition);
