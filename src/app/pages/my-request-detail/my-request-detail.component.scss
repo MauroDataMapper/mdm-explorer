@@ -29,20 +29,21 @@ $request-header-padding: 0.5em 1.2em;
 
 $request-elements-max-height: auto;
 $row-footer-content-color: $color-mauro-light-gold;
+$back-link-color: $color-mauro-dark-green;
 
-.mdm-my-requests {
+.mdm-my-request {
   border: $header-border;
   border-radius: $header-border-radius;
 
-  &__request {
-    padding-bottom: 28px;
-  }
-
-  &__request-row__footer {
-    padding: 0.75em 1.2em;
+  &__request-description {
+    padding: 0.5em 0.75em;
     background-color: $row-footer-content-color;
     button {
       float: right;
+    }
+
+    &-container {
+      padding-bottom: 2px;
     }
   }
 
@@ -53,6 +54,28 @@ $row-footer-content-color: $color-mauro-light-gold;
 
     h1 {
       margin: 0;
+    }
+  }
+
+  &__filter {
+    display: inline-block;
+    margin: $header-filter-margin;
+
+    label {
+      margin-left: 0.5em;
+    }
+  }
+
+  &__progress {
+    margin: 0 0 1em 0;
+  }
+
+  &__list {
+    overflow-y: scroll;
+    max-height: $request-elements-max-height;
+
+    .mat-list-option {
+      height: auto;
     }
   }
 
@@ -85,13 +108,22 @@ $row-footer-content-color: $color-mauro-light-gold;
     justify-content: space-between;
   }
 
-  &__filter {
-    display: inline-block;
-    margin: $header-filter-margin;
-    padding-bottom: 2px;
+  &__request-elements {
+    max-height: $request-elements-max-height;
+    width: 100%;
+  }
 
-    label {
-      margin-left: 0.5em;
+  &__request-elements-footer {
+    padding: 0.75em 1.2em;
+  }
+
+  &__back-link {
+    margin: 1em 0;
+
+    a {
+      text-decoration: none;
+      font-weight: 500;
+      color: $back-link-color;
     }
   }
 }

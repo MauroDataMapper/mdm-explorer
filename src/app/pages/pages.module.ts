@@ -44,6 +44,7 @@ import { DataElementProfileComponent } from './data-element/data-element-profile
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { RequestQueryComponent } from './request-query/request-query.component';
+import { MyRequestDetailComponent } from './my-request-detail/my-request-detail.component';
 
 @NgModule({
   declarations: [
@@ -68,6 +69,7 @@ import { RequestQueryComponent } from './request-query/request-query.component';
     MyRequestsComponent,
     ChangePasswordComponent,
     RequestQueryComponent,
+    MyRequestDetailComponent,
   ],
   imports: [
     CoreModule,

@@ -37,6 +37,7 @@ import { DataAccessRequestsSourceTargetIntersections } from 'src/app/data-explor
 import { RequestCreatedAction } from 'src/app/data-explorer/request-created-dialog/request-created-dialog.component';
 import { UserDetails } from 'src/app/security/user-details.service';
 
+export type DataRequestsGetFn = (id: string) => Observable<DataModel>;
 export type DataRequestsListFn = (username: string) => Observable<DataModel[]>;
 export type DataRequestsListElementsFn = (
   request: DataRequest
