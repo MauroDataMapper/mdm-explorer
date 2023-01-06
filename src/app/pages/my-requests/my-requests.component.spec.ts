@@ -16,38 +16,22 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { DebugElement } from '@angular/core';
-import { fakeAsync, tick } from '@angular/core/testing';
-import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSelectionListChange } from '@angular/material/list';
-import {
-  CatalogueItemDomainType,
-  DataModel,
-  DataModelDetail,
-} from '@maurodatamapper/mdm-resources';
+import { CatalogueItemDomainType } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { of, throwError } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import {
-  DataElementDeleteEvent,
-  DataElementDto,
-  DataElementMultipleOperationResult,
   DataRequest,
   DataRequestStatus,
-  DataElementSearchResult,
 } from 'src/app/data-explorer/data-explorer.types';
-import {
-  DataAccessRequestsSourceTargetIntersections,
-  DataRequestsService,
-} from 'src/app/data-explorer/data-requests.service';
-import { OkCancelDialogResponse } from 'src/app/data-explorer/ok-cancel-dialog/ok-cancel-dialog.component';
+import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { ResearchPluginService } from 'src/app/mauro/research-plugin.service';
 import { SecurityService } from 'src/app/security/security.service';
 import { UserDetails } from 'src/app/security/user-details.service';
-import { RequestElementAddDeleteEvent } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
 import { createBroadcastServiceStub } from 'src/app/testing/stubs/broadcast.stub';
 import { createDataExplorerServiceStub } from 'src/app/testing/stubs/data-explorer.stub';
 import { createDataModelServiceStub } from 'src/app/testing/stubs/data-model.stub';
@@ -123,7 +107,6 @@ describe('MyRequestsComponent', () => {
     expect(harness.component.allRequests).toStrictEqual([]);
     expect(harness.component.filteredRequests).toStrictEqual([]);
     expect(harness.component.statusFilters).toStrictEqual([]);
-    expect(harness.component.request).toBeUndefined();
     expect(harness.component.requestElements).toStrictEqual([]);
   });
 
@@ -137,6 +120,64 @@ describe('MyRequestsComponent', () => {
       harness.component.ngOnInit();
       expect(dataRequestsStub.list).not.toHaveBeenCalled();
     });
+  });
+
+  it('should display all requests available to a user', () => {
+    const requests: DataRequest[] = [
+      {
+        id: '1',
+        label: 'request 1',
+        domainType: CatalogueItemDomainType.DataModel,
+        status: 'unsent',
+      },
+      {
+        id: '2',
+        label: 'request 2',
+        domainType: CatalogueItemDomainType.DataModel,
+        status: 'unsent',
+      },
+    ];
+
+    mockSignedInUser();
+
+    dataRequestsStub.list.mockImplementationOnce(() => {
+      expect(harness.component.state).toBe('loading');
+      return of(requests);
+    });
+
+    harness.component.ngOnInit();
+
+    expect(harness.component.state).toBe('idle');
+    expect(harness.component.allRequests).toStrictEqual(requests);
+    expect(harness.component.filteredRequests).toStrictEqual(requests); // No filters yet
+  });
+
+  it('should display an error if failed to get requests', () => {
+    mockSignedInUser();
+
+    dataRequestsStub.list.mockImplementationOnce(() => throwError(() => new Error()));
+
+    harness.component.ngOnInit();
+
+    expect(harness.component.state).toBe('idle');
+    expect(toastrStub.error).toHaveBeenCalled();
+    expect(harness.component.allRequests).toStrictEqual([]);
+    expect(harness.component.filteredRequests).toStrictEqual([]);
+  });
+
+  it('should handle having no requests available', () => {
+    mockSignedInUser();
+
+    dataRequestsStub.list.mockImplementationOnce(() => {
+      expect(harness.component.state).toBe('loading');
+      return of([]);
+    });
+
+    harness.component.ngOnInit();
+
+    expect(harness.component.state).toBe('idle');
+    expect(harness.component.allRequests).toStrictEqual([]);
+    expect(harness.component.filteredRequests).toStrictEqual([]); // No filters yet
   });
 
   describe('filter by status', () => {
@@ -211,15 +252,5 @@ describe('MyRequestsComponent', () => {
         expect(harness.component.filteredRequests).toStrictEqual(requests);
       }
     );
-  });
-
-  describe('copy request', () => {
-    const request: DataRequest = {
-      id: '123',
-      label: 'request',
-      domainType: CatalogueItemDomainType.DataModel,
-      status: 'submitted',
-      modelVersion: '1.0.0',
-    };
   });
 });

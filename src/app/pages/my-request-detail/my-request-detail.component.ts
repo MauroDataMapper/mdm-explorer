@@ -1,3 +1,21 @@
+/*
+Copyright 2022 University of Oxford
+and Health and Social Care Information Centre, also known as NHS Digital
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+SPDX-License-Identifier: Apache-2.0
+*/
 import { Component, OnInit } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -8,8 +26,18 @@ import {
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, finalize, forkJoin, Observable, of, switchMap } from 'rxjs';
+import {
+  catchError,
+  EMPTY,
+  filter,
+  finalize,
+  forkJoin,
+  Observable,
+  of,
+  switchMap,
+} from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
+import { KnownRouterPath } from 'src/app/core/state-router.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import {
   DataElementDeleteEvent,
@@ -17,6 +45,7 @@ import {
   DataElementInstance,
   DataElementMultipleOperationResult,
   DataElementOperationResult,
+  DataElementSearchParameters,
   DataElementSearchResult,
   DataRequest,
   mapToDataRequest,
@@ -44,8 +73,12 @@ export class MyRequestDetailComponent implements OnInit {
   request?: DataRequest;
   requestElements: DataElementSearchResult[] = [];
   state: 'idle' | 'loading' = 'idle';
+  source: '' | 'unknown' | 'requests' | 'requests';
   sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
   removeSelectedButtonDisabled = true;
+  backRouterLink: KnownRouterPath = '';
+  backQueryParams: DataElementSearchParameters = {};
+  backLabel = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -61,9 +94,16 @@ export class MyRequestDetailComponent implements OnInit {
       dataAccessRequests: [],
       sourceTargetIntersections: [],
     };
+    this.source = '';
   }
   ngOnInit(): void {
     this.initialiseRequest();
+    this.setBackButtonProperties(this.source);
+  }
+
+  private setBackButtonProperties(source: string) {
+    this.backRouterLink = source === 'request' ? '/requests' : '/requests';
+    this.backLabel = source === 'request' ? 'Back to request' : 'Back to My Requests';
   }
 
   initialiseRequest(): void {
@@ -82,8 +122,8 @@ export class MyRequestDetailComponent implements OnInit {
       )
       .subscribe((request) => {
         this.setRequest(request);
-        this.state = 'idle';
       });
+    finalize(() => (this.state = 'idle'));
   }
 
   private setRequest(request?: DataRequest) {
@@ -141,7 +181,7 @@ export class MyRequestDetailComponent implements OnInit {
       });
   }
 
-  //intersections are dataelements that are part of the request
+  // intersections are dataelements that are part of the request
   private loadIntersections(elements: DataElementInstance[]) {
     const dataElementIds: Uuid[] = [];
 
@@ -165,11 +205,10 @@ export class MyRequestDetailComponent implements OnInit {
   private processRemoveDataElementResponse(result: boolean, message: string) {
     if (result === false) {
       this.toastr.error(message, 'Data element removal');
-      console.log(message);
     } else {
       this.toastr.success(message, 'Data element removal');
     }
-    //refresh the request
+    // refresh the request
     this.setRequest(this.request);
   }
 
@@ -275,7 +314,7 @@ export class MyRequestDetailComponent implements OnInit {
     });
   }
 
-  //listens for external uodate to the request and refreshes if so
+  // listens for external uodate to the request and refreshes if so
   handlePossibleSelfDelete(event: RequestElementAddDeleteEvent) {
     if (event.dataModel?.id === this.request?.id) {
       this.setRequest(this.request);
@@ -335,5 +374,51 @@ export class MyRequestDetailComponent implements OnInit {
       okLabel: 'Yes',
       cancelLabel: 'No',
     });
+  }
+
+  copyRequest() {
+    if (
+      !this.request ||
+      !this.request.id ||
+      !this.request.modelVersion ||
+      this.request.status !== 'submitted'
+    ) {
+      return;
+    }
+
+    this.dialogs
+      .openCreateRequest({ showDescription: false })
+      .afterClosed()
+      .pipe(
+        filter((response) => !!response),
+        switchMap((response) => {
+          if (!response || !this.request) return EMPTY;
+
+          this.broadcast.loading({
+            isLoading: true,
+            caption: 'Creating new request ...',
+          });
+
+          return this.dataModels.createFork(this.request, { label: response.name });
+        }),
+        catchError(() => {
+          this.toastr.error(
+            'There was a problem creating your request. Please try again or contact us for support.',
+            'Creation error'
+          );
+          return EMPTY;
+        }),
+        switchMap((nextDraftModel) => {
+          return forkJoin([of(nextDraftModel)]);
+        }),
+        finalize(() => this.broadcast.loading({ isLoading: false }))
+      )
+      .subscribe(([nextDraftModel]) => {
+        const nextDataRequest = mapToDataRequest(nextDraftModel);
+        this.dialogs.openSuccess({
+          heading: 'Request created',
+          message: `Your new request "${nextDataRequest.label}" has been successfully created. Modify this request by searching or browsing our catalogue before submitting again.`,
+        });
+      });
   }
 }

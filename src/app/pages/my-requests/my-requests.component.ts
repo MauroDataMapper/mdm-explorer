@@ -19,26 +19,13 @@ SPDX-License-Identifier: Apache-2.0
 import { Component, OnInit } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { ToastrService } from 'ngx-toastr';
-import {
-  catchError,
-  EMPTY,
-  finalize,
-  forkJoin,
-  of,
-  switchMap,
-  throwError,
-  filter,
-} from 'rxjs';
-import { BroadcastService } from 'src/app/core/broadcast.service';
+import { catchError, EMPTY, finalize, throwError } from 'rxjs';
 import {
   DataElementSearchResult,
   DataRequest,
   DataRequestStatus,
-  mapToDataRequest,
 } from 'src/app/data-explorer/data-explorer.types';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
-import { DialogService } from 'src/app/data-explorer/dialog.service';
-import { DataModelService } from 'src/app/mauro/data-model.service';
 import { SecurityService } from 'src/app/security/security.service';
 
 @Component({
@@ -50,7 +37,6 @@ export class MyRequestsComponent implements OnInit {
   allRequests: DataRequest[] = [];
   filteredRequests: DataRequest[] = [];
   statusFilters: DataRequestStatus[] = [];
-  request?: DataRequest;
   requestElements: DataElementSearchResult[] = [];
   state: 'idle' | 'loading' = 'idle';
   creatingNextVersion = false;
@@ -58,10 +44,7 @@ export class MyRequestsComponent implements OnInit {
   constructor(
     private security: SecurityService,
     private dataRequests: DataRequestsService,
-    private dataModels: DataModelService,
-    private toastr: ToastrService,
-    private dialogs: DialogService,
-    private broadcast: BroadcastService
+    private toastr: ToastrService
   ) {}
 
   get hasMultipleRequestStatus() {
@@ -90,6 +73,7 @@ export class MyRequestsComponent implements OnInit {
   }
 
   initialiseRequests() {
+    this.state = 'loading';
     this.getUserRequests().subscribe((requests) => {
       this.allRequests = requests;
       this.filterRequests();
@@ -106,63 +90,18 @@ export class MyRequestsComponent implements OnInit {
       catchError(() => {
         this.toastr.error('There was a problem finding your requests.');
         return EMPTY;
-      })
+      }),
+      finalize(() => (this.state = 'idle'))
     );
   }
 
   private filterRequests() {
+    this.state = 'loading';
     this.filteredRequests =
       this.statusFilters.length === 0
         ? this.allRequests
         : this.allRequests.filter((req) => this.statusFilters.includes(req.status));
-  }
-  copyRequest() {
-    if (
-      !this.request ||
-      !this.request.id ||
-      !this.request.modelVersion ||
-      this.request.status !== 'submitted'
-    ) {
-      return;
-    }
 
-    this.dialogs
-      .openCreateRequest({ showDescription: false })
-      .afterClosed()
-      .pipe(
-        filter((response) => !!response),
-        switchMap((response) => {
-          if (!response || !this.request) return EMPTY;
-
-          this.broadcast.loading({
-            isLoading: true,
-            caption: 'Creating new request ...',
-          });
-
-          return this.dataModels.createFork(this.request, { label: response.name });
-        }),
-        catchError(() => {
-          this.toastr.error(
-            'There was a problem creating your request. Please try again or contact us for support.',
-            'Creation error'
-          );
-          return EMPTY;
-        }),
-        switchMap((nextDraftModel) => {
-          return forkJoin([of(nextDraftModel), this.getUserRequests()]);
-        }),
-        finalize(() => this.broadcast.loading({ isLoading: false }))
-      )
-      .subscribe(([nextDraftModel, allRequests]) => {
-        const nextDataRequest = mapToDataRequest(nextDraftModel);
-
-        this.allRequests = allRequests;
-        this.filterRequests();
-
-        this.dialogs.openSuccess({
-          heading: 'Request created',
-          message: `Your new request "${nextDataRequest.label}" has been successfully created. Modify this request by searching or browsing our catalogue before submitting again.`,
-        });
-      });
+    this.state = 'idle';
   }
 }

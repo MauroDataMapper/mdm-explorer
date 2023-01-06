@@ -16,12 +16,30 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<div class="main-row hero">
-  <h1>My Requests</h1>
-</div>
-<div class="container hero-top-spacer">
+<div class="container">
+  <div class="main-row hero">
+    <h1>My Requests</h1>
+  </div>
   <div *ngIf="state === 'loading'" class="mdm-my-requests__progress">
     <mat-progress-bar color="primary" mode="indeterminate"></mat-progress-bar>
+  </div>
+  <div *ngIf="hasMultipleRequestStatus && filteredRequests.length > 0" class="col-md-9">
+    <div class="mdm-my-requests__filter">
+      <mat-checkbox
+        color="primary"
+        value="submitted"
+        (change)="filterByStatus($event)"
+      ></mat-checkbox>
+      <label>submitted</label>
+    </div>
+    <div class="mdm-my-requests__filter">
+      <mat-checkbox
+        color="primary"
+        value="unsent"
+        (change)="filterByStatus($event)"
+      ></mat-checkbox>
+      <label>unsent</label>
+    </div>
   </div>
   <div *ngIf="!allRequests || allRequests.length === 0" class="row">
     <p class="text-center">
@@ -33,27 +51,29 @@ SPDX-License-Identifier: Apache-2.0
   <div *ngIf="allRequests && allRequests.length > 0" class="row">
     <div *ngFor="let request of filteredRequests">
       <div class="col">
-        <div class="mdm-my-requests__request-header">
-          <div class="mdm-my-requests__request-header-title">
-            <p>{{ request.label }}</p>
-            <div class="mdm-my-requests__request-header--name">
-              <mdm-request-status-chip
-                [status]="request.status"
-              ></mdm-request-status-chip>
+        <div class="mdm-my-requests__request">
+          <div class="mdm-my-requests__request-header">
+            <div class="mdm-my-requests__request-header-title">
+              <p>{{ request.label }}</p>
+              <div class="mdm-my-requests__request-header--name">
+                <mdm-request-status-chip
+                  [status]="request.status"
+                ></mdm-request-status-chip>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="mdm-my-requests__request-row__footer">
-          <div>
-            <a [routerLink]="['/requests', request.id]"
-              ><button mat-raised-button>View details</button></a
-            >
-          </div>
-          <div *ngIf="request.description">
-            <p>{{ request.description }}</p>
-          </div>
-          <div *ngIf="!request.description">
-            <p>No description provided</p>
+          <div class="mdm-my-requests__request-row__footer">
+            <div>
+              <a [routerLink]="['/requests', request.id]"
+                ><button mat-raised-button>View details</button></a
+              >
+            </div>
+            <div *ngIf="request.description">
+              <p>{{ request.description }}</p>
+            </div>
+            <div *ngIf="!request.description">
+              <p>No description provided</p>
+            </div>
           </div>
         </div>
       </div>

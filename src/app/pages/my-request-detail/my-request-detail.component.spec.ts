@@ -17,11 +17,9 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { DebugElement } from '@angular/core';
-import { fakeAsync, tick } from '@angular/core/testing';
 import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSelectionListChange } from '@angular/material/list';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { CatalogueItemDomainType, DataModelDetail } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { of, throwError } from 'rxjs';
@@ -51,7 +49,6 @@ import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-reques
 import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
 import { createResearchPluginServiceStub } from 'src/app/testing/stubs/research-plugin.stub';
 import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
-import { createStateRouterStub } from 'src/app/testing/stubs/state-router.stub';
 import { createToastrServiceStub } from 'src/app/testing/stubs/toastr.stub';
 import {
   ComponentHarness,
@@ -72,7 +69,7 @@ describe('MyRequestsComponent', () => {
   const requestId = '1';
   const activatedRoute: ActivatedRoute = {
     params: of({
-      requestId: requestId,
+      requestId,
     }),
   } as unknown as ActivatedRoute;
 
@@ -372,7 +369,7 @@ describe('MyRequestsComponent', () => {
     });
 
     it('Refresh request when data element is deleted via DataElementInRequest component', () => {
-      //Not Sure if these two tests are still needed, can something externally modify a request?
+      // Not Sure if these two tests are still needed, can something externally modify a request?
       // pick the first row and trigger the RequestAddDelete event
       const dataElementRow: DebugElement = dom.query(
         (de) => de.name === 'mdm-data-element-row'

@@ -27,17 +27,23 @@ $request-heading-background-color: $color-mauro-dark-green;
 $request-heading-color: $color-white;
 $request-header-padding: 0.5em 1.2em;
 
-$request-elements-max-height: 500px;
+$request-elements-max-height: auto;
 $row-footer-content-color: $color-mauro-light-gold;
+$back-link-color: $color-mauro-dark-green;
+
 .mdm-my-request {
   border: $header-border;
   border-radius: $header-border-radius;
 
   &__request-description {
-    padding: 0.75em 1.2em;
+    padding: 0.5em 0.75em;
     background-color: $row-footer-content-color;
     button {
       float: right;
+    }
+
+    &-container {
+      padding-bottom: 2px;
     }
   }
 
@@ -109,5 +115,15 @@ $row-footer-content-color: $color-mauro-light-gold;
 
   &__request-elements-footer {
     padding: 0.75em 1.2em;
+  }
+
+  &__back-link {
+    margin: 1em 0;
+
+    a {
+      text-decoration: none;
+      font-weight: 500;
+      color: $back-link-color;
+    }
   }
 }
