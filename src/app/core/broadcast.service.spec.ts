@@ -1,5 +1,5 @@
 /*
-Copyright 2022 University of Oxford
+Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,17 +33,20 @@ describe('BroadcastService', () => {
 
   const getBroadcastEvents = (): BroadcastEvent[][] => [
     ['user-signed-in'],
-    ['user-signed-out']
+    ['user-signed-out'],
   ];
 
-  it.each(getBroadcastEvents())('should dispatch events when %p is broadcast', (event: BroadcastEvent) => {
-    const payload = 42;
+  it.each(getBroadcastEvents())(
+    'should dispatch events when %p is broadcast',
+    (event: BroadcastEvent) => {
+      const payload = 42;
 
-    cold('-a').subscribe(() => service.dispatch(event, payload));
+      cold('-a').subscribe(() => service.dispatch(event, payload));
 
-    const expected$ = cold('-a', { a: payload });
-    const actual$ = service.on(event);
+      const expected$ = cold('-a', { a: payload });
+      const actual$ = service.on(event);
 
-    expect(actual$).toBeObservable(expected$);
-  });
+      expect(actual$).toBeObservable(expected$);
+    }
+  );
 });
