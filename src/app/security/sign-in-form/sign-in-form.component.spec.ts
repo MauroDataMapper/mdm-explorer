@@ -1,5 +1,5 @@
 /*
-Copyright 2022 University of Oxford
+Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,21 +18,19 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MockComponent } from 'ng-mocks';
-import { ComponentHarness, setupTestModuleForComponent } from '../../testing/testing.helpers';
+import {
+  ComponentHarness,
+  setupTestModuleForComponent,
+} from '../../testing/testing.helpers';
 import { SignInFormComponent } from './sign-in-form.component';
 
 describe('SignInFormComponent', () => {
   let harness: ComponentHarness<SignInFormComponent>;
 
   beforeEach(async () => {
-    harness = await setupTestModuleForComponent(
-      SignInFormComponent,
-      {
-        declarations: [
-          MockComponent(MatFormField),
-          MockComponent(MatLabel)
-        ]
-      });
+    harness = await setupTestModuleForComponent(SignInFormComponent, {
+      declarations: [MockComponent(MatFormField), MockComponent(MatLabel)],
+    });
   });
 
   it('should create', () => {
