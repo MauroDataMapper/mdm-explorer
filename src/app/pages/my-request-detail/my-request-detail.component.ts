@@ -138,7 +138,7 @@ export class MyRequestDetailComponent implements OnInit {
     finalize(() => (this.state = 'idle'));
   }
 
-  private initialiseRequestQueries() {
+  initialiseRequestQueries() {
     if (!this.request?.id) {
       return;
     }
