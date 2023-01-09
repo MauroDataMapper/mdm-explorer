@@ -48,7 +48,9 @@ import {
   DataElementSearchParameters,
   DataElementSearchResult,
   DataRequest,
+  DataRequestQueryType,
   mapToDataRequest,
+  QueryCondition,
   SelectableDataElementSearchResultCheckedEvent,
 } from 'src/app/data-explorer/data-explorer.types';
 import {
@@ -63,7 +65,6 @@ import {
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { ResearchPluginService } from 'src/app/mauro/research-plugin.service';
 import { RequestElementAddDeleteEvent } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
-
 @Component({
   selector: 'mdm-my-request-detail',
   templateUrl: './my-request-detail.component.html',
@@ -79,6 +80,16 @@ export class MyRequestDetailComponent implements OnInit {
   backRouterLink: KnownRouterPath = '';
   backQueryParams: DataElementSearchParameters = {};
   backLabel = '';
+  cohortQueryType: DataRequestQueryType = 'cohort';
+  cohortQuery: QueryCondition = {
+    condition: 'and',
+    rules: [],
+  };
+  dataQueryType: DataRequestQueryType = 'data';
+  dataQuery: QueryCondition = {
+    condition: 'and',
+    rules: [],
+  };
 
   constructor(
     private route: ActivatedRoute,
@@ -122,8 +133,37 @@ export class MyRequestDetailComponent implements OnInit {
       )
       .subscribe((request) => {
         this.setRequest(request);
+        this.initialiseRequestQueries();
       });
     finalize(() => (this.state = 'idle'));
+  }
+
+  private initialiseRequestQueries() {
+    if (!this.request?.id) {
+      return;
+    }
+
+    this.dataRequests
+      .getQuery(this.request.id, this.cohortQueryType)
+      .pipe()
+      .subscribe((query) => {
+        if (!query) {
+          return;
+        }
+
+        this.cohortQuery = query.condition;
+      });
+
+    this.dataRequests
+      .getQuery(this.request.id, this.dataQueryType)
+      .pipe()
+      .subscribe((query) => {
+        if (!query) {
+          return;
+        }
+
+        this.dataQuery = query.condition;
+      });
   }
 
   private setRequest(request?: DataRequest) {
