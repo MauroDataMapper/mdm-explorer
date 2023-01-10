@@ -115,10 +115,10 @@ export class RequestQueryComponent implements OnInit, IModelPage {
           );
         })
       )
-      .subscribe(([dataElements, query, config]) => {
-        this.dataElements = dataElements;
-        this.config = config;
-        this.query = query;
+      .subscribe(([queryConfiguration]) => {
+        this.dataElements = queryConfiguration.dataElementSearchResult;
+        this.config = queryConfiguration.config;
+        this.query = queryConfiguration.dataRequestQueryPayload;
         this.condition = this.query ? this.query.condition : defaultQueryCondition;
         this.original = JSON.stringify(this.condition);
         this.status = 'ready';

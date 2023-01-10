@@ -27,9 +27,16 @@ import { catchError, forkJoin, map, Observable, of } from 'rxjs';
 import {
   DataElementSearchResult,
   DataRequestQueryPayload,
+  QueryCondition,
   QueryExpression,
 } from '../data-explorer/data-explorer.types';
 import { ProfileService } from './profile.service';
+
+export interface QueryConfiguration {
+  dataElementSearchResult: DataElementSearchResult[];
+  dataRequestQueryPayload: Required<DataRequestQueryPayload> | undefined;
+  config: QueryBuilderConfig;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -37,33 +44,10 @@ import { ProfileService } from './profile.service';
 export class QueryBuilderService {
   constructor(private profileService: ProfileService) {}
 
-  private getQueryBuilderDatatype(dataType?: DataType): Observable<Profile> {
-    if (dataType?.domainType === CatalogueItemDomainType.PrimitiveType) {
-      const requestOptions = {
-        handleGetErrors: false,
-      };
-
-      return this.profileService.get(
-        CatalogueItemDomainType.PrimitiveType,
-        dataType?.id ?? '',
-        'uk.ac.ox.softeng.maurodatamapper.plugins.explorer.querybuilder',
-        'QueryBuilderPrimitiveTypeProfileProviderService',
-        requestOptions
-      );
-    }
-    return of({} as Profile);
-  }
-
   public setupConfig(
     dataElements: DataElementSearchResult[],
     query?: DataRequestQueryPayload
-  ): Observable<
-    [
-      DataElementSearchResult[],
-      Required<DataRequestQueryPayload> | undefined,
-      QueryBuilderConfig
-    ]
-  > {
+  ): Observable<[QueryConfiguration]> {
     const requests$ = dataElements.map((dataElement) => {
       const profile$ = this.getQueryBuilderDatatype(dataElement.dataType).pipe(
         catchError((error) => {
@@ -82,64 +66,116 @@ export class QueryBuilderService {
 
     return forkJoin(requests$).pipe(
       map((items) => {
-        const queryCondition = query
-          ? query.condition
-          : {
-              condition: 'and',
-              rules: [],
-            };
-
-        const config: QueryBuilderConfig = {
-          fields: {},
-        };
-
-        items.forEach(([data, dataElement]) => {
-          const dataTypeString =
-            dataElement.dataType?.enumerationValues?.length ?? 0 > 0
-              ? 'category'
-              : data?.sections?.length > 0
-              ? data.sections[0].fields[0].currentValue
-              : undefined;
-
-          if (dataTypeString) {
-            config.fields[dataElement.label] = {
-              name: dataElement.label + ' (' + dataTypeString + ')',
-              type: dataTypeString,
-              options: (dataElement.dataType?.enumerationValues ?? []).map(
-                (dataOption) => {
-                  return {
-                    name: dataOption.key,
-                    value: dataOption.value,
-                  };
-                }
-              ),
-              defaultValue:
-                dataTypeString.toLowerCase() === 'number'
-                  ? 0
-                  : dataTypeString.toLowerCase() === 'string'
-                  ? ''
-                  : dataTypeString.toLowerCase() === 'boolean'
-                  ? false
-                  : null,
-            };
-          } else {
-            if (
-              queryCondition?.rules?.find((x) =>
-                (x as QueryExpression)?.field?.startsWith(dataElement.label)
-              )
-            ) {
-              config.fields[dataElement.label] = {
-                name: dataElement.label + ' (string)',
-                type: 'string',
-                options: [],
-                defaultValue: '',
-              };
-            }
-          }
-        });
-
-        return [dataElements, query as Required<DataRequestQueryPayload>, config];
+        return [this.getQueryFields(items, dataElements, query)];
       })
     );
+  }
+
+  private getQueryBuilderDatatype(dataType?: DataType): Observable<Profile> {
+    if (dataType?.domainType === CatalogueItemDomainType.PrimitiveType) {
+      const requestOptions = {
+        handleGetErrors: false,
+      };
+
+      return this.profileService.get(
+        CatalogueItemDomainType.PrimitiveType,
+        dataType?.id ?? '',
+        'uk.ac.ox.softeng.maurodatamapper.plugins.explorer.querybuilder',
+        'QueryBuilderPrimitiveTypeProfileProviderService',
+        requestOptions
+      );
+    }
+    return of({} as Profile);
+  }
+
+  private getDataTypeString(data: Profile, dataElement: DataElementSearchResult) {
+    return dataElement.dataType?.enumerationValues?.length ?? 0 > 0
+      ? 'category'
+      : data?.sections?.length > 0
+      ? data.sections[0].fields[0].currentValue
+      : undefined;
+  }
+
+  private getDefaultValue(dataTypeString: string) {
+    return dataTypeString.toLowerCase() === 'number'
+      ? 0
+      : dataTypeString.toLowerCase() === 'string'
+      ? ''
+      : dataTypeString.toLowerCase() === 'boolean'
+      ? false
+      : null;
+  }
+
+  private getQueryCondition(query?: DataRequestQueryPayload): QueryCondition {
+    return query
+      ? query.condition
+      : {
+          condition: 'and',
+          rules: [],
+        };
+  }
+
+  private setupQueryFieldFromMapping(
+    dataTypeString: string,
+    dataElement: DataElementSearchResult,
+    config: QueryBuilderConfig
+  ) {
+    config.fields[dataElement.label] = {
+      name: dataElement.label + ' (' + dataTypeString + ')',
+      type: dataTypeString,
+      options: (dataElement.dataType?.enumerationValues ?? []).map((dataOption) => {
+        return {
+          name: dataOption.key,
+          value: dataOption.value,
+        };
+      }),
+      defaultValue: this.getDefaultValue(dataTypeString),
+    };
+  }
+
+  private setupQueryFieldFromQuery(
+    dataElement: DataElementSearchResult,
+    config: QueryBuilderConfig,
+    queryCondition: QueryCondition
+  ) {
+    if (
+      queryCondition?.rules?.find((x) =>
+        (x as QueryExpression)?.field?.startsWith(dataElement.label)
+      )
+    ) {
+      config.fields[dataElement.label] = {
+        name: dataElement.label + ' (string)',
+        type: 'string',
+        options: [],
+        defaultValue: '',
+      };
+    }
+  }
+
+  private getQueryFields(
+    items: [Profile, DataElementSearchResult][],
+    dataElements: DataElementSearchResult[],
+    query?: DataRequestQueryPayload
+  ): QueryConfiguration {
+    const queryCondition: QueryCondition = this.getQueryCondition(query);
+
+    const config: QueryBuilderConfig = {
+      fields: {},
+    };
+
+    items.forEach(([data, dataElement]) => {
+      const dataTypeString = this.getDataTypeString(data, dataElement);
+      if (dataTypeString) {
+        this.setupQueryFieldFromMapping(dataTypeString, dataElement, config);
+      } else {
+        this.setupQueryFieldFromQuery(dataElement, config, queryCondition);
+      }
+    });
+
+    return {
+      dataElementSearchResult: dataElements,
+      dataRequestQueryPayload: query as Required<DataRequestQueryPayload>,
+      config,
+    };
   }
 }

@@ -25,7 +25,7 @@ import {
 import { cold } from 'jest-marbles';
 import { setupTestModuleForService } from '../testing/testing.helpers';
 import { ProfileService } from './profile.service';
-import { QueryBuilderService } from './query-builder.service';
+import { QueryBuilderService, QueryConfiguration } from './query-builder.service';
 import {
   DataElementSearchResult,
   DataRequestQueryPayload,
@@ -404,6 +404,12 @@ describe('QueryBuilderService', () => {
           );
         };
 
+        const expectedResult: QueryConfiguration = {
+          dataElementSearchResult: expectedDataElementSearchResult,
+          dataRequestQueryPayload: expectedQuery as Required<DataRequestQueryPayload>,
+          config: expectedQueryBuilderConfig,
+        };
+
         mockProfile(profiles);
 
         const expected$ = cold(
@@ -411,11 +417,7 @@ describe('QueryBuilderService', () => {
             ? '(a|)'
             : '---(a|)',
           {
-            a: [
-              expectedDataElementSearchResult,
-              expectedQuery,
-              expectedQueryBuilderConfig,
-            ],
+            a: [expectedResult],
           }
         );
         const actual$ = service.setupConfig(
