@@ -68,6 +68,8 @@ SPDX-License-Identifier: Apache-2.0
           *ngIf="this.cohortQuery.rules.length > 0"
           class="mdm-my-request__query-cohort"
         >
+          <h2>Cohort Query</h2>
+
           <mdm-meql-output [query]="cohortQuery">{{
             cohortQuery | meql
           }}</mdm-meql-output>
@@ -79,14 +81,10 @@ SPDX-License-Identifier: Apache-2.0
           >
             <p>No Cohort Query has been created for this request</p>
           </div>
-          <a
-            *ngIf="this.cohortQuery.rules.length == 0"
-            [routerLink]="['queries/', cohortQueryType]"
+          <a *ngIf="this.showCohortCreate()" [routerLink]="['queries/', cohortQueryType]"
             ><button mat-raised-button>Create Cohort Query</button></a
           >
-          <a
-            *ngIf="this.cohortQuery.rules.length > 0"
-            [routerLink]="['queries/', cohortQueryType]"
+          <a *ngIf="this.showCohortEdit()" [routerLink]="['queries/', cohortQueryType]"
             ><button mat-raised-button>Edit Cohort Query</button></a
           >
         </div>
@@ -94,6 +92,7 @@ SPDX-License-Identifier: Apache-2.0
 
       <div class="mdm-my-request__query--row row">
         <div *ngIf="this.dataQuery.rules.length > 0" class="mdm-my-request__query-data">
+          <h2>Data Query</h2>
           <mdm-meql-output [query]="dataQuery">{{ dataQuery | meql }}</mdm-meql-output>
         </div>
 
@@ -105,14 +104,10 @@ SPDX-License-Identifier: Apache-2.0
             <p>No Data Query has been created for this request</p>
           </div>
 
-          <a
-            *ngIf="this.dataQuery.rules.length == 0"
-            [routerLink]="['queries/', dataQueryType]"
+          <a *ngIf="this.showDataCreate()" [routerLink]="['queries/', dataQueryType]"
             ><button mat-raised-button>Create Data Query</button></a
           >
-          <a
-            *ngIf="this.dataQuery.rules.length > 0"
-            [routerLink]="['queries/', dataQueryType]"
+          <a *ngIf="this.showDataEdit()" [routerLink]="['queries/', dataQueryType]"
             ><button mat-raised-button>Edit Data Query</button></a
           >
         </div>

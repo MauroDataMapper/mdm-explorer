@@ -457,4 +457,19 @@ export class MyRequestDetailComponent implements OnInit {
         });
       });
   }
+
+  showCohortCreate() {
+    return this.cohortQuery.rules.length == 0 && this.request?.status == 'unsent';
+  }
+  showCohortEdit() {
+    return this.cohortQuery.rules.length > 0 && this.request?.status == 'unsent';
+  }
+
+  showDataCreate() {
+    return this.dataQuery.rules.length == 0 && this.request?.status == 'unsent';
+  }
+
+  showDataEdit() {
+    return this.dataQuery.rules.length > 0 && this.request?.status == 'unsent';
+  }
 }
