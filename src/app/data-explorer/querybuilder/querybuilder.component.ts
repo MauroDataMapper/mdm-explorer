@@ -26,6 +26,7 @@ import {
   QueryCondition,
 } from 'src/app/data-explorer/data-explorer.types';
 import { ThemePalette } from '@angular/material/core';
+import { query } from '@angular/animations';
 
 @Component({
   selector: 'mdm-querybuilder',
@@ -51,6 +52,20 @@ export class QueryBuilderComponent {
   };
 
   allowRuleset = true;
+
+  ngOnInit(): void {
+    this.clearComponent();
+    this.setupConfig();
+  }
+
+  clearComponent() {
+    if (this.query.rules.length == 0) {
+      this.query = {
+        condition: 'and',
+        rules: [],
+      };
+    }
+  }
 
   get noValidFields(): boolean {
     return Object.keys(this.config.fields).length === 0;
