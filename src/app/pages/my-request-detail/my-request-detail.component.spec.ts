@@ -236,6 +236,11 @@ describe('MyRequestsComponent', () => {
         return throwError(() => new Error());
       });
 
+      const okCancelResponse: OkCancelDialogResponse = {
+        result: true,
+      };
+      dialogsStub.usage.afterClosed.mockReturnValue(of(okCancelResponse));
+
       harness.component.request = request;
       harness.component.submitRequest();
 
@@ -257,6 +262,11 @@ describe('MyRequestsComponent', () => {
         expect(id).toBe(request.id);
         return of(submittedDataModel);
       });
+
+      const okCancelResponse: OkCancelDialogResponse = {
+        result: true,
+      };
+      dialogsStub.usage.afterClosed.mockReturnValue(of(okCancelResponse));
 
       harness.component.request = request;
       harness.component.submitRequest();
