@@ -33,11 +33,11 @@ $pager-font-weight: 600;
     margin: 0 4px;
   }
 
-  // li.page-counter {
-  //   padding: 0.375rem 0.75rem;
-  //   color: $pager-color;
-  //   font-weight: $pager-font-weight;
-  // }
+  li.page-counter {
+    padding: 0.375rem 0.75rem;
+    color: $pager-color;
+    font-weight: $pager-font-weight;
+  }
 
   button.page-link {
     font-weight: $pager-font-weight;
