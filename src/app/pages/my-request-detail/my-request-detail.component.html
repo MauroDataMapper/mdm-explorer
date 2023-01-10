@@ -64,25 +64,28 @@ SPDX-License-Identifier: Apache-2.0
 
     <div class="mdm-my-request__query">
       <div class="mdm-my-request__query--row row">
-        <div *ngIf="cohortQuery.rules.length > 0" class="mdm-my-request__query-cohort">
+        <div
+          *ngIf="this.cohortQuery.rules.length > 0"
+          class="mdm-my-request__query-cohort"
+        >
           <mdm-meql-output [query]="cohortQuery">{{
             cohortQuery | meql
           }}</mdm-meql-output>
         </div>
         <div class="mdm-my-request__query--description">
           <div
-            *ngIf="cohortQuery.rules.length == 0"
+            *ngIf="this.cohortQuery.rules.length == 0"
             class="mdm-my-request__query-missing"
           >
             <p>No Cohort Query has been created for this request</p>
           </div>
           <a
-            *ngIf="dataQuery.rules.length == 0"
+            *ngIf="this.cohortQuery.rules.length == 0"
             [routerLink]="['queries/', cohortQueryType]"
             ><button mat-raised-button>Create Cohort Query</button></a
           >
           <a
-            *ngIf="dataQuery.rules.length > 0"
+            *ngIf="this.cohortQuery.rules.length > 0"
             [routerLink]="['queries/', cohortQueryType]"
             ><button mat-raised-button>Edit Cohort Query</button></a
           >
@@ -90,21 +93,26 @@ SPDX-License-Identifier: Apache-2.0
       </div>
 
       <div class="mdm-my-request__query--row row">
-        <div *ngIf="dataQuery.rules.length > 0" class="mdm-my-request__query-data">
+        <div *ngIf="this.dataQuery.rules.length > 0" class="mdm-my-request__query-data">
           <mdm-meql-output [query]="dataQuery">{{ dataQuery | meql }}</mdm-meql-output>
         </div>
 
         <div class="mdm-my-request__query--description">
-          <div *ngIf="dataQuery.rules.length == 0" class="mdm-my-request__query-missing">
+          <div
+            *ngIf="this.dataQuery.rules.length == 0"
+            class="mdm-my-request__query-missing"
+          >
             <p>No Data Query has been created for this request</p>
           </div>
 
           <a
-            *ngIf="dataQuery.rules.length == 0"
+            *ngIf="this.dataQuery.rules.length == 0"
             [routerLink]="['queries/', dataQueryType]"
             ><button mat-raised-button>Create Data Query</button></a
           >
-          <a *ngIf="dataQuery.rules.length > 0" [routerLink]="['queries/', dataQueryType]"
+          <a
+            *ngIf="this.dataQuery.rules.length > 0"
+            [routerLink]="['queries/', dataQueryType]"
             ><button mat-raised-button>Edit Data Query</button></a
           >
         </div>

@@ -57,7 +57,9 @@ export class RequestQueryComponent implements OnInit, IModelPage {
   status: 'init' | 'loading' | 'ready' | 'error' = 'init';
   dirty = false;
   original = '';
-
+  backRouterLink = '';
+  backLabel = '';
+  backRouterRequestId = '';
   constructor(
     private route: ActivatedRoute,
     private dataRequests: DataRequestsService,
@@ -94,6 +96,7 @@ export class RequestQueryComponent implements OnInit, IModelPage {
             return EMPTY;
           }
           this.dataRequest = dataRequest;
+          this.setBackButtonProperties(dataRequest.id);
 
           return forkJoin([
             this.dataRequests.listDataElements(dataRequest),
@@ -165,5 +168,11 @@ export class RequestQueryComponent implements OnInit, IModelPage {
 
   private mapDataElements(elements: DataElement[]): DataElementSearchResult[] {
     return elements.map((element) => element as DataElementSearchResult);
+  }
+
+  private setBackButtonProperties(id: string) {
+    this.backRouterLink = '/requests/';
+    this.backRouterRequestId = id;
+    this.backLabel = 'Back to request';
   }
 }

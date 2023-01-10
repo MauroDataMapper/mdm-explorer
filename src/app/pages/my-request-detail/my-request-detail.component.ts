@@ -45,7 +45,6 @@ import {
   DataElementInstance,
   DataElementMultipleOperationResult,
   DataElementOperationResult,
-  DataElementSearchParameters,
   DataElementSearchResult,
   DataRequest,
   DataRequestQueryType,
@@ -74,11 +73,9 @@ export class MyRequestDetailComponent implements OnInit {
   request?: DataRequest;
   requestElements: DataElementSearchResult[] = [];
   state: 'idle' | 'loading' = 'idle';
-  source: '' | 'unknown' | 'requests' | 'requests';
   sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
   removeSelectedButtonDisabled = true;
   backRouterLink: KnownRouterPath = '';
-  backQueryParams: DataElementSearchParameters = {};
   backLabel = '';
   cohortQueryType: DataRequestQueryType = 'cohort';
   cohortQuery: QueryCondition = {
@@ -105,16 +102,15 @@ export class MyRequestDetailComponent implements OnInit {
       dataAccessRequests: [],
       sourceTargetIntersections: [],
     };
-    this.source = '';
   }
   ngOnInit(): void {
     this.initialiseRequest();
-    this.setBackButtonProperties(this.source);
+    this.setBackButtonProperties();
   }
 
-  private setBackButtonProperties(source: string) {
-    this.backRouterLink = source === 'request' ? '/requests' : '/requests';
-    this.backLabel = source === 'request' ? 'Back to request' : 'Back to My Requests';
+  private setBackButtonProperties() {
+    this.backRouterLink = '/requests';
+    this.backLabel = 'Back to My Requests';
   }
 
   initialiseRequest(): void {

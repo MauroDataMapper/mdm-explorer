@@ -21,9 +21,9 @@ SPDX-License-Identifier: Apache-2.0
     <h1>Request Query</h1>
   </div>
   <div class="mdm-request-query__back-link">
-    <a [routerLink]="['/requests']">
+    <a [routerLink]="[backRouterLink, backRouterRequestId]">
       <span class="fa-solid fa-arrow-left"></span>
-      Back to request
+      {{ backLabel }}
     </a>
     <button
       *ngIf="status === 'ready'"

@@ -603,7 +603,7 @@ describe('MyRequestsComponent', () => {
         ruleId: rule.id,
         representationId: representation.id,
         type: queryType,
-        condition: condition,
+        condition,
       };
 
       const returned: DataRequestQuery = {
@@ -624,7 +624,7 @@ describe('MyRequestsComponent', () => {
         ruleId: rule.id,
         representationId: representation.id,
         type: queryType,
-        condition: condition,
+        condition,
       };
 
       const returned: DataRequestQuery = {
