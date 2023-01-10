@@ -26,7 +26,6 @@ import {
   QueryCondition,
 } from 'src/app/data-explorer/data-explorer.types';
 import { ThemePalette } from '@angular/material/core';
-import { query } from '@angular/animations';
 
 @Component({
   selector: 'mdm-querybuilder',
@@ -59,7 +58,7 @@ export class QueryBuilderComponent {
   }
 
   clearComponent() {
-    if (this.query.rules.length == 0) {
+    if (this.query.rules.length === 0) {
       this.query = {
         condition: 'and',
         rules: [],
