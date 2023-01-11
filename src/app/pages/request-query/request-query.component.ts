@@ -115,7 +115,7 @@ export class RequestQueryComponent implements OnInit, IModelPage {
           );
         })
       )
-      .subscribe(([queryConfiguration]) => {
+      .subscribe((queryConfiguration) => {
         this.dataElements = queryConfiguration.dataElementSearchResult;
         this.config = queryConfiguration.config;
         this.query = queryConfiguration.dataRequestQueryPayload;

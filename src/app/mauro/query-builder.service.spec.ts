@@ -417,7 +417,7 @@ describe('QueryBuilderService', () => {
             ? '(a|)'
             : '---(a|)',
           {
-            a: [expectedResult],
+            a: expectedResult,
           }
         );
         const actual$ = service.setupConfig(

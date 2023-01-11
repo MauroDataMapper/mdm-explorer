@@ -47,7 +47,7 @@ export class QueryBuilderService {
   public setupConfig(
     dataElements: DataElementSearchResult[],
     query?: DataRequestQueryPayload
-  ): Observable<[QueryConfiguration]> {
+  ): Observable<QueryConfiguration> {
     const requests$ = dataElements.map((dataElement) => {
       const profile$ = this.getQueryBuilderDatatype(dataElement.dataType).pipe(
         catchError((error) => {
@@ -66,7 +66,7 @@ export class QueryBuilderService {
 
     return forkJoin(requests$).pipe(
       map((items) => {
-        return [this.getQueryFields(items, dataElements, query)];
+        return this.getQueryFields(items, dataElements, query);
       })
     );
   }
