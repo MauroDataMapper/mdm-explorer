@@ -1,5 +1,5 @@
 /*
-Copyright 2022 University of Oxford
+Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -64,8 +64,7 @@ SPDX-License-Identifier: Apache-2.0
 /** *************************************************************************************************
  * Zone JS is required by default for Angular itself.
  */
-import 'zone.js';  // Included with Angular CLI.
-
+import 'zone.js'; // Included with Angular CLI.
 
 /** *************************************************************************************************
  * APPLICATION IMPORTS

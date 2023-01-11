@@ -2,7 +2,7 @@ import { Observable } from 'rxjs';
 import { UserDetails } from 'src/app/security/user-details.service';
 
 /*
-Copyright 2022 University of Oxford
+Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
 Licensed under the Apache License, Version 2.0 (the "License");

@@ -1,5 +1,5 @@
 /*
-Copyright 2022 University of Oxford
+Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,10 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { ComponentHarness, setupTestModuleForComponent } from '../../testing/testing.helpers';
+import {
+  ComponentHarness,
+  setupTestModuleForComponent,
+} from '../../testing/testing.helpers';
 import { AlertComponent, AlertStyle } from './alert.component';
 
 describe('AlertComponent', () => {
@@ -41,7 +44,7 @@ describe('AlertComponent', () => {
     ['fa-check-circle', 'success'],
     ['fa-info-circle', 'info'],
     ['fa-exclamation-triangle', 'warning'],
-    ['fa-times-circle', 'error']
+    ['fa-times-circle', 'error'],
   ])('should use "%s" icon for %s style', (expected, style) => {
     harness.component.showIcon = true;
     harness.component.alertStyle = style;
@@ -60,7 +63,7 @@ describe('AlertComponent', () => {
     ['mdm-alert--success', 'success'],
     ['mdm-alert--info', 'info'],
     ['mdm-alert--warning', 'warning'],
-    ['mdm-alert--error', 'error']
+    ['mdm-alert--error', 'error'],
   ])('should use "%s" CSS modifier for %s style', (expected, style) => {
     harness.component.showIcon = true;
     harness.component.alertStyle = style;

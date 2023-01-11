@@ -1,5 +1,5 @@
 /*
-Copyright 2022 University of Oxford
+Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,22 +33,20 @@ describe('MdmHttpClientService', () => {
   let httpMock: HttpTestingController;
 
   const broadcastStub: BroadcastServiceStub = {
-    dispatch: jest.fn()
+    dispatch: jest.fn(),
   };
 
   const url = 'http://localhost/api/test';
 
   beforeEach(() => {
-    service = setupTestModuleForService(
-      MdmHttpClientService,
-      {
-        providers: [
-          {
-            provide: BroadcastService,
-            useValue: broadcastStub
-          }
-        ]
-      });
+    service = setupTestModuleForService(MdmHttpClientService, {
+      providers: [
+        {
+          provide: BroadcastService,
+          useValue: broadcastStub,
+        },
+      ],
+    });
 
     const injector = getTestBed();
     httpMock = injector.inject(HttpTestingController);
@@ -72,91 +70,89 @@ describe('MdmHttpClientService', () => {
     }).toThrow();
   });
 
-  it.each([
-    'GET',
-    'POST',
-    'PUT',
-    'DELETE'
-  ])('should return a valid HTTP response from a %p request', (httpMethod) => {
-    const options: RequestSettings = {
-      method: httpMethod,
-      body: { message: 'Testing...' },
-      withCredentials: true
-    };
+  it.each(['GET', 'POST', 'PUT', 'DELETE'])(
+    'should return a valid HTTP response from a %p request',
+    (httpMethod) => {
+      const options: RequestSettings = {
+        method: httpMethod,
+        body: { message: 'Testing...' },
+        withCredentials: true,
+      };
 
-    const expectedResponseBody = {
-      message: 'Test worked'
-    };
+      const expectedResponseBody = {
+        message: 'Test worked',
+      };
 
-    service
-      .process(url, options)
-      .subscribe(response => {
+      service.process(url, options).subscribe((response) => {
         expect(response.status).toBe(200);
         expect(response.ok).toBeTruthy();
         expect(response.body).toEqual(expectedResponseBody);
       });
 
-    const request = httpMock.expectOne(url);
-    expect(request.request.method).toBe(httpMethod);
-    request.flush(expectedResponseBody);
-  });
+      const request = httpMock.expectOne(url);
+      expect(request.request.method).toBe(httpMethod);
+      request.flush(expectedResponseBody);
+    }
+  );
 
   it('should throw an error from a HTTPErrorResponse', () => {
     const options: RequestSettings = {
       method: 'GET',
       body: { message: 'Testing...' },
-      withCredentials: true
+      withCredentials: true,
     };
 
     const expectedStatus = 500;
     const expectedResponseBody = {
-      errorMessage: 'Something bad happened!'
+      errorMessage: 'Something bad happened!',
     };
 
-    service
-      .process(url, options)
-      .subscribe({
-        next: () => { throw new Error('Should not happen!'); },
-        error: (error: HttpErrorResponse) => {
-          expect(error.status).toBe(expectedStatus);
-          expect(error.ok).toBeFalsy();
-          expect(error.error).toEqual(expectedResponseBody);
-        }
-      });
+    service.process(url, options).subscribe({
+      next: () => {
+        throw new Error('Should not happen!');
+      },
+      error: (error: HttpErrorResponse) => {
+        expect(error.status).toBe(expectedStatus);
+        expect(error.ok).toBeFalsy();
+        expect(error.error).toEqual(expectedResponseBody);
+      },
+    });
 
     const request = httpMock.expectOne(url);
-    request.flush(
-      expectedResponseBody,
-      {
-        status: 500,
-        statusText: 'Server error'
-      });
+    request.flush(expectedResponseBody, {
+      status: 500,
+      statusText: 'Server error',
+    });
   });
 
   describe('Broadcasting HTTP errors', () => {
     const testHttpRequest = (
       options: RequestSettings,
       expectedStatus: number,
-      expectedBroadcastEvent: BroadcastEvent) => {
-      service.process(url, options)
-        .subscribe({
-          next: () => { throw new Error('Should not happen!'); },
-          error: (error: HttpErrorResponse) => {
-            expect(error.status).toBe(expectedStatus);
-          }
-        });
+      expectedBroadcastEvent: BroadcastEvent
+    ) => {
+      service.process(url, options).subscribe({
+        next: () => {
+          throw new Error('Should not happen!');
+        },
+        error: (error: HttpErrorResponse) => {
+          expect(error.status).toBe(expectedStatus);
+        },
+      });
 
       const request = httpMock.expectOne(url);
       request.flush(
         {},
         {
           status: expectedStatus,
-          statusText: 'Failed'
-        });
+          statusText: 'Failed',
+        }
+      );
 
       expect(broadcastStub.dispatch).toHaveBeenCalledWith(
         expectedBroadcastEvent,
-        expect.any(Object));
+        expect.any(Object)
+      );
     };
 
     it('should broadcast "Application Offline" error', () => {
@@ -164,10 +160,11 @@ describe('MdmHttpClientService', () => {
         {
           method: 'GET',
           body: { message: 'Testing...' },
-          withCredentials: true
+          withCredentials: true,
         },
         0,
-        'http-application-offline');
+        'http-application-offline'
+      );
     });
 
     it('should broadcast "Not Authorized" error', () => {
@@ -175,10 +172,11 @@ describe('MdmHttpClientService', () => {
         {
           method: 'GET',
           body: { message: 'Testing...' },
-          withCredentials: true
+          withCredentials: true,
         },
         401,
-        'http-not-authorized');
+        'http-not-authorized'
+      );
     });
 
     it('should broadcast "Server Timeout" error', () => {
@@ -186,10 +184,11 @@ describe('MdmHttpClientService', () => {
         {
           method: 'GET',
           body: { message: 'Testing...' },
-          withCredentials: true
+          withCredentials: true,
         },
         504,
-        'http-server-timeout');
+        'http-server-timeout'
+      );
     });
 
     it('should broadcast "Not Found" error from HttpNotFound status', () => {
@@ -198,10 +197,11 @@ describe('MdmHttpClientService', () => {
           method: 'GET',
           body: { message: 'Testing...' },
           withCredentials: true,
-          handleGetErrors: true // Triggers internal handling of error
+          handleGetErrors: true, // Triggers internal handling of error
         },
         404,
-        'http-not-found');
+        'http-not-found'
+      );
     });
 
     it('should broadcast "Not Found" error from HttpBadRequest status', () => {
@@ -210,10 +210,11 @@ describe('MdmHttpClientService', () => {
           method: 'GET',
           body: { message: 'Testing...' },
           withCredentials: true,
-          handleGetErrors: true // Triggers internal handling of error
+          handleGetErrors: true, // Triggers internal handling of error
         },
         400,
-        'http-not-found');
+        'http-not-found'
+      );
     });
 
     it('should broadcast "Not Implemented" error', () => {
@@ -221,10 +222,11 @@ describe('MdmHttpClientService', () => {
         {
           method: 'GET',
           body: { message: 'Testing...' },
-          withCredentials: true
+          withCredentials: true,
         },
         501,
-        'http-not-implemented');
+        'http-not-implemented'
+      );
     });
 
     it('should broadcast "Server Error" error', () => {
@@ -232,10 +234,11 @@ describe('MdmHttpClientService', () => {
         {
           method: 'GET',
           body: { message: 'Testing...' },
-          withCredentials: true
+          withCredentials: true,
         },
         500,
-        'http-server-error');
+        'http-server-error'
+      );
     });
   });
 });

@@ -1,5 +1,5 @@
 /*
-Copyright 2022 University of Oxford
+Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,21 +18,19 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MockComponent } from 'ng-mocks';
-import { ComponentHarness, setupTestModuleForComponent } from 'src/app/testing/testing.helpers';
+import {
+  ComponentHarness,
+  setupTestModuleForComponent,
+} from 'src/app/testing/testing.helpers';
 import { ForgotPasswordFormComponent } from './forgot-password-form.component';
 
 describe('ForgotPasswordFormComponent', () => {
   let harness: ComponentHarness<ForgotPasswordFormComponent>;
 
   beforeEach(async () => {
-    harness = await setupTestModuleForComponent(
-      ForgotPasswordFormComponent,
-      {
-        declarations: [
-          MockComponent(MatFormField),
-          MockComponent(MatLabel)
-        ]
-      });
+    harness = await setupTestModuleForComponent(ForgotPasswordFormComponent, {
+      declarations: [MockComponent(MatFormField), MockComponent(MatLabel)],
+    });
   });
 
   it('should create', () => {
