@@ -20,6 +20,15 @@ SPDX-License-Identifier: Apache-2.0
   <button #matMenuTrigger mat-raised-button color="primary" [matMenuTriggerFor]="menu">
     {{ caption }}
   </button>
+  <ng-container *ngIf="!suppressViewRequestsDialogButton">
+    <span
+      *ngIf="elementLinkedToRequest"
+      [matTooltip]="tooltipText"
+      matTooltipClass="mdm-request-icon-tooltip"
+      class="fa fa-circle-check"
+    ></span>
+    <span *ngIf="!elementLinkedToRequest" class="fa fa-circle hideicon"></span>
+  </ng-container>
   <mat-menu #menu="matMenu">
     <ng-container *ngIf="ready">
       <section>

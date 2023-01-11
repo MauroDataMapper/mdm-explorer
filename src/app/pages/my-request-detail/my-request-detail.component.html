@@ -66,6 +66,7 @@ SPDX-License-Identifier: Apache-2.0
       <mdm-data-element-row
         *ngFor="let element of requestElements"
         [item]="element"
+        [canDelete]="request.status === 'unsent'"
         (delete)="removeItem($event)"
         [sourceTargetIntersections]="sourceTargetIntersections"
         [suppressViewRequestsDialogButton]="true"

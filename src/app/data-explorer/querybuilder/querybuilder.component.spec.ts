@@ -16,28 +16,37 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MeqlPipe } from '../pipes/meql.pipe';
-
 import { QueryBuilderComponent } from './querybuilder.component';
+import { MdmResourcesConfiguration } from '@maurodatamapper/mdm-resources';
+import { MeqlPipe } from '../pipes/meql.pipe';
+import {
+  ComponentHarness,
+  setupTestModuleForComponent,
+} from 'src/app/testing/testing.helpers';
 
 describe('QueryBuilderComponent', () => {
-  let component: QueryBuilderComponent;
-  let fixture: ComponentFixture<QueryBuilderComponent>;
+  let harness: ComponentHarness<QueryBuilderComponent>;
+  const mdmResourcesConfiguration = new MdmResourcesConfiguration();
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [QueryBuilderComponent, MeqlPipe],
-    }).compileComponents();
-  });
+  const setupComponentTest = async () => {
+    return await setupTestModuleForComponent(QueryBuilderComponent, {
+      providers: [
+        {
+          provide: MdmResourcesConfiguration,
+          useValue: mdmResourcesConfiguration,
+        },
+      ],
+      declarations: [MeqlPipe],
+    });
+  };
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(QueryBuilderComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+  describe('creation', () => {
+    beforeEach(async () => {
+      harness = await setupComponentTest();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+    it('should be created', () => {
+      expect(harness.component).toBeTruthy();
+    });
   });
 });

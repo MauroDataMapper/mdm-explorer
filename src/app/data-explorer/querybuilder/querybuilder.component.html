@@ -53,6 +53,7 @@ SPDX-License-Identifier: Apache-2.0
           [color]="color"
           *ngIf="addRuleSet"
           (click)="addRuleSet()"
+          [disabled]="noValidFields"
         >
           <mat-icon>add_circle_outline</mat-icon>
           Rule Set
@@ -64,6 +65,7 @@ SPDX-License-Identifier: Apache-2.0
           [color]="color"
           *ngIf="removeRuleSet"
           (click)="removeRuleSet()"
+          [disabled]="noValidFields"
         >
           <mat-icon>remove_circle_outline</mat-icon>
         </button>

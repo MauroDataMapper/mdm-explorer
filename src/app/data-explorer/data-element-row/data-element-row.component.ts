@@ -31,6 +31,7 @@ import { DataElementDeleteEvent } from '../data-explorer.types';
 })
 export class DataElementRowComponent extends DataElementSearchResultComponent {
   @Input() suppressViewRequestsDialogButton = false;
+  @Input() canDelete = true;
 
   @Output() delete = new EventEmitter<DataElementDeleteEvent>();
   @Output() requestAddDelete = new EventEmitter<RequestElementAddDeleteEvent>();
