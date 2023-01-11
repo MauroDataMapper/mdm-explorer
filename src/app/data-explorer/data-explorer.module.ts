@@ -77,7 +77,6 @@ import { MeqlOutputComponent } from './meql-output/meql-output.component';
     SearchFiltersComponent,
     CatalogueSearchFormComponent,
     QueryBuilderComponent,
-    MeqlPipe,
     MeqlOutputComponent,
   ],
   providers: [

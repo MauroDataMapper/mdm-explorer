@@ -141,7 +141,6 @@ export class MyRequestDetailComponent implements OnInit {
 
     this.dataRequests
       .getQuery(this.request.id, this.cohortQueryType)
-      .pipe()
       .subscribe((query) => {
         if (!query) {
           return;
@@ -150,16 +149,13 @@ export class MyRequestDetailComponent implements OnInit {
         this.cohortQuery = query.condition;
       });
 
-    this.dataRequests
-      .getQuery(this.request.id, this.dataQueryType)
-      .pipe()
-      .subscribe((query) => {
-        if (!query) {
-          return;
-        }
+    this.dataRequests.getQuery(this.request.id, this.dataQueryType).subscribe((query) => {
+      if (!query) {
+        return;
+      }
 
-        this.dataQuery = query.condition;
-      });
+      this.dataQuery = query.condition;
+    });
   }
 
   private setRequest(request?: DataRequest) {

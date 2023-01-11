@@ -70,9 +70,7 @@ SPDX-License-Identifier: Apache-2.0
         >
           <h2>Cohort Query</h2>
 
-          <mdm-meql-output [query]="cohortQuery">{{
-            cohortQuery | meql
-          }}</mdm-meql-output>
+          <mdm-meql-output [query]="cohortQuery"></mdm-meql-output>
         </div>
         <div class="mdm-my-request__query--description">
           <div
@@ -93,7 +91,7 @@ SPDX-License-Identifier: Apache-2.0
       <div class="mdm-my-request__query--row row">
         <div *ngIf="this.dataQuery.rules.length > 0" class="mdm-my-request__query-data">
           <h2>Data Query</h2>
-          <mdm-meql-output [query]="dataQuery">{{ dataQuery | meql }}</mdm-meql-output>
+          <mdm-meql-output [query]="dataQuery"></mdm-meql-output>
         </div>
 
         <div class="mdm-my-request__query--description">
