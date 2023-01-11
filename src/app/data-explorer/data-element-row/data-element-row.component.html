@@ -36,6 +36,7 @@ SPDX-License-Identifier: Apache-2.0
     </span>
     <span class="mdm-data-element-row__header-button-panel">
       <button
+        *ngIf="canDelete"
         mat-raised-button
         class="mdm-data-element-row__header-button"
         color="primary"
