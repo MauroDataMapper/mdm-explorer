@@ -173,10 +173,21 @@ export class MyRequestDetailComponent implements OnInit {
       return;
     }
 
-    this.broadcast.loading({ isLoading: true, caption: 'Submitting your request...' });
-    this.researchPlugin
-      .submitRequest(this.request.id)
+    this.confirmSumbitRequest()
+      .afterClosed()
       .pipe(
+        filter((response) => response?.result ?? false),
+        switchMap(() => {
+          if (!this.request || !this.request.id) {
+            return EMPTY;
+          }
+
+          this.broadcast.loading({
+            isLoading: true,
+            caption: 'Submitting your request...',
+          });
+          return this.researchPlugin.submitRequest(this.request.id);
+        }),
         catchError(() => {
           this.toastr.error(
             'There was a problem submitting your request. Please try again or contact us for support.',
@@ -203,8 +214,8 @@ export class MyRequestDetailComponent implements OnInit {
     this.okCancelItem(item)
       .afterClosed()
       .pipe(
-        switchMap((result: OkCancelDialogResponse) => {
-          if (result.result) {
+        switchMap((response: OkCancelDialogResponse | undefined) => {
+          if (response?.result) {
             this.broadcast.loading({
               isLoading: true,
               caption: `Removing data element ${item.label} from request ${this.request?.label} ...`,
@@ -447,6 +458,15 @@ export class MyRequestDetailComponent implements OnInit {
   private setRemoveSelectedButtonDisabled() {
     const selectedItemList = this.requestElements.filter((item) => item.isSelected);
     this.removeSelectedButtonDisabled = !this.request || selectedItemList.length === 0;
+  }
+
+  private confirmSumbitRequest(): MatDialogRef<OkCancelDialogData>  {
+    return this.dialogs.openOkCancel({
+      heading: 'Submit request',
+      content: `You are about to submit your request "${this.request?.label}" for review. You will not be able to change it further from this point. Do you want to continue?`,
+      okLabel: 'Yes',
+      cancelLabel: 'No',
+    });
   }
 
   private okCancelItem(item: DataElementSearchResult): MatDialogRef<OkCancelDialogData> {

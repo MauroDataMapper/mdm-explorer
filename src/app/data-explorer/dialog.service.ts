@@ -35,6 +35,7 @@ import {
 import {
   OkCancelDialogComponent,
   OkCancelDialogData,
+  OkCancelDialogResponse,
 } from './ok-cancel-dialog/ok-cancel-dialog.component';
 import {
   RequestCreatedAction,
@@ -105,13 +106,14 @@ export class DialogService {
   }
 
   openOkCancel(data: OkCancelDialogData) {
-    return this.matDialog.open<OkCancelDialogComponent, OkCancelDialogData>(
+    return this.matDialog.open<
       OkCancelDialogComponent,
-      {
-        maxWidth: 500,
-        data,
-      }
-    );
+      OkCancelDialogData,
+      OkCancelDialogResponse
+    >(OkCancelDialogComponent, {
+      maxWidth: 500,
+      data,
+    });
   }
 
   openSuccess(data: SuccessDialogData) {
