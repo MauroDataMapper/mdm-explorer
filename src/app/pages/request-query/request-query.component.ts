@@ -68,16 +68,6 @@ export class RequestQueryComponent implements OnInit, IModelPage {
     private queryBuilderService: QueryBuilderService
   ) {}
 
-  isDirty(): boolean {
-    return this.dirty;
-  }
-
-  private errorResponse(errorMessage: string) {
-    this.toastr.error(errorMessage);
-    this.status = 'error';
-    return EMPTY;
-  }
-
   ngOnInit(): void {
     this.route.params
       .pipe(
@@ -128,6 +118,10 @@ export class RequestQueryComponent implements OnInit, IModelPage {
       });
   }
 
+  isDirty(): boolean {
+    return this.dirty;
+  }
+
   onQueryChange(value: QueryCondition) {
     const change = JSON.stringify(value);
     this.dirty = this.original !== change;
@@ -164,6 +158,12 @@ export class RequestQueryComponent implements OnInit, IModelPage {
           this.dirty = false;
         }
       });
+  }
+
+  private errorResponse(errorMessage: string) {
+    this.toastr.error(errorMessage);
+    this.status = 'error';
+    return EMPTY;
   }
 
   private mapDataElements(elements: DataElement[]): DataElementSearchResult[] {

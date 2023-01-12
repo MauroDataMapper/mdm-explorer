@@ -108,16 +108,11 @@ export class MyRequestDetailComponent implements OnInit {
     this.setBackButtonProperties();
   }
 
-  private setBackButtonProperties() {
-    this.backRouterLink = '/requests';
-    this.backLabel = 'Back to My Requests';
-  }
-
   initialiseRequest(): void {
     this.route.params
       .pipe(
         switchMap((params) => {
-          const requestId = params.requestId;
+          const requestId = params.requestId as string;
           this.state = 'loading';
           return this.dataRequests.get(requestId);
         }),
@@ -156,6 +151,208 @@ export class MyRequestDetailComponent implements OnInit {
 
       this.dataQuery = query.condition;
     });
+  }
+
+  onSelectElement(event: SelectableDataElementSearchResultCheckedEvent) {
+    event.item.isSelected = event.checked;
+    this.setRemoveSelectedButtonDisabled();
+  }
+
+  onSelectAll(event: MatCheckboxChange) {
+    if (this.requestElements) {
+      this.requestElements = this.requestElements.map((item) => {
+        return { ...item, isSelected: event.checked };
+      });
+    }
+
+    this.setRemoveSelectedButtonDisabled();
+  }
+
+  submitRequest() {
+    if (!this.request || !this.request.id || this.request.status !== 'unsent') {
+      return;
+    }
+
+    this.broadcast.loading({ isLoading: true, caption: 'Submitting your request...' });
+    this.researchPlugin
+      .submitRequest(this.request.id)
+      .pipe(
+        catchError(() => {
+          this.toastr.error(
+            'There was a problem submitting your request. Please try again or contact us for support.',
+            'Submission error'
+          );
+          return EMPTY;
+        }),
+        finalize(() => this.broadcast.loading({ isLoading: false }))
+      )
+      .subscribe((dataModel) => {
+        // Refresh the current state of the request in view
+        this.request = mapToDataRequest(dataModel);
+        this.broadcast.dispatch('data-request-submitted');
+
+        this.dialogs.openSuccess({
+          heading: 'Request submitted',
+          message: `Your request "${this.request.label}" has been successfully submitted. It will now be reviewed and you will be contacted shortly to discuss further steps.`,
+        });
+      });
+  }
+
+  removeItem(event: DataElementDeleteEvent) {
+    const item = event.item;
+    this.okCancelItem(item)
+      .afterClosed()
+      .pipe(
+        switchMap((result: OkCancelDialogResponse) => {
+          if (result.result) {
+            this.broadcast.loading({
+              isLoading: true,
+              caption: `Removing data element ${item.label} from request ${this.request?.label} ...`,
+            });
+            const dataModel: DataModelDetail = {
+              domainType: CatalogueItemDomainType.DataModel,
+              label: this.request?.label ?? '',
+              availableActions: [],
+              finalised: false,
+              id: this.request?.id ?? '',
+            };
+            return this.dataRequests.deleteDataElementMultiple([item], dataModel);
+          } else {
+            return EMPTY;
+          }
+        })
+      )
+      .subscribe((resultMultiple: DataElementMultipleOperationResult) => {
+        const result =
+          resultMultiple.failures.length === 0
+            ? resultMultiple.successes[0]
+            : resultMultiple.failures[0];
+        let message = '';
+        if (!result.success) {
+          message = `Removal of data element ${item.label} failed. The error message is: ${result.message}`;
+        } else {
+          message = `Data element "${item.label}" removed from request "${this.request?.label}".`;
+        }
+        this.processRemoveDataElementResponse(result.success, message);
+        this.broadcast.loading({ isLoading: false });
+      });
+  }
+
+  // listens for external uodate to the request and refreshes if so
+  handlePossibleSelfDelete(event: RequestElementAddDeleteEvent) {
+    if (event.dataModel?.id === this.request?.id) {
+      this.setRequest(this.request);
+    }
+  }
+
+  removeSelected() {
+    const itemList = this.requestElements.filter((item) => item.isSelected);
+    this.okCancelItemList(itemList)
+      .afterClosed()
+      .pipe(
+        switchMap((result: OkCancelDialogResponse) => {
+          if (result.result) {
+            this.broadcast.loading({
+              isLoading: true,
+              caption: `Removing ${itemList.length} data element${
+                itemList.length === 1 ? '' : 's'
+              } from request ${this.request?.label} ...`,
+            });
+            const dataModel: DataModelDetail = {
+              domainType: CatalogueItemDomainType.DataModel,
+              label: this.request?.label ?? '',
+              availableActions: [],
+              finalised: false,
+              id: this.request?.id ?? '',
+            };
+            return this.dataRequests.deleteDataElementMultiple(itemList, dataModel);
+          } else {
+            return EMPTY;
+          }
+        })
+      )
+      .subscribe((result: DataElementMultipleOperationResult) => {
+        const success = result.failures.length === 0;
+        let message = `${result.successes.length} Data element${
+          result.successes.length === 1 ? '' : 's'
+        } removed from request "${this.request?.label}".`;
+        if (!success) {
+          message += `\r\n${result.failures.length} Data element${
+            result.failures.length === 1 ? '' : 's'
+          } caused an error.`;
+          result.failures.forEach((item: DataElementOperationResult) =>
+            console.log(item.message)
+          );
+        }
+        this.processRemoveDataElementResponse(success, message);
+        this.broadcast.loading({ isLoading: false });
+      });
+  }
+
+  copyRequest() {
+    if (
+      !this.request ||
+      !this.request.id ||
+      !this.request.modelVersion ||
+      this.request.status !== 'submitted'
+    ) {
+      return;
+    }
+
+    this.dialogs
+      .openCreateRequest({ showDescription: false })
+      .afterClosed()
+      .pipe(
+        filter((response) => !!response),
+        switchMap((response) => {
+          if (!response || !this.request) return EMPTY;
+
+          this.broadcast.loading({
+            isLoading: true,
+            caption: 'Creating new request ...',
+          });
+
+          return this.dataModels.createFork(this.request, { label: response.name });
+        }),
+        catchError(() => {
+          this.toastr.error(
+            'There was a problem creating your request. Please try again or contact us for support.',
+            'Creation error'
+          );
+          return EMPTY;
+        }),
+        switchMap((nextDraftModel) => {
+          return forkJoin([of(nextDraftModel)]);
+        }),
+        finalize(() => this.broadcast.loading({ isLoading: false }))
+      )
+      .subscribe(([nextDraftModel]) => {
+        const nextDataRequest = mapToDataRequest(nextDraftModel);
+        this.dialogs.openSuccess({
+          heading: 'Request created',
+          message: `Your new request "${nextDataRequest.label}" has been successfully created. Modify this request by searching or browsing our catalogue before submitting again.`,
+        });
+      });
+  }
+
+  showCohortCreate() {
+    return this.cohortQuery.rules.length === 0 && this.request?.status === 'unsent';
+  }
+  showCohortEdit() {
+    return this.cohortQuery.rules.length > 0 && this.request?.status === 'unsent';
+  }
+
+  showDataCreate() {
+    return this.dataQuery.rules.length === 0 && this.request?.status === 'unsent';
+  }
+
+  showDataEdit() {
+    return this.dataQuery.rules.length > 0 && this.request?.status === 'unsent';
+  }
+
+  private setBackButtonProperties() {
+    this.backRouterLink = '/requests';
+    this.backLabel = 'Back to My Requests';
   }
 
   private setRequest(request?: DataRequest) {
@@ -252,91 +449,6 @@ export class MyRequestDetailComponent implements OnInit {
     this.removeSelectedButtonDisabled = !this.request || selectedItemList.length === 0;
   }
 
-  onSelectElement(event: SelectableDataElementSearchResultCheckedEvent) {
-    event.item.isSelected = event.checked;
-    this.setRemoveSelectedButtonDisabled();
-  }
-
-  onSelectAll(event: MatCheckboxChange) {
-    if (this.requestElements) {
-      this.requestElements = this.requestElements.map((item) => {
-        return { ...item, isSelected: event.checked };
-      });
-    }
-
-    this.setRemoveSelectedButtonDisabled();
-  }
-
-  submitRequest() {
-    if (!this.request || !this.request.id || this.request.status !== 'unsent') {
-      return;
-    }
-
-    this.broadcast.loading({ isLoading: true, caption: 'Submitting your request...' });
-    this.researchPlugin
-      .submitRequest(this.request.id)
-      .pipe(
-        catchError(() => {
-          this.toastr.error(
-            'There was a problem submitting your request. Please try again or contact us for support.',
-            'Submission error'
-          );
-          return EMPTY;
-        }),
-        finalize(() => this.broadcast.loading({ isLoading: false }))
-      )
-      .subscribe((dataModel) => {
-        // Refresh the current state of the request in view
-        this.request = mapToDataRequest(dataModel);
-        this.broadcast.dispatch('data-request-submitted');
-
-        this.dialogs.openSuccess({
-          heading: 'Request submitted',
-          message: `Your request "${this.request.label}" has been successfully submitted. It will now be reviewed and you will be contacted shortly to discuss further steps.`,
-        });
-      });
-  }
-
-  removeItem(event: DataElementDeleteEvent) {
-    const item = event.item;
-    this.okCancelItem(item)
-      .afterClosed()
-      .pipe(
-        switchMap((result: OkCancelDialogResponse) => {
-          if (result.result) {
-            this.broadcast.loading({
-              isLoading: true,
-              caption: `Removing data element ${item.label} from request ${this.request?.label} ...`,
-            });
-            const dataModel: DataModelDetail = {
-              domainType: CatalogueItemDomainType.DataModel,
-              label: this.request?.label ?? '',
-              availableActions: [],
-              finalised: false,
-              id: this.request?.id ?? '',
-            };
-            return this.dataRequests.deleteDataElementMultiple([item], dataModel);
-          } else {
-            return EMPTY;
-          }
-        })
-      )
-      .subscribe((resultMultiple: DataElementMultipleOperationResult) => {
-        const result =
-          resultMultiple.failures.length === 0
-            ? resultMultiple.successes[0]
-            : resultMultiple.failures[0];
-        let message = '';
-        if (!result.success) {
-          message = `Removal of data element ${item.label} failed. The error message is: ${result.message}`;
-        } else {
-          message = `Data element "${item.label}" removed from request "${this.request?.label}".`;
-        }
-        this.processRemoveDataElementResponse(result.success, message);
-        this.broadcast.loading({ isLoading: false });
-      });
-  }
-
   private okCancelItem(item: DataElementSearchResult): MatDialogRef<OkCancelDialogData> {
     return this.dialogs.openOkCancel({
       heading: 'Remove data element',
@@ -344,57 +456,6 @@ export class MyRequestDetailComponent implements OnInit {
       okLabel: 'Yes',
       cancelLabel: 'No',
     });
-  }
-
-  // listens for external uodate to the request and refreshes if so
-  handlePossibleSelfDelete(event: RequestElementAddDeleteEvent) {
-    if (event.dataModel?.id === this.request?.id) {
-      this.setRequest(this.request);
-    }
-  }
-
-  removeSelected() {
-    const itemList = this.requestElements.filter((item) => item.isSelected);
-    this.okCancelItemList(itemList)
-      .afterClosed()
-      .pipe(
-        switchMap((result: OkCancelDialogResponse) => {
-          if (result.result) {
-            this.broadcast.loading({
-              isLoading: true,
-              caption: `Removing ${itemList.length} data element${
-                itemList.length === 1 ? '' : 's'
-              } from request ${this.request?.label} ...`,
-            });
-            const dataModel: DataModelDetail = {
-              domainType: CatalogueItemDomainType.DataModel,
-              label: this.request?.label ?? '',
-              availableActions: [],
-              finalised: false,
-              id: this.request?.id ?? '',
-            };
-            return this.dataRequests.deleteDataElementMultiple(itemList, dataModel);
-          } else {
-            return EMPTY;
-          }
-        })
-      )
-      .subscribe((result: DataElementMultipleOperationResult) => {
-        const success = result.failures.length === 0;
-        let message = `${result.successes.length} Data element${
-          result.successes.length === 1 ? '' : 's'
-        } removed from request "${this.request?.label}".`;
-        if (!success) {
-          message += `\r\n${result.failures.length} Data element${
-            result.failures.length === 1 ? '' : 's'
-          } caused an error.`;
-          result.failures.forEach((item: DataElementOperationResult) =>
-            console.log(item.message)
-          );
-        }
-        this.processRemoveDataElementResponse(success, message);
-        this.broadcast.loading({ isLoading: false });
-      });
   }
 
   private okCancelItemList(
@@ -406,66 +467,5 @@ export class MyRequestDetailComponent implements OnInit {
       okLabel: 'Yes',
       cancelLabel: 'No',
     });
-  }
-
-  copyRequest() {
-    if (
-      !this.request ||
-      !this.request.id ||
-      !this.request.modelVersion ||
-      this.request.status !== 'submitted'
-    ) {
-      return;
-    }
-
-    this.dialogs
-      .openCreateRequest({ showDescription: false })
-      .afterClosed()
-      .pipe(
-        filter((response) => !!response),
-        switchMap((response) => {
-          if (!response || !this.request) return EMPTY;
-
-          this.broadcast.loading({
-            isLoading: true,
-            caption: 'Creating new request ...',
-          });
-
-          return this.dataModels.createFork(this.request, { label: response.name });
-        }),
-        catchError(() => {
-          this.toastr.error(
-            'There was a problem creating your request. Please try again or contact us for support.',
-            'Creation error'
-          );
-          return EMPTY;
-        }),
-        switchMap((nextDraftModel) => {
-          return forkJoin([of(nextDraftModel)]);
-        }),
-        finalize(() => this.broadcast.loading({ isLoading: false }))
-      )
-      .subscribe(([nextDraftModel]) => {
-        const nextDataRequest = mapToDataRequest(nextDraftModel);
-        this.dialogs.openSuccess({
-          heading: 'Request created',
-          message: `Your new request "${nextDataRequest.label}" has been successfully created. Modify this request by searching or browsing our catalogue before submitting again.`,
-        });
-      });
-  }
-
-  showCohortCreate() {
-    return this.cohortQuery.rules.length === 0 && this.request?.status === 'unsent';
-  }
-  showCohortEdit() {
-    return this.cohortQuery.rules.length > 0 && this.request?.status === 'unsent';
-  }
-
-  showDataCreate() {
-    return this.dataQuery.rules.length === 0 && this.request?.status === 'unsent';
-  }
-
-  showDataEdit() {
-    return this.dataQuery.rules.length > 0 && this.request?.status === 'unsent';
   }
 }
