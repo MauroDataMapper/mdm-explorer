@@ -86,21 +86,23 @@ SPDX-License-Identifier: Apache-2.0
           (bookmark)="bookmarkElement($event)"
           [sourceTargetIntersections]="sourceTargetIntersections"
         ></mdm-data-element-search-result>
-        <ng-container *ngIf="resultSet.totalResults > 0">
-          <div class="float-start">
-            <mat-checkbox (change)="onSelectAll($event)">Select all</mat-checkbox>
-            <mdm-data-element-multi-select
-              [sourceTargetIntersections]="sourceTargetIntersections"
-              [dataElements]="selectedElements"
-            ></mdm-data-element-multi-select>
-          </div>
-        </ng-container>
-        <mdm-pagination
-          [currentPage]="resultSet.page"
-          [pageSize]="resultSet.pageSize"
-          [totalResults]="resultSet.totalResults"
-          (selected)="selectPage($event)"
-        ></mdm-pagination>
+        <div class="mdm-search-listing__footer-row">
+          <ng-container *ngIf="resultSet.totalResults > 0">
+            <div class="float-start">
+              <mat-checkbox (change)="onSelectAll($event)">Select all</mat-checkbox>
+              <mdm-data-element-multi-select
+                [sourceTargetIntersections]="sourceTargetIntersections"
+                [dataElements]="selectedElements"
+              ></mdm-data-element-multi-select>
+            </div>
+          </ng-container>
+          <mdm-pagination
+            [currentPage]="resultSet.page"
+            [pageSize]="resultSet.pageSize"
+            [totalResults]="resultSet.totalResults"
+            (selected)="selectPage($event)"
+          ></mdm-pagination>
+        </div>
         <div *ngIf="resultSet.totalResults === 0" class="mdm-search-listing__no-results">
           <p>Unfortunately we could not find any matches based on this criteria. Try:</p>
           <ul>

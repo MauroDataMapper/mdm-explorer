@@ -20,6 +20,7 @@ SPDX-License-Identifier: Apache-2.0
   *ngIf="pages && pages.length > 0"
   class="pagination justify-content-end mdm-pagination"
 >
+  <li class="page-item page-counter">{{ currentPage }} of {{ totalPages }}</li>
   <li [ngClass]="{ disabled: currentPage === 1 }" class="page-item first-item">
     <button
       class="page-link"
@@ -66,8 +67,5 @@ SPDX-License-Identifier: Apache-2.0
     >
       <span class="fa-solid fa-angles-right"></span>
     </button>
-  </li>
-  <li class="page-item page-counter">
-    <span title="{{ totalPages }} pages">[ {{ totalPages }} ]</span>
   </li>
 </ul>
