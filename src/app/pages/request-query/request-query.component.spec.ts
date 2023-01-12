@@ -1,5 +1,5 @@
 /*
-Copyright 2022 University of Oxford
+Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 import {
   CatalogueItemDomainType,
   DataElement,
+  MdmResourcesConfiguration,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
@@ -51,6 +52,7 @@ describe('RequestQueryComponent', () => {
   const dataRequestsStub = createDataRequestsServiceStub();
   const toastrStub = createToastrServiceStub();
   const broadcastStub = createBroadcastServiceStub();
+  const mdmResourcesConfiguration = new MdmResourcesConfiguration();
 
   const requestId: Uuid = '1234';
 
@@ -79,6 +81,10 @@ describe('RequestQueryComponent', () => {
         {
           provide: BroadcastService,
           useValue: broadcastStub,
+        },
+        {
+          provide: MdmResourcesConfiguration,
+          useValue: mdmResourcesConfiguration,
         },
       ],
     });

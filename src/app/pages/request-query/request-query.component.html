@@ -1,5 +1,5 @@
 <!--
-Copyright 2022 University of Oxford
+Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,9 +21,9 @@ SPDX-License-Identifier: Apache-2.0
     <h1>Request Query</h1>
   </div>
   <div class="mdm-request-query__back-link">
-    <a [routerLink]="['/requests']">
+    <a [routerLink]="[backRouterLink, backRouterRequestId]">
       <span class="fa-solid fa-arrow-left"></span>
-      Back to request
+      {{ backLabel }}
     </a>
     <button
       *ngIf="status === 'ready'"
@@ -62,6 +62,7 @@ SPDX-License-Identifier: Apache-2.0
       </h2>
       <mdm-querybuilder
         [dataElements]="dataElements"
+        [config]="config"
         [(query)]="condition"
         (queryChange)="onQueryChange($event)"
       ></mdm-querybuilder>

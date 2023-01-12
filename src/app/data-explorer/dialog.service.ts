@@ -1,5 +1,5 @@
 /*
-Copyright 2022 University of Oxford
+Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,6 +35,7 @@ import {
 import {
   OkCancelDialogComponent,
   OkCancelDialogData,
+  OkCancelDialogResponse,
 } from './ok-cancel-dialog/ok-cancel-dialog.component';
 import {
   RequestCreatedAction,
@@ -105,13 +106,14 @@ export class DialogService {
   }
 
   openOkCancel(data: OkCancelDialogData) {
-    return this.matDialog.open<OkCancelDialogComponent, OkCancelDialogData>(
+    return this.matDialog.open<
       OkCancelDialogComponent,
-      {
-        maxWidth: 500,
-        data,
-      }
-    );
+      OkCancelDialogData,
+      OkCancelDialogResponse
+    >(OkCancelDialogComponent, {
+      maxWidth: 500,
+      data,
+    });
   }
 
   openSuccess(data: SuccessDialogData) {

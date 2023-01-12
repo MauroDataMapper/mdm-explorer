@@ -1,5 +1,5 @@
 <!--
-Copyright 2022 University of Oxford
+Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -53,6 +53,7 @@ SPDX-License-Identifier: Apache-2.0
           [color]="color"
           *ngIf="addRuleSet"
           (click)="addRuleSet()"
+          [disabled]="noValidFields"
         >
           <mat-icon>add_circle_outline</mat-icon>
           Rule Set
@@ -64,6 +65,7 @@ SPDX-License-Identifier: Apache-2.0
           [color]="color"
           *ngIf="removeRuleSet"
           (click)="removeRuleSet()"
+          [disabled]="noValidFields"
         >
           <mat-icon>remove_circle_outline</mat-icon>
         </button>

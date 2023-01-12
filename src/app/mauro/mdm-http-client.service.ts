@@ -1,5 +1,5 @@
 /*
-Copyright 2022 University of Oxford
+Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,22 +26,22 @@ import { BroadcastEvent, BroadcastService } from '../core/broadcast.service';
  * An IMdmRestHandler implemented using Angular's HttpClient.
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MdmHttpClientService implements MdmRestHandler {
-  constructor(
-    private http: HttpClient,
-    private broadcast: BroadcastService) { }
+  constructor(private http: HttpClient, private broadcast: BroadcastService) {}
 
   process(url: string, options: RequestSettings) {
     if (
       options.withCredentials === undefined ||
       options.withCredentials === null ||
-      (options.withCredentials !== undefined && options.withCredentials === false)) {
+      (options.withCredentials !== undefined && options.withCredentials === false)
+    ) {
       throw new Error('withCredentials is not provided!');
     }
 
-    if (options.responseType) { } else {
+    if (options.responseType) {
+    } else {
       options.responseType = undefined;
     }
 
@@ -51,12 +51,13 @@ export class MdmHttpClientService implements MdmRestHandler {
     options.headers.Pragma = 'no-cache';
 
     return this.http
-      .request(options.method, url, { // eslint-disable-line @typescript-eslint/no-unsafe-argument
+      .request(options.method as string, url, {
+        // eslint-disable-line @typescript-eslint/no-unsafe-argument
         body: options.body,
         headers: options.headers,
         withCredentials: options.withCredentials,
         observe: 'response',
-        responseType: options.responseType
+        responseType: options.responseType,
       })
       .pipe(
         catchError((response: HttpErrorResponse) => {
@@ -72,7 +73,8 @@ export class MdmHttpClientService implements MdmRestHandler {
 
   private getBroadcastEvent(
     response: HttpErrorResponse,
-    options: RequestSettings): BroadcastEvent | null {
+    options: RequestSettings
+  ): BroadcastEvent | null {
     // For any GET requests that return 4XX response, automatically handle them unless overridden
     const handleGetErrors: boolean = options?.handleGetErrors ?? true;
 
@@ -96,7 +98,12 @@ export class MdmHttpClientService implements MdmRestHandler {
       return 'http-not-implemented';
     }
 
-    if (response.status >= 400 && response.status < 500 && options.method === 'GET' && handleGetErrors) {
+    if (
+      response.status >= 400 &&
+      response.status < 500 &&
+      options.method === 'GET' &&
+      handleGetErrors
+    ) {
       return 'http-not-found';
     }
 

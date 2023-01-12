@@ -1,5 +1,5 @@
 /*
-Copyright 2022 University of Oxford
+Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,6 +31,7 @@ import { DataElementDeleteEvent } from '../data-explorer.types';
 })
 export class DataElementRowComponent extends DataElementSearchResultComponent {
   @Input() suppressViewRequestsDialogButton = false;
+  @Input() canDelete = true;
 
   @Output() delete = new EventEmitter<DataElementDeleteEvent>();
   @Output() requestAddDelete = new EventEmitter<RequestElementAddDeleteEvent>();

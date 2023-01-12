@@ -1,5 +1,5 @@
 /*
-Copyright 2022 University of Oxford
+Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,13 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { DataModel, DataModelSubsetPayload } from '@maurodatamapper/mdm-resources';
-import { finalize, Observable, of, Subject, takeUntil } from 'rxjs';
+import {
+  DataModel,
+  DataModelDetail,
+  DataModelSubsetPayload,
+  Uuid,
+} from '@maurodatamapper/mdm-resources';
+import { EMPTY, finalize, Observable, of, Subject, switchMap, takeUntil } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import {
   DataAccessRequestsSourceTargetIntersections,
@@ -36,6 +41,8 @@ import { ToastrService } from 'ngx-toastr';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { DialogService } from 'src/app/data-explorer/dialog.service';
 import { RequestUpdatedData } from 'src/app/data-explorer/request-updated-dialog/request-updated-dialog.component';
+import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
+import { TooltipHelpTextOption } from '../bookmark-toggle/bookmark-toggle.component';
 
 export interface CreateRequestEvent {
   item: DataElementSearchResult;
@@ -70,6 +77,8 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
 
   // The list of items in the createRequest menu
   dataRequestMenuItems: DataAccessRequestMenuItem[] = [];
+  elementLinkedToRequest = false;
+  tooltipText = 'Assigned to Request';
 
   private user: UserDetails | null;
 
@@ -85,7 +94,8 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
     private endpoints: MdmEndpointsService,
     private dialogs: DialogService,
     private toastr: ToastrService,
-    private broadcast: BroadcastService
+    private broadcast: BroadcastService,
+    private explorer: DataExplorerService
   ) {
     this.user = security.getSignedInUser();
     this.sourceTargetIntersections = {
@@ -165,6 +175,9 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
             addedElements: event.checked ? [de] : [],
             removedElements: !event.checked ? [de] : [],
           };
+
+          this.loadIntersections();
+
           return this.dialogs
             .openRequestUpdated(requestUpdatedData)
             .afterClosed()
@@ -188,14 +201,28 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
         .filter((sti) => sti.intersects.includes(this.dataElement!.id)) // eslint-disable-line @typescript-eslint/no-non-null-assertion
         .map((sti) => sti.targetDataModelId);
 
-    this.dataRequestMenuItems = this.sourceTargetIntersections.dataAccessRequests.map(
-      (req) => {
+    this.dataRequestMenuItems = this.sourceTargetIntersections.dataAccessRequests
+      .map((req) => {
         return {
           dataModel: req,
           containsElement: idsOfRequestsContainingElement.includes(req.id ?? ''),
         };
-      }
-    );
+      })
+      .sort();
+
+    this.elementLinkedToRequest =
+      this.dataRequestMenuItems.filter((obj) => obj.containsElement).length > 0;
+
+    const menuList = this.dataRequestMenuItems
+      .filter((obj) => obj.containsElement)
+      .map((menuItem) => {
+        return menuItem.dataModel.label;
+      })
+      .join('\n');
+
+    this.tooltipText = menuList
+      ? 'Referenced by request(s):\n' + (menuList as TooltipHelpTextOption)
+      : this.tooltipText;
   }
 
   onClickCreateRequest() {
@@ -235,6 +262,33 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
       .on('data-intersections-refreshed')
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((intersections) => {
+        this.sourceTargetIntersections = intersections;
+        this.refreshDataRequestMenuItems();
+      });
+  }
+
+  private loadIntersections() {
+    const dataElementIds: Uuid[] = [];
+
+    if (this.dataElement) {
+      dataElementIds.push(this.dataElement.id);
+    }
+
+    this.explorer
+      .getRootDataModel()
+      .pipe(
+        switchMap((rootModel: DataModelDetail) => {
+          if (rootModel.id) {
+            return this.dataRequests.getRequestsIntersections(
+              rootModel.id,
+              dataElementIds
+            );
+          } else {
+            return EMPTY;
+          }
+        })
+      )
+      .subscribe((intersections: DataAccessRequestsSourceTargetIntersections) => {
         this.sourceTargetIntersections = intersections;
         this.refreshDataRequestMenuItems();
       });

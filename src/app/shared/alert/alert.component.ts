@@ -1,5 +1,5 @@
 /*
-Copyright 2022 University of Oxford
+Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,20 +28,19 @@ export interface AlertStyleMetadata {
 @Component({
   selector: 'mdm-alert',
   templateUrl: './alert.component.html',
-  styleUrls: ['./alert.component.scss']
+  styleUrls: ['./alert.component.scss'],
 })
 export class AlertComponent implements OnInit {
-
   @Input() alertStyle: AlertStyle = 'none';
 
   @Input() showIcon = false;
 
   private readonly styleMetadata = new Map<AlertStyle, AlertStyleMetadata>([
-    ['none', { icon: '', cssModifier: ''}],
+    ['none', { icon: '', cssModifier: '' }],
     ['success', { icon: 'fa-check-circle', cssModifier: 'mdm-alert--success' }],
     ['info', { icon: 'fa-info-circle', cssModifier: 'mdm-alert--info' }],
     ['warning', { icon: 'fa-exclamation-triangle', cssModifier: 'mdm-alert--warning' }],
-    ['error', { icon: 'fa-times-circle', cssModifier: 'mdm-alert--error' }]
+    ['error', { icon: 'fa-times-circle', cssModifier: 'mdm-alert--error' }],
   ]);
 
   get iconName() {
@@ -56,7 +55,5 @@ export class AlertComponent implements OnInit {
     return this.styleMetadata.get(this.alertStyle)?.cssModifier ?? '';
   }
 
-  ngOnInit(): void {
-  }
-
+  ngOnInit(): void {}
 }

@@ -1,5 +1,5 @@
 /*
-Copyright 2022 University of Oxford
+Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DataElement, Uuid } from '@maurodatamapper/mdm-resources';
+import { QueryBuilderConfig } from 'angular2-query-builder';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY, finalize, forkJoin, switchMap } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
@@ -31,6 +32,7 @@ import {
   QueryCondition,
 } from 'src/app/data-explorer/data-explorer.types';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { QueryBuilderService } from 'src/app/mauro/query-builder.service';
 import { IModelPage } from 'src/app/shared/types/shared.types';
 
 const defaultQueryCondition: QueryCondition = {
@@ -47,22 +49,24 @@ export class RequestQueryComponent implements OnInit, IModelPage {
   dataRequest?: DataRequest;
   queryType: DataRequestQueryType = 'none';
   dataElements?: DataElementSearchResult[];
+  config: QueryBuilderConfig = {
+    fields: {},
+  };
   query?: DataRequestQuery;
   condition: QueryCondition = defaultQueryCondition;
   status: 'init' | 'loading' | 'ready' | 'error' = 'init';
   dirty = false;
   original = '';
-
+  backRouterLink = '';
+  backLabel = '';
+  backRouterRequestId = '';
   constructor(
     private route: ActivatedRoute,
     private dataRequests: DataRequestsService,
     private toastr: ToastrService,
-    private broadcast: BroadcastService
+    private broadcast: BroadcastService,
+    private queryBuilderService: QueryBuilderService
   ) {}
-
-  isDirty(): boolean {
-    return this.dirty;
-  }
 
   ngOnInit(): void {
     this.route.params
@@ -75,15 +79,14 @@ export class RequestQueryComponent implements OnInit, IModelPage {
           return this.dataRequests.get(requestId);
         }),
         catchError(() => {
-          this.toastr.error('There was a problem finding your request.');
-          this.status = 'error';
-          return EMPTY;
+          return this.errorResponse('There was a problem finding your request.');
         }),
         switchMap((dataRequest) => {
           if (!dataRequest || !dataRequest.id) {
             return EMPTY;
           }
           this.dataRequest = dataRequest;
+          this.setBackButtonProperties(dataRequest.id);
 
           return forkJoin([
             this.dataRequests.listDataElements(dataRequest),
@@ -91,18 +94,32 @@ export class RequestQueryComponent implements OnInit, IModelPage {
           ]);
         }),
         catchError(() => {
-          this.toastr.error('There was a problem finding your request queries.');
-          this.status = 'error';
-          return EMPTY;
+          return this.errorResponse('There was a problem finding your request queries.');
+        }),
+        switchMap(([dataElements, query]) => {
+          return this.queryBuilderService.setupConfig(
+            this.mapDataElements(dataElements),
+            query
+          );
+        }),
+        catchError(() => {
+          return this.errorResponse(
+            'There was a problem configuring your request queries.'
+          );
         })
       )
-      .subscribe(([dataElements, query]) => {
-        this.dataElements = this.mapDataElements(dataElements);
-        this.query = query;
+      .subscribe((queryConfiguration) => {
+        this.dataElements = queryConfiguration.dataElementSearchResult;
+        this.config = queryConfiguration.config;
+        this.query = queryConfiguration.dataRequestQueryPayload;
         this.condition = this.query ? this.query.condition : defaultQueryCondition;
         this.original = JSON.stringify(this.condition);
         this.status = 'ready';
       });
+  }
+
+  isDirty(): boolean {
+    return this.dirty;
   }
 
   onQueryChange(value: QueryCondition) {
@@ -143,7 +160,19 @@ export class RequestQueryComponent implements OnInit, IModelPage {
       });
   }
 
+  private errorResponse(errorMessage: string) {
+    this.toastr.error(errorMessage);
+    this.status = 'error';
+    return EMPTY;
+  }
+
   private mapDataElements(elements: DataElement[]): DataElementSearchResult[] {
     return elements.map((element) => element as DataElementSearchResult);
+  }
+
+  private setBackButtonProperties(id: string) {
+    this.backRouterLink = '/requests/';
+    this.backRouterRequestId = id;
+    this.backLabel = 'Back to request';
   }
 }

@@ -1,5 +1,5 @@
 /*
-Copyright 2022 University of Oxford
+Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,6 +28,7 @@ import {
   ProfileSearchResponse,
   ProfileDefinition,
   ProfileDefinitionResponse,
+  RequestSettings,
 } from '@maurodatamapper/mdm-resources';
 import { map, Observable } from 'rxjs';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
@@ -54,10 +55,11 @@ export class ProfileService {
     catalogueItemDomainType: CatalogueItemDomainType,
     catalogueItemId: Uuid,
     profileNamespace: string,
-    profileName: string
+    profileName: string,
+    options?: RequestSettings,
   ): Observable<Profile> {
     return this.endpoints.profile
-      .profile(catalogueItemDomainType, catalogueItemId, profileNamespace, profileName)
+      .profile(catalogueItemDomainType, catalogueItemId, profileNamespace, profileName, undefined, undefined, options)
       .pipe(map((response: Profile) => response.body));
   }
 

@@ -1,5 +1,5 @@
 <!--
-Copyright 2022 University of Oxford
+Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,21 +36,23 @@ SPDX-License-Identifier: Apache-2.0
           <div class="mdm-my-request__request-header--name">
             <mdm-request-status-chip [status]="request.status"></mdm-request-status-chip>
           </div>
-          <button
-            *ngIf="request.status === 'submitted'"
-            mat-raised-button
-            matTooltip="Create a new request based on this one and make modifications."
-            (click)="copyRequest()"
-          >
-            Copy
-          </button>
-          <button
-            *ngIf="request.status === 'unsent'"
-            mat-raised-button
-            (click)="submitRequest()"
-          >
-            Submit request
-          </button>
+          <div class="mdm-my-request__request-header--buttons">
+            <button
+              *ngIf="request.status === 'submitted'"
+              mat-raised-button
+              matTooltip="Create a new request based on this one and make modifications."
+              (click)="copyRequest()"
+            >
+              Copy
+            </button>
+            <button
+              *ngIf="request.status === 'unsent'"
+              mat-raised-button
+              (click)="submitRequest()"
+            >
+              Submit request
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -59,6 +61,57 @@ SPDX-License-Identifier: Apache-2.0
         <p>{{ request.description }}</p>
       </div>
     </div>
+
+    <div class="mdm-my-request__query">
+      <div class="mdm-my-request__query--row row">
+        <div
+          *ngIf="this.cohortQuery.rules.length > 0"
+          class="mdm-my-request__query-cohort"
+        >
+          <h2>Cohort Query</h2>
+
+          <mdm-meql-output [query]="cohortQuery"></mdm-meql-output>
+        </div>
+        <div class="mdm-my-request__query--description">
+          <div
+            *ngIf="this.cohortQuery.rules.length == 0"
+            class="mdm-my-request__query-missing"
+          >
+            <p>No Cohort Query has been created for this request</p>
+          </div>
+          <a *ngIf="this.showCohortCreate()" [routerLink]="['queries/', cohortQueryType]"
+            ><button mat-raised-button>Create Cohort Query</button></a
+          >
+          <a *ngIf="this.showCohortEdit()" [routerLink]="['queries/', cohortQueryType]"
+            ><button mat-raised-button>Edit Cohort Query</button></a
+          >
+        </div>
+      </div>
+
+      <div class="mdm-my-request__query--row row">
+        <div *ngIf="this.dataQuery.rules.length > 0" class="mdm-my-request__query-data">
+          <h2>Data Query</h2>
+          <mdm-meql-output [query]="dataQuery"></mdm-meql-output>
+        </div>
+
+        <div class="mdm-my-request__query--description">
+          <div
+            *ngIf="this.dataQuery.rules.length == 0"
+            class="mdm-my-request__query-missing"
+          >
+            <p>No Data Query has been created for this request</p>
+          </div>
+
+          <a *ngIf="this.showDataCreate()" [routerLink]="['queries/', dataQueryType]"
+            ><button mat-raised-button>Create Data Query</button></a
+          >
+          <a *ngIf="this.showDataEdit()" [routerLink]="['queries/', dataQueryType]"
+            ><button mat-raised-button>Edit Data Query</button></a
+          >
+        </div>
+      </div>
+    </div>
+
     <div
       class="mdm-my-request__request-elements"
       *ngIf="sourceTargetIntersections.dataAccessRequests.length > 0"
@@ -66,6 +119,7 @@ SPDX-License-Identifier: Apache-2.0
       <mdm-data-element-row
         *ngFor="let element of requestElements"
         [item]="element"
+        [canDelete]="request.status === 'unsent'"
         (delete)="removeItem($event)"
         [sourceTargetIntersections]="sourceTargetIntersections"
         [suppressViewRequestsDialogButton]="true"

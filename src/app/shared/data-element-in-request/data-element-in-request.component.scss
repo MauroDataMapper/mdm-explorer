@@ -1,5 +1,5 @@
 /*
-Copyright 2022 University of Oxford
+Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,6 +30,44 @@ section {
   padding-right: 1rem;
 }
 
+.hideicon {
+  opacity: 0;
+}
+
 .mat-divider {
   margin-bottom: 0.5rem;
+}
+
+$triangle-center: 77.5%;
+$vertical-offset: 6px;
+$horizontal-offset: 8px;
+
+::ng-deep div.mat-tooltip.mdm-request-icon-tooltip {
+  color: black;
+  font-size: small;
+  font-weight: normal;
+  text-align: center;
+  background: $color-mauro-gold;
+  padding-top: 1.1em;
+  margin-top: 0.2em;
+  margin-right: 8.1em;
+  width: 165px;
+  white-space: pre-line;
+
+  clip-path: polygon(
+    // Top left point
+    0% calc(0% + $vertical-offset),
+    // center left of triangle
+    calc($triangle-center - $horizontal-offset) calc(0% + $vertical-offset),
+    // tip of triangle
+    $triangle-center 0%,
+    // center right of triangle
+    calc($triangle-center + $horizontal-offset) calc(0% + $vertical-offset),
+    // Top right point
+    100% calc(0% + $vertical-offset),
+    // Bottom right point
+    100% 100%,
+    // Bottom left point
+    0% 100%
+  );
 }
