@@ -51,7 +51,7 @@ export class MdmHttpClientService implements MdmRestHandler {
     options.headers.Pragma = 'no-cache';
 
     return this.http
-      .request(options.method, url, {
+      .request(options.method as string, url, {
         // eslint-disable-line @typescript-eslint/no-unsafe-argument
         body: options.body,
         headers: options.headers,

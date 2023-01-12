@@ -35,12 +35,32 @@ $back-link-color: $color-mauro-dark-green;
   border: $header-border;
   border-radius: $header-border-radius;
 
+  &__query {
+    padding: 0.5em;
+    background-color: $row-footer-content-color;
+
+    &--row {
+      padding: 0.5em 0.75em;
+    }
+
+    &--description {
+      p {
+        float: left;
+      }
+
+      a {
+        float: right;
+        padding: 0;
+      }
+      button {
+        width: 160px;
+      }
+    }
+  }
+
   &__request-description {
     padding: 0.5em 0.75em;
     background-color: $row-footer-content-color;
-    button {
-      float: right;
-    }
 
     &-container {
       padding-bottom: 2px;
@@ -100,6 +120,10 @@ $back-link-color: $color-mauro-dark-green;
 
     &--info {
       margin-top: 1.2em;
+    }
+
+    button {
+      width: 160px;
     }
   }
 

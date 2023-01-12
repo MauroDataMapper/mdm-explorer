@@ -57,7 +57,9 @@ export class RequestQueryComponent implements OnInit, IModelPage {
   status: 'init' | 'loading' | 'ready' | 'error' = 'init';
   dirty = false;
   original = '';
-
+  backRouterLink = '';
+  backLabel = '';
+  backRouterRequestId = '';
   constructor(
     private route: ActivatedRoute,
     private dataRequests: DataRequestsService,
@@ -65,16 +67,6 @@ export class RequestQueryComponent implements OnInit, IModelPage {
     private broadcast: BroadcastService,
     private queryBuilderService: QueryBuilderService
   ) {}
-
-  isDirty(): boolean {
-    return this.dirty;
-  }
-
-  private errorResponse(errorMessage: string) {
-    this.toastr.error(errorMessage);
-    this.status = 'error';
-    return EMPTY;
-  }
 
   ngOnInit(): void {
     this.route.params
@@ -94,6 +86,7 @@ export class RequestQueryComponent implements OnInit, IModelPage {
             return EMPTY;
           }
           this.dataRequest = dataRequest;
+          this.setBackButtonProperties(dataRequest.id);
 
           return forkJoin([
             this.dataRequests.listDataElements(dataRequest),
@@ -123,6 +116,10 @@ export class RequestQueryComponent implements OnInit, IModelPage {
         this.original = JSON.stringify(this.condition);
         this.status = 'ready';
       });
+  }
+
+  isDirty(): boolean {
+    return this.dirty;
   }
 
   onQueryChange(value: QueryCondition) {
@@ -163,7 +160,19 @@ export class RequestQueryComponent implements OnInit, IModelPage {
       });
   }
 
+  private errorResponse(errorMessage: string) {
+    this.toastr.error(errorMessage);
+    this.status = 'error';
+    return EMPTY;
+  }
+
   private mapDataElements(elements: DataElement[]): DataElementSearchResult[] {
     return elements.map((element) => element as DataElementSearchResult);
+  }
+
+  private setBackButtonProperties(id: string) {
+    this.backRouterLink = '/requests/';
+    this.backRouterRequestId = id;
+    this.backLabel = 'Back to request';
   }
 }

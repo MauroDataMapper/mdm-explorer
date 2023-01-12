@@ -20,7 +20,12 @@ import { DebugElement } from '@angular/core';
 import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
-import { CatalogueItemDomainType, DataModelDetail } from '@maurodatamapper/mdm-resources';
+import {
+  CatalogueItemDomainType,
+  DataModelDetail,
+  Rule,
+  RuleRepresentation,
+} from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { of, throwError } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
@@ -31,6 +36,11 @@ import {
   DataElementMultipleOperationResult,
   DataRequest,
   DataElementSearchResult,
+  QueryCondition,
+  DataRequestQuery,
+  DataRequestQueryType,
+  dataRequestQueryLanguage,
+  DataRequestQueryPayload,
 } from 'src/app/data-explorer/data-explorer.types';
 import {
   DataAccessRequestsSourceTargetIntersections,
@@ -564,6 +574,69 @@ describe('MyRequestsComponent', () => {
         request.label
       );
       expect(component.requestElements.length).toBe(0);
+    });
+  });
+
+  describe('Should Check for Queries', () => {
+    const request = { id: '1', status: 'unsent', label: 'request 1' } as DataRequest;
+    const condition: QueryCondition = { condition: 'or', rules: [] };
+
+    const representation: RuleRepresentation = {
+      id: '789',
+      language: dataRequestQueryLanguage,
+      representation: JSON.stringify(condition, null, 2),
+    };
+    const rule: Rule = {
+      id: '456',
+      name: 'temp',
+      ruleRepresentations: [representation],
+    };
+
+    beforeEach(() => {
+      dataRequestsStub.list.mockClear();
+      harness.component.request = request;
+    });
+
+    it('should get the Cohort Query if available', () => {
+      const queryType: DataRequestQueryType = 'cohort';
+      const payload: DataRequestQueryPayload = {
+        ruleId: rule.id,
+        representationId: representation.id,
+        type: queryType,
+        condition,
+      };
+
+      const returned: DataRequestQuery = {
+        ruleId: rule.id,
+        representationId: representation.id,
+        ...payload,
+      };
+      dataRequestsStub.getQuery.mockImplementation(() => {
+        return of(returned);
+      });
+      harness.component.initialiseRequestQueries();
+      expect(harness.component.cohortQuery).toEqual(condition);
+    });
+
+    it('should get the data Query if available', () => {
+      const queryType: DataRequestQueryType = 'data';
+      const payload: DataRequestQueryPayload = {
+        ruleId: rule.id,
+        representationId: representation.id,
+        type: queryType,
+        condition,
+      };
+
+      const returned: DataRequestQuery = {
+        ruleId: rule.id,
+        representationId: representation.id,
+        ...payload,
+      };
+      dataRequestsStub.getQuery.mockImplementation(() => {
+        return of(returned);
+      });
+      harness.component.initialiseRequestQueries();
+      expect(harness.component.dataQuery).toEqual(condition);
     });
   });
 });

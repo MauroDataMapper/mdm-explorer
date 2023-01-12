@@ -19,7 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 /*
 Query builder source: https://github.com/zebzhao/Angular-QueryBuilder
 */
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { QueryBuilderConfig, RuleSet } from 'angular2-query-builder';
 import {
   DataElementSearchResult,
@@ -32,7 +32,7 @@ import { ThemePalette } from '@angular/material/core';
   templateUrl: './querybuilder.component.html',
   styleUrls: ['./querybuilder.component.scss'],
 })
-export class QueryBuilderComponent {
+export class QueryBuilderComponent implements OnInit {
   @Input() dataElements: DataElementSearchResult[] = [];
   @Input() color: ThemePalette = 'primary';
   @Input() query: QueryCondition = {
@@ -54,6 +54,16 @@ export class QueryBuilderComponent {
 
   get noValidFields(): boolean {
     return Object.keys(this.config.fields).length === 0;
+  }
+
+  ngOnInit(): void {
+    // Clear the query component
+    if (this.query.rules.length === 0) {
+      this.query = {
+        condition: 'and',
+        rules: [],
+      };
+    }
   }
 
   modelChanged(value: RuleSet) {

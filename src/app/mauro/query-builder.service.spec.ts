@@ -59,44 +59,6 @@ const defaultProfileNamespace =
 const defaultProfileServiceName = 'QueryBuilderPrimitiveTypeProfileProviderService';
 
 abstract class testHelper {
-  public static expectedProfilesStubGet = (
-    actualCatalogueItemDomainType: CatalogueItemDomainType,
-    actualCatalogueItemId: string,
-    actualProfileNamespace: string,
-    actualProfileName: string,
-    expectedCatalogueItemId: string
-  ) => {
-    expect(actualCatalogueItemDomainType).toBe(defaultCatalogueItemDomainType);
-    expect(actualCatalogueItemId).toBe(expectedCatalogueItemId);
-    expect(actualProfileNamespace).toBe(defaultProfileNamespace);
-    expect(actualProfileName).toBe(defaultProfileServiceName);
-  };
-
-  public static createMappingProfile = (
-    dataType: DataType,
-    currentValue: string,
-    domainType: CatalogueItemDomainType = CatalogueItemDomainType.PrimitiveType
-  ): Profile => {
-    return {
-      sections: [
-        {
-          name: 'section1',
-          fields: [
-            {
-              fieldName: 'QueryBuilderType',
-              metadataPropertyName: 'querybuildertype',
-              dataType: 'enumeration',
-              currentValue,
-            },
-          ],
-        },
-      ],
-      id: dataType.Id ?? '',
-      label: dataType.label,
-      domainType,
-    };
-  };
-
   public static dataType_varchar: DataType = {
     id: 'dt-varchar',
     domainType: defaultCatalogueItemDomainType,
@@ -141,6 +103,44 @@ abstract class testHelper {
     id: 'dt-time',
     domainType: CatalogueItemDomainType.ReferenceType,
     label: 'time',
+  };
+
+  public static expectedProfilesStubGet = (
+    actualCatalogueItemDomainType: CatalogueItemDomainType,
+    actualCatalogueItemId: string,
+    actualProfileNamespace: string,
+    actualProfileName: string,
+    expectedCatalogueItemId: string
+  ) => {
+    expect(actualCatalogueItemDomainType).toBe(defaultCatalogueItemDomainType);
+    expect(actualCatalogueItemId).toBe(expectedCatalogueItemId);
+    expect(actualProfileNamespace).toBe(defaultProfileNamespace);
+    expect(actualProfileName).toBe(defaultProfileServiceName);
+  };
+
+  public static createMappingProfile = (
+    dataType: DataType,
+    currentValue: string,
+    domainType: CatalogueItemDomainType = CatalogueItemDomainType.PrimitiveType
+  ): Profile => {
+    return {
+      sections: [
+        {
+          name: 'section1',
+          fields: [
+            {
+              fieldName: 'QueryBuilderType',
+              metadataPropertyName: 'querybuildertype',
+              dataType: 'enumeration',
+              currentValue,
+            },
+          ],
+        },
+      ],
+      id: dataType.Id ?? '',
+      label: dataType.label,
+      domainType,
+    };
   };
 
   public static getProfile(profiles: Profile[], dataTypeLabel: string): DataType {
