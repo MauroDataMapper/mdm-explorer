@@ -54,6 +54,8 @@ import { DataElementProfileComponent } from './data-element-profile/data-element
 import { MatIcon } from '@angular/material/icon';
 import { MatCard } from '@angular/material/card';
 import { MatTooltip } from '@angular/material/tooltip';
+import { createTerminologyServiceStub } from 'src/app/testing/stubs/terminology.stub';
+import { TerminologyService } from 'src/app/mauro/terminology.service';
 
 describe('DataElementComponent', () => {
   let harness: ComponentHarness<DataElementComponent>;
@@ -62,6 +64,7 @@ describe('DataElementComponent', () => {
   const toastrStub = createToastrServiceStub();
   const dataRequestsStub = createDataRequestsServiceStub();
   const profileStub = createProfileServiceStub();
+  const terminologiesStub = createTerminologyServiceStub();
   const config: DataExplorerConfiguration = {
     rootDataModelPath: 'my test model',
     profileServiceName: 'Profile Service',
@@ -110,6 +113,10 @@ describe('DataElementComponent', () => {
         {
           provide: ToastrService,
           useValue: toastrStub,
+        },
+        {
+          provide: TerminologyService,
+          useValue: terminologiesStub,
         },
         {
           provide: DATA_EXPLORER_CONFIGURATION,
@@ -237,19 +244,6 @@ describe('DataElementComponent', () => {
     // any further details of the profile display should be tested within the data-element-profile.component tests
   });
 
-  it('should display data element description', () => {
-    const component = harness.component;
-    const dom = harness.fixture.nativeElement;
-    harness.detectChanges();
-    const descriptionContainer = (dom.querySelectorAll('h2') as HTMLElement[])[0]
-      .nextSibling?.nextSibling as HTMLElement;
-    const descriptionHtml = descriptionContainer.innerHTML;
-    const descriptionMatcher = new RegExp(
-      `.*Description.*${component.dataElement?.description}.*`
-    );
-    expect(descriptionHtml).toMatch(descriptionMatcher);
-  });
-
   it('should display breadcrumbs', () => {
     const component = harness.component;
     const dom = harness.fixture.nativeElement;
@@ -265,17 +259,6 @@ describe('DataElementComponent', () => {
     );
     /* eslint-enable @typescript-eslint/no-non-null-assertion */
     expect(breadcrumbContainer.innerHTML).toMatch(breadcrumbMatcher);
-  });
-
-  it('should display data element label', () => {
-    const component = harness.component;
-    const dom = harness.fixture.nativeElement;
-    harness.detectChanges();
-    const labelContainer = (dom.querySelectorAll('h2') as HTMLElement[])[0]
-      .nextSibling as HTMLElement;
-    const labelHtml = labelContainer.innerHTML;
-    const labelMatcher = new RegExp(`.*Label.*${component.dataElement?.label}.*`);
-    expect(labelHtml).toMatch(labelMatcher);
   });
 
   describe('toggleBookmark', () => {

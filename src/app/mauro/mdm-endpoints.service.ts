@@ -21,6 +21,7 @@ import {
   MdmApiPropertyResources,
   MdmCatalogueItemResource,
   MdmCatalogueUserResource,
+  MdmCodeSetResource,
   MdmDataClassResource,
   MdmDataElementResource,
   MdmDataFlowResource,
@@ -34,6 +35,7 @@ import {
   MdmSecurityResource,
   MdmSessionResource,
   MdmSummaryMetadataResource,
+  MdmTerminologyResource,
 } from '@maurodatamapper/mdm-resources';
 import { MdmHttpClientService } from './mdm-http-client.service';
 import { MdmPluginResearchResource } from './plugins/plugin-research.resource';
@@ -45,6 +47,7 @@ export class MdmEndpointsService {
   apiProperties = new MdmApiPropertyResources(this.configuration, this.httpClient);
   catalogueItem = new MdmCatalogueItemResource(this.configuration, this.httpClient);
   catalogueUser = new MdmCatalogueUserResource(this.configuration, this.httpClient);
+  codeSet = new MdmCodeSetResource(this.configuration, this.httpClient);
   dataClass = new MdmDataClassResource(this.configuration, this.httpClient);
   dataElement = new MdmDataElementResource(this.configuration, this.httpClient);
   dataFlow = new MdmDataFlowResource(this.configuration, this.httpClient);
@@ -61,6 +64,7 @@ export class MdmEndpointsService {
   security = new MdmSecurityResource(this.configuration, this.httpClient);
   session = new MdmSessionResource(this.configuration, this.httpClient);
   summaryMetadata = new MdmSummaryMetadataResource(this.configuration, this.httpClient);
+  terminology = new MdmTerminologyResource(this.configuration, this.httpClient);
 
   constructor(
     private configuration: MdmResourcesConfiguration,

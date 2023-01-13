@@ -26,7 +26,7 @@ SPDX-License-Identifier: Apache-2.0
   <div *ngIf="dataElement" class="highlight-box mdm-data-element-detail">
     <div class="mdm-data-element-detail__header">
       <span>
-        <h3>{{ dataElement?.label }}</h3>
+        <h3>{{ dataElement.label }}</h3>
       </span>
       <span>
         <mdm-data-element-in-request
@@ -54,29 +54,24 @@ SPDX-License-Identifier: Apache-2.0
         *ngIf="dataElement.classifiers && dataElement.classifiers.length > 0"
         class="mdm-data-element-card"
       >
-        <mdm-classifiers [classifiers]="dataElement?.classifiers"></mdm-classifiers>
+        <mdm-classifiers [classifiers]="dataElement.classifiers"></mdm-classifiers>
       </mat-card>
 
-      <mat-card class="mdm-data-element-card">
-        <h2>Data Element</h2>
+      <mat-card
+        *ngIf="dataElement.description && dataElement.description.length > 0"
+        class="mdm-data-element-card"
+      >
         <p>
-          <span class="mdm-data-element-property-name">Label: </span
-          >{{ dataElement?.label }}
-        </p>
-        <p>
-          <span class="mdm-data-element-property-name">Description: </span
-          >{{ dataElement?.description }}
+          {{ dataElement.description }}
         </p>
       </mat-card>
 
       <mat-card class="mdm-data-element-card">
         <h2>Data Type</h2>
         <p>
-          <span class="mdm-data-element-property-name">Label: </span
-          >{{ dataElement.dataType?.label }}
+          {{ dataElement.dataType?.label }}
         </p>
         <div *ngIf="dataElement.dataType?.domainType == 'EnumerationType'">
-          <h3>List of enumeration values</h3>
           <table class="table table-striped" aria-label="Enumeration values">
             <thead>
               <tr>
@@ -94,9 +89,24 @@ SPDX-License-Identifier: Apache-2.0
             </tbody>
           </table>
         </div>
+        <div
+          *ngIf="dataElement.dataType?.domainType === 'ModelDataType' && dataTypeModel"
+        >
+          <p>
+            <span class="mdm-data-element-property-name">Model: </span
+            >{{ dataTypeModel.label }}
+          </p>
+          <p>
+            <span class="mdm-data-element-property-name">Type: </span
+            >{{ dataTypeModel.domainType }}
+          </p>
+        </div>
       </mat-card>
 
-      <mat-card *ngIf="researchProfile" class="mdm-data-element-card">
+      <mat-card
+        *ngIf="researchProfile && researchProfile.sections.length > 0"
+        class="mdm-data-element-card"
+      >
         <mdm-data-element-profile [profile]="researchProfile"></mdm-data-element-profile>
       </mat-card>
 
