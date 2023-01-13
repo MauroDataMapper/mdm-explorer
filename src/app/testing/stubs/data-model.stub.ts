@@ -108,6 +108,9 @@ export interface DataModelServiceStub {
   createFork: jest.MockedFunction<DataModelForkFn>;
   elementsInAnotherModel: jest.MockedFunction<DataModelElementsInAnotherModelFn>;
   dataElementToBasic: jest.MockedFunction<DataModelDataElementToBasicFn>;
+  moveToFolder: jest.MockedFunction<
+    (modelId: Uuid, targetFolderId: Uuid) => Observable<DataModelDetail>
+  >;
 }
 
 export const createDataModelServiceStub = (): DataModelServiceStub => {
@@ -133,5 +136,6 @@ export const createDataModelServiceStub = (): DataModelServiceStub => {
     elementsInAnotherModel:
       jest.fn() as jest.MockedFunction<DataModelElementsInAnotherModelFn>,
     dataElementToBasic: jest.fn() as jest.MockedFunction<DataModelDataElementToBasicFn>,
+    moveToFolder: jest.fn(),
   };
 };

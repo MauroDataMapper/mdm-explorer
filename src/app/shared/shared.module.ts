@@ -35,6 +35,8 @@ import { DataElementInRequestComponent } from './data-element-in-request/data-el
 import { DataElementMultiSelectComponent } from './data-element-multi-select/data-element-multi-select.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { AutocompleteSelectComponent } from './autocomplete-select/autocomplete-select.component';
+import { BackLinkComponent } from './back-link/back-link.component';
+import { HeaderAndContentBoxComponent } from './header-and-content-box/header-and-content-box.component';
 
 @NgModule({
   declarations: [
@@ -54,6 +56,8 @@ import { AutocompleteSelectComponent } from './autocomplete-select/autocomplete-
     DataElementMultiSelectComponent,
     ConfirmationDialogComponent,
     AutocompleteSelectComponent,
+    BackLinkComponent,
+    HeaderAndContentBoxComponent,
   ],
   imports: [CoreModule, NgChartsModule],
   exports: [
@@ -71,6 +75,8 @@ import { AutocompleteSelectComponent } from './autocomplete-select/autocomplete-
     DataElementInRequestComponent,
     DataElementMultiSelectComponent,
     AutocompleteSelectComponent,
+    BackLinkComponent,
+    HeaderAndContentBoxComponent,
   ],
 })
 export class SharedModule {}

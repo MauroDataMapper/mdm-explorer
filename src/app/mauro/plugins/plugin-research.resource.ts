@@ -21,6 +21,7 @@ import {
   MdmResourcesConfiguration,
   MdmResponse,
   MdmRestHandler,
+  QueryParameters,
   RequestSettings,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
@@ -83,5 +84,18 @@ export class MdmPluginResearchResource extends MdmResource {
   userFolder(options?: RequestSettings) {
     const url = `${this.apiEndpoint}/explorer/userFolder`;
     return this.simplePost(url, null, options);
+  }
+
+  /**
+   * `HTTP GET` - Get the root folder where template requests are held.
+   *
+   * @param options Optional REST handler parameters, if required.
+   * @returns The result of the `POST` request:
+   *
+   * `200 OK` - will return an folder detail response. The HTTP status explains that it was successful.
+   */
+  templateFolder(query?: QueryParameters, options?: RequestSettings) {
+    const url = `${this.apiEndpoint}/explorer/templateFolder`;
+    return this.simpleGet(url, query, options);
   }
 }

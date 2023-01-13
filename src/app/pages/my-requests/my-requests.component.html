@@ -45,33 +45,18 @@ SPDX-License-Identifier: Apache-2.0
     <p class="text-center">
       You currently have no requests. Try
       <a routerLink="/search">searching</a> or <a routerLink="/browse">browsing</a> our
-      catalogue and start creating some.
+      catalogue and start creating some. If you are still unsure what to look for, try
+      viewing our <a routerLink="/templates">request templates</a> to base your own
+      requests on.
     </p>
   </div>
   <div *ngIf="allRequests && allRequests.length > 0" class="row">
     <div *ngFor="let request of filteredRequests">
       <div class="col">
-        <div class="mdm-my-requests__request">
-          <div class="mdm-my-requests__request-header">
-            <div class="mdm-my-requests__request-header-title">
-              <div class="mdm-my-requests__request-header--name">
-                <p>{{ request.label }}</p>
-              </div>
-              <a [routerLink]="['/requests', request.id]"
-                ><button mat-raised-button>View details</button></a
-              >
-            </div>
-          </div>
-          <div class="mdm-my-requests__request-row__footer">
-            <div *ngIf="request.description">
-              <p>{{ request.description }}</p>
-            </div>
-            <div *ngIf="!request.description">
-              <p>No description provided</p>
-            </div>
-            <mdm-request-status-chip [status]="request.status"></mdm-request-status-chip>
-          </div>
-        </div>
+        <mdm-data-request-row
+          [request]="request"
+          [detailsRouterLink]="['/requests', request.id]"
+        ></mdm-data-request-row>
       </div>
     </div>
   </div>
