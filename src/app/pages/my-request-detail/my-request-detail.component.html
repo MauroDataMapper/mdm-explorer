@@ -34,24 +34,23 @@ SPDX-License-Identifier: Apache-2.0
       <div class="mdm-my-request__request-header">
         <div class="mdm-my-request__request-header-title">
           <div class="mdm-my-request__request-header--name">
-            <mdm-request-status-chip [status]="request.status"></mdm-request-status-chip>
-          </div>
-          <div class="mdm-my-request__request-header--buttons">
-            <button
-              *ngIf="request.status === 'submitted'"
-              mat-raised-button
-              matTooltip="Create a new request based on this one and make modifications."
-              (click)="copyRequest()"
-            >
-              Copy
-            </button>
-            <button
-              *ngIf="request.status === 'unsent'"
-              mat-raised-button
-              (click)="submitRequest()"
-            >
-              Submit request
-            </button>
+            <div class="mdm-my-request__request-header--buttons">
+              <button
+                *ngIf="request.status === 'submitted'"
+                mat-raised-button
+                matTooltip="Create a new request based on this one and make modifications."
+                (click)="copyRequest()"
+              >
+                Copy
+              </button>
+              <button
+                *ngIf="request.status === 'unsent'"
+                mat-raised-button
+                (click)="submitRequest()"
+              >
+                Submit request
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -59,55 +58,66 @@ SPDX-License-Identifier: Apache-2.0
     <div class="mdm-my-request__request-description-container">
       <div *ngIf="request.description" class="mdm-my-request__request-description">
         <p>{{ request.description }}</p>
+        <mdm-request-status-chip [status]="request.status"></mdm-request-status-chip>
       </div>
     </div>
 
-    <div class="mdm-my-request__query">
-      <div class="mdm-my-request__query--row row">
-        <div
-          *ngIf="this.cohortQuery.rules.length > 0"
-          class="mdm-my-request__query-cohort"
-        >
-          <h2>Cohort Query</h2>
-
-          <mdm-meql-output [query]="cohortQuery"></mdm-meql-output>
-        </div>
-        <div class="mdm-my-request__query--description">
+    <div class="mdm-my-request__query--container">
+      <div class="mdm-my-request__query">
+        <div class="row">
           <div
-            *ngIf="this.cohortQuery.rules.length == 0"
-            class="mdm-my-request__query-missing"
+            *ngIf="this.cohortQuery.rules.length > 0"
+            class="mdm-my-request__query-cohort"
           >
-            <p>No Cohort Query has been created for this request</p>
+            <h2>Cohort Query</h2>
+
+            <mdm-meql-output [query]="cohortQuery"></mdm-meql-output>
           </div>
-          <a *ngIf="this.showCohortCreate()" [routerLink]="['queries/', cohortQueryType]"
-            ><button mat-raised-button>Create Cohort Query</button></a
-          >
-          <a *ngIf="this.showCohortEdit()" [routerLink]="['queries/', cohortQueryType]"
-            ><button mat-raised-button>Edit Cohort Query</button></a
-          >
+          <div class="mdm-my-request__query--description">
+            <div
+              *ngIf="this.cohortQuery.rules.length == 0"
+              class="mdm-my-request__query-missing"
+            >
+              <p>No Cohort Query has been created for this request</p>
+            </div>
+            <div class="mdm-my-request__query--description-buttons">
+              <a
+                *ngIf="this.showCohortCreate()"
+                [routerLink]="['queries/', cohortQueryType]"
+                ><button mat-raised-button>Create Cohort Query</button></a
+              >
+              <a
+                *ngIf="this.showCohortEdit()"
+                [routerLink]="['queries/', cohortQueryType]"
+                ><button mat-raised-button>Edit Cohort Query</button></a
+              >
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div class="mdm-my-request__query--row row">
-        <div *ngIf="this.dataQuery.rules.length > 0" class="mdm-my-request__query-data">
-          <h2>Data Query</h2>
-          <mdm-meql-output [query]="dataQuery"></mdm-meql-output>
-        </div>
-
-        <div class="mdm-my-request__query--description">
-          <div
-            *ngIf="this.dataQuery.rules.length == 0"
-            class="mdm-my-request__query-missing"
-          >
-            <p>No Data Query has been created for this request</p>
+        <div class="row">
+          <div *ngIf="this.dataQuery.rules.length > 0" class="mdm-my-request__query-data">
+            <h2>Data Query</h2>
+            <mdm-meql-output [query]="dataQuery"></mdm-meql-output>
           </div>
 
-          <a *ngIf="this.showDataCreate()" [routerLink]="['queries/', dataQueryType]"
-            ><button mat-raised-button>Create Data Query</button></a
-          >
-          <a *ngIf="this.showDataEdit()" [routerLink]="['queries/', dataQueryType]"
-            ><button mat-raised-button>Edit Data Query</button></a
-          >
+          <div class="mdm-my-request__query--description">
+            <div
+              *ngIf="this.dataQuery.rules.length == 0"
+              class="mdm-my-request__query-missing"
+            >
+              <p>No Data Query has been created for this request</p>
+            </div>
+
+            <div class="mdm-my-request__query--description-buttons">
+              <a *ngIf="this.showDataCreate()" [routerLink]="['queries/', dataQueryType]"
+                ><button mat-raised-button>Create Data Query</button></a
+              >
+              <a *ngIf="this.showDataEdit()" [routerLink]="['queries/', dataQueryType]"
+                ><button mat-raised-button>Edit Data Query</button></a
+              >
+            </div>
+          </div>
         </div>
       </div>
     </div>

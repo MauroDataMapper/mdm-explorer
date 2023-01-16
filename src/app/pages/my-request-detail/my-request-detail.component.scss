@@ -36,24 +36,28 @@ $back-link-color: $color-mauro-dark-green;
   border-radius: $header-border-radius;
 
   &__query {
-    padding: 0.5em;
+    padding: 0.5em 0.75em;
     background-color: $row-footer-content-color;
 
     &--row {
       padding: 0.5em 0.75em;
     }
 
-    &--description {
-      p {
-        float: left;
-      }
+    &--container {
+      padding-bottom: 2px;
+    }
 
-      a {
-        float: right;
-        padding: 0;
-      }
-      button {
-        width: 160px;
+    &--description {
+      padding: 0.5em 0.75em;
+      display: flex;
+      justify-content: space-between;
+
+      &-buttons {
+        margin-left: auto;
+
+        button {
+          width: 160px;
+        }
       }
     }
   }
@@ -61,7 +65,8 @@ $back-link-color: $color-mauro-dark-green;
   &__request-description {
     padding: 0.5em 0.75em;
     background-color: $row-footer-content-color;
-
+    display: flex;
+    justify-content: space-between;
     &-container {
       padding-bottom: 2px;
     }
@@ -115,6 +120,7 @@ $back-link-color: $color-mauro-dark-green;
     background-color: $request-heading-background-color;
 
     &--name {
+      margin-left: auto;
       font-size: 16px;
     }
 
@@ -122,8 +128,10 @@ $back-link-color: $color-mauro-dark-green;
       margin-top: 1.2em;
     }
 
-    button {
-      width: 160px;
+    &--buttons {
+      button {
+        width: 160px;
+      }
     }
   }
 

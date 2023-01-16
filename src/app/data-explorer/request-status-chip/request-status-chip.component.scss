@@ -26,7 +26,7 @@ $chip-text-color-light: $color-white;
   display: inline-block;
   padding: 2px 8px;
   border-radius: 23px;
-  margin: 5px 0 5px 23px;
+  margin: 5px 0 5px;
 
   &--unsent {
     color: $chip-text-color-light;
