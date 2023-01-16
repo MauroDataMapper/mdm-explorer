@@ -69,7 +69,10 @@ SPDX-License-Identifier: Apache-2.0
       <div *ngIf="currentUserRequests.length > 0">
         <p-carousel [value]="currentUserRequests" [numVisible]="3" [numScroll]="3">
           <ng-template let-request pTemplate="item">
-            <div class="mdm-dashboard__request-card">
+            <div
+              class="mdm-dashboard__request-card"
+              routerLink="/requests/{{ request.id }}"
+            >
               <h3>{{ request.label }}</h3>
               <p>{{ request.description }}</p>
             </div>
