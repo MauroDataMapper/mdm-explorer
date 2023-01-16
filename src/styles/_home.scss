@@ -84,3 +84,14 @@ SPDX-License-Identifier: Apache-2.0
     font-size: 3.5em;
   }
 }
+
+body {
+  padding-bottom: 125px;
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 125px;
+}
