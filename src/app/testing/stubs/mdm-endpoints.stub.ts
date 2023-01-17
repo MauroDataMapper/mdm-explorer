@@ -60,11 +60,20 @@ import {
   createProfileStub,
   MdmProfileResourcesStub,
 } from './mdm-resources/profile-resource.stub';
+import {
+  createCodeSetStub,
+  MdmCodeSetResourceStub,
+} from './mdm-resources/code-set-resource.stub';
+import {
+  createTerminologyStub,
+  MdmTerminologyResourceStub,
+} from './mdm-resources/terminology-resource.stub';
 
 export interface MdmEndpointsServiceStub {
   apiProperties: MdmApiPropertiesResourceStub;
   catalogueItem: MdmCatalogueItemResourceStub;
   catalogueUser: MdmCatalogueUserResourceStub;
+  codeSet: MdmCodeSetResourceStub;
   dataClass: MdmDataClassResourceStub;
   dataElement: MdmDataElementResourceStub;
   dataModel: MdmDataModelResourcesStub;
@@ -73,6 +82,7 @@ export interface MdmEndpointsServiceStub {
   security: MdmSecurityResourceStub;
   session: MdmSessionResourceStub;
   profile: MdmProfileResourcesStub;
+  terminology: MdmTerminologyResourceStub;
 }
 
 export const createMdmEndpointsStub = (): MdmEndpointsServiceStub => {
@@ -80,6 +90,7 @@ export const createMdmEndpointsStub = (): MdmEndpointsServiceStub => {
     apiProperties: createApiPropertiesStub(),
     catalogueItem: createCatalogueItemStub(),
     catalogueUser: createCatalogueUserStub(),
+    codeSet: createCodeSetStub(),
     dataClass: createDataClassStub(),
     dataElement: createDataElementStub(),
     dataModel: createDataModelStub(),
@@ -88,5 +99,6 @@ export const createMdmEndpointsStub = (): MdmEndpointsServiceStub => {
     security: createSecurityStub(),
     session: createSessionStub(),
     profile: createProfileStub(),
+    terminology: createTerminologyStub(),
   };
 };
