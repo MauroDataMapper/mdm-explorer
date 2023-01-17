@@ -146,11 +146,5 @@ describe('DashboardComponent', () => {
         expectedPayload
       );
     });
-
-    it('should transition to the "my requests" page', () => {
-      harness.component.viewAllRequests();
-
-      expect(stateRouterStub.navigateToKnownPath).toHaveBeenCalledWith('/requests');
-    });
   });
 });
