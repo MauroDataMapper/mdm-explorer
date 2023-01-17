@@ -43,6 +43,7 @@ $row-footer-content-color: $color-mauro-light-gold;
     background-color: $row-footer-content-color;
     button {
       float: right;
+      width: 160px;
     }
   }
 
@@ -78,6 +79,10 @@ $row-footer-content-color: $color-mauro-light-gold;
     &--info {
       margin-top: 1.2em;
     }
+
+    button {
+      width: 160px;
+    }
   }
 
   &__request-header-title {
@@ -93,5 +98,10 @@ $row-footer-content-color: $color-mauro-light-gold;
     label {
       margin-left: 0.5em;
     }
+  }
+
+  &__request-row__footer {
+    display: flex;
+    justify-content: space-between;
   }
 }
