@@ -16,18 +16,19 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
   CatalogueItemDomainType,
   DataElementDetail,
   DataType,
+  Modelable,
   Profile,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { ProfileService } from 'src/app/mauro/profile.service';
 import { ToastrService } from 'ngx-toastr';
-import { switchMap, forkJoin, catchError, EMPTY, Subject, takeUntil } from 'rxjs';
+import { switchMap, forkJoin, catchError, EMPTY, map } from 'rxjs';
 import { BookmarkService } from 'src/app/data-explorer/bookmark.service';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import {
@@ -39,14 +40,14 @@ import {
   DataAccessRequestsSourceTargetIntersections,
   DataRequestsService,
 } from 'src/app/data-explorer/data-requests.service';
-import { BroadcastService } from 'src/app/core/broadcast.service';
+import { TerminologyService } from 'src/app/mauro/terminology.service';
 
 @Component({
   selector: 'mdm-data-element',
   templateUrl: './data-element.component.html',
   styleUrls: ['./data-element.component.scss'],
 })
-export class DataElementComponent implements OnInit, OnDestroy {
+export class DataElementComponent implements OnInit {
   dataModelId: Uuid = '';
   dataClassId: Uuid = '';
   dataElementId: Uuid = '';
@@ -57,15 +58,11 @@ export class DataElementComponent implements OnInit, OnDestroy {
 
   researchProfile?: Profile;
   identifiableData?: string;
+  dataTypeModel?: Modelable;
 
   isBookmarked = false;
 
   sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
-
-  /**
-   * Signal to attach to subscriptions to trigger when they should be unsubscribed.
-   */
-  private unsubscribe$ = new Subject<void>();
 
   constructor(
     private route: ActivatedRoute,
@@ -74,7 +71,7 @@ export class DataElementComponent implements OnInit, OnDestroy {
     private bookmarks: BookmarkService,
     private profileService: ProfileService,
     private toastr: ToastrService,
-    private broadcast: BroadcastService,
+    private terminologies: TerminologyService,
     @Inject(DATA_EXPLORER_CONFIGURATION) private config: DataExplorerConfiguration
   ) {
     this.sourceTargetIntersections = {
@@ -116,28 +113,10 @@ export class DataElementComponent implements OnInit, OnDestroy {
           this.researchProfile = profile;
           this.sourceTargetIntersections = sourceTargetIntersections;
 
-          // Check for the Identifiable Data value
-          if (this.researchProfile && this.researchProfile.sections.length > 0) {
-            const identifiableInformation = this.researchProfile.sections.find(
-              (section) => section.name === 'Identifiable Information'
-            );
-
-            if (identifiableInformation && identifiableInformation.fields.length > 0) {
-              const identifiableDataField = identifiableInformation.fields.find(
-                (field) => field.fieldName === 'Identifiable Data'
-              );
-              if (identifiableDataField) {
-                this.identifiableData = identifiableDataField.currentValue;
-              }
-            }
-          }
+          this.setIdentifiableData();
+          this.setDataTypeModel();
         }
       );
-  }
-
-  ngOnDestroy(): void {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
   }
 
   toggleBookmark(selected: boolean) {
@@ -185,7 +164,8 @@ export class DataElementComponent implements OnInit, OnDestroy {
         catchError(() => {
           this.toastr.error('Unable to retrieve the Data Element Profile.');
           return EMPTY;
-        })
+        }),
+        map((profile) => this.trimProfile(profile))
       );
   }
 
@@ -201,19 +181,68 @@ export class DataElementComponent implements OnInit, OnDestroy {
       );
   }
 
+  private setIdentifiableData() {
+    if (this.researchProfile && this.researchProfile.sections.length > 0) {
+      const identifiableInformation = this.researchProfile.sections.find(
+        (section) => section.name === 'Identifiable Information'
+      );
+
+      if (identifiableInformation && identifiableInformation.fields.length > 0) {
+        const identifiableDataField = identifiableInformation.fields.find(
+          (field) => field.fieldName === 'Identifiable Data'
+        );
+        if (identifiableDataField) {
+          this.identifiableData = identifiableDataField.currentValue;
+        }
+      }
+    }
+  }
+
+  private setDataTypeModel() {
+    const dataType = this.dataElement?.dataType as DataType;
+    if (dataType?.domainType !== CatalogueItemDomainType.ModelDataType) {
+      return;
+    }
+
+    const id: Uuid = dataType.modelResourceId;
+    const domainType: CatalogueItemDomainType = dataType.modelResourceDomainType;
+
+    if (
+      !(
+        domainType === CatalogueItemDomainType.Terminology ||
+        domainType === CatalogueItemDomainType.CodeSet
+      )
+    ) {
+      // Only support Terminologies or Code Sets for now...
+      return;
+    }
+
+    this.terminologies
+      .getModel(id, domainType)
+      .subscribe((model) => (this.dataTypeModel = model));
+  }
+
   /**
-   * When a data request is added, reload all intersections (which ensures we pick up intersections with the
-   * new data request) and tell all data-element-in-request components about the new intersections.
+   * Trim a profile to remove fields/sections that are empty.
+   *
+   * @param profile The profile to trim
    */
-  private subscribeDataRequestChanges() {
-    this.broadcast
-      .on('data-request-added')
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(() => {
-        this.loadIntersections().subscribe((intersections) => {
-          this.sourceTargetIntersections = intersections;
-          this.broadcast.dispatch('data-intersections-refreshed', intersections);
-        });
-      });
+  private trimProfile(profile: Profile): Profile {
+    return {
+      id: profile.id,
+      domainType: profile.domainType,
+      label: profile.label,
+      sections: profile.sections
+        .map((section) => {
+          return {
+            name: section.name,
+            description: section.description,
+            fields: section.fields.filter(
+              (field) => field.currentValue && field.currentValue.length > 0
+            ),
+          };
+        })
+        .filter((section) => section.fields.length > 0),
+    };
   }
 }
