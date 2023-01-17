@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<div class="default-theme">
+<div class="default-theme page-container">
   <div class="mat-typography mdm-app-component">
     <mdm-header
       [logoLink]="logoLink"
@@ -33,11 +33,11 @@ SPDX-License-Identifier: Apache-2.0
       <router-outlet></router-outlet>
     </main>
 
-    <mdm-footer version="0.1.0" [links]="footerLinks"></mdm-footer>
-
     <mdm-loading-spinner
       *ngIf="isLoading"
       [caption]="loadingCaption"
     ></mdm-loading-spinner>
   </div>
+
+  <mdm-footer version="0.1.0" [links]="footerLinks"></mdm-footer>
 </div>
