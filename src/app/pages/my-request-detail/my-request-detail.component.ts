@@ -103,6 +103,7 @@ export class MyRequestDetailComponent implements OnInit {
       sourceTargetIntersections: [],
     };
   }
+
   ngOnInit(): void {
     this.initialiseRequest();
     this.setBackButtonProperties();
@@ -112,7 +113,7 @@ export class MyRequestDetailComponent implements OnInit {
     this.route.params
       .pipe(
         switchMap((params) => {
-          const requestId = params.requestId as string;
+          const requestId: Uuid = params.requestId;
           this.state = 'loading';
           return this.dataRequests.get(requestId);
         }),
@@ -120,13 +121,13 @@ export class MyRequestDetailComponent implements OnInit {
           this.toastr.error(`Invalid Request Id. ${error}`);
           this.state = 'idle';
           return EMPTY;
-        })
+        }),
+        finalize(() => (this.state = 'idle'))
       )
       .subscribe((request) => {
         this.setRequest(request);
         this.initialiseRequestQueries();
       });
-    finalize(() => (this.state = 'idle'));
   }
 
   initialiseRequestQueries() {

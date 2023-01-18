@@ -52,7 +52,6 @@ export class MdmHttpClientService implements MdmRestHandler {
 
     return this.http
       .request(options.method as string, url, {
-        // eslint-disable-line @typescript-eslint/no-unsafe-argument
         body: options.body,
         headers: options.headers,
         withCredentials: options.withCredentials,
