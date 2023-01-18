@@ -19,7 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 import { MeqlPipe } from './meql.pipe';
 import { TestBed } from '@angular/core/testing';
 import moment from 'moment';
-import { QueryCondition, QueryExpression } from '../data-explorer.types';
+import { QueryCondition, QueryExpression, QueryOperator } from '../data-explorer.types';
 
 const newline = '\r\n';
 const tab = '\t';
@@ -331,5 +331,72 @@ describe('MeqlPipe', () => {
       const actual = pipe.transform(query);
       expect(actual).toBe('');
     });
+  });
+
+  describe('autocomplete select options tests', () => {
+    it.each<[string, QueryOperator, string]>([
+      ['autocomplete field', 'in', 'Term 01'],
+      ['autocomplete field', 'not in', 'Term 01'],
+    ])(
+      'formats single autocomplete select option %p with operator %p correctly',
+      (field, operator, name) => {
+        const query: QueryCondition = {
+          condition: 'and',
+          rules: [
+            {
+              field,
+              operator,
+              value: [
+                {
+                  name,
+                  value: {}, // Minimum value required for tests
+                },
+              ],
+            },
+          ],
+        };
+
+        const line1 = `(${newline}`;
+        const line2 = `${tab}"${field}" ${operator} "${name}"${newline}`;
+        const line3 = ')';
+
+        const expected = `${line1}${line2}${line3}`;
+        const actual = pipe.transform(query);
+        expect(actual).toBe(expected);
+      }
+    );
+
+    it.each<[string, QueryOperator, string[]]>([
+      ['autocomplete field', 'in', ['Term 01', 'Term 02', 'Term 03']],
+      ['autocomplete field', 'not in', ['Term 01', 'Term 02', 'Term 03']],
+    ])(
+      'formats multiple autocomplete select options %p with operator %p correctly',
+      (field, operator, names) => {
+        const query: QueryCondition = {
+          condition: 'and',
+          rules: [
+            {
+              field,
+              operator,
+              value: names.map((name) => {
+                return {
+                  name,
+                  value: {}, // Minimum value required for tests
+                };
+              }),
+            },
+          ],
+        };
+
+        const combinedNames = names.join(', ');
+        const line1 = `(${newline}`;
+        const line2 = `${tab}"${field}" ${operator} "${combinedNames}"${newline}`;
+        const line3 = ')';
+
+        const expected = `${line1}${line2}${line3}`;
+        const actual = pipe.transform(query);
+        expect(actual).toBe(expected);
+      }
+    );
   });
 });

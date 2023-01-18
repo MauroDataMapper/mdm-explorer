@@ -20,12 +20,16 @@ SPDX-License-Identifier: Apache-2.0
 Query builder source: https://github.com/zebzhao/Angular-QueryBuilder
 */
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { QueryBuilderConfig, RuleSet } from 'angular2-query-builder';
+import { QueryBuilderConfig, Rule, RuleSet, Option } from 'angular2-query-builder';
 import {
   DataElementSearchResult,
   QueryCondition,
 } from 'src/app/data-explorer/data-explorer.types';
 import { ThemePalette } from '@angular/material/core';
+import { map } from 'rxjs';
+import { AutocompleteSelectOptionSet } from 'src/app/shared/autocomplete-select/autocomplete-select.component';
+import { TerminologyService } from 'src/app/mauro/terminology.service';
+import { mapOptionsArrayToModelDataType } from 'src/app/data-explorer/query-builder.service';
 
 @Component({
   selector: 'mdm-querybuilder',
@@ -48,15 +52,28 @@ export class QueryBuilderComponent implements OnInit {
   operatorMap: { [key: string]: string[] } = {
     /* eslint-disable-next-line */
     string: ['=', '!=', 'contains', 'like', 'startswith', 'endswith'],
+    terminology: ['in', 'not in'],
   };
 
   allowRuleset = true;
+
+  /**
+   * Track zero or more term searches linked to the automcomplete controls.
+   * */
+  termSearchResults: { [field: string]: AutocompleteSelectOptionSet } = {};
+
+  constructor(private terminology: TerminologyService) {}
 
   get noValidFields(): boolean {
     return Object.keys(this.config.fields).length === 0;
   }
 
   ngOnInit(): void {
+    // For all 'terminology' fields, initialse the search result sets for the controls
+    Object.entries(this.config.fields)
+      .filter(([_, field]) => field.type === 'terminology')
+      .forEach(([name, _]) => (this.termSearchResults[name] = { count: 0, options: [] }));
+
     // Clear the query component
     if (this.query.rules.length === 0) {
       this.query = {
@@ -68,5 +85,36 @@ export class QueryBuilderComponent implements OnInit {
 
   modelChanged(value: RuleSet) {
     this.queryChange.emit(value as QueryCondition);
+  }
+
+  termSearchChanged(value: string | undefined, rule: Rule, options: Option[]) {
+    // Due to the querybuilder component not having enough information available, we've had
+    // to store necessary model details in the Option[] from the querybuilder control, otherwise
+    // we have no context as to which term search to carry out
+    const model = mapOptionsArrayToModelDataType(options);
+
+    this.terminology
+      .listTerms(model.id, model.domainType, {
+        max: 20,
+        sort: 'definition',
+        order: 'asc',
+        ...(value && { definition: value }),
+      })
+      .pipe(
+        map((terms) => {
+          return {
+            count: terms.count,
+            options: terms.items.map((item) => {
+              return {
+                name: item.definition,
+                value: item,
+              };
+            }),
+          };
+        })
+      )
+      .subscribe((results: AutocompleteSelectOptionSet) => {
+        this.termSearchResults[rule.field] = results;
+      });
   }
 }

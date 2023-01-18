@@ -34,5 +34,10 @@ SPDX-License-Identifier: Apache-2.0
 
 .query-builder-input,
 .query-builder-number {
-  width: 30%;
+  width: 40%;
+}
+
+.query-builder-autocomplete {
+  width: 40%;
+  vertical-align: top;
 }

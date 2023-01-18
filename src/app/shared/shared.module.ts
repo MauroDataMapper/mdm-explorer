@@ -34,6 +34,7 @@ import { CallToActionComponent } from './call-to-action/call-to-action.component
 import { DataElementInRequestComponent } from './data-element-in-request/data-element-in-request.component';
 import { DataElementMultiSelectComponent } from './data-element-multi-select/data-element-multi-select.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
+import { AutocompleteSelectComponent } from './autocomplete-select/autocomplete-select.component';
 
 @NgModule({
   declarations: [
@@ -52,6 +53,7 @@ import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-
     DataElementInRequestComponent,
     DataElementMultiSelectComponent,
     ConfirmationDialogComponent,
+    AutocompleteSelectComponent,
   ],
   imports: [CoreModule, NgChartsModule],
   exports: [
@@ -68,6 +70,7 @@ import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-
     CallToActionComponent,
     DataElementInRequestComponent,
     DataElementMultiSelectComponent,
+    AutocompleteSelectComponent,
   ],
 })
 export class SharedModule {}
