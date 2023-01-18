@@ -21,6 +21,10 @@ import {
   CatalogueItemDomainType,
   TerminologyDetail,
   TerminologyDetailResponse,
+  FilterQueryParameters,
+  MdmIndexBody,
+  Term,
+  TermIndexResponse,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { map, Observable } from 'rxjs';
@@ -51,5 +55,26 @@ export class TerminologyService {
         ? this.endpoints.codeSet.get(id)
         : this.endpoints.terminology.get(id);
     return request$.pipe(map((response: TerminologyDetailResponse) => response.body));
+  }
+
+  /**
+   * Lists the terms from a Terminology (or Code Set), with filtering options to control the result set.
+   *
+   * @param id The ID of the model to inspect.
+   * @param domainType Optional domain type of the model, either "Terminology" or "CodeSet". If not provided, "Terminology" is presumed.
+   * @param query Optional query parameters used to filter, page and sort the results.
+   * @returns A list of matching terms.
+   */
+  listTerms(
+    id: Uuid,
+    domainType?: CatalogueItemDomainType,
+    query?: FilterQueryParameters
+  ): Observable<MdmIndexBody<Term>> {
+    const request$ =
+      domainType === CatalogueItemDomainType.CodeSet
+        ? this.endpoints.codeSet.terms(id, query)
+        : this.endpoints.term.list(id, query);
+
+    return request$.pipe(map((response: TermIndexResponse) => response.body));
   }
 }

@@ -236,6 +236,29 @@ SPDX-License-Identifier: Apache-2.0
           </textarea>
         </mat-form-field>
       </ng-container>
+      <!-- Terminology -->
+      <ng-container
+        *queryInput="
+          let rule;
+          let options = options;
+          type: 'terminology';
+          let onChange = onChange
+        "
+      >
+        <mat-form-field
+          appearance="outline"
+          class="query-builder-input query-builder-autocomplete"
+        >
+          <mdm-autocomplete-select
+            [(ngModel)]="rule.value"
+            (ngModelChange)="onChange()"
+            placeholder="Search for terms..."
+            multiple
+            [searchResults]="termSearchResults[rule.field]"
+            (searchChange)="termSearchChanged($event, rule, options)"
+          ></mdm-autocomplete-select>
+        </mat-form-field>
+      </ng-container>
     </query-builder>
   </mat-card>
 </div>

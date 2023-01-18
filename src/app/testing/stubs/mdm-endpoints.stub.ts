@@ -60,6 +60,7 @@ import {
   createProfileStub,
   MdmProfileResourcesStub,
 } from './mdm-resources/profile-resource.stub';
+import { createTermStub, MdmTermResourceStub } from './mdm-resources/term-resource.stub';
 import {
   createCodeSetStub,
   MdmCodeSetResourceStub,
@@ -83,6 +84,7 @@ export interface MdmEndpointsServiceStub {
   session: MdmSessionResourceStub;
   profile: MdmProfileResourcesStub;
   terminology: MdmTerminologyResourceStub;
+  term: MdmTermResourceStub;
 }
 
 export const createMdmEndpointsStub = (): MdmEndpointsServiceStub => {
@@ -100,5 +102,6 @@ export const createMdmEndpointsStub = (): MdmEndpointsServiceStub => {
     session: createSessionStub(),
     profile: createProfileStub(),
     terminology: createTerminologyStub(),
+    term: createTermStub(),
   };
 };
