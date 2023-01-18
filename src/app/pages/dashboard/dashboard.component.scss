@@ -40,9 +40,18 @@ SPDX-License-Identifier: Apache-2.0
     margin-left: 1em;
     margin-right: 1em;
     padding: 1em;
+    cursor: pointer;
+    height: 16rem;
 
     h3 {
       font-weight: 500;
+    }
+
+    p {
+      display: -webkit-box;
+      -webkit-line-clamp: 6;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
   }
 

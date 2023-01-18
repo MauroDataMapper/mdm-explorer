@@ -16,19 +16,9 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-@import "./base/all";
-
-.query-builder {
-  .mat-form-field {
-    margin: 0 5px; /* Add a space before the next control*/
-  }
-
-  .mat-form-field-wrapper {
-    padding-bottom: 0;
-  }
-
-  /* Set the space between radio buttons */
-  .mat-radio-button {
-    padding: 10px;
+.mdm-autocomplete-select {
+  &__search {
+    display: flex;
+    align-items: baseline;
   }
 }
