@@ -515,14 +515,14 @@ export class DataRequestsService {
    *
    * @param requestId The unique identifier of the data request.
    * @param type The type of query to get.
-   * @param dataElementLabel the label of the data element to remove from the query.
+   * @param dataElementLabels the labels of the data elements to remove from the query.
    * @returns a {@link DataRequestQueryPayload} with the query after removing the
    * data elements, or empty if the request or query cannot be found.
    */
   deleteDataElementsFromQuery(
     requestId: Uuid,
     type: DataRequestQueryType,
-    dataElementLabel: string
+    dataElementLabels: string[]
   ): Observable<DataRequestQueryPayload> {
     let updatedQuery: DataRequestQueryPayload;
 
@@ -534,9 +534,11 @@ export class DataRequestsService {
 
         updatedQuery = query;
 
-        updatedQuery.condition.rules = query.condition.rules.filter(
-          (item) => !(item as QueryExpression)?.field?.startsWith(dataElementLabel)
-        );
+        dataElementLabels.forEach((label) => {
+          updatedQuery.condition.rules = query.condition.rules.filter(
+            (item) => !(item as QueryExpression)?.field?.startsWith(label)
+          );
+        });
 
         return this.createOrUpdateQuery(requestId, updatedQuery);
       })
