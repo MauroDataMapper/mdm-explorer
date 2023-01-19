@@ -51,6 +51,8 @@ import {
   mapToDataRequest,
   QueryCondition,
   SelectableDataElementSearchResultCheckedEvent,
+  QueryExpression,
+  DataRequestQueryPayload,
 } from 'src/app/data-explorer/data-explorer.types';
 import {
   DataAccessRequestsSourceTargetIntersections,
@@ -227,6 +229,7 @@ export class MyRequestDetailComponent implements OnInit {
               finalised: false,
               id: this.request?.id ?? '',
             };
+
             return this.dataRequests.deleteDataElementMultiple([item], dataModel);
           } else {
             return EMPTY;
@@ -234,6 +237,11 @@ export class MyRequestDetailComponent implements OnInit {
         })
       )
       .subscribe((resultMultiple: DataElementMultipleOperationResult) => {
+        resultMultiple.successes.forEach((success) => {
+          // Remove data element from request queries.
+          this.removeDataElementFromQuery(success.item.label, this.dataQueryType);
+          this.removeDataElementFromQuery(success.item.label, this.cohortQueryType);
+        });
         const result =
           resultMultiple.failures.length === 0
             ? resultMultiple.successes[0]
@@ -283,6 +291,12 @@ export class MyRequestDetailComponent implements OnInit {
         })
       )
       .subscribe((result: DataElementMultipleOperationResult) => {
+        result.successes.forEach((success) => {
+          // Remove data element from request queries.
+          this.removeDataElementFromQuery(success.item.label, this.dataQueryType);
+          this.removeDataElementFromQuery(success.item.label, this.cohortQueryType);
+        });
+
         const success = result.failures.length === 0;
         let message = `${result.successes.length} Data element${
           result.successes.length === 1 ? '' : 's'
@@ -291,9 +305,6 @@ export class MyRequestDetailComponent implements OnInit {
           message += `\r\n${result.failures.length} Data element${
             result.failures.length === 1 ? '' : 's'
           } caused an error.`;
-          result.failures.forEach((item: DataElementOperationResult) =>
-            console.log(item.message)
-          );
         }
         this.processRemoveDataElementResponse(success, message);
         this.broadcast.loading({ isLoading: false });
@@ -349,6 +360,7 @@ export class MyRequestDetailComponent implements OnInit {
   showCohortCreate() {
     return this.cohortQuery.rules.length === 0 && this.request?.status === 'unsent';
   }
+
   showCohortEdit() {
     return this.cohortQuery.rules.length > 0 && this.request?.status === 'unsent';
   }
@@ -359,6 +371,31 @@ export class MyRequestDetailComponent implements OnInit {
 
   showDataEdit() {
     return this.dataQuery.rules.length > 0 && this.request?.status === 'unsent';
+  }
+
+  private removeDataElementFromQuery(
+    dataElementLabel: string,
+    queryType: DataRequestQueryType
+  ) {
+    if (!this.request?.id) {
+      return;
+    }
+
+    this.dataRequests
+      .deleteDataElementsFromQuery(this.request.id, queryType, dataElementLabel)
+      .subscribe((newQuery) => {
+        if (!newQuery) {
+          return;
+        }
+
+        switch (queryType) {
+          case this.cohortQueryType:
+            this.cohortQuery = newQuery.condition;
+            break;
+          case this.dataQueryType:
+            this.dataQuery = newQuery.condition;
+        }
+      });
   }
 
   private setBackButtonProperties() {
@@ -460,7 +497,7 @@ export class MyRequestDetailComponent implements OnInit {
     this.removeSelectedButtonDisabled = !this.request || selectedItemList.length === 0;
   }
 
-  private confirmSumbitRequest(): MatDialogRef<OkCancelDialogData>  {
+  private confirmSumbitRequest(): MatDialogRef<OkCancelDialogData> {
     return this.dialogs.openOkCancel({
       heading: 'Submit request',
       content: `You are about to submit your request "${this.request?.label}" for review. You will not be able to change it further from this point. Do you want to continue?`,
@@ -472,7 +509,7 @@ export class MyRequestDetailComponent implements OnInit {
   private okCancelItem(item: DataElementSearchResult): MatDialogRef<OkCancelDialogData> {
     return this.dialogs.openOkCancel({
       heading: 'Remove data element',
-      content: `Are you sure you want to remove data element "${item.label}" from request "${this.request?.label}"?`,
+      content: `Are you sure you want to remove data element "${item.label}" from request "${this.request?.label}" and all its related queries?`,
       okLabel: 'Yes',
       cancelLabel: 'No',
     });
@@ -483,7 +520,7 @@ export class MyRequestDetailComponent implements OnInit {
   ): MatDialogRef<OkCancelDialogData> {
     return this.dialogs.openOkCancel({
       heading: 'Remove selected data elements',
-      content: `Are you sure you want to remove these ${itemList.length} selected data elements from request ${this.request?.label}?`,
+      content: `Are you sure you want to remove these ${itemList.length} selected data elements from request "${this.request?.label}" and all its related queries?`,
       okLabel: 'Yes',
       cancelLabel: 'No',
     });

@@ -43,6 +43,7 @@ import {
   switchMap,
   throwError,
   from,
+  empty,
 } from 'rxjs';
 import { UserDetails } from '../security/user-details.service';
 import { DataModelService } from '../mauro/data-model.service';
@@ -57,6 +58,7 @@ import {
   DataRequestQueryPayload,
   DataRequestQueryType,
   mapToDataRequest,
+  QueryExpression,
 } from './data-explorer.types';
 import { DataRequest } from '../data-explorer/data-explorer.types';
 import { DataExplorerService } from './data-explorer.service';
@@ -503,6 +505,40 @@ export class DataRequestsService {
           type: payload.type,
           condition: JSON.parse(representation.representation),
         };
+      })
+    );
+  }
+
+  /**
+   * Removes all rules containing the data element label. And returns
+   * the new value of the query.
+   *
+   * @param requestId The unique identifier of the data request.
+   * @param type The type of query to get.
+   * @param dataElementLabel the label of the data element to remove from the query.
+   * @returns a {@link DataRequestQueryPayload} with the query after removing the
+   * data elements, or empty if the request or query cannot be found.
+   */
+  deleteDataElementsFromQuery(
+    requestId: Uuid,
+    type: DataRequestQueryType,
+    dataElementLabel: string
+  ): Observable<DataRequestQueryPayload> {
+    let updatedQuery: DataRequestQueryPayload;
+
+    return this.getQuery(requestId, type).pipe(
+      switchMap((query) => {
+        if (!query) {
+          return EMPTY;
+        }
+
+        updatedQuery = query;
+
+        updatedQuery.condition.rules = query.condition.rules.filter(
+          (item) => !(item as QueryExpression)?.field?.startsWith(dataElementLabel)
+        );
+
+        return this.createOrUpdateQuery(requestId, updatedQuery);
       })
     );
   }
