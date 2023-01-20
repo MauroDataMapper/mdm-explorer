@@ -16,26 +16,9 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-/*
-Copyright 2022 University of Oxford
-and Health and Social Care Information Centre, also known as NHS Digital
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-SPDX-License-Identifier: Apache-2.0
-*/
 import { Injectable } from '@angular/core';
 import {
+  CatalogueItem,
   CatalogueItemDomainType,
   DataType,
   Profile,
@@ -48,13 +31,36 @@ import {
   QueryCondition,
   QueryExpression,
 } from '../data-explorer/data-explorer.types';
-import { ProfileService } from './profile.service';
+import { Option } from 'angular2-query-builder';
+import { ProfileService } from '../mauro/profile.service';
 
 export interface QueryConfiguration {
   dataElementSearchResult: DataElementSearchResult[];
   dataRequestQueryPayload: Required<DataRequestQueryPayload> | undefined;
   config: QueryBuilderConfig;
 }
+
+export const mapModelDataTypeToOptionsArray = (dataType: DataType): Option[] => {
+  return [
+    {
+      name: 'modelResourceDomainType',
+      value: dataType.modelResourceDomainType,
+    },
+    {
+      name: 'modelResourceId',
+      value: dataType.modelResourceId,
+    },
+  ];
+};
+
+export const mapOptionsArrayToModelDataType = (
+  options: Option[]
+): Required<CatalogueItem> => {
+  const domainType = options.find((o) => o.name === 'modelResourceDomainType')
+    ?.value as CatalogueItemDomainType;
+  const id = options.find((o) => o.name === 'modelResourceId')?.value;
+  return { id, domainType };
+};
 
 @Injectable({
   providedIn: 'root',
@@ -107,11 +113,44 @@ export class QueryBuilderService {
   }
 
   private getDataTypeString(data: Profile, dataElement: DataElementSearchResult) {
-    return dataElement.dataType?.enumerationValues?.length ?? 0 > 0
-      ? 'category'
-      : data?.sections?.length > 0
-      ? data.sections[0].fields[0].currentValue
-      : undefined;
+    if (
+      dataElement.dataType?.domainType === CatalogueItemDomainType.ModelDataType &&
+      (dataElement.dataType?.modelResourceDomainType ===
+        CatalogueItemDomainType.Terminology ||
+        dataElement.dataType?.modelResourceDomainType === CatalogueItemDomainType.CodeSet)
+    ) {
+      return 'terminology';
+    }
+
+    if (dataElement.dataType?.enumerationValues?.length ?? 0 > 0) {
+      return 'category';
+    }
+
+    if (data?.sections?.length > 0) {
+      return data.sections[0].fields[0].currentValue;
+    }
+
+    return undefined;
+  }
+
+  private getFieldOptions(dataElement: DataElementSearchResult): Option[] {
+    if (dataElement.dataType?.domainType === CatalogueItemDomainType.ModelDataType) {
+      // We need to store contextual information with the field to track which model refers to this field.
+      // Unfortunately, a Field object has no available property to hold this info, so re-use the Options[]
+      // array as a rudimentary way of storing additional data
+      return mapModelDataTypeToOptionsArray(dataElement.dataType);
+    }
+
+    if (dataElement.dataType?.enumerationValues) {
+      return dataElement.dataType.enumerationValues.map((enumValue) => {
+        return {
+          name: enumValue.key,
+          value: enumValue.value,
+        };
+      });
+    }
+
+    return [];
   }
 
   private getDefaultValue(dataTypeString: string) {
@@ -141,12 +180,7 @@ export class QueryBuilderService {
     config.fields[dataElement.label] = {
       name: dataElement.label + ' (' + dataTypeString + ')',
       type: dataTypeString,
-      options: (dataElement.dataType?.enumerationValues ?? []).map((dataOption) => {
-        return {
-          name: dataOption.key,
-          value: dataOption.value,
-        };
-      }),
+      options: this.getFieldOptions(dataElement),
       defaultValue: this.getDefaultValue(dataTypeString),
     };
   }

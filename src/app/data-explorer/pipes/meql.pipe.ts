@@ -19,6 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 import { Pipe, PipeTransform } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import moment from 'moment';
+import { isAutocompleteSelectOptionArray } from 'src/app/shared/autocomplete-select/autocomplete-select.component';
 
 @Pipe({ name: 'meql', pure: false })
 export class MeqlPipe implements PipeTransform {
@@ -49,6 +50,10 @@ export class MeqlPipe implements PipeTransform {
       return `${quotes}${this._date
         .transform(value.toDate(), 'dd/MM/yyyy')
         ?.toString()}${quotes}`;
+    } else if (isAutocompleteSelectOptionArray(value)) {
+      const optionsStr =
+        value && value.length > 0 ? value.map((item) => item.name).join(', ') : 'null';
+      return `${quotes}${optionsStr}${quotes}`;
     } else {
       if (value !== undefined && value !== null) {
         return `${quotes}${value.toString()}${quotes}`;

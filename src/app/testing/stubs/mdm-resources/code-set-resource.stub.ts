@@ -16,15 +16,24 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { CodeSetDetailResponse, Uuid } from '@maurodatamapper/mdm-resources';
+import {
+  CodeSetDetailResponse,
+  FilterQueryParameters,
+  TermIndexResponse,
+  Uuid,
+} from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
 
 export interface MdmCodeSetResourceStub {
   get: jest.MockedFunction<(id: Uuid) => Observable<CodeSetDetailResponse>>;
+  terms: jest.MockedFunction<
+    (id: Uuid, query?: FilterQueryParameters) => Observable<TermIndexResponse>
+  >;
 }
 
 export const createCodeSetStub = (): MdmCodeSetResourceStub => {
   return {
     get: jest.fn(),
+    terms: jest.fn(),
   };
 };

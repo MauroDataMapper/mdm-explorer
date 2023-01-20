@@ -44,6 +44,7 @@ import { MatPasswordStrengthModule } from '@angular-material-extensions/password
 import { AppErrorHandlerService } from './app-error-handler.service';
 import { AppErrorDialogComponent } from './app-error-dialog/app-error-dialog.component';
 import { OverlayContainer } from '@angular/cdk/overlay';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 const angularModules = [CommonModule, FormsModule, ReactiveFormsModule, RouterModule];
 const primeNgModules = [CarouselModule];
@@ -69,6 +70,7 @@ const materialModules = [
   MatDialogModule,
   MatTooltipModule,
   MatPasswordStrengthModule,
+  MatAutocompleteModule,
 ];
 
 @NgModule({

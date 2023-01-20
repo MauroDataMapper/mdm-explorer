@@ -77,8 +77,4 @@ export class DashboardComponent implements OnInit {
     const params = mapSearchParametersToParams(searchParameters);
     this.stateRouter.navigateToKnownPath('/search/listing', params);
   }
-
-  viewAllRequests() {
-    this.stateRouter.navigateToKnownPath('/requests');
-  }
 }
