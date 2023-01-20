@@ -70,6 +70,11 @@ export type DataRequestsUpdateRequestsFolderFn = (
 ) => Observable<[DataModel, string[]]>;
 export type DataRequestGetRequestsFolderFn = () => Observable<FolderDetail>;
 export type DataRequestGetFolderNameFn = (userEmail: string) => string;
+export type DeleteDataElementsFromQueryFn = (
+  requestId: Uuid,
+  type: DataRequestQueryType,
+  dataElementLabels: string[]
+) => Observable<DataRequestQueryPayload>;
 
 export interface DataRequestsServiceStub {
   get: jest.MockedFunction<(id: Uuid) => Observable<DataRequest>>;
@@ -88,6 +93,7 @@ export interface DataRequestsServiceStub {
   createOrUpdateQuery: jest.MockedFunction<
     (requestId: string, payload: DataRequestQueryPayload) => Observable<DataRequestQuery>
   >;
+  deleteDataElementsFromQuery: jest.MockedFunction<DeleteDataElementsFromQueryFn>;
 }
 
 export const createDataRequestsServiceStub = (): DataRequestsServiceStub => {
@@ -109,5 +115,7 @@ export const createDataRequestsServiceStub = (): DataRequestsServiceStub => {
       jest.fn() as jest.MockedFunction<DataRequestGetFolderNameFn>,
     getQuery: jest.fn(),
     createOrUpdateQuery: jest.fn(),
+    deleteDataElementsFromQuery:
+      jest.fn() as jest.MockedFunction<DeleteDataElementsFromQueryFn>,
   };
 };
