@@ -57,6 +57,7 @@ import {
   DataRequestQueryPayload,
   DataRequestQueryType,
   mapToDataRequest,
+  QueryExpression,
 } from './data-explorer.types';
 import { DataRequest } from '../data-explorer/data-explorer.types';
 import { DataExplorerService } from './data-explorer.service';
@@ -503,6 +504,41 @@ export class DataRequestsService {
           type: payload.type,
           condition: JSON.parse(representation.representation),
         };
+      })
+    );
+  }
+
+  /**
+   * Removes all data labels found in a query attached to a data request.
+   *
+   * @param requestId The unique identifier of the data request.
+   * @param type The type of query to get.
+   * @param dataElementLabels the labels of the data elements to remove from the query.
+   * @returns a {@link DataRequestQueryPayload} with the query after removing the
+   * data elements, or empty if the request or query cannot be found.
+   */
+  deleteDataElementsFromQuery(
+    requestId: Uuid,
+    type: DataRequestQueryType,
+    dataElementLabels: string[]
+  ): Observable<DataRequestQueryPayload> {
+    let updatedQuery: DataRequestQueryPayload;
+
+    return this.getQuery(requestId, type).pipe(
+      switchMap((query) => {
+        if (!query) {
+          return EMPTY;
+        }
+
+        updatedQuery = query;
+
+        dataElementLabels.forEach((label) => {
+          updatedQuery.condition.rules = query.condition.rules.filter(
+            (item) => !(item as QueryExpression)?.field?.startsWith(label)
+          );
+        });
+
+        return this.createOrUpdateQuery(requestId, updatedQuery);
       })
     );
   }

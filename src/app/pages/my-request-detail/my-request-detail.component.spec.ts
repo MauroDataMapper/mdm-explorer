@@ -504,8 +504,21 @@ describe('MyRequestsComponent', () => {
         ],
         failures: [],
       };
+
+      const deleteFromQueryResult: DataRequestQueryPayload = {
+        ruleId: 'id1',
+        representationId: 'representationId1',
+        type: 'cohort',
+        condition: {
+          condition: 'and',
+          rules: [],
+        },
+      };
       dataRequestsStub.deleteDataElementMultiple.mockReset();
       dataRequestsStub.deleteDataElementMultiple.mockReturnValue(of(deleteResult));
+      dataRequestsStub.deleteDataElementsFromQuery.mockReturnValue(
+        of(deleteFromQueryResult)
+      );
       broadcastStub.loading.mockReset();
 
       // Pretend to delete first element
@@ -518,6 +531,7 @@ describe('MyRequestsComponent', () => {
       // check the fallout
       expect(dialogsStub.open).toHaveBeenCalledTimes(1);
       expect(broadcastStub.loading).toHaveBeenCalledTimes(2);
+      expect(dataRequestsStub.deleteDataElementsFromQuery).toBeCalledTimes(2);
       expect(dataRequestsStub.deleteDataElementMultiple).toHaveBeenCalledTimes(1);
       expect(dataRequestsStub.deleteDataElementMultiple.mock.calls[0][0]).toStrictEqual([
         selectableElements()[0],

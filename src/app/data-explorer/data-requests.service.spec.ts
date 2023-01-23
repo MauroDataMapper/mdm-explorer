@@ -40,6 +40,7 @@ import {
   DataRequestQueryPayload,
   DataRequestQueryType,
   QueryCondition,
+  QueryExpression,
 } from '../data-explorer/data-explorer.types';
 import { createDataModelServiceStub } from '../testing/stubs/data-model.stub';
 import { createSecurityServiceStub } from '../testing/stubs/security.stub';
@@ -808,6 +809,119 @@ describe('DataRequestsService', () => {
 
       const expected$ = cold('---(a|)', { a: expected });
       const actual$ = service.createOrUpdateQuery(requestId, payload);
+      expect(actual$).toBeObservable(expected$);
+    });
+  });
+
+  describe('deleteDataElementsFromQuery', () => {
+    const requestId: Uuid = '1234';
+    const queryTypes: DataRequestQueryType[] = ['cohort', 'data'];
+    const expressions: QueryExpression[] = [
+      { field: 'field1', operator: '!=', value: 'value_field1' },
+      { field: 'field2', operator: '=', value: 'value_field2' },
+      { field: 'field3', operator: '<=', value: 'value_field3' },
+    ];
+    const condition: QueryCondition = { condition: 'and', rules: expressions };
+
+    it.each(queryTypes)('Should remove 1 data element correctly', (type) => {
+      const queryPayload: DataRequestQueryPayload = {
+        ruleId: '456',
+        representationId: '789',
+        type,
+        condition,
+      };
+
+      const expectedExpressions: QueryExpression[] = [
+        { field: 'field2', operator: '=', value: 'value_field2' },
+        { field: 'field3', operator: '<=', value: 'value_field3' },
+      ];
+      const expectedCondition: QueryCondition = {
+        condition: 'and',
+        rules: expectedExpressions,
+      };
+
+      // Get query and createOrUpdateQuery has its own tests, so we can mock its dependency
+      // to unit test deleteDataElementsFromQuery
+      service.getQuery = jest.fn().mockReturnValueOnce(
+        cold('a|', {
+          a: queryPayload,
+        })
+      );
+      service.createOrUpdateQuery = jest
+        .fn()
+        .mockImplementation((id: string, payload: DataRequestQueryPayload) => {
+          return cold('a|', {
+            a: {
+              ruleId: payload.ruleId,
+              representationId: payload.representationId,
+              type: payload.type,
+              condition: payload.condition,
+            },
+          });
+        });
+
+      const expected$ = cold('a|', {
+        a: {
+          ruleId: queryPayload.ruleId,
+          representationId: queryPayload.representationId,
+          type,
+          condition: expectedCondition,
+        },
+      });
+
+      const actual$ = service.deleteDataElementsFromQuery(requestId, type, ['field1']);
+      expect(actual$).toBeObservable(expected$);
+    });
+
+    it.each(queryTypes)('Should remove multiple data element correctly', (type) => {
+      const queryPayload: DataRequestQueryPayload = {
+        ruleId: '456',
+        representationId: '789',
+        type,
+        condition,
+      };
+
+      const expectedExpressions: QueryExpression[] = [
+        { field: 'field2', operator: '=', value: 'value_field2' },
+      ];
+      const expectedCondition: QueryCondition = {
+        condition: 'and',
+        rules: expectedExpressions,
+      };
+
+      // Get query and createOrUpdateQuery has its own tests, so we can mock its dependency
+      // to unit test deleteDataElementsFromQuery
+      service.getQuery = jest.fn().mockReturnValueOnce(
+        cold('a|', {
+          a: queryPayload,
+        })
+      );
+      service.createOrUpdateQuery = jest
+        .fn()
+        .mockImplementation((id: string, payload: DataRequestQueryPayload) => {
+          return cold('a|', {
+            a: {
+              ruleId: payload.ruleId,
+              representationId: payload.representationId,
+              type: payload.type,
+              condition: payload.condition,
+            },
+          });
+        });
+
+      const expected$ = cold('a|', {
+        a: {
+          ruleId: queryPayload.ruleId,
+          representationId: queryPayload.representationId,
+          type,
+          condition: expectedCondition,
+        },
+      });
+
+      const actual$ = service.deleteDataElementsFromQuery(requestId, type, [
+        'field1',
+        'field3',
+      ]);
       expect(actual$).toBeObservable(expected$);
     });
   });
