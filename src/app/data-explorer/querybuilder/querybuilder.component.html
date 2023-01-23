@@ -157,7 +157,7 @@ SPDX-License-Identifier: Apache-2.0
         >
           <mat-select [(ngModel)]="rule.value" (ngModelChange)="onChange()">
             <mat-option *ngFor="let opt of options" [value]="opt.value">
-              {{ opt.name }}
+              {{ opt.value }}
             </mat-option>
           </mat-select>
         </mat-form-field>
