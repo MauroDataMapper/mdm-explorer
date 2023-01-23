@@ -43,7 +43,6 @@ import {
   switchMap,
   throwError,
   from,
-  empty,
 } from 'rxjs';
 import { UserDetails } from '../security/user-details.service';
 import { DataModelService } from '../mauro/data-model.service';
@@ -510,8 +509,7 @@ export class DataRequestsService {
   }
 
   /**
-   * Removes all rules containing the data element label. And returns
-   * the new value of the query.
+   * Removes all data labels found in a query attached to a data request.
    *
    * @param requestId The unique identifier of the data request.
    * @param type The type of query to get.

@@ -824,7 +824,7 @@ describe('DataRequestsService', () => {
     const condition: QueryCondition = { condition: 'and', rules: expressions };
 
     it.each(queryTypes)('Should remove 1 data element correctly', (type) => {
-      const payload: DataRequestQueryPayload = {
+      const queryPayload: DataRequestQueryPayload = {
         ruleId: '456',
         representationId: '789',
         type,
@@ -844,7 +844,7 @@ describe('DataRequestsService', () => {
       // to unit test deleteDataElementsFromQuery
       service.getQuery = jest.fn().mockReturnValueOnce(
         cold('a|', {
-          a: payload,
+          a: queryPayload,
         })
       );
       service.createOrUpdateQuery = jest
@@ -862,9 +862,9 @@ describe('DataRequestsService', () => {
 
       const expected$ = cold('a|', {
         a: {
-          ruleId: payload.ruleId,
-          representationId: payload.representationId,
-          type: type,
+          ruleId: queryPayload.ruleId,
+          representationId: queryPayload.representationId,
+          type,
           condition: expectedCondition,
         },
       });
@@ -874,7 +874,7 @@ describe('DataRequestsService', () => {
     });
 
     it.each(queryTypes)('Should remove multiple data element correctly', (type) => {
-      const payload: DataRequestQueryPayload = {
+      const queryPayload: DataRequestQueryPayload = {
         ruleId: '456',
         representationId: '789',
         type,
@@ -893,7 +893,7 @@ describe('DataRequestsService', () => {
       // to unit test deleteDataElementsFromQuery
       service.getQuery = jest.fn().mockReturnValueOnce(
         cold('a|', {
-          a: payload,
+          a: queryPayload,
         })
       );
       service.createOrUpdateQuery = jest
@@ -911,9 +911,9 @@ describe('DataRequestsService', () => {
 
       const expected$ = cold('a|', {
         a: {
-          ruleId: payload.ruleId,
-          representationId: payload.representationId,
-          type: type,
+          ruleId: queryPayload.ruleId,
+          representationId: queryPayload.representationId,
+          type,
           condition: expectedCondition,
         },
       });

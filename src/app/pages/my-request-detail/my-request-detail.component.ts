@@ -44,15 +44,13 @@ import {
   DataElementDto,
   DataElementInstance,
   DataElementMultipleOperationResult,
-  DataElementOperationResult,
   DataElementSearchResult,
   DataRequest,
+  DataRequestQueryPayload,
   DataRequestQueryType,
   mapToDataRequest,
   QueryCondition,
   SelectableDataElementSearchResultCheckedEvent,
-  QueryExpression,
-  DataRequestQueryPayload,
 } from 'src/app/data-explorer/data-explorer.types';
 import {
   DataAccessRequestsSourceTargetIntersections,
@@ -224,73 +222,6 @@ export class MyRequestDetailComponent implements OnInit {
     }
   }
 
-  removeOneOrMoreDataElements(items: DataElementSearchResult[]) {
-    this.okCancelItemList(items)
-      .afterClosed()
-      .pipe(
-        switchMap((result: OkCancelDialogResponse) => {
-          if (result.result) {
-            this.broadcast.loading({
-              isLoading: true,
-              caption:
-                items.length === 1
-                  ? `Removing data element ${items[0].label} from request ${this.request?.label} ...`
-                  : `Removing ${items.length} data elements from request ${this.request?.label} ...`,
-            });
-            const dataModel: DataModelDetail = {
-              domainType: CatalogueItemDomainType.DataModel,
-              label: this.request?.label ?? '',
-              availableActions: [],
-              finalised: false,
-              id: this.request?.id ?? '',
-            };
-            return this.dataRequests.deleteDataElementMultiple(items, dataModel);
-          } else {
-            return EMPTY;
-          }
-        })
-      )
-      .subscribe((resultMultiple: DataElementMultipleOperationResult) => {
-        const labels = resultMultiple.successes.map((success) => {
-          return success.item.label;
-        });
-
-        // Remove data element from request queries.
-        this.removeDataElementFromQuery(labels, this.dataQueryType);
-        this.removeDataElementFromQuery(labels, this.cohortQueryType);
-
-        let success: boolean;
-        let message: string = '';
-
-        if (items.length === 1) {
-          const singleResult =
-            resultMultiple.failures.length === 0
-              ? resultMultiple.successes[0]
-              : resultMultiple.failures[0];
-          success = singleResult.success;
-
-          if (!singleResult.success) {
-            message = `Removal of data element ${items[0].label} failed. The error message is: ${singleResult.message}`;
-          } else {
-            message = `Data element "${items[0].label}" removed from request "${this.request?.label}".`;
-          }
-        } else {
-          success = resultMultiple.failures.length === 0;
-          message = `${resultMultiple.successes.length} Data element${
-            resultMultiple.successes.length === 1 ? '' : 's'
-          } removed from request "${this.request?.label}".`;
-
-          if (!success) {
-            message += `\r\n${resultMultiple.failures.length} Data element${
-              resultMultiple.failures.length === 1 ? '' : 's'
-            } caused an error.`;
-          }
-        }
-        this.processRemoveDataElementResponse(success, message);
-        this.broadcast.loading({ isLoading: false });
-      });
-  }
-
   removeSelected() {
     const itemList = this.requestElements.filter((item) => item.isSelected);
     this.removeOneOrMoreDataElements(itemList);
@@ -358,29 +289,111 @@ export class MyRequestDetailComponent implements OnInit {
     return this.dataQuery.rules.length > 0 && this.request?.status === 'unsent';
   }
 
-  private removeDataElementFromQuery(
-    dataElementLabels: string[],
-    queryType: DataRequestQueryType
-  ) {
-    if (!this.request?.id) {
+  private removeOneOrMoreDataElements(items: DataElementSearchResult[]) {
+    this.okCancelItemList(items)
+      .afterClosed()
+      .pipe(
+        switchMap((result: OkCancelDialogResponse) => {
+          if (result.result) {
+            this.broadcast.loading({
+              isLoading: true,
+              caption:
+                items.length === 1
+                  ? `Removing data element ${items[0].label} from request ${this.request?.label} ...`
+                  : `Removing ${items.length} data elements from request ${this.request?.label} ...`,
+            });
+            const dataModel: DataModelDetail = {
+              domainType: CatalogueItemDomainType.DataModel,
+              label: this.request?.label ?? '',
+              availableActions: [],
+              finalised: false,
+              id: this.request?.id ?? '',
+            };
+            return this.dataRequests.deleteDataElementMultiple(items, dataModel);
+          } else {
+            return EMPTY;
+          }
+        }),
+        switchMap((resultMultiple: DataElementMultipleOperationResult) => {
+          const labels = resultMultiple.successes.map((success) => {
+            return success.item.label;
+          });
+
+          // Remove data element from request queries.
+          return forkJoin({
+            dataQuery: this.removeDataElementFromQuery(labels, this.dataQueryType),
+            cohortQuery: this.removeDataElementFromQuery(labels, this.cohortQueryType),
+            resultMultiple: of(resultMultiple),
+          });
+        }),
+        finalize(() => {
+          this.broadcast.loading({ isLoading: false });
+        })
+      )
+      .subscribe((forkJoinResult) => {
+        this.updateLocalQuery(forkJoinResult.dataQuery);
+        this.updateLocalQuery(forkJoinResult.cohortQuery);
+
+        let success: boolean;
+        let message = '';
+
+        if (items.length === 1) {
+          const singleResult =
+            forkJoinResult.resultMultiple.failures.length === 0
+              ? forkJoinResult.resultMultiple.successes[0]
+              : forkJoinResult.resultMultiple.failures[0];
+          success = singleResult.success;
+
+          if (!singleResult.success) {
+            message = `Removal of data element ${items[0].label} failed. The error message is: ${singleResult.message}`;
+          } else {
+            message = `Data element "${items[0].label}" removed from request "${this.request?.label}".`;
+          }
+        } else {
+          success = forkJoinResult.resultMultiple.failures.length === 0;
+          message = `${forkJoinResult.resultMultiple.successes.length} Data element${
+            forkJoinResult.resultMultiple.successes.length === 1 ? '' : 's'
+          } removed from request "${this.request?.label}".`;
+
+          if (!success) {
+            message += `\r\n${
+              forkJoinResult.resultMultiple.failures.length
+            } Data element${
+              forkJoinResult.resultMultiple.failures.length === 1 ? '' : 's'
+            } caused an error.`;
+          }
+        }
+        this.processRemoveDataElementResponse(success, message);
+      });
+  }
+
+  private updateLocalQuery(newQuery: DataRequestQueryPayload) {
+    if (!newQuery) {
       return;
     }
 
-    this.dataRequests
-      .deleteDataElementsFromQuery(this.request.id, queryType, dataElementLabels)
-      .subscribe((newQuery) => {
-        if (!newQuery) {
-          return;
-        }
+    switch (newQuery.type) {
+      case this.cohortQueryType:
+        this.cohortQuery = newQuery.condition;
+        break;
+      case this.dataQueryType:
+        this.dataQuery = newQuery.condition;
+    }
+  }
 
-        switch (queryType) {
-          case this.cohortQueryType:
-            this.cohortQuery = newQuery.condition;
-            break;
-          case this.dataQueryType:
-            this.dataQuery = newQuery.condition;
-        }
-      });
+  private removeDataElementFromQuery(
+    dataElementLabels: string[],
+    queryType: DataRequestQueryType
+  ): Observable<DataRequestQueryPayload> {
+    if (!this.request?.id) {
+      return EMPTY;
+    }
+
+    return this.dataRequests.deleteDataElementsFromQuery(
+      this.request.id,
+      queryType,
+      dataElementLabels
+    );
   }
 
   private setBackButtonProperties() {
@@ -494,7 +507,7 @@ export class MyRequestDetailComponent implements OnInit {
   private okCancelItemList(
     itemList: DataElementSearchResult[]
   ): MatDialogRef<OkCancelDialogData> {
-    if (itemList.length == 1) {
+    if (itemList.length === 1) {
       return this.dialogs.openOkCancel({
         heading: 'Remove data element',
         content: `Are you sure you want to remove data element "${itemList[0].label}" from request "${this.request?.label}" and all its related queries?`,
