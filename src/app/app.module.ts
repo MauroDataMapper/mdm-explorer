@@ -41,7 +41,12 @@ import { DataExplorerService } from './data-explorer/data-explorer.service';
 import { Observable } from 'rxjs';
 import { USER_IDLE_CONFIGURATION } from './external/user-idle.service';
 import { LOCALE_ID } from '@angular/core';
-import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import {
+  DateAdapter,
+  MatDateFormats,
+  MAT_DATE_FORMATS,
+  MAT_DATE_LOCALE,
+} from '@angular/material/core';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 
 /**
@@ -100,7 +105,7 @@ const getOpenIdAuthorizeUrl = () => {
 };
 
 // Work around to display and validate dates in gb format
-export const DATE_FORMATS = {
+export const DATE_FORMATS: MatDateFormats = {
   parse: {
     dateInput: 'DD/MM/YYYY',
   },

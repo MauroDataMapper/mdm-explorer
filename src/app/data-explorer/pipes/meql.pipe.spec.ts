@@ -45,7 +45,7 @@ describe('MeqlPipe', () => {
       ['transforms field not equal to string', 'Simple String Field', '!=', 'Some Text'],
       ['transforms field equal to number', 'Simple String Field', '=', 0],
       ['transforms field not equal to number', 'Simple String Field', '!=', 99],
-    ])('%s', (testname, field, operator, value) => {
+    ])('%s', (_, field, operator, value) => {
       /*
           Expected example:
 
@@ -57,8 +57,11 @@ describe('MeqlPipe', () => {
         condition: 'and',
         rules: [{ field, operator, value }],
       };
+
+      const expectedValue = typeof value === 'string' ? `"${value}"` : value.toString();
+
       const line1 = `(${newline}`;
-      const line2 = `${tab}"${query.rules[0].field}" ${query.rules[0].operator} "${query.rules[0].value}"${newline}`;
+      const line2 = `${tab}"${query.rules[0].field}" ${query.rules[0].operator} ${expectedValue}${newline}`;
       const line3 = ')';
 
       const actual = pipe.transform(query);
@@ -105,7 +108,7 @@ describe('MeqlPipe', () => {
           ],
         },
       ],
-    ])('%s', (testname, query) => {
+    ])('%s', (_, query) => {
       /*
         Expected example:
 
@@ -259,7 +262,7 @@ describe('MeqlPipe', () => {
           ],
         },
       ],
-    ])('%s', (testname, query) => {
+    ])('%s', (_, query) => {
       /*
         Expected example:
 
