@@ -36,6 +36,11 @@ import { SecurityService } from 'src/app/security/security.service';
 export class DashboardComponent implements OnInit {
   searchTerms = '';
   currentUserRequests: DataRequest[] = [];
+  itemCardNumerOfLinesToShow: number = 6;
+  currentCardsHeight: number = 1;
+  get currentCardsHeightString(): string {
+    return `${this.currentCardsHeight}rem`;
+  }
 
   constructor(
     private security: SecurityService,
@@ -66,6 +71,7 @@ export class DashboardComponent implements OnInit {
       )
       .subscribe((dataRequests: DataRequest[]) => {
         this.currentUserRequests = [...dataRequests];
+        this.calculateLinesToShow(this.currentUserRequests);
       });
   }
 
@@ -76,5 +82,61 @@ export class DashboardComponent implements OnInit {
 
     const params = mapSearchParametersToParams(searchParameters);
     this.stateRouter.navigateToKnownPath('/search/listing', params);
+  }
+
+  private calculateLinesToShow(currentUserRequests: DataRequest[]) {
+    let approximateCharactersPerLine: number;
+
+    // when there is only 1 request, the width of the
+    // card item is 100% so it can fit more characters per line.
+    // When 2 elements, is 50%ish, and then 3 or more around 30%.
+    // baseNumberOfCharacters is pure empiric tesing driven
+    // there is no way to know for sure, as different combination
+    // of letters can ocuppy different space (except in monospace fonts)
+    const baseNumberOfCharacters: number = 30;
+    if (currentUserRequests.length < 1) {
+      return;
+    } else if (currentUserRequests.length < 2) {
+      approximateCharactersPerLine = baseNumberOfCharacters * 3;
+    } else if (currentUserRequests.length < 3) {
+      approximateCharactersPerLine = baseNumberOfCharacters * 3;
+    } else {
+      approximateCharactersPerLine = baseNumberOfCharacters;
+    }
+
+    // Get the maximum length of the current requests
+    // if description is undefined, use 1.
+    // Minumum 1, even if no dataRequests.
+    const longestDescription: number =
+      currentUserRequests.length > 0
+        ? Math.max(
+            ...currentUserRequests.map((x) => {
+              return x.description ? x.description.length : 0;
+            })
+          )
+        : 1;
+
+    if (longestDescription < approximateCharactersPerLine) {
+      this.itemCardNumerOfLinesToShow = 1;
+    } else if (longestDescription < approximateCharactersPerLine * 2) {
+      this.itemCardNumerOfLinesToShow = 2;
+    } else if (longestDescription < approximateCharactersPerLine * 3) {
+      this.itemCardNumerOfLinesToShow = 3;
+    } else if (longestDescription < approximateCharactersPerLine * 4) {
+      this.itemCardNumerOfLinesToShow = 4;
+    } else if (longestDescription < approximateCharactersPerLine * 5) {
+      this.itemCardNumerOfLinesToShow = 5;
+    } else {
+      this.itemCardNumerOfLinesToShow = 6;
+    }
+
+    // From testing it seems 2rem units per
+    // line to show is the one that yields better results.
+    // Base height is just enough to hold the title with
+    // some padding.
+    const baseHeightNeeded = 4;
+    this.currentCardsHeight = Math.ceil(
+      this.itemCardNumerOfLinesToShow * 2 + baseHeightNeeded
+    );
   }
 }
