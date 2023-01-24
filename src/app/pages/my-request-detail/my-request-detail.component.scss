@@ -28,8 +28,9 @@ $request-heading-color: $color-white;
 $request-header-padding: 0.5em 1.2em;
 
 $request-elements-max-height: auto;
-$row-footer-content-color: $color-mauro-light-gold;
+$background-color: $color-mauro-light-gold;
 $back-link-color: $color-mauro-dark-green;
+$border-radius: 4px;
 
 .mdm-my-request {
   border: $header-border;
@@ -37,17 +38,17 @@ $back-link-color: $color-mauro-dark-green;
 
   &__query {
     padding: 0.5em 0.75em;
-    background-color: $row-footer-content-color;
-
-    &--row {
+    background-color: $background-color;
+    border-radius: $border-radius;
+    &-row {
       padding: 0.5em 0.75em;
     }
 
-    &--container {
+    &-container {
       padding-bottom: 2px;
     }
 
-    &--description {
+    &-description {
       padding: 0.5em 0.75em;
       display: flex;
       justify-content: space-between;
@@ -63,8 +64,9 @@ $back-link-color: $color-mauro-dark-green;
   }
 
   &__request-description {
+    border-radius: $border-radius;
     padding: 0.5em 0.75em;
-    background-color: $row-footer-content-color;
+    background-color: $background-color;
     display: flex;
     justify-content: space-between;
     &-container {
@@ -119,16 +121,16 @@ $back-link-color: $color-mauro-dark-green;
     color: $request-heading-color;
     background-color: $request-heading-background-color;
 
-    &--name {
+    &-name {
       margin-left: auto;
       font-size: 16px;
     }
 
-    &--info {
+    &-info {
       margin-top: 1.2em;
     }
 
-    &--buttons {
+    &-buttons {
       button {
         width: 160px;
       }

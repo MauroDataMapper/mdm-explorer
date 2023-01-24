@@ -33,8 +33,8 @@ SPDX-License-Identifier: Apache-2.0
     <div class="col">
       <div class="mdm-my-request__request-header">
         <div class="mdm-my-request__request-header-title">
-          <div class="mdm-my-request__request-header--name">
-            <div class="mdm-my-request__request-header--buttons">
+          <div class="mdm-my-request__request-header-name">
+            <div class="mdm-my-request__request-header-buttons">
               <button
                 *ngIf="request.status === 'submitted'"
                 mat-raised-button
@@ -66,7 +66,7 @@ SPDX-License-Identifier: Apache-2.0
       </div>
     </div>
 
-    <div class="mdm-my-request__query--container">
+    <div class="mdm-my-request__query-container">
       <div class="mdm-my-request__query">
         <div class="row">
           <div
@@ -77,14 +77,14 @@ SPDX-License-Identifier: Apache-2.0
 
             <mdm-meql-output [query]="cohortQuery"></mdm-meql-output>
           </div>
-          <div class="mdm-my-request__query--description">
+          <div class="mdm-my-request__query-description">
             <div
               *ngIf="this.cohortQuery.rules.length == 0"
               class="mdm-my-request__query-missing"
             >
               <p>No Cohort Query has been created for this request</p>
             </div>
-            <div class="mdm-my-request__query--description-buttons">
+            <div class="mdm-my-request__query-description-buttons">
               <a
                 *ngIf="this.showCohortCreate()"
                 [routerLink]="['queries/', cohortQueryType]"
@@ -105,7 +105,7 @@ SPDX-License-Identifier: Apache-2.0
             <mdm-meql-output [query]="dataQuery"></mdm-meql-output>
           </div>
 
-          <div class="mdm-my-request__query--description">
+          <div class="mdm-my-request__query-description">
             <div
               *ngIf="this.dataQuery.rules.length == 0"
               class="mdm-my-request__query-missing"
@@ -113,7 +113,7 @@ SPDX-License-Identifier: Apache-2.0
               <p>No Data Query has been created for this request</p>
             </div>
 
-            <div class="mdm-my-request__query--description-buttons">
+            <div class="mdm-my-request__query-description-buttons">
               <a *ngIf="this.showDataCreate()" [routerLink]="['queries/', dataQueryType]"
                 ><button mat-raised-button>Create Data Query</button></a
               >
