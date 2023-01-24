@@ -38,9 +38,6 @@ export class DashboardComponent implements OnInit {
   currentUserRequests: DataRequest[] = [];
   itemCardNumerOfLinesToShow: number = 6;
   currentCardsHeight: number = 1;
-  get currentCardsHeightString(): string {
-    return `${this.currentCardsHeight}rem`;
-  }
 
   constructor(
     private security: SecurityService,
@@ -48,6 +45,10 @@ export class DashboardComponent implements OnInit {
     private dataRequests: DataRequestsService,
     private toastr: ToastrService
   ) {}
+
+  get currentCardsHeightString(): string {
+    return `${this.currentCardsHeight}rem`;
+  }
 
   ngOnInit(): void {
     const user = this.security.getSignedInUser();
