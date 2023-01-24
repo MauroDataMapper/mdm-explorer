@@ -98,4 +98,18 @@ export class MdmPluginResearchResource extends MdmResource {
     const url = `${this.apiEndpoint}/explorer/templateFolder`;
     return this.simpleGet(url, query, options);
   }
+
+  /**
+   * `HTTP GET` - Get the root data model which contains all metadata.
+   *
+   * @param query Optional query parameters, if required.
+   * @param options Optional REST handler parameters, if required.
+   * @returns The result of the `GET` request:
+   *
+   * `200 OK` - will return a Data Model object.
+   */
+  rootDataModel(query?: QueryParameters, options?: RequestSettings) {
+    const url = `${this.apiEndpoint}/explorer/rootDataModel`;
+    return this.simpleGet(url, query, options);
+  }
 }
