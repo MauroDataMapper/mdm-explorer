@@ -46,21 +46,30 @@ export class MeqlPipe implements PipeTransform {
       quotes = '"';
     }
 
-    if (moment.isMoment(value)) {
-      return `${quotes}${this._date
-        .transform(value.toDate(), 'dd/MM/yyyy')
-        ?.toString()}${quotes}`;
+    if (typeof value === 'number') {
+      return value.toString();
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    else if (moment(value, true).isValid()) {
+      return this.formatDate(value, quotes);
     } else if (isAutocompleteSelectOptionArray(value)) {
       const optionsStr =
         value && value.length > 0 ? value.map((item) => item.name).join(', ') : 'null';
       return `${quotes}${optionsStr}${quotes}`;
+    } else if (value !== undefined && value !== null) {
+      return `${quotes}${value.toString()}${quotes}`;
     } else {
-      if (value !== undefined && value !== null) {
-        return `${quotes}${value.toString()}${quotes}`;
-      } else {
-        return 'null';
-      }
+      return 'null';
     }
+  }
+
+  private formatDate(value: any, quotes = '') {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const date = moment.isMoment(value) ? value : moment(value);
+
+    return `${quotes}${this._date
+      .transform(date.toDate(), 'dd/MM/yyyy')
+      ?.toString()}${quotes}`;
   }
 
   private parseQuery(
