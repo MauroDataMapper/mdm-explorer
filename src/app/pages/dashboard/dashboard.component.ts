@@ -36,8 +36,8 @@ import { SecurityService } from 'src/app/security/security.service';
 export class DashboardComponent implements OnInit {
   searchTerms = '';
   currentUserRequests: DataRequest[] = [];
-  itemCardNumerOfLinesToShow: number = 6;
-  currentCardsHeight: number = 1;
+  itemCardNumerOfLinesToShow = 6;
+  currentCardsHeight = 1;
 
   constructor(
     private security: SecurityService,
@@ -94,7 +94,7 @@ export class DashboardComponent implements OnInit {
     // baseNumberOfCharacters is pure empiric tesing driven
     // there is no way to know for sure, as different combination
     // of letters can ocuppy different space (except in monospace fonts)
-    const baseNumberOfCharacters: number = 30;
+    const baseNumberOfCharacters = 30;
     if (currentUserRequests.length < 1) {
       return;
     } else if (currentUserRequests.length < 2) {
