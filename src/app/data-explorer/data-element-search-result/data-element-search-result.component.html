@@ -46,6 +46,12 @@ SPDX-License-Identifier: Apache-2.0
       <div *ngIf="item.description" class="mdm-data-element-search-result__description">
         {{ item.description }}
       </div>
+      <div
+        *ngIf="!item.description"
+        class="mdm-data-element-search-result__no-description"
+      >
+        No description available
+      </div>
       <div class="mdm-data-element-search-result__footer">
         <span class="spacer"></span>
         <mdm-identifiable-data-icon

@@ -70,4 +70,8 @@ $search-result-border-radius: 4px;
     justify-content: space-between;
     border-radius: $search-result-border-radius;
   }
+
+  &__no-description {
+    font-style: italic;
+  }
 }
