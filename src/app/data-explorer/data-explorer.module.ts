@@ -40,6 +40,8 @@ import { QueryBuilderComponent } from '../data-explorer/querybuilder/querybuilde
 import { QueryBuilderModule } from 'angular2-query-builder';
 import { MeqlPipe } from './pipes/meql.pipe';
 import { MeqlOutputComponent } from './meql-output/meql-output.component';
+import { DataRequestRowComponent } from './data-request-row/data-request-row.component';
+import { DataQueryRowComponent } from './data-query-row/data-query-row.component';
 
 @NgModule({
   declarations: [
@@ -62,6 +64,8 @@ import { MeqlOutputComponent } from './meql-output/meql-output.component';
     QueryBuilderComponent,
     MeqlPipe,
     MeqlOutputComponent,
+    DataRequestRowComponent,
+    DataQueryRowComponent,
   ],
   imports: [CoreModule, SharedModule, QueryBuilderModule],
   exports: [
@@ -78,6 +82,8 @@ import { MeqlOutputComponent } from './meql-output/meql-output.component';
     CatalogueSearchFormComponent,
     QueryBuilderComponent,
     MeqlOutputComponent,
+    DataRequestRowComponent,
+    DataQueryRowComponent,
   ],
   providers: [
     {

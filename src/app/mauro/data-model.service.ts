@@ -228,6 +228,19 @@ export class DataModelService {
   }
 
   /**
+   * Moves a data model to a target folder.
+   *
+   * @param modelId The ID of the data model to move.
+   * @param targetFolderId The ID of the folder to move to.
+   * @returns An observable of {@link DataModelDetail} object just moved.
+   */
+  moveToFolder(modelId: Uuid, targetFolderId: Uuid): Observable<DataModelDetail> {
+    return this.endpoints.dataModel
+      .moveDataModelToFolder(modelId, targetFolderId, {})
+      .pipe(map((response: DataModelDetailResponse) => response.body));
+  }
+
+  /**
    * Copy a subset of a Data Model to another Data Model. Define which Data Elements to add/remove and the related
    * schema will also be copied to the target as well.
    *

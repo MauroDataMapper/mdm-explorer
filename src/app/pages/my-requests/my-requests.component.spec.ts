@@ -107,7 +107,6 @@ describe('MyRequestsComponent', () => {
     expect(harness.component.allRequests).toStrictEqual([]);
     expect(harness.component.filteredRequests).toStrictEqual([]);
     expect(harness.component.statusFilters).toStrictEqual([]);
-    expect(harness.component.requestElements).toStrictEqual([]);
   });
 
   describe('initialisation', () => {

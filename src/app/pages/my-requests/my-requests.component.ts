@@ -21,7 +21,6 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY, finalize, throwError } from 'rxjs';
 import {
-  DataElementSearchResult,
   DataRequest,
   DataRequestStatus,
 } from 'src/app/data-explorer/data-explorer.types';
@@ -37,9 +36,7 @@ export class MyRequestsComponent implements OnInit {
   allRequests: DataRequest[] = [];
   filteredRequests: DataRequest[] = [];
   statusFilters: DataRequestStatus[] = [];
-  requestElements: DataElementSearchResult[] = [];
   state: 'idle' | 'loading' = 'idle';
-  creatingNextVersion = false;
 
   constructor(
     private security: SecurityService,
@@ -66,10 +63,6 @@ export class MyRequestsComponent implements OnInit {
     }
 
     this.filterRequests();
-  }
-
-  refreshRequests() {
-    this.initialiseRequests();
   }
 
   initialiseRequests() {
@@ -104,6 +97,4 @@ export class MyRequestsComponent implements OnInit {
 
     this.state = 'idle';
   }
-
-
 }

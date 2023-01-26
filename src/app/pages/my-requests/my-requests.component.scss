@@ -18,78 +18,9 @@ SPDX-License-Identifier: Apache-2.0
 */
 @import "../../../styles/base/all";
 
-$header-padding: 1em 1.2em;
 $header-filter-margin: 0.5em 1em 0 0;
-$header-border: 1px solid $color-mauro-dark-green;
-$header-border-radius: 4px;
-
-$request-heading-background-color: $color-mauro-dark-green;
-$request-heading-color: $color-white;
-$request-header-padding: 0.5em 1.2em;
-
-$request-elements-max-height: auto;
-$row-footer-content-color: $color-mauro-light-gold;
 
 .mdm-my-requests {
-  border: $header-border;
-  border-radius: $header-border-radius;
-
-  &__request {
-    padding-bottom: 28px;
-  }
-
-  &__request-row__footer {
-    padding: 0.75em 1.2em;
-    background-color: $row-footer-content-color;
-    button {
-      float: right;
-      width: 160px;
-    }
-  }
-
-  &__header {
-    padding: $header-padding;
-    border-bottom: $header-border;
-    border-radius: $header-border-radius;
-
-    h1 {
-      margin: 0;
-    }
-  }
-
-  &__request-name {
-    display: inline-block;
-    width: 120px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    vertical-align: middle;
-  }
-
-  &__request-header {
-    padding: $request-header-padding;
-    border-radius: 4px;
-    color: $request-heading-color;
-    background-color: $request-heading-background-color;
-
-    &--name {
-      font-size: 16px;
-    }
-
-    &--info {
-      margin-top: 1.2em;
-    }
-
-    button {
-      width: 160px;
-    }
-  }
-
-  &__request-header-title {
-    display: flex;
-    justify-content: space-between;
-  }
-
   &__filter {
     display: inline-block;
     margin: $header-filter-margin;

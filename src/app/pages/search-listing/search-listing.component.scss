@@ -19,15 +19,9 @@ SPDX-License-Identifier: Apache-2.0
 
 @import "../../../styles/base/all";
 
-$back-link-color: $color-mauro-dark-green;
-
 $no-results-background-color: $color-mauro-light-gold;
 
 .mdm-search-listing {
-  &__back-link {
-    margin: 1em 0;
-  }
-
   &__search {
     text-align: center;
   }
@@ -40,14 +34,6 @@ $no-results-background-color: $color-mauro-light-gold;
     .vertically-aligned {
       display: flex;
       align-items: center;
-    }
-  }
-
-  &__back-link {
-    a {
-      text-decoration: none;
-      font-weight: 500;
-      color: $back-link-color;
     }
   }
 

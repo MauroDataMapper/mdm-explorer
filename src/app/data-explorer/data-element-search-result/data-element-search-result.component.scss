@@ -23,7 +23,7 @@ $search-result-heading-color: $color-white;
 $search-result-header-padding: 0.2em 1.2em;
 
 $search-result-content-color: $color-mauro-light-gold;
-$search-result-content-padding: 1.2em 1.2em;
+$search-result-content-padding: 0.2em 0;
 
 $search-result-border-radius: 4px;
 
@@ -36,7 +36,6 @@ $search-result-border-radius: 4px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: $search-result-header-padding;
     background-color: $search-result-heading-background-color;
     color: $search-result-heading-color;
     border-radius: $search-result-border-radius;
@@ -46,6 +45,10 @@ $search-result-border-radius: 4px;
       font-weight: 500;
       margin: 0 1em;
       vertical-align: middle;
+
+      a {
+        color: $search-result-heading-color;
+      }
     }
 
     &__breadcrumb {
@@ -54,12 +57,21 @@ $search-result-border-radius: 4px;
     }
   }
 
-  &__content,
+  &__content {
+    display: block;
+    width: 100%;
+  }
+
+  &__description,
   &__footer {
     padding: $search-result-content-padding;
     background-color: $search-result-content-color;
     display: flex;
     justify-content: space-between;
     border-radius: $search-result-border-radius;
+  }
+
+  &__no-description {
+    font-style: italic;
   }
 }

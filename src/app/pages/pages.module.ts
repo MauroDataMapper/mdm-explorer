@@ -45,6 +45,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { RequestQueryComponent } from './request-query/request-query.component';
 import { MyRequestDetailComponent } from './my-request-detail/my-request-detail.component';
+import { TemplateRequestsComponent } from './template-requests/template-requests.component';
+import { TemplateRequestDetailComponent } from './template-request-detail/template-request-detail.component';
 
 @NgModule({
   declarations: [
@@ -70,6 +72,8 @@ import { MyRequestDetailComponent } from './my-request-detail/my-request-detail.
     ChangePasswordComponent,
     RequestQueryComponent,
     MyRequestDetailComponent,
+    TemplateRequestsComponent,
+    TemplateRequestDetailComponent,
   ],
   imports: [
     CoreModule,

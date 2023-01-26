@@ -75,6 +75,9 @@ export interface MdmDataModelResourcesStub {
   copySubset: jest.MockedFunction<DataModelCopySubsetFn>;
   newBranchModelVersion: jest.MockedFunction<DataModelBranchVersionFn>;
   newForkModel: jest.MockedFunction<DataModelForkVersionFn>;
+  moveDataModelToFolder: jest.MockedFunction<
+    (modelId: Uuid, folderId: Uuid) => Observable<DataModelDetail>
+  >;
 }
 
 export const createDataModelStub = (): MdmDataModelResourcesStub => {
@@ -87,5 +90,6 @@ export const createDataModelStub = (): MdmDataModelResourcesStub => {
     copySubset: jest.fn() as jest.MockedFunction<DataModelCopySubsetFn>,
     newBranchModelVersion: jest.fn() as jest.MockedFunction<DataModelBranchVersionFn>,
     newForkModel: jest.fn() as jest.MockedFunction<DataModelForkVersionFn>,
+    moveDataModelToFolder: jest.fn(),
   };
 };

@@ -17,12 +17,11 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 -->
 <div *ngIf="source !== 'unknown'" class="container hero-top-spacer">
-  <div class="mdm-search-listing__back-link">
-    <a [routerLink]="backRouterLink" [queryParams]="backQueryParams">
-      <span class="fa-solid fa-arrow-left"></span>
-      {{ backLabel }}
-    </a>
-  </div>
+  <mdm-back-link
+    [routerLink]="backRouterLink"
+    [queryParams]="backQueryParams"
+    [label]="backLabel"
+  ></mdm-back-link>
   <div class="mdm-search-listing__search">
     <form role="form" name="search" (submit)="updateSearch()">
       <mat-form-field appearance="outline" class="mdm-search-listing__search-input">

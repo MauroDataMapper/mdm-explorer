@@ -24,6 +24,7 @@ import {
   DataElement,
   DataModel,
   DataType,
+  Folder,
   ProfileField,
   ProfileSearchResult,
   ProfileSearchResultField,
@@ -363,3 +364,7 @@ export interface QueryCondition {
 }
 
 export type QueryRule = QueryExpression | QueryCondition;
+
+export interface ForkDataRequestOptions {
+  targetFolder?: Folder;
+}

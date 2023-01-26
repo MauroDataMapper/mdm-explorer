@@ -27,6 +27,7 @@ import {
   DataModelFull,
   DataModelSubsetPayload,
   SearchQueryParameters,
+  Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
 import { DataElementDto } from '../data-explorer/data-explorer.types';
@@ -457,6 +458,30 @@ describe('DataModelService', () => {
 
       const expected$ = cold('--a|', { a: dataModel });
       const actual$ = service.addToFolder(folderId, payload);
+      expect(actual$).toBeObservable(expected$);
+    });
+  });
+
+  describe('move to folder', () => {
+    it('should return a data model', () => {
+      const folderId: Uuid = '1';
+      const dataModel: DataModelDetail = {
+        id: '2',
+        label: 'test',
+        domainType: CatalogueItemDomainType.DataModel,
+        availableActions: ['show'],
+        finalised: false,
+      };
+
+      endpointsStub.dataModel.moveDataModelToFolder.mockImplementationOnce((mId, fId) => {
+        expect(mId).toBe(dataModel.id);
+        expect(fId).toBe(folderId);
+        return cold('--a|', { a: { body: dataModel } });
+      });
+
+      const expected$ = cold('--a|', { a: dataModel });
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const actual$ = service.moveToFolder(dataModel.id!, folderId);
       expect(actual$).toBeObservable(expected$);
     });
   });

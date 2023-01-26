@@ -29,3 +29,8 @@ export interface IModelPage {
    */
   isDirty(): boolean;
 }
+
+/**
+ * Alias for Angular Router link information
+ */
+export type RouterLinkRef = any[] | string | null | undefined;

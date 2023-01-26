@@ -55,4 +55,10 @@ export class ResearchPluginService {
       .userFolder()
       .pipe(map((response: FolderDetailResponse) => response.body));
   }
+
+  templateFolder(): Observable<FolderDetail> {
+    return this.endpoints.pluginResearch
+      .templateFolder()
+      .pipe(map((response: FolderDetailResponse) => response.body));
+  }
 }
