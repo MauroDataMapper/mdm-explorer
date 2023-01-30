@@ -56,6 +56,12 @@ SPDX-License-Identifier: Apache-2.0
 
     <h2>Data elements</h2>
 
+    <p *ngIf="request.status === 'unsent'">
+      You can add more data elements to this request by
+      <a routerLink="/browse">browsing</a> or <a routerLink="/search">searching</a> our
+      catalogue.
+    </p>
+
     <div
       class="mdm-my-request__request-elements"
       *ngIf="sourceTargetIntersections.dataAccessRequests.length > 0"
