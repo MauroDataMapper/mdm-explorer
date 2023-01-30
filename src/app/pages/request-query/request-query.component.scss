@@ -65,13 +65,6 @@ $back-link-color: $color-mauro-dark-green;
 
     &-buttons {
       margin-left: auto;
-      button {
-        background-color: $color-white;
-        width: 160px;
-      }
-      button:disabled {
-        opacity: 0;
-      }
     }
   }
   &__query-editor {

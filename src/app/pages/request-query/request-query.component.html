@@ -42,9 +42,11 @@ SPDX-License-Identifier: Apache-2.0
             <button
               *ngIf="status === 'ready'"
               mat-raised-button
+              color="primary"
               [disabled]="!dirty"
               (click)="save()"
             >
+              <span class="fa-solid fa-paper-plane"></span>
               Save changes
             </button>
             <div class="mdm-request-query__header-name"></div>
