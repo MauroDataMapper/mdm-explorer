@@ -178,6 +178,23 @@ SPDX-License-Identifier: Apache-2.0
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
       </ng-container>
+      <!-- Time -->
+      <ng-container *queryInput="let rule; type: 'time'; let onChange = onChange">
+        <mat-form-field
+          appearance="outline"
+          class="query-builder-input mat-form-field-no-padding"
+        >
+          <input
+            matInput
+            [matTimepicker]="picker"
+            [(ngModel)]="rule.value"
+            (ngModelChange)="onChange()"
+          />
+          <mat-timepicker-toggle matSuffix [for]="picker"></mat-timepicker-toggle>
+          <mat-timepicker #picker></mat-timepicker >
+        </mat-form-field>
+      </ng-container>
+
       <!-- Multiselect -->
       <ng-container
         *queryInput="
