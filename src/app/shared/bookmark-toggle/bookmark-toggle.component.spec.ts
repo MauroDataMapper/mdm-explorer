@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { MatTooltip } from '@angular/material/tooltip';
-import { MockComponent } from 'ng-mocks';
+import { MockDirective } from 'ng-mocks';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
@@ -33,7 +33,7 @@ describe('BookmarkToggleComponent', () => {
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(BookmarkToggleComponent, {
-      declarations: [MockComponent(MatTooltip)],
+      declarations: [MockDirective(MatTooltip)],
     });
   });
 

@@ -19,7 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 import { SimpleChange } from '@angular/core';
 import { MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
 import { ProfileField } from '@maurodatamapper/mdm-resources';
-import { MockComponent } from 'ng-mocks';
+import { MockComponent, MockDirective } from 'ng-mocks';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
@@ -59,8 +59,8 @@ describe('CatalogueSearchFormComponent', () => {
     harness = await setupTestModuleForComponent(CatalogueSearchFormComponent, {
       declarations: [
         MockComponent(MatFormField),
-        MockComponent(MatLabel),
-        MockComponent(MatHint),
+        MockDirective(MatLabel),
+        MockDirective(MatHint),
       ],
     });
   });

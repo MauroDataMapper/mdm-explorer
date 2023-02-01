@@ -25,7 +25,7 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatFormFieldAppearance } from '@angular/material/form-field';
 import { PublicOpenIdConnectProvider } from '@maurodatamapper/mdm-resources';
 import { defaultEmailPattern } from 'src/app/core/core.types';
@@ -58,7 +58,7 @@ export class SignInFormComponent implements OnInit, OnChanges {
 
   @Output() openIdConnectClicked = new EventEmitter<PublicOpenIdConnectProvider>();
 
-  signInForm!: FormGroup;
+  signInForm!: UntypedFormGroup;
 
   get userName() {
     return this.signInForm.get('userName');
@@ -84,12 +84,12 @@ export class SignInFormComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this.signInForm = new FormGroup({
-      userName: new FormControl('', [
+    this.signInForm = new UntypedFormGroup({
+      userName: new UntypedFormControl('', [
         Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
         Validators.pattern(this.emailPattern ?? defaultEmailPattern),
       ]),
-      password: new FormControl('', [
+      password: new UntypedFormControl('', [
         Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
       ]),
     });

@@ -35,7 +35,7 @@ import {
 } from '@angular/core';
 import {
   ControlValueAccessor,
-  FormControl,
+  UntypedFormControl,
   FormGroupDirective,
   NgControl,
   NgForm,
@@ -302,7 +302,7 @@ export class AutocompleteSelectComponent
    */
   @Output() searchChange = new EventEmitter<string | undefined>();
 
-  searchCtrl = new FormControl();
+  searchCtrl = new UntypedFormControl();
   focused = false;
   controlType?: string | undefined = 'mdm-autocomplete-select';
 

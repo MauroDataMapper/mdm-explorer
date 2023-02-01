@@ -25,7 +25,7 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatFormFieldAppearance } from '@angular/material/form-field';
 import { defaultEmailPattern } from 'src/app/core/core.types';
 import { PluginResearchContactPayload } from 'src/app/mauro/plugins/plugin-research.resource';
@@ -48,7 +48,7 @@ export class ContactFormComponent implements OnInit, OnChanges {
 
   @Output() submitClicked = new EventEmitter<PluginResearchContactPayload>();
 
-  contactForm!: FormGroup;
+  contactForm!: UntypedFormGroup;
 
   get firstName() {
     return this.contactForm.get('firstName');
@@ -75,22 +75,22 @@ export class ContactFormComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this.contactForm = new FormGroup({
-      firstName: new FormControl(this.data?.firstName ?? '', [
+    this.contactForm = new UntypedFormGroup({
+      firstName: new UntypedFormControl(this.data?.firstName ?? '', [
         Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
       ]),
-      lastName: new FormControl(this.data?.lastName ?? '', [
+      lastName: new UntypedFormControl(this.data?.lastName ?? '', [
         Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
       ]),
-      organisation: new FormControl(this.data?.organisation ?? '', []),
-      email: new FormControl(this.data?.emailAddress ?? '', [
+      organisation: new UntypedFormControl(this.data?.organisation ?? '', []),
+      email: new UntypedFormControl(this.data?.emailAddress ?? '', [
         Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
         Validators.pattern(this.emailPattern ?? defaultEmailPattern),
       ]),
-      subject: new FormControl(this.data?.subject ?? '', [
+      subject: new UntypedFormControl(this.data?.subject ?? '', [
         Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
       ]),
-      message: new FormControl(this.data?.message ?? '', [
+      message: new UntypedFormControl(this.data?.message ?? '', [
         Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
         Validators.maxLength(1000),
       ]),
