@@ -18,6 +18,9 @@ SPDX-License-Identifier: Apache-2.0
 */
 import {
   CatalogueItemDomainType,
+  FilterQueryParameters,
+  MdmIndexBody,
+  Term,
   TerminologyDetail,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
@@ -27,10 +30,18 @@ export interface TerminologyServiceStub {
   getModel: jest.MockedFunction<
     (id: Uuid, domainType?: CatalogueItemDomainType) => Observable<TerminologyDetail>
   >;
+  listTerms: jest.MockedFunction<
+    (
+      id: Uuid,
+      domainType?: CatalogueItemDomainType,
+      query?: FilterQueryParameters
+    ) => Observable<MdmIndexBody<Term>>
+  >;
 }
 
 export const createTerminologyServiceStub = (): TerminologyServiceStub => {
   return {
     getModel: jest.fn(),
+    listTerms: jest.fn(),
   };
 };
