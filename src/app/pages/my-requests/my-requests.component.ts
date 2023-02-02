@@ -25,6 +25,7 @@ import {
   DataRequestStatus,
 } from 'src/app/data-explorer/data-explorer.types';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { SortService } from 'src/app/mauro/sort.service';
 import { SecurityService } from 'src/app/security/security.service';
 
 @Component({
@@ -41,7 +42,8 @@ export class MyRequestsComponent implements OnInit {
   constructor(
     private security: SecurityService,
     private dataRequests: DataRequestsService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private sortService: SortService
   ) {}
 
   get hasMultipleRequestStatus() {
@@ -68,7 +70,9 @@ export class MyRequestsComponent implements OnInit {
   initialiseRequests() {
     this.state = 'loading';
     this.getUserRequests().subscribe((requests) => {
-      this.allRequests = requests;
+      this.allRequests = requests.sort((a, b) =>
+        this.sortService.ascString(a.label, b.label)
+      );
       this.filterRequests();
     });
   }

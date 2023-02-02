@@ -16,26 +16,64 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import {
   CreateRequestEvent,
   RequestElementAddDeleteEvent,
 } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
 import { DataElementSearchResultComponent } from '../data-element-search-result/data-element-search-result.component';
-import { DataElementDeleteEvent } from '../data-explorer.types';
+import {
+  SelectionChange,
+  DataElementSearchResult,
+  DataItemDeleteEvent,
+} from '../data-explorer.types';
 
 @Component({
   selector: 'mdm-data-element-row',
   templateUrl: './data-element-row.component.html',
   styleUrls: ['./data-element-row.component.scss'],
 })
-export class DataElementRowComponent extends DataElementSearchResultComponent {
+export class DataElementRowComponent
+  extends DataElementSearchResultComponent
+  implements OnInit, OnChanges
+{
   @Input() suppressViewRequestsDialogButton = false;
   @Input() canDelete = true;
+  @Input() nestedPadding = false;
+  @Input() classSelected?: SelectionChange;
 
-  @Output() delete = new EventEmitter<DataElementDeleteEvent>();
+  @Output() deleteItemEvent = new EventEmitter<DataItemDeleteEvent>();
   @Output() requestAddDelete = new EventEmitter<RequestElementAddDeleteEvent>();
   @Output() requestCreated = new EventEmitter<CreateRequestEvent>();
+  @Output() setRemoveSelectedButtonDisabledEvent = new EventEmitter();
+
+  padding = 'default';
+  itemAsArray: DataElementSearchResult[] = [] as DataElementSearchResult[];
+
+  override ngOnInit(): void {
+    this.padding = this.nestedPadding ? 'nested' : 'default';
+    if (this.item) {
+      this.itemAsArray.push(this.item);
+    }
+    super.ngOnInit();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.classSelected) {
+      if (this.item && this.classSelected?.changedBy?.instigator === 'parent') {
+        this.item.isSelected = this.classSelected.isSelected;
+        this.setRemoveSelectedButtonDisabledEvent.emit();
+      }
+    }
+  }
 
   handleRequestAddDelete(event: RequestElementAddDeleteEvent) {
     this.requestAddDelete.emit(event);
@@ -47,7 +85,7 @@ export class DataElementRowComponent extends DataElementSearchResultComponent {
 
   removeElement() {
     if (this.item) {
-      this.delete.emit({ item: this.item });
+      this.deleteItemEvent.emit({ dataElement: this.item });
     }
   }
 }

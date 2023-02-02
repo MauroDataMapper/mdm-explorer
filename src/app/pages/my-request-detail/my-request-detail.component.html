@@ -55,41 +55,46 @@ SPDX-License-Identifier: Apache-2.0
     ></mdm-data-query-row>
 
     <h2>Data elements</h2>
-
     <p *ngIf="request.status === 'unsent'">
       You can add more data elements to this request by
       <a routerLink="/browse">browsing</a> or <a routerLink="/search">searching</a> our
       catalogue.
     </p>
 
+    <div class="mdm-my-request__request-elements-footer">
+      <mat-checkbox (change)="onSelectAll($event)" [checked]="selectAllElements"
+        >Select all</mat-checkbox
+      >
+      <button
+        class="ms-4"
+        mat-raised-button
+        color="primary"
+        [disabled]="removeSelectedButtonDisabled"
+        (click)="removeSelected()"
+      >
+        Remove selected ...
+      </button>
+    </div>
+
     <div
       class="mdm-my-request__request-elements"
       *ngIf="sourceTargetIntersections.dataAccessRequests.length > 0"
     >
-      <mdm-data-element-row
-        *ngFor="let element of requestElements"
-        [item]="element"
+      <mdm-data-schema-row
+        *ngFor="let dataSchema of dataSchemas"
+        [dataSchema]="dataSchema"
         [canDelete]="request.status === 'unsent'"
-        (delete)="removeItem($event)"
-        [sourceTargetIntersections]="sourceTargetIntersections"
+        (deleteItemEvent)="removeItem($event)"
         [suppressViewRequestsDialogButton]="true"
         (requestAddDelete)="handlePossibleSelfDelete($event)"
-        (checked)="onSelectElement($event)"
+        [requestName]="request.label"
+        [requestId]="request.id ?? ''"
+        [sourceTargetIntersections]="sourceTargetIntersections"
+        [allSelected]="allSelected"
+        (schemaCheckedEvent)="onSelectSchema()"
+        (setRemoveSelectedButtonDisabledEvent)="handleSetRemoveSelectedButtonDisable()"
       >
-      </mdm-data-element-row>
-
-      <div class="mdm-my-request__request-elements-footer">
-        <mat-checkbox (change)="onSelectAll($event)">Select all</mat-checkbox>
-        <button
-          class="ms-4"
-          mat-raised-button
-          color="primary"
-          [disabled]="removeSelectedButtonDisabled"
-          (click)="removeSelected()"
-        >
-          Remove selected ...
-        </button>
-      </div>
+      </mdm-data-schema-row>
     </div>
   </div>
 </div>

@@ -28,6 +28,8 @@ import { PAGINATION_CONFIG } from './data-explorer.types';
 import { RequestStatusChipComponent } from './request-status-chip/request-status-chip.component';
 import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { DataElementRowComponent } from './data-element-row/data-element-row.component';
+import { DataClassRowComponent } from './data-class-row/data-class-row.component';
+import { DataSchemaRowComponent } from './data-schema-row/data-schema-row.component';
 import { CreateRequestDialogComponent } from './create-request-dialog/create-request-dialog.component';
 import { RequestCreatedDialogComponent } from './request-created-dialog/request-created-dialog.component';
 import { RequestUpdatedDialogComponent } from './request-updated-dialog/request-updated-dialog.component';
@@ -47,6 +49,8 @@ import { DataQueryRowComponent } from './data-query-row/data-query-row.component
   declarations: [
     DataElementSearchResultComponent,
     DataElementRowComponent,
+    DataClassRowComponent,
+    DataSchemaRowComponent,
     RequestStatusChipComponent,
     PaginationComponent,
     SortByComponent,
@@ -71,6 +75,8 @@ import { DataQueryRowComponent } from './data-query-row/data-query-row.component
   exports: [
     DataElementSearchResultComponent,
     DataElementRowComponent,
+    DataClassRowComponent,
+    DataSchemaRowComponent,
     PaginationComponent,
     SortByComponent,
     ContactFormComponent,

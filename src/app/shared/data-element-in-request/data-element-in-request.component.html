@@ -17,9 +17,14 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 -->
 <ng-container>
-  <button #matMenuTrigger mat-raised-button color="primary" [matMenuTriggerFor]="menu">
-    {{ caption }}
-  </button>
+  <button
+    #matMenuTrigger
+    mat-raised-button
+    color="primary"
+    [matMenuTriggerFor]="menu"
+    class="fa-solid fa-add"
+    title="{{ caption }}"
+  ></button>
   <ng-container *ngIf="!suppressViewRequestsDialogButton">
     <span
       *ngIf="elementLinkedToRequest"

@@ -154,7 +154,7 @@ export class DataModelService {
    *
    * @param id The identifiers required to locate the Data Class.
    * @param params Optional parameters to control the resulting list
-   * @returns An observable of {@link DataElement} objects, including the total number found.
+   * @returns An observable of {@link DataElementDto} objects, including the total number found.
    */
   getDataElements(
     id: DataClassIdentifier,
@@ -336,6 +336,18 @@ export class DataModelService {
       dataElement.dataClass,
       dataElement.id
     );
+  }
+
+  deleteDataClass(dataClass: DataClass): any {
+    return this.endpoints.dataClass.removeChildDataClass(
+      dataClass.model ?? '',
+      dataClass.parentDataClass ?? '',
+      dataClass.id ?? ''
+    );
+  }
+
+  deleteDataSchema(dataSchema: DataClass): any {
+    return this.endpoints.dataClass.remove(dataSchema.model ?? '', dataSchema.id ?? '');
   }
 
   /**

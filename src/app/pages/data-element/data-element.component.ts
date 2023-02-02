@@ -54,7 +54,7 @@ export class DataElementComponent implements OnInit {
   dataElement?: DataElementDetail;
 
   // A workaround
-  dataElementSearchResult?: DataElementSearchResult;
+  dataElementSearchResult: DataElementSearchResult[] = [];
 
   researchProfile?: Profile;
   identifiableData?: string;
@@ -100,7 +100,8 @@ export class DataElementComponent implements OnInit {
         ([dataElementDetail, isBookmarked, profile, sourceTargetIntersections]) => {
           this.dataElement = dataElementDetail;
           this.isBookmarked = isBookmarked;
-          this.dataElementSearchResult = {
+          this.dataElementSearchResult = [];
+          this.dataElementSearchResult.push({
             id: dataElementDetail.id ?? '',
             dataClass: dataElementDetail.dataClass ?? '',
             model: dataElementDetail.model ?? '',
@@ -109,7 +110,7 @@ export class DataElementComponent implements OnInit {
             breadcrumbs: dataElementDetail.breadcrumbs,
             isBookmarked,
             isSelected: false,
-          };
+          });
           this.researchProfile = profile;
           this.sourceTargetIntersections = sourceTargetIntersections;
 

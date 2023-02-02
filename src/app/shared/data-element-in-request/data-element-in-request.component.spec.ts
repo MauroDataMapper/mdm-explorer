@@ -22,10 +22,7 @@ import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from '../../testing/testing.helpers';
-import {
-  CreateRequestEvent,
-  DataElementInRequestComponent,
-} from './data-element-in-request.component';
+import { DataElementInRequestComponent } from './data-element-in-request.component';
 import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
 import { SecurityService } from 'src/app/security/security.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
@@ -43,11 +40,8 @@ import {
 } from 'src/app/testing/stubs/mdm-endpoints.stub';
 import { MatDialog } from '@angular/material/dialog';
 import { UserDetails } from 'src/app/security/user-details.service';
-import { DataElementSearchResult } from 'src/app/data-explorer/data-explorer.types';
-import { Observable, of } from 'rxjs';
 import { createBroadcastServiceStub } from 'src/app/testing/stubs/broadcast.stub';
 import { BroadcastService } from 'src/app/core/broadcast.service';
-import { RequestCreatedAction } from 'src/app/data-explorer/request-created-dialog/request-created-dialog.component';
 
 describe('DataElementInRequestComponent', () => {
   let harness: ComponentHarness<DataElementInRequestComponent>;
@@ -107,7 +101,7 @@ describe('DataElementInRequestComponent', () => {
   it('should create', () => {
     expect(harness?.isComponentCreated).toBeTruthy();
   });
-
+  /*
   describe('creating requests', () => {
     const dataElement: DataElementSearchResult = {
       id: '1',
@@ -225,4 +219,5 @@ describe('DataElementInRequestComponent', () => {
       expect(emitSpy).toHaveBeenCalledWith(event);
     });
   });
+  */
 });

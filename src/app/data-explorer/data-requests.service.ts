@@ -18,6 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
 import {
+  DataClass,
   DataModel,
   DataModelCreatePayload,
   DataModelDetail,
@@ -56,6 +57,7 @@ import {
   dataRequestQueryLanguage,
   DataRequestQueryPayload,
   DataRequestQueryType,
+  DataSchema,
   ForkDataRequestOptions,
   mapToDataRequest,
   QueryExpression,
@@ -260,6 +262,110 @@ export class DataRequestsService {
       }),
       map((dataModel) => {
         return mapToDataRequest(dataModel);
+      })
+    );
+  }
+
+  /**
+   * Deletes multiple data elements from a data request, calling the delete endpoint once
+   * for each element. Using concatMap sidestep backend exceptions
+   *
+   * @param items: The data elements to be removed
+   *
+   * @returns: Observable of DataElementMultipleOperationResult
+   */
+  deleteDataClassMultiple(
+    dataClasses: DataClass[]
+  ): Observable<DataElementMultipleOperationResult> {
+    return of(dataClasses).pipe(
+      switchMap((dataClassArray: DataClass[]) => from(dataClassArray)),
+      filter((dataClass) => dataClass !== null),
+      concatMap((dataClass: DataClass) => {
+        return this.deleteDataClass(dataClass);
+      }),
+      toArray(),
+      switchMap((results: DataElementOperationResult[]) => {
+        const successes: DataElementOperationResult[] = [];
+        const failures: DataElementOperationResult[] = [];
+        results.forEach((result: DataElementOperationResult) => {
+          const destination = result.success ? successes : failures;
+          destination.push(result);
+        });
+        return of({ successes, failures });
+      })
+    );
+  }
+
+  /**
+   * Deletes a data class from a data request
+   *
+   * @param dataClass: The data class to be removed
+   *
+   * @returns: Observable of DataElementOperationResult
+   */
+  deleteDataClass(dataClass: DataClass): Observable<DataElementOperationResult> {
+    return this.dataModels.deleteDataClass(dataClass).pipe(
+      map((response: HttpResponse<any>) => {
+        if (response.status === 200 || response.status === 204) {
+          return { success: true, message: 'OK', dataClass };
+        } else {
+          return { success: false, message: response.body, dataClass };
+        }
+      }),
+      catchError((response: HttpErrorResponse) => {
+        return of({ success: false, message: response.message, dataClass });
+      })
+    );
+  }
+
+  /**
+   * Deletes multiple data elements from a data request, calling the delete endpoint once
+   * for each element. Using concatMap sidestep backend exceptions
+   *
+   * @param items: The data elements to be removed
+   *
+   * @returns: Observable of DataElementMultipleOperationResult
+   */
+  deleteDataSchemaMultiple(
+    dataSchemas: DataSchema[]
+  ): Observable<DataElementMultipleOperationResult> {
+    return of(dataSchemas).pipe(
+      switchMap((dataSchemaArray: DataSchema[]) => from(dataSchemaArray)),
+      filter((dataSchema) => dataSchema !== null),
+      concatMap((dataSchema: DataSchema) => {
+        return this.deleteDataSchema(dataSchema.schema);
+      }),
+      toArray(),
+      switchMap((results: DataElementOperationResult[]) => {
+        const successes: DataElementOperationResult[] = [];
+        const failures: DataElementOperationResult[] = [];
+        results.forEach((result: DataElementOperationResult) => {
+          const destination = result.success ? successes : failures;
+          destination.push(result);
+        });
+        return of({ successes, failures });
+      })
+    );
+  }
+
+  /**
+   * Deletes a data class from a data request
+   *
+   * @param dataClass: The data class to be removed
+   *
+   * @returns: Observable of DataElementOperationResult
+   */
+  deleteDataSchema(dataSchema: DataClass): Observable<DataElementOperationResult> {
+    return this.dataModels.deleteDataSchema(dataSchema).pipe(
+      map((response: HttpResponse<any>) => {
+        if (response.status === 200 || response.status === 204) {
+          return { success: true, message: 'OK', dataSchema };
+        } else {
+          return { success: false, message: response.body, dataSchema };
+        }
+      }),
+      catchError((response: HttpErrorResponse) => {
+        return of({ success: false, message: response.message, dataSchema });
       })
     );
   }
