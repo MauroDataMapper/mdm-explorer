@@ -112,3 +112,17 @@ Once happy with the collection of data elements gathered, the user will be able 
 At this point, the Mauro Data Explorer does not handle the submitted request anymore, the request for data access now falls under the control/responsibility of the hosting organisation.
 
 It is possible for a user to create a new version of a previously submitted request, using the same [versioning](https://maurodatamapper.github.io/user-guides/branch-version-fork/branch-version-fork/) mechanisms that all data models have. This will create a new draft version which can be modified again before being submitted (finalised) a second time.
+
+# Template Requests
+
+Instead of creating User Requests from scratch, it is possible to base a request off of a _template_. This is a pre-made request that is finalised and can be forked to make a copy from.
+
+## Templates Folder
+
+The `mdm-plugin-explorer` will automatically:
+
+1. Bootstrap a folder in Mauro called "Mauro Explorer Templates"
+2. Secure this folder to only be read by the "Explorer Readers" user group.
+3. Install the API property `explorer.config.root_-_template_folder` pointing to this folder.
+
+This will be the root folder to store any finalised template requests. The Mauro Data Explorer `/templates` page route will list all available templates and allow the user to inspect them and copy from them. Copying involves forking the Data Model request to build the copy, which is then automatically moved to the current user's personal request folder.

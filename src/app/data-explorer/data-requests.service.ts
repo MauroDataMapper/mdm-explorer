@@ -56,6 +56,7 @@ import {
   dataRequestQueryLanguage,
   DataRequestQueryPayload,
   DataRequestQueryType,
+  ForkDataRequestOptions,
   mapToDataRequest,
   QueryExpression,
 } from './data-explorer.types';
@@ -68,6 +69,7 @@ import { ToastrService } from 'ngx-toastr';
 import { BroadcastService } from '../core/broadcast.service';
 import { DialogService } from './dialog.service';
 import { RulesService } from '../mauro/rules.service';
+import { ResearchPluginService } from '../mauro/research-plugin.service';
 
 /**
  * A collection data access requests and their intersections with target models.
@@ -90,7 +92,8 @@ export class DataRequestsService {
     private toastr: ToastrService,
     private broadcast: BroadcastService,
     private dialogs: DialogService,
-    private rules: RulesService
+    private rules: RulesService,
+    private researchPlugin: ResearchPluginService
   ) {}
 
   /**
@@ -100,15 +103,7 @@ export class DataRequestsService {
    */
   getRequestsFolder(): Observable<FolderDetail> {
     const user = this.security.getSignedInUser();
-
-    if (user && user.requestFolder) {
-      return new Observable<FolderDetail>((subscriber) => {
-        subscriber.next(user.requestFolder);
-        subscriber.complete();
-      });
-    } else {
-      return EMPTY;
-    }
+    return user && user.requestFolder ? of(user.requestFolder) : EMPTY;
   }
 
   /**
@@ -132,6 +127,20 @@ export class DataRequestsService {
     return this.getRequestsFolder().pipe(
       switchMap((requestsFolder: FolderDetail): Observable<DataModel[]> => {
         return this.dataModels.listInFolder(requestsFolder.id!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
+      }),
+      map((dataModels) => dataModels.map(mapToDataRequest))
+    );
+  }
+
+  /**
+   * Lists all of available template data requests as {@link DataRequest} objects.
+   *
+   * @returns an observable containing an array of data requests
+   */
+  listTemplates(): Observable<DataRequest[]> {
+    return this.researchPlugin.templateFolder().pipe(
+      switchMap((folder: FolderDetail): Observable<DataModel[]> => {
+        return this.dataModels.listInFolder(folder.id!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
       }),
       map((dataModels) => dataModels.map(mapToDataRequest))
     );
@@ -404,6 +413,70 @@ export class DataRequestsService {
               suppressViewRequests: suppressViewRequestsDialogButton,
             })
             .afterClosed();
+        }),
+        finalize(() => this.broadcast.loading({ isLoading: false }))
+      );
+  }
+
+  /**
+   * Fork a finalised data request to create a new copy to base further work on. Use an interactive process to name the new request.
+   *
+   * @param request The original data request to fork from.
+   * @param options Options that may be passed to control the process.
+   * @returns An observable returning the new forked {@link DataRequest}. If the user cancelled the operation, then nothing further would happen.
+   */
+  forkWithDialogs(request: DataRequest, options?: ForkDataRequestOptions) {
+    if (
+      !request ||
+      !request.id ||
+      !request.modelVersion ||
+      request.status !== 'submitted'
+    ) {
+      return EMPTY;
+    }
+
+    return this.dialogs
+      .openCreateRequest({ showDescription: false })
+      .afterClosed()
+      .pipe(
+        filter((response) => !!response),
+        switchMap((response) => {
+          if (!response || !request) {
+            return EMPTY;
+          }
+
+          this.broadcast.loading({
+            isLoading: true,
+            caption: 'Copying to new request ...',
+          });
+
+          return this.dataModels.createFork(request, { label: response.name });
+        }),
+        catchError(() => {
+          this.toastr.error(
+            'There was a problem creating your request. Please try again or contact us for support.',
+            'Copying error'
+          );
+          return EMPTY;
+        }),
+        switchMap((nextDraftModel) => {
+          if (options?.targetFolder?.id && nextDraftModel.id) {
+            return this.dataModels.moveToFolder(
+              nextDraftModel.id,
+              options.targetFolder.id
+            );
+          }
+
+          return of(nextDraftModel);
+        }),
+        map((nextDraftModel) => mapToDataRequest(nextDraftModel)),
+        map((nextDataRequest) => {
+          this.broadcast.dispatch('data-request-added');
+          this.dialogs.openSuccess({
+            heading: 'Request copied',
+            message: `Your new request "${nextDataRequest.label}" has been successfully created. Modify this request by searching or browsing our catalogue before submitting again.`,
+          });
+          return nextDataRequest;
         }),
         finalize(() => this.broadcast.loading({ isLoading: false }))
       );

@@ -37,7 +37,6 @@ import {
   switchMap,
 } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
-import { KnownRouterPath } from 'src/app/core/state-router.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import {
   DataElementDeleteEvent,
@@ -64,6 +63,7 @@ import {
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { ResearchPluginService } from 'src/app/mauro/research-plugin.service';
 import { RequestElementAddDeleteEvent } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
+
 @Component({
   selector: 'mdm-my-request-detail',
   templateUrl: './my-request-detail.component.html',
@@ -75,8 +75,6 @@ export class MyRequestDetailComponent implements OnInit {
   state: 'idle' | 'loading' = 'idle';
   sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
   removeSelectedButtonDisabled = true;
-  backRouterLink: KnownRouterPath = '';
-  backLabel = '';
   cohortQueryType: DataRequestQueryType = 'cohort';
   cohortQuery: QueryCondition = {
     condition: 'and',
@@ -106,7 +104,6 @@ export class MyRequestDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.initialiseRequest();
-    this.setBackButtonProperties();
   }
 
   initialiseRequest(): void {
@@ -237,40 +234,7 @@ export class MyRequestDetailComponent implements OnInit {
       return;
     }
 
-    this.dialogs
-      .openCreateRequest({ showDescription: false })
-      .afterClosed()
-      .pipe(
-        filter((response) => !!response),
-        switchMap((response) => {
-          if (!response || !this.request) return EMPTY;
-
-          this.broadcast.loading({
-            isLoading: true,
-            caption: 'Creating new request ...',
-          });
-
-          return this.dataModels.createFork(this.request, { label: response.name });
-        }),
-        catchError(() => {
-          this.toastr.error(
-            'There was a problem creating your request. Please try again or contact us for support.',
-            'Creation error'
-          );
-          return EMPTY;
-        }),
-        switchMap((nextDraftModel) => {
-          return forkJoin([of(nextDraftModel)]);
-        }),
-        finalize(() => this.broadcast.loading({ isLoading: false }))
-      )
-      .subscribe(([nextDraftModel]) => {
-        const nextDataRequest = mapToDataRequest(nextDraftModel);
-        this.dialogs.openSuccess({
-          heading: 'Request created',
-          message: `Your new request "${nextDataRequest.label}" has been successfully created. Modify this request by searching or browsing our catalogue before submitting again.`,
-        });
-      });
+    this.dataRequests.forkWithDialogs(this.request).subscribe();
   }
 
   showCohortCreate() {
@@ -394,11 +358,6 @@ export class MyRequestDetailComponent implements OnInit {
       queryType,
       dataElementLabels
     );
-  }
-
-  private setBackButtonProperties() {
-    this.backRouterLink = '/requests';
-    this.backLabel = 'Back to My Requests';
   }
 
   private setRequest(request?: DataRequest) {

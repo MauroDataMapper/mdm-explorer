@@ -59,12 +59,16 @@ SPDX-License-Identifier: Apache-2.0
       <p>
         You will find your active projects here, which organises our data points you are
         interested in for your own research. You can then submit these to us to request
-        permission for our data. <a routerLink="/search">Search</a> or
-        <a routerLink="/browse">browse</a> our catalogue to identify further data points
-        of interest.
+        permission for our data.
+      </p>
+      <p>
+        <a routerLink="/search">Search</a> or <a routerLink="/browse">browse</a> our
+        catalogue to identify further data points of interest. You can also use our
+        <a routerLink="/templates">request templates</a>, curated to represent common
+        scenarios, as a starting point for your own data requests.
       </p>
       <p *ngIf="currentUserRequests.length === 0" class="text-center">
-        No active requests yet? Search the catalogue to start...
+        No active requests yet? Search the catalogue to start, or review our templates.
       </p>
       <div *ngIf="currentUserRequests.length > 0">
         <p-carousel [value]="currentUserRequests" [numVisible]="3" [numScroll]="3">

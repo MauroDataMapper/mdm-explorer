@@ -32,6 +32,7 @@ import {
   DataRequestQuery,
   DataRequestQueryPayload,
   DataRequestQueryType,
+  ForkDataRequestOptions,
 } from 'src/app/data-explorer/data-explorer.types';
 import { DataAccessRequestsSourceTargetIntersections } from 'src/app/data-explorer/data-requests.service';
 import { RequestCreatedAction } from 'src/app/data-explorer/request-created-dialog/request-created-dialog.component';
@@ -79,9 +80,13 @@ export type DeleteDataElementsFromQueryFn = (
 export interface DataRequestsServiceStub {
   get: jest.MockedFunction<(id: Uuid) => Observable<DataRequest>>;
   list: jest.MockedFunction<DataRequestsListFn>;
+  listTemplates: jest.MockedFunction<() => Observable<DataRequest[]>>;
   listDataElements: jest.MockedFunction<DataRequestsListElementsFn>;
   createFromDataElements: jest.MockedFunction<DataRequestsCreateFromDataElementsFn>;
   createWithDialogs: jest.MockedFunction<CreateFromDialogsFn>;
+  forkWithDialogs: jest.MockedFunction<
+    (request: DataRequest, options?: ForkDataRequestOptions) => Observable<DataRequest>
+  >;
   getRequestsIntersections: jest.MockedFunction<DataAccessRequestsSourceTargetIntersectionsFn>;
   deleteDataElementMultiple: jest.MockedFunction<DeleteDataElementMultipleFn>;
   updateRequestsFolder: jest.MockedFunction<DataRequestsUpdateRequestsFolderFn>;
@@ -100,10 +105,12 @@ export const createDataRequestsServiceStub = (): DataRequestsServiceStub => {
   return {
     get: jest.fn(),
     list: jest.fn() as jest.MockedFunction<DataRequestsListFn>,
+    listTemplates: jest.fn(),
     listDataElements: jest.fn() as jest.MockedFunction<DataRequestsListElementsFn>,
     createFromDataElements:
       jest.fn() as jest.MockedFunction<DataRequestsCreateFromDataElementsFn>,
     createWithDialogs: jest.fn() as jest.MockedFunction<CreateFromDialogsFn>,
+    forkWithDialogs: jest.fn(),
     getRequestsIntersections:
       jest.fn() as jest.MockedFunction<DataAccessRequestsSourceTargetIntersectionsFn>,
     deleteDataElementMultiple:

@@ -103,6 +103,11 @@ export class AppComponent implements OnInit, OnDestroy {
       onlySignedIn: true,
     },
     {
+      label: 'Templates',
+      routerLink: '/templates',
+      onlySignedIn: true,
+    },
+    {
       label: 'Help',
       routerLink: '/help',
       arrow: 'angle-down',

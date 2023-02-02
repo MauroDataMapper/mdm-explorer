@@ -10,6 +10,7 @@ The [mdm-plugin-explorer](https://github.com/MauroDataMapper-Plugins/mdm-plugin-
 
 - `explorer.config.root_data_model_path`
 - `explorer.config.root_request_folder`
+- `explorer.config.root_template_folder`
 - `explorer.config.profile_namespace`
 - `explorer.config.profile_service_name`
 

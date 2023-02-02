@@ -28,6 +28,7 @@ import {
   Uuid,
   Rule,
   RuleRepresentation,
+  Folder,
 } from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
 import { DataModelService } from '../mauro/data-model.service';
@@ -39,6 +40,7 @@ import {
   dataRequestQueryLanguage,
   DataRequestQueryPayload,
   DataRequestQueryType,
+  ForkDataRequestOptions,
   QueryCondition,
   QueryExpression,
 } from '../data-explorer/data-explorer.types';
@@ -229,6 +231,45 @@ describe('DataRequestsService', () => {
       const actual$ = service.list();
 
       // Assert
+      expect(actual$).toBeObservable(expected$);
+    });
+  });
+
+  describe('list templates', () => {
+    it('should return a list of template data requests', () => {
+      const templates: DataRequest[] = [
+        {
+          id: '1',
+          domainType: CatalogueItemDomainType.DataModel,
+          label: 'template 1',
+          status: 'unsent',
+        },
+        {
+          id: '2',
+          domainType: CatalogueItemDomainType.DataModel,
+          label: 'template 2',
+          status: 'unsent',
+        },
+      ];
+
+      const folder: FolderDetail = {
+        id: '123',
+        domainType: CatalogueItemDomainType.Folder,
+        label: 'folder',
+        availableActions: [],
+      };
+
+      researchPluginStub.templateFolder.mockImplementationOnce(() => {
+        return cold('-a|', { a: folder });
+      });
+
+      dataModelsStub.listInFolder.mockImplementationOnce((fId) => {
+        expect(fId).toBe(folder.id);
+        return cold('-a|', { a: templates });
+      });
+
+      const expected$ = cold('--a|', { a: templates });
+      const actual$ = service.listTemplates();
       expect(actual$).toBeObservable(expected$);
     });
   });
@@ -593,6 +634,135 @@ describe('DataRequestsService', () => {
       expect(actual$).toSatisfyOnFlush(() => {
         expect(loadingSpy).toHaveBeenCalledWith({ isLoading: false });
       });
+    });
+  });
+
+  describe('forkWithDialogs', () => {
+    const originalRequest: DataRequest = {
+      id: '123',
+      domainType: CatalogueItemDomainType.DataModel,
+      label: 'original request',
+      modelVersion: '1',
+      status: 'submitted',
+    };
+
+    const forkedRequest: DataRequest = {
+      id: '456',
+      domainType: CatalogueItemDomainType.DataModel,
+      label: 'forked request',
+      status: 'unsent',
+    };
+
+    it('should return nothing if no request is provided', () => {
+      const expected$ = cold('|');
+      const actual$ = service.forkWithDialogs(undefined as unknown as DataRequest);
+      expect(actual$).toBeObservable(expected$);
+    });
+
+    it('should return nothing if request has no id', () => {
+      const expected$ = cold('|');
+      const actual$ = service.forkWithDialogs({} as DataRequest);
+      expect(actual$).toBeObservable(expected$);
+    });
+
+    it('should return nothing if request has no model version', () => {
+      const expected$ = cold('|');
+      const actual$ = service.forkWithDialogs({ id: '123' } as DataRequest);
+      expect(actual$).toBeObservable(expected$);
+    });
+
+    it('should return nothing if request is not submitted', () => {
+      const expected$ = cold('|');
+      const actual$ = service.forkWithDialogs({
+        id: '123',
+        modelVersion: '1',
+        status: 'unsent',
+      } as unknown as DataRequest);
+      expect(actual$).toBeObservable(expected$);
+    });
+
+    it('should return nothing if create dialog is cancelled', () => {
+      dialogStub.usage.afterClosed.mockImplementationOnce(() => of(undefined));
+
+      const expected$ = cold('|');
+      const actual$ = service.forkWithDialogs(originalRequest);
+      expect(actual$).toBeObservable(expected$);
+    });
+
+    it('should fire a loading broadcast if dialog response retrieved', () => {
+      const loadingSpy = jest.spyOn(broadcastStub, 'loading');
+
+      const actual$ = service.forkWithDialogs(originalRequest);
+
+      expect(actual$).toSatisfyOnFlush(() => {
+        expect(loadingSpy).toHaveBeenCalledWith({
+          isLoading: true,
+          caption: 'Copying to new request ...',
+        });
+      });
+    });
+
+    it('should display an error if forking failed', () => {
+      const toastrSpy = jest.spyOn(toastrStub, 'error');
+
+      dataModelsStub.createFork.mockImplementationOnce(() =>
+        cold('#', null, new Error('fork fails'))
+      );
+
+      const expected$ = cold('|');
+      const actual$ = service.forkWithDialogs(originalRequest);
+
+      expect(actual$).toBeObservable(expected$);
+
+      expect(actual$).toSatisfyOnFlush(() => {
+        expect(toastrSpy).toHaveBeenCalled();
+      });
+    });
+
+    it('should return successful forked request', () => {
+      const loadingSpy = jest.spyOn(broadcastStub, 'loading');
+
+      dialogStub.usage.afterClosed.mockImplementationOnce(() => of('continue'));
+
+      dataModelsStub.createFork.mockImplementationOnce(() =>
+        cold('--a|', { a: forkedRequest })
+      );
+
+      const expected$ = cold('--a|', { a: forkedRequest });
+      const actual$ = service.forkWithDialogs(originalRequest);
+      expect(actual$).toBeObservable(expected$);
+
+      expect(actual$).toSatisfyOnFlush(() => {
+        expect(loadingSpy).toHaveBeenCalledWith({ isLoading: false });
+      });
+    });
+
+    it('should move forked request to another folder', () => {
+      const targetFolder: Folder = {
+        id: '789',
+        domainType: CatalogueItemDomainType.Folder,
+        label: 'folder',
+      };
+
+      const options: ForkDataRequestOptions = {
+        targetFolder,
+      };
+
+      dialogStub.usage.afterClosed.mockImplementationOnce(() => of('continue'));
+
+      dataModelsStub.createFork.mockImplementationOnce(() =>
+        cold('--a|', { a: forkedRequest })
+      );
+
+      dataModelsStub.moveToFolder.mockImplementationOnce((mId, fId) => {
+        expect(mId).toBe(forkedRequest.id);
+        expect(fId).toBe(targetFolder.id);
+        return cold('--a|', { a: forkedRequest });
+      });
+
+      const expected$ = cold('----a|', { a: forkedRequest });
+      const actual$ = service.forkWithDialogs(originalRequest, options);
+      expect(actual$).toBeObservable(expected$);
     });
   });
 

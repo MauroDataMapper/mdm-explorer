@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { MdmResponse, Uuid } from '@maurodatamapper/mdm-resources';
+import { FolderDetail, MdmResponse, Uuid } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
 import {
   PluginResearchContactPayload,
@@ -33,6 +33,7 @@ export interface MdmPluginResearchResourceStub {
   contact: jest.MockedFunction<PluginResearchContactFn>;
   submitRequest: jest.MockedFunction<PluginResearchSubmitRequestFn>;
   userFolder: jest.MockedFunction<PluginResearchUserFolderFn>;
+  templateFolder: jest.MockedFunction<() => Observable<FolderDetail>>;
 }
 
 export const createPluginResearchStub = (): MdmPluginResearchResourceStub => {
@@ -40,5 +41,6 @@ export const createPluginResearchStub = (): MdmPluginResearchResourceStub => {
     contact: jest.fn() as jest.MockedFunction<PluginResearchContactFn>,
     submitRequest: jest.fn() as jest.MockedFunction<PluginResearchSubmitRequestFn>,
     userFolder: jest.fn() as jest.MockedFunction<PluginResearchUserFolderFn>,
+    templateFolder: jest.fn(),
   };
 };

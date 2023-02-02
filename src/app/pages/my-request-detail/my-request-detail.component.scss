@@ -18,126 +18,11 @@ SPDX-License-Identifier: Apache-2.0
 */
 @import "../../../styles/base/all";
 
-$header-padding: 1em 1.2em;
-$header-filter-margin: 0.5em 1em 0 0;
-$header-border: 1px solid $color-mauro-dark-green;
-$header-border-radius: 4px;
-
-$request-heading-background-color: $color-mauro-dark-green;
-$request-heading-color: $color-white;
-$request-header-padding: 0.5em 1.2em;
-
 $request-elements-max-height: auto;
-$row-footer-content-color: $color-mauro-light-gold;
-$back-link-color: $color-mauro-dark-green;
 
 .mdm-my-request {
-  border: $header-border;
-  border-radius: $header-border-radius;
-
-  &__query {
-    padding: 0.5em 0.75em;
-    background-color: $row-footer-content-color;
-
-    &--row {
-      padding: 0.5em 0.75em;
-    }
-
-    &--container {
-      padding-bottom: 2px;
-    }
-
-    &--description {
-      padding: 0.5em 0.75em;
-      display: flex;
-      justify-content: space-between;
-
-      &-buttons {
-        margin-left: auto;
-
-        button {
-          width: 160px;
-        }
-      }
-    }
-  }
-
-  &__request-description {
-    padding: 0.5em 0.75em;
-    background-color: $row-footer-content-color;
-    display: flex;
-    justify-content: space-between;
-    &-container {
-      padding-bottom: 2px;
-    }
-  }
-
-  &__header {
-    padding: $header-padding;
-    border-bottom: $header-border;
-    border-radius: $header-border-radius;
-
-    h1 {
-      margin: 0;
-    }
-  }
-
-  &__filter {
-    display: inline-block;
-    margin: $header-filter-margin;
-
-    label {
-      margin-left: 0.5em;
-    }
-  }
-
   &__progress {
     margin: 0 0 1em 0;
-  }
-
-  &__list {
-    overflow-y: scroll;
-    max-height: $request-elements-max-height;
-
-    .mat-list-option {
-      height: auto;
-    }
-  }
-
-  &__request-name {
-    display: inline-block;
-    width: 120px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    vertical-align: middle;
-  }
-
-  &__request-header {
-    padding: $request-header-padding;
-    border-radius: 4px;
-    color: $request-heading-color;
-    background-color: $request-heading-background-color;
-
-    &--name {
-      margin-left: auto;
-      font-size: 16px;
-    }
-
-    &--info {
-      margin-top: 1.2em;
-    }
-
-    &--buttons {
-      button {
-        width: 160px;
-      }
-    }
-  }
-
-  &__request-header-title {
-    display: flex;
-    justify-content: space-between;
   }
 
   &__request-elements {
@@ -147,15 +32,5 @@ $back-link-color: $color-mauro-dark-green;
 
   &__request-elements-footer {
     padding: 0.75em 1.2em;
-  }
-
-  &__back-link {
-    margin: 1em 0;
-
-    a {
-      text-decoration: none;
-      font-weight: 500;
-      color: $back-link-color;
-    }
   }
 }
