@@ -50,7 +50,7 @@ export class QueryBuilderComponent implements OnInit {
   @Output() queryChange = new EventEmitter<QueryCondition>();
 
   operatorMap: { [key: string]: string[] } = {
-    /* eslint-disable-next-line */
+    /* eslint-disable */
     string: ['=', '!=', 'contains', 'like', 'startswith', 'endswith'],
     datetime: ['=', '!=', '>', '<', '=>', '=<'],
     date: ['=', '!=', '>', '<', '=>', '=<'],
@@ -58,6 +58,7 @@ export class QueryBuilderComponent implements OnInit {
     boolean: ['=', '!='],
     number: ['=', '!=', '>', '<', '=>', '=<'],
     terminology: ['in', 'not in'],
+    /* eslint-enable */
   };
 
   allowRuleset = true;
