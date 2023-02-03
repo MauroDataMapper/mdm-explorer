@@ -52,6 +52,11 @@ export class QueryBuilderComponent implements OnInit {
   operatorMap: { [key: string]: string[] } = {
     /* eslint-disable-next-line */
     string: ['=', '!=', 'contains', 'like', 'startswith', 'endswith'],
+    datetime: ['=', '!=', '>', '<', '=>', '=<'],
+    date: ['=', '!=', '>', '<', '=>', '=<'],
+    time: ['=', '>', '<', '=>', '=<'],
+    boolean: ['=', '!='],
+    number: ['=', '!=', '>', '<', '=>', '=<'],
     terminology: ['in', 'not in'],
   };
 
