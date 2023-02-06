@@ -64,8 +64,8 @@ export class QueryBuilderComponent implements OnInit {
 
   constructor(private terminology: TerminologyService) {}
 
-  get noValidFields(): boolean {
-    return Object.keys(this.config.fields).length === 0;
+  get hasFields(): boolean {
+    return Object.keys(this.config.fields).length > 0;
   }
 
   ngOnInit(): void {
