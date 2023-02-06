@@ -61,7 +61,10 @@ SPDX-License-Identifier: Apache-2.0
       catalogue.
     </p>
 
-    <div class="mdm-my-request__request-elements-footer">
+    <div
+      *ngIf="request.status === 'unsent'"
+      class="mdm-my-request__request-elements-selectall"
+    >
       <mat-checkbox (change)="onSelectAll($event)" [checked]="selectAllElements"
         >Select all</mat-checkbox
       >

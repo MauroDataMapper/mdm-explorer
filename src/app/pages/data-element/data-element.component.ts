@@ -100,17 +100,18 @@ export class DataElementComponent implements OnInit {
         ([dataElementDetail, isBookmarked, profile, sourceTargetIntersections]) => {
           this.dataElement = dataElementDetail;
           this.isBookmarked = isBookmarked;
-          this.dataElementSearchResult = [];
-          this.dataElementSearchResult.push({
-            id: dataElementDetail.id ?? '',
-            dataClass: dataElementDetail.dataClass ?? '',
-            model: dataElementDetail.model ?? '',
-            label: dataElementDetail.label,
-            dataType: dataElementDetail.dataType as DataType,
-            breadcrumbs: dataElementDetail.breadcrumbs,
-            isBookmarked,
-            isSelected: false,
-          });
+          this.dataElementSearchResult = [
+            {
+              id: dataElementDetail.id ?? '',
+              dataClass: dataElementDetail.dataClass ?? '',
+              model: dataElementDetail.model ?? '',
+              label: dataElementDetail.label,
+              dataType: dataElementDetail.dataType as DataType,
+              breadcrumbs: dataElementDetail.breadcrumbs,
+              isBookmarked,
+              isSelected: false,
+            },
+          ];
           this.researchProfile = profile;
           this.sourceTargetIntersections = sourceTargetIntersections;
 

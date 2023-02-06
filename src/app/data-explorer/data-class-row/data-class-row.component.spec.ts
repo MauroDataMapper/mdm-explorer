@@ -16,7 +16,6 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
 import {
   CatalogueItemDomainType,
@@ -64,31 +63,26 @@ describe('DataClassRowComponent', () => {
 
   it('should not raise a classCheckedEvent when checked but has no data class', () => {
     const emitSpy = jest.spyOn(harness.component.classCheckedEvent, 'emit');
-    const event = {} as MatCheckboxChange;
-    harness.component.classChecked(event);
+    harness.component.classChecked();
     expect(emitSpy).not.toHaveBeenCalled();
   });
 
-  it.each([true, false])(
-    'should raise a classCheckedEvent when has a data class and checked is %p',
-    (checked) => {
-      const emitSpy = jest.spyOn(harness.component.classCheckedEvent, 'emit');
-      const event = { checked } as MatCheckboxChange;
+  it('should raise a classCheckedEvent when has a data class is checked', () => {
+    const emitSpy = jest.spyOn(harness.component.classCheckedEvent, 'emit');
 
-      const dataClassWithElements: DataClassWithElements = {
-        dataClass: {
-          label: 'test',
-          domainType: CatalogueItemDomainType.DataClass,
-        },
-        dataElements: [],
-      };
+    const dataClassWithElements: DataClassWithElements = {
+      dataClass: {
+        label: 'test',
+        domainType: CatalogueItemDomainType.DataClass,
+      },
+      dataElements: [],
+    };
 
-      harness.component.dataClassWithElements = dataClassWithElements;
-      harness.component.classChecked(event);
+    harness.component.dataClassWithElements = dataClassWithElements;
+    harness.component.classChecked();
 
-      expect(emitSpy).toHaveBeenCalled();
-    }
-  );
+    expect(emitSpy).toHaveBeenCalled();
+  });
 
   /* This code should be restored when further tests are written.
 

@@ -39,7 +39,6 @@ import {
   switchMap,
 } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
-import { KnownRouterPath } from 'src/app/core/state-router.service';
 import {
   DataClassWithElements,
   DataElementMultipleOperationResult,
@@ -94,8 +93,6 @@ export class MyRequestDetailComponent implements OnInit {
   state: 'idle' | 'loading' = 'idle';
   sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
   removeSelectedButtonDisabled = true;
-  backRouterLink: KnownRouterPath = '';
-  backLabel = '';
   cohortQueryType: DataRequestQueryType = 'cohort';
   cohortQuery: QueryCondition = {
     condition: 'and',
@@ -133,7 +130,6 @@ export class MyRequestDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.initialiseRequest();
-    this.setBackButtonProperties();
   }
 
   initialiseRequest(): void {
@@ -235,50 +231,53 @@ export class MyRequestDetailComponent implements OnInit {
           heading: 'Request submitted',
           message: `Your request "${this.request.label}" has been successfully submitted. It will now be reviewed and you will be contacted shortly to discuss further steps.`,
         });
+
+        this.setRemoveSelectedButtonDisabled();
       });
   }
 
   removeItem(event: DataItemDeleteEvent) {
     if (!event.dataSchema) {
       this.toastr.error('Data schema undefined', 'Unable to delete items');
-    } else {
-      const userFacingText = this.getUserFacingText(event);
-
-      if (!userFacingText) {
-        this.toastr.error('Data schema undefined', 'User text not found');
-      } else {
-        this.okCancelItem(userFacingText)
-          .afterClosed()
-          .pipe(
-            switchMap((response: OkCancelDialogResponse | undefined) => {
-              return this.deleteItem(event, response, userFacingText);
-            }),
-            switchMap((result: DataElementOperationResult) => {
-              return this.deleteElementsFromQueries(event, result);
-            })
-          )
-          .subscribe(
-            ({
-              dataQuery,
-              cohortQuery,
-              result,
-            }: {
-              dataQuery: DataRequestQueryPayload;
-              cohortQuery: DataRequestQueryPayload;
-              result: DataElementOperationResult;
-            }) => {
-              this.refreshQueries(dataQuery, cohortQuery);
-
-              const message = result.success
-                ? `${userFacingText?.successMessage}`
-                : `${userFacingText?.failureMessage}${result.message}`;
-              this.processRemoveDataElementResponse(result.success, message);
-
-              this.broadcastService.loading({ isLoading: false });
-            }
-          );
-      }
+      return;
     }
+
+    const userFacingText = this.getUserFacingText(event);
+    if (!userFacingText) {
+      this.toastr.error('Data schema undefined', 'User text not found');
+      return;
+    }
+
+    this.okCancelItem(userFacingText)
+      .afterClosed()
+      .pipe(
+        switchMap((response: OkCancelDialogResponse | undefined) => {
+          return this.deleteItem(event, response, userFacingText);
+        }),
+        switchMap((result: DataElementOperationResult) => {
+          return this.deleteElementsFromQueries(event, result);
+        })
+      )
+      .subscribe(
+        ({
+          dataQuery,
+          cohortQuery,
+          result,
+        }: {
+          dataQuery: DataRequestQueryPayload;
+          cohortQuery: DataRequestQueryPayload;
+          result: DataElementOperationResult;
+        }) => {
+          this.refreshQueries(dataQuery, cohortQuery);
+
+          const message = result.success
+            ? `${userFacingText?.successMessage}`
+            : `${userFacingText?.failureMessage}${result.message}`;
+          this.processRemoveDataElementResponse(result.success, message);
+
+          this.broadcastService.loading({ isLoading: false });
+        }
+      );
   }
 
   // listens for external update to the request and refreshes if so
@@ -403,11 +402,6 @@ export class MyRequestDetailComponent implements OnInit {
   /**
    * Methods for general page management
    */
-  private setBackButtonProperties() {
-    this.backRouterLink = '/requests';
-    this.backLabel = 'Back to My Requests';
-  }
-
   private loadError() {
     this.toastr.error('There was a problem locating your request details.');
     return EMPTY;
@@ -450,7 +444,7 @@ export class MyRequestDetailComponent implements OnInit {
     dataSchemas: DataSchema[]
   ): Observable<DataAccessRequestsSourceTargetIntersections> {
     const dataElementIds: Uuid[] = this.dataSchemaService
-      .dataRequestElements(dataSchemas)
+      .getDataRequestElements(dataSchemas)
       .map((element) => element.id);
 
     return of(this.request).pipe(
@@ -481,8 +475,10 @@ export class MyRequestDetailComponent implements OnInit {
    * Disable the 'Remove Selected' button unless some elements are selected in the current request
    */
   private setRemoveSelectedButtonDisabled() {
-    const allElements = this.dataSchemaService.dataRequestElements(this.dataSchemas);
-    this.removeSelectedButtonDisabled = allElements.findIndex((x) => x.isSelected) === -1;
+    const allElements = this.dataSchemaService.getDataRequestElements(this.dataSchemas);
+    this.removeSelectedButtonDisabled =
+      this.request?.status === 'submitted' ||
+      allElements.findIndex((dataElement) => dataElement.isSelected) === -1;
     this.changeDetectorRef.detectChanges();
   }
 
@@ -536,13 +532,13 @@ export class MyRequestDetailComponent implements OnInit {
 
   private getSelectedItems(): DataElementSearchResult[] {
     return this.dataSchemaService
-      .dataRequestElements(this.dataSchemas)
+      .getDataRequestElements(this.dataSchemas)
       .filter((item) => item.isSelected);
   }
 
   private getSelectedClasses(): DataClass[] {
     return this.dataSchemaService
-      .dataRequestClasses(this.dataSchemas)
+      .getDataRequestClasses(this.dataSchemas)
       .filter(
         (dataClassWithElements) =>
           dataClassWithElements.dataElements.filter(
@@ -556,9 +552,9 @@ export class MyRequestDetailComponent implements OnInit {
     return this.dataSchemas.filter(
       (dataSchema) =>
         this.dataSchemaService
-          .dataSchemaElements(dataSchema)
+          .getDataSchemaElements(dataSchema)
           .filter((dataElement) => dataElement.isSelected).length ===
-        this.dataSchemaService.dataSchemaElements(dataSchema).length
+        this.dataSchemaService.getDataSchemaElements(dataSchema).length
     );
   }
 
@@ -715,7 +711,7 @@ export class MyRequestDetailComponent implements OnInit {
           dataSchemas.push(event.dataSchema);
         }
         return this.dataSchemaService
-          .dataRequestElements(dataSchemas)
+          .getDataRequestElements(dataSchemas)
           .map((element) => element.label);
       }
       case 'dataClass': {

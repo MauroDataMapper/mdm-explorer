@@ -33,7 +33,6 @@ import {
   DataItemDeleteEvent,
   DataRequestQueryType,
   DataSchema,
-  // RefreshRequestEvent,
   SelectionChange,
   SelectionChangedBy,
 } from '../data-explorer.types';
@@ -56,7 +55,6 @@ export class DataSchemaRowComponent implements OnInit, OnChanges {
 
   @Output() deleteItemEvent = new EventEmitter<DataItemDeleteEvent>();
   @Output() requestAddDelete = new EventEmitter<RequestElementAddDeleteEvent>();
-  // @Output() requestCreated = new EventEmitter<CreateRequestEvent>();
   @Output() schemaCheckedEvent = new EventEmitter();
   @Output() setRemoveSelectedButtonDisabledEvent = new EventEmitter();
 
@@ -78,10 +76,9 @@ export class DataSchemaRowComponent implements OnInit, OnChanges {
     };
   }
 
-  // Init, get the classes from the request. and list.
   ngOnInit(): void {
     if (this.dataSchema) {
-      this.schemaElements = this.dataSchemaService.dataSchemaElements(this.dataSchema);
+      this.schemaElements = this.dataSchemaService.getDataSchemaElements(this.dataSchema);
     }
   }
 
@@ -128,15 +125,9 @@ export class DataSchemaRowComponent implements OnInit, OnChanges {
     });
 
     this.schemaCheckedEvent.emit();
-    /*
-    this.schemaCheckedEvent.emit({
-      changedBy: { instigator: 'child' },
-      isSelected: this.dataSchema.schema.isSelected,
-    });
-    */
   }
 
-  onSelectClass(/* event: SelectionChange*/) {
+  onSelectClass() {
     if (this.dataSchema) {
       const selectedItemList = this.dataSchema.dataClasses.filter(
         (item) => item.dataClass.isSelected

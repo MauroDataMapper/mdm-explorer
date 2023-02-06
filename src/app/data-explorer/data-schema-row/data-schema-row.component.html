@@ -21,6 +21,7 @@ SPDX-License-Identifier: Apache-2.0
     <span class="mdm-data-schema-row__header-left-container">
       <div class="mdm-data-schema-row__header-title">
         <mat-checkbox
+          *ngIf="canDelete"
           class="mdm-data-schema-row__header-title-checkbox"
           [checked]="dataSchema.schema.isSelected"
           (change)="schemaChecked($event)"
@@ -35,6 +36,9 @@ SPDX-License-Identifier: Apache-2.0
         class="mdm-data-schema-row__header-button fa fa-trash-alt"
         color="primary"
         (click)="removeSchema()"
+        matTooltip="Remove from Request"
+        matTooltipClass="mdm-request-icon-tooltip"
+        aria-label="Button that removes the data schema from the request"
       ></button>
 
       <mdm-data-element-in-request
@@ -45,8 +49,7 @@ SPDX-License-Identifier: Apache-2.0
         [caption]="'Add to other requests'"
         [suppressViewRequestsDialogButton]="suppressViewRequestsDialogButton"
         (requestAddDelete)="handleRequestAddDelete($event)"
-      ></mdm-data-element-in-request
-      ><!--(createRequestClicked)="handleCreateRequest($event)"-->
+      ></mdm-data-element-in-request>
       <button
         mat-button
         class="mdm-data-schema-row__header-button-updown fa-solid"
@@ -55,7 +58,7 @@ SPDX-License-Identifier: Apache-2.0
       ></button>
     </span>
   </div>
-  <div [hidden]="!visible" class="mdm-my-request__request-elements" cCollapse>
+  <div [hidden]="!visible" class="mdm-my-request__request-elements">
     <mdm-data-class-row
       *ngFor="let dataClass of dataSchema.dataClasses"
       [dataClassWithElements]="dataClass"

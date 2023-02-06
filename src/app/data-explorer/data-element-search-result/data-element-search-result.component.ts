@@ -21,7 +21,6 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnInit,
   Output,
 } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
@@ -38,7 +37,7 @@ import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.se
   styleUrls: ['./data-element-search-result.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DataElementSearchResultComponent implements OnInit {
+export class DataElementSearchResultComponent {
   @Input() item?: DataElementSearchResult;
 
   @Input() showBreadcrumb = false;
@@ -52,19 +51,12 @@ export class DataElementSearchResultComponent implements OnInit {
   @Output() bookmark = new EventEmitter<DataElementBookmarkEvent>();
 
   bookmarked = false;
-  dataElementSearchResults: DataElementSearchResult[] = [];
 
   constructor() {
     this.sourceTargetIntersections = {
       dataAccessRequests: [],
       sourceTargetIntersections: [],
     };
-  }
-
-  ngOnInit(): void {
-    if (this.item) {
-      this.dataElementSearchResults.push(this.item);
-    }
   }
 
   itemChecked(event: MatCheckboxChange) {

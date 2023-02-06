@@ -30,7 +30,8 @@ $request-elements-max-height: auto;
     width: 100%;
   }
 
-  &__request-elements-footer {
+  &__request-elements-selectall {
+    text-indent: 9px;
     padding: 0.75em 1.2em;
   }
 }

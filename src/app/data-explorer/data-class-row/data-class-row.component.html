@@ -21,9 +21,10 @@ SPDX-License-Identifier: Apache-2.0
     <span class="mdm-data-class-row__header-left-container">
       <div class="mdm-data-class-row__header-title">
         <mat-checkbox
+          *ngIf="canDelete"
           class="mdm-data-class-row__header-title-checkbox"
           [checked]="dataClassWithElements?.dataClass?.isSelected"
-          (change)="classChecked($event)"
+          (change)="classChecked()"
         ></mat-checkbox>
         <h3>{{ dataClassWithElements?.dataClass?.label }}</h3>
       </div>
@@ -35,6 +36,9 @@ SPDX-License-Identifier: Apache-2.0
         class="mdm-data-class-row__header-button fa fa-trash-alt"
         color="primary"
         (click)="removeClass()"
+        matTooltip="Remove from Request"
+        matTooltipClass="mdm-request-icon-tooltip"
+        aria-label="Button that removes the data class from the request"
       ></button>
       <mdm-data-element-in-request
         class="mdm-data-class-row__header-button"

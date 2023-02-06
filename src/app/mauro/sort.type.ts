@@ -16,5 +16,12 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import 'jest-preset-angular/setup-jest'; // This allows jest tests to run in Visual Studio Code
-// import './jestGlobalMocks'; // browser mocks globally available for every test
+export class Sort {
+  static ascString(a: string, b: string): number {
+    return a > b ? 1 : b > a ? -1 : 0;
+  }
+
+  static descString(a: string, b: string): number {
+    return a > b ? -1 : b > a ? 1 : 0;
+  }
+}

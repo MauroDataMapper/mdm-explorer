@@ -24,6 +24,7 @@ SPDX-License-Identifier: Apache-2.0
     <span class="mdm-data-element-row__header-left-container">
       <div class="mdm-data-element-row__header-title">
         <mat-checkbox
+          *ngIf="canDelete"
           class="mdm-data-element-row__header-title-checkbox"
           [checked]="item.isSelected"
           (change)="itemChecked($event)"
@@ -49,11 +50,14 @@ SPDX-License-Identifier: Apache-2.0
         class="mdm-data-element-row__header-button fa fa-trash-alt"
         color="primary"
         (click)="removeElement()"
+        matTooltip="Remove from Request"
+        matTooltipClass="mdm-request-icon-tooltip"
+        aria-label="Button that removes the data element from the request"
       ></button>
       <mdm-data-element-in-request
         class="mdm-data-element-row__header-button"
         *ngIf="sourceTargetIntersections.dataAccessRequests.length > 0"
-        [dataElements]="itemAsArray"
+        [dataElements]="[item]"
         [sourceTargetIntersections]="sourceTargetIntersections"
         [caption]="'Add to other requests'"
         [suppressViewRequestsDialogButton]="suppressViewRequestsDialogButton"

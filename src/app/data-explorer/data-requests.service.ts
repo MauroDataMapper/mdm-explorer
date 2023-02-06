@@ -279,7 +279,7 @@ export class DataRequestsService {
   ): Observable<DataElementMultipleOperationResult> {
     return of(dataClasses).pipe(
       switchMap((dataClassArray: DataClass[]) => from(dataClassArray)),
-      filter((dataClass) => dataClass !== null),
+      filter((dataClass) => !!dataClass),
       concatMap((dataClass: DataClass) => {
         return this.deleteDataClass(dataClass);
       }),

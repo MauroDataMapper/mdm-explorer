@@ -23,7 +23,9 @@ SPDX-License-Identifier: Apache-2.0
     color="primary"
     [matMenuTriggerFor]="menu"
     class="fa-solid fa-add"
-    title="{{ caption }}"
+    matTooltip="{{ caption }}"
+    matTooltipClass="mdm-request-icon-tooltip"
+    aria-label="Button that displays a menu allowing you to copy the data item to other requests"
   ></button>
   <ng-container *ngIf="!suppressViewRequestsDialogButton">
     <span

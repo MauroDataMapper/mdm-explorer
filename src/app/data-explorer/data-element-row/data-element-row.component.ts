@@ -30,11 +30,7 @@ import {
   RequestElementAddDeleteEvent,
 } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
 import { DataElementSearchResultComponent } from '../data-element-search-result/data-element-search-result.component';
-import {
-  SelectionChange,
-  DataElementSearchResult,
-  DataItemDeleteEvent,
-} from '../data-explorer.types';
+import { SelectionChange, DataItemDeleteEvent } from '../data-explorer.types';
 
 @Component({
   selector: 'mdm-data-element-row',
@@ -56,14 +52,9 @@ export class DataElementRowComponent
   @Output() setRemoveSelectedButtonDisabledEvent = new EventEmitter();
 
   padding = 'default';
-  itemAsArray: DataElementSearchResult[] = [] as DataElementSearchResult[];
 
-  override ngOnInit(): void {
+  ngOnInit(): void {
     this.padding = this.nestedPadding ? 'nested' : 'default';
-    if (this.item) {
-      this.itemAsArray.push(this.item);
-    }
-    super.ngOnInit();
   }
 
   ngOnChanges(changes: SimpleChanges): void {

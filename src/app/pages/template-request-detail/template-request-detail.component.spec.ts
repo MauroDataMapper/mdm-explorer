@@ -19,18 +19,20 @@ SPDX-License-Identifier: Apache-2.0
 import { ActivatedRoute } from '@angular/router';
 import {
   CatalogueItemDomainType,
-  DataElement,
   FolderDetail,
+  MdmResourcesConfiguration,
 } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { of, throwError } from 'rxjs';
 import {
-  DataElementSearchResult,
   DataRequest,
   DataRequestQueryPayload,
+  DataSchema,
 } from 'src/app/data-explorer/data-explorer.types';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { DataSchemaService } from 'src/app/mauro/data-schema-service';
 import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
+import { createDataSchemaServiceStub } from 'src/app/testing/stubs/data-schema.stub';
 import { createToastrServiceStub } from 'src/app/testing/stubs/toastr.stub';
 import {
   ComponentHarness,
@@ -43,7 +45,9 @@ describe('TemplateRequestDetailComponent', () => {
   let harness: ComponentHarness<TemplateRequestDetailComponent>;
 
   const dataRequestsStub = createDataRequestsServiceStub();
+  const dataSchemaStub = createDataSchemaServiceStub();
   const toastrStub = createToastrServiceStub();
+  const mdmResourcesConfiguration = new MdmResourcesConfiguration();
 
   const templateId = '123';
   const activatedRoute: ActivatedRoute = {
@@ -64,8 +68,16 @@ describe('TemplateRequestDetailComponent', () => {
           useValue: dataRequestsStub,
         },
         {
+          provide: DataSchemaService,
+          useValue: dataSchemaStub,
+        },
+        {
           provide: ToastrService,
           useValue: toastrStub,
+        },
+        {
+          provide: MdmResourcesConfiguration,
+          useValue: mdmResourcesConfiguration,
         },
       ],
     });
@@ -74,7 +86,7 @@ describe('TemplateRequestDetailComponent', () => {
   it('should create', () => {
     expect(harness.isComponentCreated).toBeTruthy();
     expect(harness.component.request).toBeUndefined();
-    expect(harness.component.requestElements).toStrictEqual([]);
+    expect(harness.component.dataSchemas).toStrictEqual([]);
     expect(harness.component.cohortQuery.rules).toStrictEqual([]);
     expect(harness.component.dataQuery.rules).toStrictEqual([]);
     expect(harness.component.state).toBe('idle');
@@ -115,17 +127,38 @@ describe('TemplateRequestDetailComponent', () => {
       expect(harness.component.request).toBeUndefined();
     });
 
-    it('should load template data elements and queries', () => {
-      const elements: DataElement[] = [
+    it('should load template data schemas and queries', () => {
+      const dataSchemas: DataSchema[] = [
         {
-          id: '1',
-          domainType: CatalogueItemDomainType.DataElement,
-          label: 'element 1',
-        },
-        {
-          id: '2',
-          domainType: CatalogueItemDomainType.DataElement,
-          label: 'element 2',
+          schema: { label: 'dataSchema', domainType: CatalogueItemDomainType.DataClass },
+          dataClasses: [
+            {
+              dataClass: {
+                label: 'dataClass',
+                domainType: CatalogueItemDomainType.DataClass,
+              },
+              dataElements: [
+                {
+                  id: '1',
+                  domainType: CatalogueItemDomainType.DataElement,
+                  label: 'element 1',
+                  isSelected: false,
+                  model: 'model',
+                  dataClass: 'dataClass',
+                  isBookmarked: false,
+                },
+                {
+                  id: '2',
+                  domainType: CatalogueItemDomainType.DataElement,
+                  label: 'element 2',
+                  isSelected: false,
+                  model: 'model',
+                  dataClass: 'dataClass',
+                  isBookmarked: false,
+                },
+              ],
+            },
+          ],
         },
       ];
 
@@ -145,10 +178,10 @@ describe('TemplateRequestDetailComponent', () => {
 
       dataRequestsStub.get.mockImplementationOnce(() => of(template));
 
-      dataRequestsStub.listDataElements.mockImplementationOnce((req) => {
+      dataSchemaStub.loadDataSchemas.mockImplementationOnce((req) => {
         expect(req).toBe(template);
         expect(harness.component.state).toBe('loading');
-        return of(elements);
+        return of(dataSchemas);
       });
 
       dataRequestsStub.getQuery.mockImplementationOnce(() => of(cohortQueryPayload));
@@ -156,19 +189,7 @@ describe('TemplateRequestDetailComponent', () => {
 
       harness.component.ngOnInit();
 
-      const expectedElements = elements.map((element) => {
-        return (
-          element
-            ? {
-                ...element,
-                isSelected: false,
-                isBookmarked: false,
-              }
-            : null
-        ) as DataElementSearchResult;
-      });
-
-      expect(harness.component.requestElements).toStrictEqual(expectedElements);
+      expect(harness.component.dataSchemas).toStrictEqual(dataSchemas);
       expect(harness.component.state).toBe('idle');
     });
   });

@@ -1,5 +1,3 @@
-import { Injectable } from '@angular/core';
-
 /*
 Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
@@ -18,15 +16,17 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-@Injectable({
-  providedIn: 'root',
-})
-export class SortService {
-  ascString(a: string, b: string): number {
-    return a > b ? 1 : b > a ? -1 : 0;
-  }
+import { Observable } from 'rxjs';
+import { DataRequest, DataSchema } from 'src/app/data-explorer/data-explorer.types';
 
-  descString(a: string, b: string): number {
-    return a > b ? -1 : b > a ? 1 : 0;
-  }
+export type DataSchemaLoadFn = (request: DataRequest) => Observable<DataSchema[]>;
+
+export interface DataSchemaServiceStub {
+  loadDataSchemas: jest.MockedFunction<DataSchemaLoadFn>;
 }
+
+export const createDataSchemaServiceStub = (): DataSchemaServiceStub => {
+  return {
+    loadDataSchemas: jest.fn() as jest.MockedFunction<DataSchemaLoadFn>,
+  };
+};

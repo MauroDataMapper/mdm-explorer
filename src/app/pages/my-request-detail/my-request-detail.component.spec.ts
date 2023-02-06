@@ -111,6 +111,7 @@ describe('MyRequestsComponent', () => {
   NOTE:
   The tests need to be reviewed based on the new functionality. Some of these
   may no longer be releavant, and additional tests will be required.
+  gh-244 has been raised to carry out this task.
 
   describe('initialisation', () => {
     beforeEach(() => {

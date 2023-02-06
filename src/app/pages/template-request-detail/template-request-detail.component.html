@@ -52,15 +52,15 @@ SPDX-License-Identifier: Apache-2.0
 
     <div
       class="mdm-my-request__request-elements"
-      *ngIf="requestElements && requestElements.length > 0"
+      *ngIf="dataSchemas && dataSchemas.length > 0"
     >
-      <mdm-data-element-row
-        *ngFor="let element of requestElements"
-        [item]="element"
+      <mdm-data-schema-row
+        *ngFor="let dataSchema of dataSchemas"
+        [dataSchema]="dataSchema"
         [canDelete]="false"
         [suppressViewRequestsDialogButton]="true"
       >
-      </mdm-data-element-row>
+      </mdm-data-schema-row>
     </div>
   </div>
 </div>

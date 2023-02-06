@@ -25,13 +25,11 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { MatCheckboxChange } from '@angular/material/checkbox';
 import { RequestElementAddDeleteEvent } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
 import {
   DataClassWithElements,
   DataElementSearchResult,
   DataItemDeleteEvent,
-  // RefreshRequestEvent,
   SelectableDataElementSearchResultCheckedEvent,
   SelectionChange,
   SelectionChangedBy,
@@ -116,8 +114,7 @@ export class DataClassRowComponent implements OnInit, OnChanges {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  classChecked(event: MatCheckboxChange) {
+  classChecked() {
     if (!this.dataClassWithElements) {
       return;
     }

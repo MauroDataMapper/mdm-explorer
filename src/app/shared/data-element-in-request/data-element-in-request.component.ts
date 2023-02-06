@@ -44,7 +44,7 @@ import { DialogService } from 'src/app/data-explorer/dialog.service';
 import { RequestUpdatedData } from 'src/app/data-explorer/request-updated-dialog/request-updated-dialog.component';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import { TooltipHelpTextOption } from '../bookmark-toggle/bookmark-toggle.component';
-import { SortService } from 'src/app/mauro/sort.service';
+import { Sort } from 'src/app/mauro/sort.type';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 
 export interface CreateRequestEvent {
@@ -100,7 +100,6 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
     private toastr: ToastrService,
     private broadcast: BroadcastService,
     private explorer: DataExplorerService,
-    private sortService: SortService,
     private dataModelService: DataModelService
   ) {
     this.user = security.getSignedInUser();
@@ -115,12 +114,6 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
       this.stateRouter.navigateToKnownPath('/home');
       return;
     }
-
-    /*
-    if (this.dataElement && !this.dataElements) {
-      this.dataElements = [] as DataElementSearchResult[];
-      this.dataElements.push(this.dataElement);
-    }*/
 
     this.subscribeIntersectionsRefreshed();
     this.refreshDataRequestMenuItems();
@@ -151,43 +144,6 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
       dataElements = this.dataElements;
 
       this.broadcast.loading({ isLoading: true, caption: 'Updating your request...' });
-
-      // All the elements will belong to the same dataModel so we can just check the first one.
-      // const dataElement: DataElementSearchResult = this.dataElements[0];
-
-      // If the dataModel and target is the same set the dataModel to be the root
-      /*
-      if (dataElements[0].model === targetDataModelId) {
-        this.explorer
-          .getRootDataModel()
-          .pipe(
-            switchMap((rootModel: DataModelDetail) => {
-              return this.dataModelService.elementsInAnotherModel(
-                rootModel,
-                this.dataElementSearchResultsToDataElementDTOs(dataElements)
-              );
-            })
-          )
-          .subscribe({
-            next: (rootDataElements) => {
-              dataElements =
-                this.dataElementDTOsToDataElementSearchResults(rootDataElements);
-            },
-          });
-      } else {
-        dataElements = this.dataElements;
-      }
-
-
-      if (event.checked) {
-        // Do a subset add for this data element in the request
-        //datamodelSubsetPayload.additions = [this.dataElements[0].id];
-        datamodelSubsetPayload.additions = dataElements.map((de) => de.id);
-      } else {
-        // Do a subset remove for this data element in the request
-        //datamodelSubsetPayload.deletions = [this.dataElements[0].id];
-        datamodelSubsetPayload.deletions = dataElements.map((de) => de.id);
-      }*/
 
       this.explorer
         .getRootDataModel()
@@ -296,7 +252,7 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
           containsElement: idsOfRequestsContainingElement.includes(req.id ?? ''),
         };
       })
-      .sort((a, b) => this.sortService.ascString(a.dataModel.label, b.dataModel.label));
+      .sort((a, b) => Sort.ascString(a.dataModel.label, b.dataModel.label));
 
     this.elementLinkedToRequest =
       this.dataRequestMenuItems.filter((obj) => obj.containsElement).length > 0;
@@ -378,7 +334,6 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
       return (
         element
           ? {
-              // ...element
               key: element.key,
               id: element.id,
               domainType: element.domainType,

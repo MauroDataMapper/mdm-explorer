@@ -102,6 +102,12 @@ describe('DataElementInRequestComponent', () => {
     expect(harness?.isComponentCreated).toBeTruthy();
   });
   /*
+
+  NOTE:
+  The tests need to be reviewed based on the new functionality. Some of these
+  may no longer be releavant, and additional tests will be required.
+  gh-244 has been raised to carry out this task.
+
   describe('creating requests', () => {
     const dataElement: DataElementSearchResult = {
       id: '1',

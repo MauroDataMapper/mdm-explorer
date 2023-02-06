@@ -33,7 +33,7 @@ import { DataModelService } from './data-model.service';
 export class DataSchemaService {
   constructor(private dataModels: DataModelService) {}
 
-  dataRequestClasses(dataSchemas: DataSchema[]): DataClassWithElements[] {
+  getDataRequestClasses(dataSchemas: DataSchema[]): DataClassWithElements[] {
     const dataRequestClasses = dataSchemas.map((dataSchema) => dataSchema.dataClasses);
     return dataRequestClasses.reduce(
       (accumulator, value) => accumulator.concat(value),
@@ -41,9 +41,9 @@ export class DataSchemaService {
     );
   }
 
-  dataRequestElements(dataSchemas: DataSchema[]): DataElementSearchResult[] {
+  getDataRequestElements(dataSchemas: DataSchema[]): DataElementSearchResult[] {
     const dataRequestElements = dataSchemas.map((dataSchema) =>
-      this.dataSchemaElements(dataSchema)
+      this.getDataSchemaElements(dataSchema)
     );
     return dataRequestElements.reduce(
       (accumulator, value) => accumulator.concat(value),
@@ -51,7 +51,7 @@ export class DataSchemaService {
     );
   }
 
-  dataSchemaElements(dataSchema: DataSchema): DataElementSearchResult[] {
+  getDataSchemaElements(dataSchema: DataSchema): DataElementSearchResult[] {
     const dataSchemaElements = dataSchema.dataClasses.map(
       (dataClass) => dataClass.dataElements
     );
