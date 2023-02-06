@@ -17,16 +17,25 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
-import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatSelectChange } from '@angular/material/select';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY, finalize, throwError } from 'rxjs';
 import {
   DataRequest,
   DataRequestStatus,
+  SortOrder,
 } from 'src/app/data-explorer/data-explorer.types';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { SortByOption } from 'src/app/data-explorer/sort-by/sort-by.component';
 import { Sort } from 'src/app/mauro/sort.type';
 import { SecurityService } from 'src/app/security/security.service';
+
+/**
+ * These options must be of the form '{propertyToSortBy}-{order}' where propertyToSortBy
+ * can be any property on the objects you are sorting and order must be of type
+ * {@link SortOrder }
+ */
+export type DataRequestSortByOption = 'label-asc' | 'label-desc';
 
 @Component({
   selector: 'mdm-my-requests',
@@ -38,6 +47,13 @@ export class MyRequestsComponent implements OnInit {
   filteredRequests: DataRequest[] = [];
   statusFilters: DataRequestStatus[] = [];
   state: 'idle' | 'loading' = 'idle';
+
+  sortByOptions: SortByOption[] = [
+    { value: 'label-asc', displayName: 'Name (a-z)' },
+    { value: 'label-desc', displayName: 'Name (z-a)' },
+  ];
+  sortByDefaultOption: SortByOption = this.sortByOptions[0];
+  sortBy?: SortByOption;
 
   constructor(
     private security: SecurityService,
@@ -55,23 +71,23 @@ export class MyRequestsComponent implements OnInit {
     this.initialiseRequests();
   }
 
-  filterByStatus(event: MatCheckboxChange) {
-    const status = event.source.value as DataRequestStatus;
-    if (event.checked) {
-      this.statusFilters = [...this.statusFilters, status];
-    } else {
-      this.statusFilters = this.statusFilters.filter((s) => s !== status);
-    }
-
-    this.filterRequests();
+  filterByStatus(event: MatSelectChange) {
+    const filters = event.value === 'all' ? ['submitted', 'unsent'] : [event.value];
+    this.filterAndSortRequests(filters, this.sortBy);
   }
 
   initialiseRequests() {
     this.state = 'loading';
-    this.getUserRequests().subscribe((requests) => {
-      this.allRequests = requests.sort((a, b) => Sort.ascString(a.label, b.label));
-      this.filterRequests();
-    });
+    this.getUserRequests()
+      .pipe(finalize(() => (this.state = 'idle')))
+      .subscribe((requests) => {
+        this.allRequests = requests;
+        this.filterAndSortRequests();
+      });
+  }
+
+  selectSortBy(selected: SortByOption) {
+    this.filterAndSortRequests(this.statusFilters, selected);
   }
 
   private getUserRequests() {
@@ -84,18 +100,21 @@ export class MyRequestsComponent implements OnInit {
       catchError(() => {
         this.toastr.error('There was a problem finding your requests.');
         return EMPTY;
-      }),
-      finalize(() => (this.state = 'idle'))
+      })
     );
   }
 
-  private filterRequests() {
-    this.state = 'loading';
-    this.filteredRequests =
+  private filterAndSortRequests(filters?: DataRequestStatus[], sortBy?: SortByOption) {
+    this.statusFilters = filters ?? ['submitted', 'unsent'];
+    const filtered =
       this.statusFilters.length === 0
         ? this.allRequests
         : this.allRequests.filter((req) => this.statusFilters.includes(req.status));
 
-    this.state = 'idle';
+    this.sortBy = sortBy ?? this.sortByDefaultOption;
+    const [property, order] = Sort.defineSortParams(this.sortBy.value);
+    const sorted = filtered.sort((a, b) => Sort.compareByString(a, b, property, order));
+
+    this.filteredRequests = sorted;
   }
 }

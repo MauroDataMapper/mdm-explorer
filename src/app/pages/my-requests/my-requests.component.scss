@@ -16,19 +16,11 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-@import "../../../styles/base/all";
-
-$header-filter-margin: 0.5em 1em 0 0;
-
 .mdm-my-requests {
-  &__filter {
-    display: inline-block;
-    margin: $header-filter-margin;
-    padding-bottom: 2px;
-
-    label {
-      margin-left: 0.5em;
-    }
+  &__sort-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   &__request-row__footer {
