@@ -16,5 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import 'jest-preset-angular/setup-jest'; // This allows jest tests to run in Visual Studio Code
+// If you want to run tests using Visual Studio Code extension
+// "Jest Test Explorer" restore the single line directly below. ** DO NOT commit this change. **
+// import 'jest-preset-angular/setup-jest';
 // import './jestGlobalMocks'; // browser mocks globally available for every test
