@@ -23,21 +23,26 @@ SPDX-License-Identifier: Apache-2.0
 */
 
 /* Set the query builder controls lengths. */
-.query-builder-field {
-  width: 40%;
-}
+@import "../../../styles/base/all";
 
-.query-builder-operator {
-  width: 10%;
-  min-width: 120px;
-}
+$content-color: $color-mauro-light-gold;
+.query-builder {
+  &-field {
+    width: 40%;
+  }
 
-.query-builder-input,
-.query-builder-number {
-  width: 40%;
-}
+  &-operator {
+    width: 10%;
+    min-width: 120px;
+  }
 
-.query-builder-autocomplete {
-  width: 40%;
-  vertical-align: top;
+  &-input,
+  &-number {
+    width: 40%;
+  }
+
+  &-autocomplete {
+    width: 40%;
+    vertical-align: top;
+  }
 }

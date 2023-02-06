@@ -16,43 +16,57 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<div *ngIf="dataRequest" class="container">
-  <div class="main-row hero">
-    <h1>Request Query</h1>
-  </div>
-  <div class="mdm-request-query__back-link">
-    <a [routerLink]="[backRouterLink, backRouterRequestId]">
-      <span class="fa-solid fa-arrow-left"></span>
-      {{ backLabel }}
-    </a>
-    <button
-      *ngIf="status === 'ready'"
-      mat-flat-button
-      color="primary"
-      [disabled]="!dirty"
-      (click)="save()"
-    >
-      Save changes
-    </button>
-  </div>
-  <div *ngIf="status === 'loading'" class="main-row mdm-request-query__loading">
-    <mat-spinner color="primary"></mat-spinner>
-    <p>Finding your query...</p>
-  </div>
-  <div *ngIf="status === 'error'" class="highlight-box mdm-request-query__error">
-    Unfortunately there was a problem with your request or query. Please try again.
-  </div>
-  <div *ngIf="status === 'ready'" class="row">
-    <div class="mdm-request-query__header">
-      <h2>
-        {{ dataRequest.label }}
-        <mdm-request-status-chip [status]="dataRequest.status"></mdm-request-status-chip>
-      </h2>
-      <div *ngIf="dataRequest.description" class="mdm-request-query__description">
-        {{ dataRequest.description }}
+<div class="container">
+  <div *ngIf="dataRequest">
+    <div class="main-row hero">
+      <h1>{{ dataRequest.label }}</h1>
+    </div>
+    <div *ngIf="status === 'loading'" class="mdm-my-request__progress">
+      <mat-progress-bar color="primary" mode="indeterminate"></mat-progress-bar>
+    </div>
+    <div class="mdm-request-query__back-link">
+      <mdm-back-link
+        [routerLink]="[backRouterLink, backRouterRequestId]"
+        [label]="backLabel"
+      ></mdm-back-link>
+    </div>
+
+    <div *ngIf="status === 'error'" class="highlight-box mdm-request-query__error">
+      Unfortunately there was a problem with your request or query. Please try again.
+    </div>
+
+    <div class="col">
+      <div class="mdm-request-query__header">
+        <div class="mdm-request-query__header-title">
+          <div class="mdm-request-query__header-buttons">
+            <button
+              *ngIf="status === 'ready'"
+              mat-raised-button
+              color="primary"
+              [disabled]="!dirty"
+              (click)="save()"
+            >
+              <span class="fa-solid fa-paper-plane"></span>
+              Save changes
+            </button>
+            <div class="mdm-request-query__header-name"></div>
+          </div>
+        </div>
       </div>
     </div>
-    <div *ngIf="dataElements">
+
+    <div class="mdm-request-query__description-container">
+      <div *ngIf="dataRequest.description" class="mdm-request-query__description">
+        <p>{{ dataRequest.description }}</p>
+        <mdm-request-status-chip [status]="dataRequest.status"></mdm-request-status-chip>
+      </div>
+      <div *ngIf="!dataRequest.description" class="mdm-request-query__description">
+        <p>No description provided</p>
+        <mdm-request-status-chip [status]="dataRequest.status"></mdm-request-status-chip>
+      </div>
+    </div>
+
+    <div *ngIf="dataElements" class="mdm-request-query__query-editor">
       <h2 class="mdm-request-query__query-header">
         <span> {{ queryType | titlecase }} query </span>
         <span *ngIf="dirty" class="mdm-request-query__modified">

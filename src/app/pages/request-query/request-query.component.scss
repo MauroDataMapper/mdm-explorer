@@ -18,7 +18,22 @@ SPDX-License-Identifier: Apache-2.0
 */
 @import "../../../styles/base/all";
 
+$header-padding: 1em 1.2em;
+$header-filter-margin: 0.5em 1em 0 0;
+$header-border: 1px solid $color-mauro-dark-green;
+$header-border-radius: 4px;
+
+$heading-background-color: $color-mauro-dark-green;
+$heading-color: $color-white;
+$header-padding: 0.5em 1.2em;
+$content-color: $color-mauro-light-gold;
+$border-radius: 4px;
+
 $back-link-color: $color-mauro-dark-green;
+
+.container {
+  margin-bottom: 2em;
+}
 
 .mdm-request-query {
   &__back-link {
@@ -34,30 +49,48 @@ $back-link-color: $color-mauro-dark-green;
   }
 
   &__header {
-    margin-bottom: 1.5em;
-  }
+    padding: $header-padding;
+    color: $heading-color;
+    background-color: $heading-background-color;
+    border-radius: $border-radius;
 
-  &__description {
-    margin: 1em 0;
-  }
+    &-name {
+      margin-left: auto;
+      font-size: 16px;
+    }
 
-  &__loading {
-    mat-spinner {
-      margin: 2em auto;
+    &-info {
+      margin-top: 1.2em;
+    }
+
+    &-buttons {
+      margin-left: auto;
+
+      button:disabled {
+        opacity: 0;
+      }
     }
   }
-
-  &__error {
-    padding: 2em 3em;
-    text-align: center;
+  &__query-editor {
+    border-radius: $border-radius;
+    background-color: $content-color;
+    padding: 0.5em 0.75em;
   }
 
-  &__query-header {
+  &__header-title {
+    border-radius: $border-radius;
     display: flex;
     justify-content: space-between;
   }
 
-  &__modified {
-    font-size: 14px;
+  &__description {
+    border-radius: $border-radius;
+    padding: 0.5em 0.75em;
+    background-color: $content-color;
+    display: flex;
+    justify-content: space-between;
+    &-container {
+      padding-bottom: 28px;
+    }
   }
 }
