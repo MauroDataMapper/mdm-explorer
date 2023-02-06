@@ -25,10 +25,10 @@ SPDX-License-Identifier: Apache-2.0
       <mat-progress-bar color="primary" mode="indeterminate"></mat-progress-bar>
     </div>
     <div class="mdm-request-query__back-link">
-      <a [routerLink]="[backRouterLink, backRouterRequestId]">
-        <span class="fa-solid fa-arrow-left"></span>
-        {{ backLabel }}
-      </a>
+      <mdm-back-link
+        [routerLink]="[backRouterLink, backRouterRequestId]"
+        [label]="backLabel"
+      ></mdm-back-link>
     </div>
 
     <div *ngIf="status === 'error'" class="highlight-box mdm-request-query__error">
