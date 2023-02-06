@@ -16,18 +16,20 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import {
   CatalogueItemDomainType,
+  DataClass,
   DataModelDetail,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import {
   catchError,
+  defaultIfEmpty,
   EMPTY,
   filter,
   finalize,
@@ -37,19 +39,21 @@ import {
   switchMap,
 } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
-import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import {
-  DataElementDeleteEvent,
-  DataElementDto,
-  DataElementInstance,
+  DataClassWithElements,
   DataElementMultipleOperationResult,
+  DataElementOperationResult,
   DataElementSearchResult,
+  DataItemDeleteEvent,
   DataRequest,
   DataRequestQueryPayload,
   DataRequestQueryType,
+  DataSchema,
   mapToDataRequest,
   QueryCondition,
   SelectableDataElementSearchResultCheckedEvent,
+  SelectionChange,
+  SelectionChangedBy,
 } from 'src/app/data-explorer/data-explorer.types';
 import {
   DataAccessRequestsSourceTargetIntersections,
@@ -60,9 +64,24 @@ import {
   OkCancelDialogData,
   OkCancelDialogResponse,
 } from 'src/app/data-explorer/ok-cancel-dialog/ok-cancel-dialog.component';
-import { DataModelService } from 'src/app/mauro/data-model.service';
+import { DataSchemaService } from 'src/app/mauro/data-schema-service';
 import { ResearchPluginService } from 'src/app/mauro/research-plugin.service';
 import { RequestElementAddDeleteEvent } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
+export interface RemoveSelectedResponse {
+  okCancelDialogResponse: Observable<OkCancelDialogResponse>;
+  deletedItems: Observable<DataElementMultipleOperationResult>;
+  deletedClasses?: Observable<DataElementMultipleOperationResult>;
+  deletedSchemas?: Observable<DataElementMultipleOperationResult>;
+}
+
+export type ItemToBeDeleted = 'dataElement' | 'dataClass' | 'dataSchema';
+export type UserFacingText = {
+  confirmationHeading: string;
+  confirmationMessage: string;
+  loadingMessage: string;
+  successMessage: string;
+  failureMessage: string;
+};
 
 @Component({
   selector: 'mdm-my-request-detail',
@@ -71,7 +90,6 @@ import { RequestElementAddDeleteEvent } from 'src/app/shared/data-element-in-req
 })
 export class MyRequestDetailComponent implements OnInit {
   request?: DataRequest;
-  requestElements: DataElementSearchResult[] = [];
   state: 'idle' | 'loading' = 'idle';
   sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
   removeSelectedButtonDisabled = true;
@@ -85,16 +103,24 @@ export class MyRequestDetailComponent implements OnInit {
     condition: 'and',
     rules: [],
   };
+  dataSchemas: DataSchema[] = [];
+
+  allSelected: SelectionChange = {
+    changedBy: { instigator: 'parent' },
+    isSelected: false,
+  };
+
+  selectAllElements = false;
 
   constructor(
     private route: ActivatedRoute,
-    private dataRequests: DataRequestsService,
-    private explorer: DataExplorerService,
+    private dataRequestsService: DataRequestsService,
     private toastr: ToastrService,
-    private dataModels: DataModelService,
     private researchPlugin: ResearchPluginService,
     private dialogs: DialogService,
-    private broadcast: BroadcastService
+    private broadcastService: BroadcastService,
+    private dataSchemaService: DataSchemaService,
+    private changeDetectorRef: ChangeDetectorRef
   ) {
     this.sourceTargetIntersections = {
       dataAccessRequests: [],
@@ -112,7 +138,7 @@ export class MyRequestDetailComponent implements OnInit {
         switchMap((params) => {
           const requestId: Uuid = params.requestId;
           this.state = 'loading';
-          return this.dataRequests.get(requestId);
+          return this.dataRequestsService.get(requestId);
         }),
         catchError((error) => {
           this.toastr.error(`Invalid Request Id. ${error}`);
@@ -132,7 +158,7 @@ export class MyRequestDetailComponent implements OnInit {
       return;
     }
 
-    this.dataRequests
+    this.dataRequestsService
       .getQuery(this.request.id, this.cohortQueryType)
       .subscribe((query) => {
         if (!query) {
@@ -142,28 +168,29 @@ export class MyRequestDetailComponent implements OnInit {
         this.cohortQuery = query.condition;
       });
 
-    this.dataRequests.getQuery(this.request.id, this.dataQueryType).subscribe((query) => {
-      if (!query) {
-        return;
-      }
+    this.dataRequestsService
+      .getQuery(this.request.id, this.dataQueryType)
+      .subscribe((query) => {
+        if (!query) {
+          return;
+        }
 
-      this.dataQuery = query.condition;
-    });
+        this.dataQuery = query.condition;
+      });
+  }
+
+  handleSetRemoveSelectedButtonDisable() {
+    this.setRemoveSelectedButtonDisabled();
   }
 
   onSelectElement(event: SelectableDataElementSearchResultCheckedEvent) {
     event.item.isSelected = event.checked;
-    this.setRemoveSelectedButtonDisabled();
   }
 
   onSelectAll(event: MatCheckboxChange) {
-    if (this.requestElements) {
-      this.requestElements = this.requestElements.map((item) => {
-        return { ...item, isSelected: event.checked };
-      });
-    }
-
-    this.setRemoveSelectedButtonDisabled();
+    this.selectAll(event.checked, {
+      instigator: 'parent',
+    });
   }
 
   submitRequest() {
@@ -180,7 +207,7 @@ export class MyRequestDetailComponent implements OnInit {
             return EMPTY;
           }
 
-          this.broadcast.loading({
+          this.broadcastService.loading({
             isLoading: true,
             caption: 'Submitting your request...',
           });
@@ -193,26 +220,67 @@ export class MyRequestDetailComponent implements OnInit {
           );
           return EMPTY;
         }),
-        finalize(() => this.broadcast.loading({ isLoading: false }))
+        finalize(() => this.broadcastService.loading({ isLoading: false }))
       )
       .subscribe((dataModel) => {
         // Refresh the current state of the request in view
         this.request = mapToDataRequest(dataModel);
-        this.broadcast.dispatch('data-request-submitted');
+        this.broadcastService.dispatch('data-request-submitted');
 
         this.dialogs.openSuccess({
           heading: 'Request submitted',
           message: `Your request "${this.request.label}" has been successfully submitted. It will now be reviewed and you will be contacted shortly to discuss further steps.`,
         });
+
+        this.setRemoveSelectedButtonDisabled();
       });
   }
 
-  removeItem(event: DataElementDeleteEvent) {
-    const item = event.item;
-    this.removeOneOrMoreDataElements([item]);
+  removeItem(event: DataItemDeleteEvent) {
+    if (!event.dataSchema) {
+      this.toastr.error('Data schema undefined', 'Unable to delete items');
+      return;
+    }
+
+    const userFacingText = this.getUserFacingText(event);
+    if (!userFacingText) {
+      this.toastr.error('Data schema undefined', 'User text not found');
+      return;
+    }
+
+    this.okCancelItem(userFacingText)
+      .afterClosed()
+      .pipe(
+        switchMap((response: OkCancelDialogResponse | undefined) => {
+          return this.deleteItem(event, response, userFacingText);
+        }),
+        switchMap((result: DataElementOperationResult) => {
+          return this.deleteElementsFromQueries(event, result);
+        })
+      )
+      .subscribe(
+        ({
+          dataQuery,
+          cohortQuery,
+          result,
+        }: {
+          dataQuery: DataRequestQueryPayload;
+          cohortQuery: DataRequestQueryPayload;
+          result: DataElementOperationResult;
+        }) => {
+          this.refreshQueries(dataQuery, cohortQuery);
+
+          const message = result.success
+            ? `${userFacingText?.successMessage}`
+            : `${userFacingText?.failureMessage}${result.message}`;
+          this.processRemoveDataElementResponse(result.success, message);
+
+          this.broadcastService.loading({ isLoading: false });
+        }
+      );
   }
 
-  // listens for external uodate to the request and refreshes if so
+  // listens for external update to the request and refreshes if so
   handlePossibleSelfDelete(event: RequestElementAddDeleteEvent) {
     if (event.dataModel?.id === this.request?.id) {
       this.setRequest(this.request);
@@ -220,8 +288,84 @@ export class MyRequestDetailComponent implements OnInit {
   }
 
   removeSelected() {
-    const itemList = this.requestElements.filter((item) => item.isSelected);
-    this.removeOneOrMoreDataElements(itemList);
+    const itemList = this.getSelectedItems();
+    const classList = this.getSelectedClasses();
+    const schemaList = this.getSelectedSchemas();
+
+    this.okCancelItemList(itemList)
+      .afterClosed()
+      .pipe(
+        switchMap((okCancelDialogResponse: OkCancelDialogResponse) => {
+          return this.removeSelectedItems(okCancelDialogResponse, itemList);
+        }),
+        switchMap(([okCancelDialogResponse, deletedElements]) => {
+          return this.removeSelectedClasses(
+            okCancelDialogResponse,
+            deletedElements,
+            classList
+          );
+        }),
+        switchMap(([okCancelDialogResponse, deletedElements, deletedClasses]) => {
+          return this.removeSelectedSchemas(
+            okCancelDialogResponse,
+            deletedElements,
+            deletedClasses,
+            schemaList
+          );
+        }),
+        switchMap(([deletedElements, deletedClasses, deletedSchemas]) => {
+          const labels = itemList.map((item) => item.label);
+          return forkJoin({
+            deletedElements: of(deletedElements),
+            deletedClasses: of(deletedClasses),
+            deletedSchemas: of(deletedSchemas),
+            dataQuery: this.removeDataElementFromQuery(labels, this.dataQueryType),
+            cohortQuery: this.removeDataElementFromQuery(labels, this.cohortQueryType),
+          });
+        })
+      )
+      .subscribe(
+        ({ deletedElements, deletedClasses, deletedSchemas, dataQuery, cohortQuery }) => {
+          this.refreshQueries(dataQuery, cohortQuery);
+
+          const success = deletedElements.failures.length === 0;
+          let message = `${deletedElements.successes.length} Data element${
+            deletedElements.successes.length === 1 ? '' : 's'
+          } removed from request "${this.request?.label}".`;
+          if (!success) {
+            message += `\r\n${deletedElements.failures.length} Data element${
+              deletedElements.failures.length === 1 ? '' : 's'
+            } caused an error.`;
+            deletedElements.failures.forEach((item: DataElementOperationResult) =>
+              console.log(item.message)
+            );
+          }
+
+          const classSuccess = deletedClasses.failures.length === 0;
+          if (!classSuccess) {
+            message += `\r\n${deletedClasses.failures.length} Data class${
+              deletedClasses.failures.length === 1 ? '' : 'es'
+            } caused an error.`;
+            deletedClasses.failures.forEach((item: DataElementOperationResult) =>
+              console.log(item.message)
+            );
+          }
+
+          const schemaSuccess = deletedSchemas.failures.length === 0;
+          if (!schemaSuccess) {
+            message += `\r\n${deletedSchemas.failures.length} Data schema${
+              deletedSchemas.failures.length === 1 ? '' : 's'
+            } caused an error.`;
+            deletedSchemas.failures.forEach((item: DataElementOperationResult) =>
+              console.log(item.message)
+            );
+          }
+
+          this.processRemoveDataElementResponse(success, message);
+          this.broadcastService.loading({ isLoading: false });
+          this.setRequest(this.request);
+        }
+      );
   }
 
   copyRequest() {
@@ -234,201 +378,82 @@ export class MyRequestDetailComponent implements OnInit {
       return;
     }
 
-    this.dataRequests.forkWithDialogs(this.request).subscribe();
+    this.dataRequestsService.forkWithDialogs(this.request).subscribe();
   }
 
   showCohortCreate() {
     return this.cohortQuery.rules.length === 0 && this.request?.status === 'unsent';
   }
-
   showCohortEdit() {
     return this.cohortQuery.rules.length > 0 && this.request?.status === 'unsent';
-  }
-
-  showDataCreate() {
-    return this.dataQuery.rules.length === 0 && this.request?.status === 'unsent';
   }
 
   showDataEdit() {
     return this.dataQuery.rules.length > 0 && this.request?.status === 'unsent';
   }
 
-  private removeOneOrMoreDataElements(items: DataElementSearchResult[]) {
-    this.okCancelItemList(items)
-      .afterClosed()
-      .pipe(
-        switchMap((result: OkCancelDialogResponse) => {
-          if (result.result) {
-            this.broadcast.loading({
-              isLoading: true,
-              caption:
-                items.length === 1
-                  ? `Removing data element ${items[0].label} from request ${this.request?.label} ...`
-                  : `Removing ${items.length} data elements from request ${this.request?.label} ...`,
-            });
-            const dataModel: DataModelDetail = {
-              domainType: CatalogueItemDomainType.DataModel,
-              label: this.request?.label ?? '',
-              availableActions: [],
-              finalised: false,
-              id: this.request?.id ?? '',
-            };
-            return this.dataRequests.deleteDataElementMultiple(items, dataModel);
-          } else {
-            return EMPTY;
-          }
-        }),
-        switchMap((resultMultiple: DataElementMultipleOperationResult) => {
-          const labels = resultMultiple.successes.map((success) => {
-            return success.item.label;
-          });
-
-          // Remove data element from request queries.
-          return forkJoin({
-            dataQuery: this.removeDataElementFromQuery(labels, this.dataQueryType),
-            cohortQuery: this.removeDataElementFromQuery(labels, this.cohortQueryType),
-            resultMultiple: of(resultMultiple),
-          });
-        }),
-        finalize(() => {
-          this.broadcast.loading({ isLoading: false });
-        })
-      )
-      .subscribe((forkJoinResult) => {
-        this.updateLocalQuery(forkJoinResult.dataQuery);
-        this.updateLocalQuery(forkJoinResult.cohortQuery);
-
-        let success: boolean;
-        let message = '';
-
-        if (items.length === 1) {
-          const singleResult =
-            forkJoinResult.resultMultiple.failures.length === 0
-              ? forkJoinResult.resultMultiple.successes[0]
-              : forkJoinResult.resultMultiple.failures[0];
-          success = singleResult.success;
-
-          if (!singleResult.success) {
-            message = `Removal of data element ${items[0].label} failed. The error message is: ${singleResult.message}`;
-          } else {
-            message = `Data element "${items[0].label}" removed from request "${this.request?.label}".`;
-          }
-        } else {
-          success = forkJoinResult.resultMultiple.failures.length === 0;
-          message = `${forkJoinResult.resultMultiple.successes.length} Data element${
-            forkJoinResult.resultMultiple.successes.length === 1 ? '' : 's'
-          } removed from request "${this.request?.label}".`;
-
-          if (!success) {
-            message += `\r\n${
-              forkJoinResult.resultMultiple.failures.length
-            } Data element${
-              forkJoinResult.resultMultiple.failures.length === 1 ? '' : 's'
-            } caused an error.`;
-          }
-        }
-        this.processRemoveDataElementResponse(success, message);
-      });
-  }
-
-  private updateLocalQuery(newQuery: DataRequestQueryPayload) {
-    if (!newQuery) {
-      return;
-    }
-
-    switch (newQuery.type) {
-      case this.cohortQueryType:
-        this.cohortQuery = newQuery.condition;
-        break;
-      case this.dataQueryType:
-        this.dataQuery = newQuery.condition;
+  onSelectSchema(/* event: SelectionChange*/) {
+    if (this.dataSchemas) {
+      const selectedItemList = this.dataSchemas.filter((item) => item.schema.isSelected);
+      this.selectAllElements = selectedItemList.length === this.dataSchemas.length;
     }
   }
 
-  private removeDataElementFromQuery(
-    dataElementLabels: string[],
-    queryType: DataRequestQueryType
-  ): Observable<DataRequestQueryPayload> {
-    if (!this.request?.id) {
-      return EMPTY;
-    }
-
-    return this.dataRequests.deleteDataElementsFromQuery(
-      this.request.id,
-      queryType,
-      dataElementLabels
-    );
+  /**
+   * Methods for general page management
+   */
+  private loadError() {
+    this.toastr.error('There was a problem locating your request details.');
+    return EMPTY;
   }
 
+  /**
+   * Methods for loading/reloading request data.
+   */
   private setRequest(request?: DataRequest) {
     this.request = request;
     if (!this.request) {
-      this.requestElements = [];
       return;
     }
     this.state = 'loading';
-    forkJoin([
-      this.dataRequests.listDataElements(this.request),
-      this.explorer.getRootDataModel(),
-    ])
+
+    this.dataSchemaService
+      .loadDataSchemas(this.request)
       .pipe(
-        switchMap(([dataElements, rootModel]: [DataElementDto[], DataModelDetail]) => {
-          if (this.request?.id && rootModel?.id) {
-            return this.dataModels.elementsInAnotherModel(rootModel, dataElements);
-          }
-          throw new Error('Id cannot be found for user request or root data model');
-        }),
-        switchMap((dataElements: (DataElementDto | null)[]) => {
-          return of(
-            dataElements.map((element) => {
-              return (
-                element
-                  ? {
-                      ...element,
-                      isSelected: false,
-                      isBookmarked: false,
-                    }
-                  : null
-              ) as DataElementSearchResult;
-            })
-          );
-        }),
-        switchMap((dataElements: DataElementSearchResult[]) => {
+        defaultIfEmpty(undefined),
+        switchMap((dataSchemas: DataSchema[] | undefined) => {
           return forkJoin([
-            of(dataElements),
-            this.loadIntersections(dataElements),
-          ]) as Observable<
-            [DataElementSearchResult[], DataAccessRequestsSourceTargetIntersections]
-          >;
+            of(dataSchemas ?? []),
+            this.loadIntersections(dataSchemas ?? []),
+          ]) as Observable<[DataSchema[], DataAccessRequestsSourceTargetIntersections]>;
         }),
         catchError(() => {
-          this.toastr.error('There was a problem locating your request details.');
-          return EMPTY;
+          return this.loadError();
         }),
         finalize(() => (this.state = 'idle'))
       )
-      .subscribe({
-        next: ([dataElements, intersections]) => {
-          this.requestElements = dataElements;
-          this.sourceTargetIntersections = intersections;
-        },
+      .subscribe(([dataSchemas, intersections]) => {
+        this.dataSchemas = [];
+        this.dataSchemas = dataSchemas;
+        this.sourceTargetIntersections = intersections;
       });
   }
 
   // intersections are dataelements that are part of the request
-  private loadIntersections(elements: DataElementInstance[]) {
-    const dataElementIds: Uuid[] = [];
+  private loadIntersections(
+    dataSchemas: DataSchema[]
+  ): Observable<DataAccessRequestsSourceTargetIntersections> {
+    const dataElementIds: Uuid[] = this.dataSchemaService
+      .getDataRequestElements(dataSchemas)
+      .map((element) => element.id);
 
-    if (elements) {
-      elements.forEach((item: DataElementInstance) => {
-        dataElementIds.push(item.id);
-      });
-    }
-
-    return this.explorer.getRootDataModel().pipe(
-      switchMap((rootModel: DataModelDetail) => {
-        if (rootModel.id) {
-          return this.dataRequests.getRequestsIntersections(rootModel.id, dataElementIds);
+    return of(this.request).pipe(
+      switchMap((dataRequest) => {
+        if (dataRequest?.id) {
+          return this.dataRequestsService.getRequestsIntersections(
+            dataRequest.id,
+            dataElementIds
+          );
         } else {
           return EMPTY;
         }
@@ -450,36 +475,396 @@ export class MyRequestDetailComponent implements OnInit {
    * Disable the 'Remove Selected' button unless some elements are selected in the current request
    */
   private setRemoveSelectedButtonDisabled() {
-    const selectedItemList = this.requestElements.filter((item) => item.isSelected);
-    this.removeSelectedButtonDisabled = !this.request || selectedItemList.length === 0;
+    const allElements = this.dataSchemaService.getDataRequestElements(this.dataSchemas);
+    this.removeSelectedButtonDisabled =
+      this.request?.status === 'submitted' ||
+      allElements.findIndex((dataElement) => dataElement.isSelected) === -1;
+    this.changeDetectorRef.detectChanges();
   }
 
+  /**
+   * Methods for managing the okCancel dialogs.
+   */
   private confirmSumbitRequest(): MatDialogRef<OkCancelDialogData> {
-    return this.dialogs.openOkCancel({
-      heading: 'Submit request',
-      content: `You are about to submit your request "${this.request?.label}" for review. You will not be able to change it further from this point. Do you want to continue?`,
-      okLabel: 'Yes',
-      cancelLabel: 'No',
-    });
+    return this.okCancel(
+      'Submit request',
+      `You are about to submit your request "${this.request?.label}" for review. You will not be able to change it further from this point. Do you want to continue?`
+    );
+  }
+
+  private okCancelItem(userFacingText: UserFacingText): MatDialogRef<OkCancelDialogData> {
+    return this.okCancel(
+      userFacingText.confirmationHeading,
+      userFacingText.confirmationMessage
+    );
   }
 
   private okCancelItemList(
     itemList: DataElementSearchResult[]
   ): MatDialogRef<OkCancelDialogData> {
-    if (itemList.length === 1) {
-      return this.dialogs.openOkCancel({
-        heading: 'Remove data element',
-        content: `Are you sure you want to remove data element "${itemList[0].label}" from request "${this.request?.label}" and all its related queries?`,
-        okLabel: 'Yes',
-        cancelLabel: 'No',
+    return this.okCancel(
+      'Remove selected data elements',
+      `Are you sure you want to remove these ${itemList.length} selected data elements from request ${this.request?.label}?`
+    );
+  }
+
+  private okCancel(heading: string, content: string): MatDialogRef<OkCancelDialogData> {
+    return this.dialogs.openOkCancel({
+      heading,
+      content,
+      okLabel: 'Yes',
+      cancelLabel: 'No',
+    });
+  }
+
+  /**
+   * Methods for managing the selection of items.
+   */
+  private selectAll(value: boolean, changedBy: SelectionChangedBy) {
+    this.selectAllElements = value;
+
+    const allSelected: SelectionChange = {
+      changedBy,
+      isSelected: value,
+    };
+    this.allSelected = allSelected;
+  }
+
+  private getSelectedItems(): DataElementSearchResult[] {
+    return this.dataSchemaService
+      .getDataRequestElements(this.dataSchemas)
+      .filter((item) => item.isSelected);
+  }
+
+  private getSelectedClasses(): DataClass[] {
+    return this.dataSchemaService
+      .getDataRequestClasses(this.dataSchemas)
+      .filter(
+        (dataClassWithElements) =>
+          dataClassWithElements.dataElements.filter(
+            (dataElement) => dataElement.isSelected
+          ).length === dataClassWithElements.dataElements.length
+      )
+      .map((dataClassWithElements) => dataClassWithElements.dataClass);
+  }
+
+  private getSelectedSchemas(): DataSchema[] {
+    return this.dataSchemas.filter(
+      (dataSchema) =>
+        this.dataSchemaService
+          .getDataSchemaElements(dataSchema)
+          .filter((dataElement) => dataElement.isSelected).length ===
+        this.dataSchemaService.getDataSchemaElements(dataSchema).length
+    );
+  }
+
+  private removeSelectedItems(
+    okCancelDialogResponse: OkCancelDialogResponse,
+    itemList: DataElementSearchResult[]
+  ): Observable<[OkCancelDialogResponse, DataElementMultipleOperationResult]> {
+    if (okCancelDialogResponse.result) {
+      this.broadcastService.loading({
+        isLoading: true,
+        caption: `Removing ${itemList.length} data element${
+          itemList.length === 1 ? '' : 's'
+        } from request ${this.request?.label} ...`,
       });
+      const dataModel: DataModelDetail = {
+        domainType: CatalogueItemDomainType.DataModel,
+        label: this.request?.label ?? '',
+        availableActions: [],
+        finalised: false,
+        id: this.request?.id ?? '',
+      };
+      return forkJoin([
+        of(okCancelDialogResponse),
+        this.dataRequestsService.deleteDataElementMultiple(itemList, dataModel),
+      ]) as Observable<[OkCancelDialogResponse, DataElementMultipleOperationResult]>;
     } else {
-      return this.dialogs.openOkCancel({
-        heading: 'Remove selected data elements',
-        content: `Are you sure you want to remove these ${itemList.length} selected data elements from request "${this.request?.label}" and all its related queries?`,
-        okLabel: 'Yes',
-        cancelLabel: 'No',
-      });
+      return forkJoin([of(okCancelDialogResponse), EMPTY]) as Observable<
+        [OkCancelDialogResponse, DataElementMultipleOperationResult]
+      >;
     }
+  }
+
+  private removeSelectedClasses(
+    okCancelDialogResponse: OkCancelDialogResponse,
+    deletedElements: DataElementMultipleOperationResult,
+    classList: DataClass[]
+  ): Observable<
+    [
+      OkCancelDialogResponse,
+      DataElementMultipleOperationResult,
+      DataElementMultipleOperationResult
+    ]
+  > {
+    if (okCancelDialogResponse.result) {
+      return forkJoin([
+        of(okCancelDialogResponse),
+        of(deletedElements),
+        this.dataRequestsService.deleteDataClassMultiple(classList),
+      ]) as Observable<
+        [
+          OkCancelDialogResponse,
+          DataElementMultipleOperationResult,
+          DataElementMultipleOperationResult
+        ]
+      >;
+    } else {
+      return forkJoin([of(okCancelDialogResponse), EMPTY, EMPTY]) as Observable<
+        [
+          OkCancelDialogResponse,
+          DataElementMultipleOperationResult,
+          DataElementMultipleOperationResult
+        ]
+      >;
+    }
+  }
+
+  private removeSelectedSchemas(
+    okCancelDialogResponse: OkCancelDialogResponse,
+    deletedElements: DataElementMultipleOperationResult,
+    deletedClasses: DataElementMultipleOperationResult,
+    schemaList: DataSchema[]
+  ): Observable<
+    [
+      DataElementMultipleOperationResult,
+      DataElementMultipleOperationResult,
+      DataElementMultipleOperationResult
+    ]
+  > {
+    if (okCancelDialogResponse.result) {
+      return forkJoin([
+        of(deletedElements),
+        of(deletedClasses),
+        this.dataRequestsService.deleteDataSchemaMultiple(schemaList),
+      ]) as Observable<
+        [
+          DataElementMultipleOperationResult,
+          DataElementMultipleOperationResult,
+          DataElementMultipleOperationResult
+        ]
+      >;
+    } else {
+      return forkJoin([EMPTY, EMPTY, EMPTY]) as Observable<
+        [
+          DataElementMultipleOperationResult,
+          DataElementMultipleOperationResult,
+          DataElementMultipleOperationResult
+        ]
+      >;
+    }
+  }
+
+  /**
+   * Methods for managing the data elements associated with a query.
+   */
+  private removeDataElementFromQuery(
+    dataElementLabels: string[],
+    queryType: DataRequestQueryType
+  ): Observable<DataRequestQueryPayload> {
+    if (!this.request?.id) {
+      return EMPTY;
+    }
+
+    return this.dataRequestsService.deleteDataElementsFromQuery(
+      this.request.id,
+      queryType,
+      dataElementLabels
+    );
+  }
+
+  private refreshQueries(
+    dataQuery: DataRequestQueryPayload,
+    cohortQuery: DataRequestQueryPayload
+  ) {
+    if (this.dataQuery !== dataQuery.condition) {
+      this.dataQuery = dataQuery.condition;
+    }
+
+    if (this.cohortQuery !== cohortQuery.condition) {
+      this.cohortQuery = cohortQuery.condition;
+    }
+  }
+
+  /**
+   * Methods for deleting dataSchemas, dataClasses and dataElements.
+   */
+  private getItemType(event: DataItemDeleteEvent): ItemToBeDeleted | undefined {
+    if (event.dataElement && event.dataClassWithElements && event.dataSchema) {
+      return 'dataElement';
+    } else if (!event.dataElement && event.dataClassWithElements && event.dataSchema) {
+      return 'dataClass';
+    } else if (!event.dataElement && !event.dataClassWithElements && event.dataSchema) {
+      return 'dataSchema';
+    } else {
+      return undefined;
+    }
+  }
+
+  private getLabels(event: DataItemDeleteEvent): string[] {
+    const itemToBeDeleted: ItemToBeDeleted | undefined = this.getItemType(event);
+    switch (itemToBeDeleted) {
+      case 'dataSchema': {
+        const dataSchemas: DataSchema[] = [];
+        if (event.dataSchema) {
+          dataSchemas.push(event.dataSchema);
+        }
+        return this.dataSchemaService
+          .getDataRequestElements(dataSchemas)
+          .map((element) => element.label);
+      }
+      case 'dataClass': {
+        return (
+          event.dataClassWithElements?.dataElements.map((dataElement) => {
+            return dataElement.label;
+          }) ?? []
+        );
+      }
+      case 'dataElement': {
+        const dataElements: string[] = [];
+        if (event.dataElement) {
+          dataElements.push(event.dataElement.label);
+        }
+        return dataElements;
+      }
+      default:
+        return [];
+    }
+  }
+
+  private getUserFacingText(event: DataItemDeleteEvent): UserFacingText | undefined {
+    const itemToBeDeleted: ItemToBeDeleted | undefined = this.getItemType(event);
+    switch (itemToBeDeleted) {
+      case 'dataSchema':
+        return {
+          confirmationHeading: 'Remove data schema',
+          confirmationMessage: `Are you sure you want to remove all the data elements belonging to data schema "${event.dataSchema?.schema.label}" from request "${this.request?.label}" and all their related queries?`,
+          loadingMessage: `Removing data elements belonging to schema ${
+            event.dataSchema?.schema.label ?? ''
+          } from request ${this.request?.label} ...`,
+          successMessage: `Data elements belonging to schema ${event.dataSchema?.schema.label} removed from request "${this.request?.label}".`,
+          failureMessage: `Removal of data elements belonging to schema ${event.dataSchema?.schema.label} failed. The error message is: `,
+        };
+      case 'dataClass': {
+        const dataClassName = event.dataClassWithElements?.dataClass.label;
+        return {
+          confirmationHeading: 'Remove data class',
+          confirmationMessage: `Are you sure you want to remove all the data elements belonging to data class "${dataClassName}" from request "${this.request?.label}" and all their related queries?`,
+          loadingMessage: `Removing data elements belonging to class ${dataClassName} from request ${this.request?.label} ...`,
+          successMessage: `Data elements belonging to class ${dataClassName} removed from request "${this.request?.label}".`,
+          failureMessage: `Removal of data elements belonging to class ${dataClassName} failed. The error message is: `,
+        };
+      }
+      case 'dataElement':
+        return {
+          confirmationHeading: 'Remove data element',
+          confirmationMessage: `Are you sure you want to remove data element "${event.dataElement?.label}" from request "${this.request?.label}" and all its related queries?`,
+          loadingMessage: `Removing data element ${event.dataElement?.label} from request ${this.request?.label} ...`,
+          successMessage: `Data element "${event.dataElement?.label}" removed from request "${this.request?.label}".`,
+          failureMessage: `Removal of data element ${event.dataElement?.label} failed. The error message is: `,
+        };
+      default:
+        return undefined;
+    }
+  }
+
+  private deleteDataClass(
+    dataClass: DataClass | undefined,
+    dataSchema: DataSchema | undefined
+  ) {
+    if (dataSchema?.schema && dataSchema?.dataClasses.length === 1) {
+      return this.dataRequestsService.deleteDataSchema(dataSchema.schema);
+    } else if (dataClass) {
+      return this.dataRequestsService.deleteDataClass(dataClass);
+    } else {
+      return EMPTY;
+    }
+  }
+
+  private deleteDataElement(
+    dataElement: DataElementSearchResult | undefined,
+    dataClassWithElements: DataClassWithElements | undefined,
+    dataSchema: DataSchema | undefined
+  ): Observable<DataElementOperationResult> {
+    if (
+      dataClassWithElements?.dataElements &&
+      dataClassWithElements?.dataElements.length === 1
+    ) {
+      return this.deleteDataClass(dataClassWithElements.dataClass, dataSchema);
+    } else if (dataElement) {
+      if (this.request) {
+        const dataModel: DataModelDetail = {
+          domainType: CatalogueItemDomainType.DataModel,
+          label: this.request.label,
+          availableActions: [],
+          finalised: false,
+          id: this.request.id,
+        };
+        return this.dataRequestsService
+          .deleteDataElementMultiple([dataElement], dataModel)
+          .pipe(
+            switchMap((result: DataElementMultipleOperationResult) => {
+              const singleResult =
+                result.failures.length === 0 ? result.successes[0] : result.failures[0];
+              return of(singleResult);
+            })
+          );
+      } else {
+        return EMPTY;
+      }
+    } else {
+      return EMPTY;
+    }
+  }
+
+  private deleteItem(
+    event: DataItemDeleteEvent,
+    response: OkCancelDialogResponse | undefined,
+    userFacingText: UserFacingText
+  ) {
+    if (response?.result) {
+      this.broadcastService.loading({
+        isLoading: true,
+        caption: userFacingText?.loadingMessage,
+      });
+      switch (this.getItemType(event)) {
+        case 'dataSchema':
+          if (event.dataSchema) {
+            return this.dataRequestsService.deleteDataSchema(event.dataSchema.schema);
+          } else {
+            return EMPTY;
+          }
+        case 'dataClass':
+          return this.deleteDataClass(
+            event.dataClassWithElements?.dataClass,
+            event.dataSchema
+          );
+        case 'dataElement':
+          return this.deleteDataElement(
+            event.dataElement,
+            event.dataClassWithElements,
+            event.dataSchema
+          );
+        default:
+          return EMPTY;
+      }
+    } else {
+      return EMPTY;
+    }
+  }
+
+  private deleteElementsFromQueries(
+    event: DataItemDeleteEvent,
+    result: DataElementOperationResult
+  ) {
+    const labels = this.getLabels(event);
+
+    // Remove data element from request queries.
+    return forkJoin({
+      dataQuery: this.removeDataElementFromQuery(labels, this.dataQueryType),
+      cohortQuery: this.removeDataElementFromQuery(labels, this.cohortQueryType),
+      result: of(result),
+    });
   }
 }

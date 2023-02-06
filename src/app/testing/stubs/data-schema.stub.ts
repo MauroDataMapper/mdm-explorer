@@ -16,5 +16,17 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import 'jest-preset-angular/setup-jest'; // This allows jest tests to run in Visual Studio Code
-// import './jestGlobalMocks'; // browser mocks globally available for every test
+import { Observable } from 'rxjs';
+import { DataRequest, DataSchema } from 'src/app/data-explorer/data-explorer.types';
+
+export type DataSchemaLoadFn = (request: DataRequest) => Observable<DataSchema[]>;
+
+export interface DataSchemaServiceStub {
+  loadDataSchemas: jest.MockedFunction<DataSchemaLoadFn>;
+}
+
+export const createDataSchemaServiceStub = (): DataSchemaServiceStub => {
+  return {
+    loadDataSchemas: jest.fn() as jest.MockedFunction<DataSchemaLoadFn>,
+  };
+};

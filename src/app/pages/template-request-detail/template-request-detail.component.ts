@@ -18,15 +18,15 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { DataElement } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY, forkJoin, switchMap } from 'rxjs';
 import {
-  DataElementSearchResult,
   DataRequest,
+  DataSchema,
   QueryCondition,
 } from 'src/app/data-explorer/data-explorer.types';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { DataSchemaService } from 'src/app/mauro/data-schema-service';
 
 @Component({
   selector: 'mdm-template-request-detail',
@@ -35,7 +35,7 @@ import { DataRequestsService } from 'src/app/data-explorer/data-requests.service
 })
 export class TemplateRequestDetailComponent implements OnInit {
   request?: DataRequest;
-  requestElements: DataElementSearchResult[] = [];
+  dataSchemas: DataSchema[] = [];
   cohortQuery: QueryCondition = {
     condition: 'and',
     rules: [],
@@ -49,7 +49,8 @@ export class TemplateRequestDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private dataRequests: DataRequestsService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private dataSchemaService: DataSchemaService
   ) {}
 
   ngOnInit(): void {
@@ -73,20 +74,22 @@ export class TemplateRequestDetailComponent implements OnInit {
           this.request = request;
 
           return forkJoin([
-            this.dataRequests.listDataElements(request),
+            this.dataSchemaService.loadDataSchemas(request),
             this.dataRequests.getQuery(request.id, 'cohort'),
             this.dataRequests.getQuery(request.id, 'data'),
           ]);
         }),
-        catchError(() => {
-          this.toastr.error('There was a problem locating the template details.');
+        catchError((error) => {
+          this.toastr.error(
+            `There was a problem locating the template details. ${error}`
+          );
           this.state = 'idle';
           return EMPTY;
         })
       )
-      .subscribe(([dataElements, cohortQuery, dataQuery]) => {
+      .subscribe(([dataSchemas, cohortQuery, dataQuery]) => {
         this.state = 'idle';
-        this.requestElements = this.mapDataElements(dataElements);
+        this.dataSchemas = dataSchemas;
 
         if (cohortQuery) {
           this.cohortQuery = cohortQuery.condition;
@@ -113,19 +116,5 @@ export class TemplateRequestDetailComponent implements OnInit {
         })
       )
       .subscribe();
-  }
-
-  private mapDataElements(dataElements: DataElement[]) {
-    return dataElements.map((element) => {
-      return (
-        element
-          ? {
-              ...element,
-              isSelected: false,
-              isBookmarked: false,
-            }
-          : null
-      ) as DataElementSearchResult;
-    });
   }
 }

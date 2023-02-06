@@ -18,12 +18,12 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import {
+  DataElement,
   DataModel,
   DataModelDetail,
   DataModelSubsetPayload,
-  Uuid,
 } from '@maurodatamapper/mdm-resources';
-import { EMPTY, finalize, Observable, of, Subject, switchMap, takeUntil } from 'rxjs';
+import { finalize, Observable, of, Subject, switchMap, takeUntil } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import {
   DataAccessRequestsSourceTargetIntersections,
@@ -33,6 +33,7 @@ import { SecurityService } from 'src/app/security/security.service';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
 import {
+  DataElementDto,
   DataElementInstance,
   DataElementSearchResult,
 } from 'src/app/data-explorer/data-explorer.types';
@@ -43,6 +44,8 @@ import { DialogService } from 'src/app/data-explorer/dialog.service';
 import { RequestUpdatedData } from 'src/app/data-explorer/request-updated-dialog/request-updated-dialog.component';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import { TooltipHelpTextOption } from '../bookmark-toggle/bookmark-toggle.component';
+import { Sort } from 'src/app/mauro/sort.type';
+import { DataModelService } from 'src/app/mauro/data-model.service';
 
 export interface CreateRequestEvent {
   item: DataElementSearchResult;
@@ -64,7 +67,8 @@ export interface DataAccessRequestMenuItem {
   styleUrls: ['./data-element-in-request.component.scss'],
 })
 export class DataElementInRequestComponent implements OnInit, OnDestroy {
-  @Input() dataElement?: DataElementSearchResult;
+  // @Input() dataElement?: DataElementSearchResult;
+  @Input() dataElements?: DataElementSearchResult[];
   @Input() caption = 'Add to request';
 
   @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
@@ -95,7 +99,8 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
     private dialogs: DialogService,
     private toastr: ToastrService,
     private broadcast: BroadcastService,
-    private explorer: DataExplorerService
+    private explorer: DataExplorerService,
+    private dataModelService: DataModelService
   ) {
     this.user = security.getSignedInUser();
     this.sourceTargetIntersections = {
@@ -128,55 +133,86 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
    * @param event
    */
   changed(event: MatCheckboxChange, item: DataModel) {
-    if (this.dataElement) {
+    let dataElements: DataElementSearchResult[];
+    if (this.dataElements && this.dataElements?.length !== 0) {
       const targetDataModelId = event.source.value;
       const datamodelSubsetPayload: DataModelSubsetPayload = {
         additions: [],
         deletions: [],
       };
-      if (event.checked) {
-        // Do a subset add for this data element in the request
-        datamodelSubsetPayload.additions = [this.dataElement.id];
-      } else {
-        // Do a subset remove for this data element in the request
-        datamodelSubsetPayload.deletions = [this.dataElement.id];
-      }
+
+      dataElements = this.dataElements;
 
       this.broadcast.loading({ isLoading: true, caption: 'Updating your request...' });
 
-      this.endpoints.dataModel
-        .copySubset(this.dataElement.model, targetDataModelId, datamodelSubsetPayload)
+      this.explorer
+        .getRootDataModel()
         .pipe(
+          switchMap((rootModel: DataModelDetail) => {
+            return this.dataModelService.elementsInAnotherModel(
+              rootModel,
+              this.dataElementSearchResultsToDataElementDTOs(dataElements)
+            );
+          }),
+          switchMap((rootDataElements) => {
+            // Elements cannot be copied to themselves, so if the source and target model is the same,
+            // use the root model as the source instead.
+            if (dataElements[0].model === targetDataModelId) {
+              return of(this.dataElementDTOsToDataElementSearchResults(rootDataElements));
+            } else {
+              return of(dataElements);
+            }
+          }),
+          switchMap((transposedDataElements) => {
+            if (event.checked) {
+              // Do a subset add for this data element in the request
+              datamodelSubsetPayload.additions = transposedDataElements.map(
+                (de) => de.id
+              );
+            } else {
+              // Do a subset remove for this data element in the request
+              datamodelSubsetPayload.deletions = transposedDataElements.map(
+                (de) => de.id
+              );
+            }
+            return this.endpoints.dataModel.copySubset(
+              transposedDataElements[0].model,
+              targetDataModelId,
+              datamodelSubsetPayload
+            );
+          }),
           finalize(() => {
             this.broadcast.loading({ isLoading: false });
           })
         )
         .subscribe(() => {
           // Communicate change to the outside world
-          if (this.dataElement) {
-            const addDeleteEventData: RequestElementAddDeleteEvent = {
-              adding: event.checked,
-              dataElement: this.dataElement,
-              dataModel: item,
-            };
-            this.requestAddDelete.emit(addDeleteEventData);
+          if (dataElements) {
+            dataElements.forEach((dataElement) => {
+              const addDeleteEventData: RequestElementAddDeleteEvent = {
+                adding: event.checked,
+                dataElement,
+                dataModel: item,
+              };
+              this.requestAddDelete.emit(addDeleteEventData);
+            });
           }
 
-          const de: DataElementInstance = {
-            id: this.dataElement?.id ?? '',
-            model: this.dataElement?.model ?? '',
-            dataClass: this.dataElement?.dataClass ?? '',
-            label: this.dataElement?.label ?? '',
-            isBookmarked: this.dataElement?.isBookmarked ?? false,
-          };
+          const dataElementInstances: DataElementInstance[] = dataElements
+            ? dataElements.map((dataElement) => ({
+                id: dataElement?.id ?? '',
+                model: dataElement?.model ?? '',
+                dataClass: dataElement?.dataClass ?? '',
+                label: dataElement?.label ?? '',
+                isBookmarked: dataElement.isBookmarked ?? false,
+              }))
+            : ([] as DataElementInstance[]);
 
           const requestUpdatedData: RequestUpdatedData = {
             request: item,
-            addedElements: event.checked ? [de] : [],
-            removedElements: !event.checked ? [de] : [],
+            addedElements: event.checked ? dataElementInstances : [],
+            removedElements: !event.checked ? dataElementInstances : [],
           };
-
-          this.loadIntersections();
 
           return this.dialogs
             .openRequestUpdated(requestUpdatedData)
@@ -194,12 +230,20 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
    * Refresh the addToRequest menu items
    */
   refreshDataRequestMenuItems(): void {
-    if (!this.dataElement) return;
+    if (!this.dataElements || this.dataElements?.length === 0) return;
+
+    const element = this.dataElements[0];
 
     const idsOfRequestsContainingElement =
-      this.sourceTargetIntersections.sourceTargetIntersections
-        .filter((sti) => sti.intersects.includes(this.dataElement!.id)) // eslint-disable-line @typescript-eslint/no-non-null-assertion
-        .map((sti) => sti.targetDataModelId);
+      this.dataElements?.length === 1
+        ? this.sourceTargetIntersections.sourceTargetIntersections
+            .filter((sti) => sti.intersects.includes(element!.id)) // eslint-disable-line @typescript-eslint/no-non-null-assertion
+            .map((sti) => sti.targetDataModelId)
+        : this.sourceTargetIntersections.sourceTargetIntersections
+            .filter((sti) =>
+              this.dataElements?.every((de) => sti.intersects.includes(de.id))
+            ) // eslint-disable-line @typescript-eslint/no-non-null-assertion
+            .map((sti) => sti.targetDataModelId);
 
     this.dataRequestMenuItems = this.sourceTargetIntersections.dataAccessRequests
       .map((req) => {
@@ -208,7 +252,7 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
           containsElement: idsOfRequestsContainingElement.includes(req.id ?? ''),
         };
       })
-      .sort();
+      .sort((a, b) => Sort.ascString(a.dataModel.label, b.dataModel.label));
 
     this.elementLinkedToRequest =
       this.dataRequestMenuItems.filter((obj) => obj.containsElement).length > 0;
@@ -226,10 +270,10 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
   }
 
   onClickCreateRequest() {
-    if (!this.dataElement) return;
+    if (!this.dataElements || this.dataElements?.length === 0) return;
 
     const event: CreateRequestEvent = {
-      item: this.dataElement, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+      item: this.dataElements[0], // eslint-disable-line @typescript-eslint/no-non-null-assertion
     };
     this.createRequest(event);
   }
@@ -241,7 +285,23 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
     }
 
     const getDataElements = (): Observable<DataElementInstance[]> => {
-      return of([event.item]);
+      return this.explorer.getRootDataModel().pipe(
+        switchMap((rootModel: DataModelDetail) => {
+          return this.dataModelService.elementsInAnotherModel(
+            rootModel,
+            this.dataElementSearchResultsToDataElementDTOs(
+              this.dataElements ?? ([] as DataElementSearchResult[])
+            )
+          );
+        }),
+        switchMap((dataElements: DataElement[]) => {
+          return of(
+            dataElements.map((dataElement) => {
+              return dataElement as DataElementInstance;
+            })
+          );
+        })
+      );
     };
 
     this.dataRequests
@@ -267,30 +327,37 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
       });
   }
 
-  private loadIntersections() {
-    const dataElementIds: Uuid[] = [];
+  private dataElementSearchResultsToDataElementDTOs(
+    dataElements: DataElementSearchResult[]
+  ): DataElementDto[] {
+    return dataElements.map((element) => {
+      return (
+        element
+          ? {
+              key: element.key,
+              id: element.id,
+              domainType: element.domainType,
+              label: element.label,
+              breadcrumbs: element.breadcrumbs,
+            }
+          : null
+      ) as DataElementDto;
+    });
+  }
 
-    if (this.dataElement) {
-      dataElementIds.push(this.dataElement.id);
-    }
-
-    this.explorer
-      .getRootDataModel()
-      .pipe(
-        switchMap((rootModel: DataModelDetail) => {
-          if (rootModel.id) {
-            return this.dataRequests.getRequestsIntersections(
-              rootModel.id,
-              dataElementIds
-            );
-          } else {
-            return EMPTY;
-          }
-        })
-      )
-      .subscribe((intersections: DataAccessRequestsSourceTargetIntersections) => {
-        this.sourceTargetIntersections = intersections;
-        this.refreshDataRequestMenuItems();
-      });
+  private dataElementDTOsToDataElementSearchResults(
+    dataElements: (DataElementDto | null)[]
+  ): DataElementSearchResult[] {
+    return dataElements.map((element) => {
+      return (
+        element
+          ? {
+              ...element,
+              isSelected: false,
+              isBookmarked: false,
+            }
+          : null
+      ) as DataElementSearchResult;
+    });
   }
 }

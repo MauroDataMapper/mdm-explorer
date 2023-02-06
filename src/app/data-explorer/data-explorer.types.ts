@@ -21,6 +21,7 @@ import { ParamMap, Params } from '@angular/router';
 import {
   Breadcrumb,
   CatalogueItemDomainType,
+  DataClass,
   DataElement,
   DataModel,
   DataType,
@@ -297,6 +298,13 @@ export interface SelectableDataElementSearchResultCheckedEvent {
   item: DataElementSearchResult;
   checked: boolean;
 }
+export interface SelectionChangedBy {
+  instigator: 'parent' | 'child';
+}
+export interface SelectionChange {
+  changedBy: SelectionChangedBy;
+  isSelected: boolean;
+}
 
 export interface BookMarkCheckedEvent {
   item: DataElementSearchResult;
@@ -323,6 +331,29 @@ export interface IsBookmarkable {
 
 export interface DataElementDeleteEvent {
   item: DataElementSearchResult;
+  confirmationMessage?: string;
+}
+
+export interface DataElementSelectEvent {
+  selected: boolean;
+}
+
+export interface DataClassDeleteEvent {
+  dataClassWithElements: DataClassWithElements;
+  dataSchema?: DataSchema;
+  confirmationMessage?: string;
+}
+
+export interface DataSchemaDeleteEvent {
+  dataSchema: DataSchema;
+  confirmationMessage?: string;
+}
+
+export interface DataItemDeleteEvent {
+  dataSchema?: DataSchema;
+  dataClassWithElements?: DataClassWithElements;
+  dataElement?: DataElementSearchResult;
+  confirmationMessage?: string;
 }
 
 export type DataRequestQueryType = 'none' | 'cohort' | 'data';
@@ -364,6 +395,16 @@ export interface QueryCondition {
 }
 
 export type QueryRule = QueryExpression | QueryCondition;
+
+export interface DataClassWithElements {
+  dataClass: DataClass;
+  dataElements: DataElementSearchResult[];
+}
+
+export interface DataSchema {
+  schema: DataClass;
+  dataClasses: DataClassWithElements[];
+}
 
 export interface ForkDataRequestOptions {
   targetFolder?: Folder;

@@ -18,38 +18,25 @@ SPDX-License-Identifier: Apache-2.0
 */
 @import "../../../styles/base/all";
 
-$row-header-background-color: $color-mauro-light-gold;
-$row-header-color: $color-mauro-dark-green;
+$row-header-background-color: $color-mauro-dark-green;
+$row-header-color: $color-white;
 $row-header-border-color: $color-mauro-dark-green;
 $row-header-padding: 0.2em 1.2em;
 
-$row-padding-default: 0.75em 1.2em;
-$row-padding-nested: 0.75em 0em;
+$row-padding: 0.75em 1.2em;
 $row-footer-padding: 0.75em 1.2em;
 $row-footer-content-color: $color-mauro-light-gold;
 $row-border-radius: 4px;
 
-.hidden {
-  visibility: hidden;
-}
-
-.mdm-data-element-row {
+.mdm-data-schema-row {
   margin-bottom: 0.2em;
+  padding: $row-padding;
 
-  &__default_padding {
-    padding: $row-padding-default;
-  }
-
-  &__nested_padding {
-    padding: $row-padding-nested;
-  }
-
-  &__header-link {
+  h3 {
     display: inline-block;
     font-weight: 500;
-    margin: 0.5em 1em;
-    vertical-align: bottom; //middle;
-    align-items: center;
+    margin: 0 1em;
+    vertical-align: middle;
   }
 
   &__breadcrumb-container {
@@ -102,14 +89,6 @@ $row-border-radius: 4px;
       }
     }
 
-    &-button-panel {
-      display: inline-flex;
-      @include respond-to-tablet {
-        display: inline-block;
-        width: 100%;
-      }
-    }
-
     &-button-updown {
       margin: 0 0.6em;
       @include respond-to-tablet {
@@ -117,6 +96,14 @@ $row-border-radius: 4px;
       }
       width: 20px !important;
       min-width: unset !important;
+    }
+
+    &-button-panel {
+      display: inline-flex;
+      @include respond-to-tablet {
+        display: inline-block;
+        width: 100%;
+      }
     }
   }
 

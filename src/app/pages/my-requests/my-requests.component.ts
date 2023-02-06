@@ -25,6 +25,7 @@ import {
   DataRequestStatus,
 } from 'src/app/data-explorer/data-explorer.types';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { Sort } from 'src/app/mauro/sort.type';
 import { SecurityService } from 'src/app/security/security.service';
 
 @Component({
@@ -68,7 +69,7 @@ export class MyRequestsComponent implements OnInit {
   initialiseRequests() {
     this.state = 'loading';
     this.getUserRequests().subscribe((requests) => {
-      this.allRequests = requests;
+      this.allRequests = requests.sort((a, b) => Sort.ascString(a.label, b.label));
       this.filterRequests();
     });
   }
