@@ -23,7 +23,6 @@ import { catchError, EMPTY, finalize, throwError } from 'rxjs';
 import {
   DataRequest,
   DataRequestStatus,
-  SortOrder,
 } from 'src/app/data-explorer/data-explorer.types';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import { SortByOption } from 'src/app/data-explorer/sort-by/sort-by.component';

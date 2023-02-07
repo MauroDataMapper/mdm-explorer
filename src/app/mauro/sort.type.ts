@@ -29,6 +29,7 @@ export class Sort {
 
   /**
    * Compare two objects by string property.
+   *
    * @param a The first object.
    * @param b The second object.
    * @param property The name of the property to sort by.
@@ -36,13 +37,14 @@ export class Sort {
    * @returns A numeric value that can used to determine if a is less than, greater than, or equal to b.
    */
   static compareByString(a: any, b: any, property: string, order: SortOrder): number {
-    return order == 'desc'
-      ? this.descString(a[property], b[property])
-      : this.ascString(a[property], b[property]);
+    return order === 'desc'
+      ? this.descString(a[property] as string, b[property] as string)
+      : this.ascString(a[property] as string, b[property] as string);
   }
 
   /**
    * Splits a string into the sort parameters it represents.
+   *
    * @param value A string value in the format "{property}-{order}" e.g. "label-desc".
    * @returns A tuple containing the property name, then the sort order.
    */
