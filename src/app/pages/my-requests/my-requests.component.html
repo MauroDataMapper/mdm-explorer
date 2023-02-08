@@ -56,6 +56,8 @@ SPDX-License-Identifier: Apache-2.0
         <mdm-data-request-row
           [request]="request"
           [detailsRouterLink]="['/requests', request.id]"
+          [showEditButton]="request.status === 'unsent'"
+          (editClick)="editRequest(request.label, request.id, request.description)"
         ></mdm-data-request-row>
       </div>
     </div>

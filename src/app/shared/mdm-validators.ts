@@ -16,7 +16,14 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import {
+  AbstractControl,
+  AsyncValidatorFn,
+  ValidationErrors,
+  ValidatorFn,
+} from '@angular/forms';
+import { map, Observable, of } from 'rxjs';
+import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 
 /**
  * Validates that a form control has a value that matches another form control.
@@ -53,5 +60,37 @@ export const mustMatch = (
 
     // Return null here because errors have already been set, which will trigger an invalid form state
     return null;
+  };
+};
+
+/**
+ * Async validator that prevents the user to attempt to use an existing
+ * name for a Data Request.
+ *
+ * @param dataRequestService A {@link DataRequestsService} instance to list existing data requests.
+ * @returns An observable with a boolean that indicates if there is any other element with that label.
+ */
+export const dontAllowDuplicatedNames = (
+  dataRequestService: DataRequestsService,
+  requestInitialName?: string
+): AsyncValidatorFn => {
+  return (c: AbstractControl): Observable<ValidationErrors | null> => {
+    if (c) {
+      const name: string = c.value;
+      if (requestInitialName === name) {
+        // If the name has not changed,
+        // allow without looking for duplicates.
+        return of(null);
+      }
+      return dataRequestService.isDataRequestNameAvailable(name).pipe(
+        map((isAvailableResponse) => {
+          if (!isAvailableResponse) {
+            return { duplicatedNames: true };
+          }
+          return null;
+        })
+      );
+    }
+    return of(null);
   };
 };
