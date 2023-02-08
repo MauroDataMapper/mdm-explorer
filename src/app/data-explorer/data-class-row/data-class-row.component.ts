@@ -42,9 +42,7 @@ export class DataClassRowComponent implements OnInit {
   @Output() requestAddDelete = new EventEmitter<RequestElementAddDeleteEvent>();
   @Output() updateAllChildrenSelected = new EventEmitter();
 
-  state: 'idle' | 'loading' = 'idle';
-
-  visible = true;
+  expanded = true;
 
   classElements: DataElementSearchResult[] = [];
 
@@ -82,8 +80,8 @@ export class DataClassRowComponent implements OnInit {
     this.updateAllChildrenSelected.emit();
   }
 
-  toggleCollapse(): void {
-    this.visible = !this.visible;
+  toggleExpanded(): void {
+    this.expanded = !this.expanded;
   }
 
   handleRequestAddDelete(event: RequestElementAddDeleteEvent) {

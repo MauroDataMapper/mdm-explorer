@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
@@ -32,6 +32,11 @@ import { DataElementSearchService } from '../data-element-search.service';
 import { MatDialog } from '@angular/material/dialog';
 import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
 import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
+import { MockComponent } from 'ng-mocks';
+import { BookmarkToggleComponent } from 'src/app/shared/bookmark-toggle/bookmark-toggle.component';
+import { IdentifiableDataIconComponent } from '../identifiable-data-icon/identifiable-data-icon.component';
+import { DataElementInRequestComponent } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
+import { HeaderAndContentBoxComponent } from 'src/app/shared/header-and-content-box/header-and-content-box.component';
 
 describe('DataElementSearchResultComponent', () => {
   let harness: ComponentHarness<DataElementSearchResultComponent>;
@@ -54,6 +59,13 @@ describe('DataElementSearchResultComponent', () => {
           provide: MatDialog,
           useValue: matDialogStub,
         },
+      ],
+      declarations: [
+        MockComponent(BookmarkToggleComponent),
+        MockComponent(IdentifiableDataIconComponent),
+        MockComponent(DataElementInRequestComponent),
+        MockComponent(HeaderAndContentBoxComponent),
+        MockComponent(MatCheckbox),
       ],
     });
   });

@@ -16,21 +16,21 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { MatDialog } from '@angular/material/dialog';
-import {
-  CatalogueItemDomainType,
-  MdmResourcesConfiguration,
-} from '@maurodatamapper/mdm-resources';
+import { SimpleChange, SimpleChanges } from '@angular/core';
+import { CatalogueItemDomainType } from '@maurodatamapper/mdm-resources';
+import { MockComponent } from 'ng-mocks';
 import { RequestElementAddDeleteEvent } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
-import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
+import { DataElementRowComponent } from '../data-element-row/data-element-row.component';
 import {
   DataClassWithElements,
+  DataElementInstance,
   DataElementSearchResult,
   DataItemDeleteEvent,
+  SelectionChange,
 } from '../data-explorer.types';
 
 import { DataClassRowComponent } from './data-class-row.component';
@@ -38,27 +38,51 @@ import { DataClassRowComponent } from './data-class-row.component';
 describe('DataClassRowComponent', () => {
   let harness: ComponentHarness<DataClassRowComponent>;
 
-  const dialogStub = createMatDialogStub();
-  const mdmResourcesConfiguration = new MdmResourcesConfiguration();
+  const dataClassWithElements: DataClassWithElements = {
+    dataClass: {
+      label: 'class',
+      domainType: CatalogueItemDomainType.DataClass,
+      isSelected: false,
+    },
+    dataElements: [
+      {
+        id: '1',
+        label: 'element 1',
+        domainType: CatalogueItemDomainType.DataElement,
+        model: '2',
+        dataClass: '3',
+        isSelected: false,
+        isBookmarked: false,
+      },
+      {
+        id: '2',
+        label: 'element 2',
+        domainType: CatalogueItemDomainType.DataElement,
+        model: '2',
+        dataClass: '3',
+        isSelected: false,
+        isBookmarked: false,
+      },
+    ],
+  };
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(DataClassRowComponent, {
-      providers: [
-        {
-          provide: MatDialog,
-          useValue: dialogStub,
-        },
-        {
-          provide: MdmResourcesConfiguration,
-          useValue: mdmResourcesConfiguration,
-        },
-      ],
+      declarations: [MockComponent(DataElementRowComponent)],
     });
   });
 
   it('should create', () => {
     expect(harness.isComponentCreated).toBeTruthy();
     expect(harness.component.dataClassWithElements).toBeUndefined();
+    expect(harness.component.suppressViewRequestsDialogButton).toBe(false);
+    expect(harness.component.canDelete).toBe(true);
+    expect(harness.component.schemaSelected).toBeUndefined();
+    expect(harness.component.sourceTargetIntersections).toStrictEqual({
+      dataAccessRequests: [],
+      sourceTargetIntersections: [],
+    });
+    expect(harness.component.expanded).toBe(true);
   });
 
   it('should not raise a updateAllChildrenSelected when model changes but has no data class', () => {
@@ -81,82 +105,87 @@ describe('DataClassRowComponent', () => {
     harness.component.dataClassWithElements = dataClassWithElements;
     harness.component.ngModelOnChange();
 
-    expect(emitSpy).toHaveBeenCalled();
+      expect(harness.component.classElements).toStrictEqual(
+        dataClassWithElements.dataElements
+      );
+    });
   });
 
-  /* This code should be restored when further tests are written.
+  describe('on changes', () => {
+    it('should select data class when parent data schema is selected', () => {
+      harness.component.dataClassWithElements = dataClassWithElements;
+      expect(harness.component.dataClassWithElements.dataClass.isSelected).toBe(false);
+      expect(harness.component.classSelected).toStrictEqual({
+        changedBy: { instigator: 'parent' },
+        isSelected: false,
+      });
 
-  it('should raise a deleteEvent when "Remove" button is clicked', () => {
-    const component = harness.component;
-    const emitSpy = jest.spyOn(component.deleteClass, 'emit');
-    const dom = harness.fixture.debugElement;
-    harness.detectChanges();
-    const button: DebugElement = dom.query(
-      (de) => de.name === 'button' && de.nativeElement.click === 'removeClass'
-    );
+      const schemaSelected: SelectionChange = {
+        changedBy: {
+          instigator: 'parent',
+        },
+        isSelected: true,
+      };
 
-    const dataClassWithElements: DataClassWithElements = {
-      dataClass: {
-        label: 'test',
-        domainType: CatalogueItemDomainType.DataClass,
-      },
-      dataElements: [],
-    };
+      const changes: SimpleChanges = {
+        schemaSelected: new SimpleChange(null, null, false),
+      };
 
-    const event: DataClassDeleteEvent = {
-      dataClassWithElements: dataClassWithElements, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-    };
+      harness.component.schemaSelected = schemaSelected;
+      harness.component.ngOnChanges(changes);
 
-    harness.component.dataClassWithElements = dataClassWithElements;
-
-    button.triggerEventHandler('click', event);
-    expect(emitSpy).toHaveBeenCalledWith(event);
+      expect(harness.component.dataClassWithElements.dataClass.isSelected).toBe(true);
+      expect(harness.component.classSelected).toStrictEqual({
+        changedBy: { instigator: 'parent' },
+        isSelected: true,
+      });
+    });
   });
-  */
-});
 
-describe('DataClassRowComponent mdm-data-element-row', () => {
-  let harness: ComponentHarness<DataClassRowComponent>;
-  let dataClassWithElements: DataClassWithElements;
+  it.each([true, false])(
+    'should correctly set expanded state when initial state is %p',
+    (initialState) => {
+      harness.component.expanded = initialState;
+      harness.component.toggleExpanded();
+      expect(harness.component.expanded).toBe(!initialState);
+    }
+  );
 
-  const dialogStub = createMatDialogStub();
-  const mdmResourcesConfiguration = new MdmResourcesConfiguration();
+  describe('event handlers', () => {
+    const dataElement: DataElementInstance = {
+      id: '111',
+      label: 'element',
+      model: '222',
+      dataClass: '333',
+      isBookmarked: false,
+      isSelected: false,
+    };
 
-  beforeEach(async () => {
-    harness = await setupTestModuleForComponent(DataClassRowComponent, {
-      providers: [
-        {
-          provide: MatDialog,
-          useValue: dialogStub,
+    it('should raise a request add or delete event', () => {
+      const event: RequestElementAddDeleteEvent = {
+        adding: true,
+        dataModel: {
+          label: 'model',
+          domainType: CatalogueItemDomainType.DataModel,
         },
-        {
-          provide: MdmResourcesConfiguration,
-          useValue: mdmResourcesConfiguration,
-        },
-      ],
+        dataElement,
+      };
+
+      const eventSpy = jest.spyOn(harness.component.modifyingElementsInRequest, 'emit');
+
+      harness.component.onModifyingElementsInRequest(event);
+      expect(eventSpy).toHaveBeenCalledWith(event);
     });
 
-    dataClassWithElements = {
-      dataClass: {
-        label: 'test',
-        domainType: CatalogueItemDomainType.DataClass,
-      },
-      dataElements: [
-        {
-          isSelected: false,
-          id: '1',
-          model: 'test',
-          dataClass: 'test',
-          label: 'test',
-          isBookmarked: false,
-        },
-      ],
-    };
-  });
+    it('should raise a remove element event', () => {
+      const event: DataItemDeleteEvent = {
+        dataElement: dataElement as DataElementSearchResult,
+      };
 
-  it('should raise a setRemoveSelectedButtonDisabledEvent when mdm-data-element-row emits a SetRemoveSelectedButtonDisabledEvent event', () => {
-    const component = harness.component;
-    harness.component.dataClassWithElements = dataClassWithElements;
+      const expected: DataItemDeleteEvent = {
+        ...event,
+        dataClassWithElements,
+      };
 
     harness.detectChanges();
     const dom = harness.fixture.debugElement;
@@ -168,79 +197,62 @@ describe('DataClassRowComponent mdm-data-element-row', () => {
     expect(emitSpy).toHaveBeenCalledWith();
   });
 
-  it('should raise a requestAddDelete when mdm-data-element-row emits a RequestElementAddDeleteEvent event', () => {
-    const component = harness.component;
-    harness.component.dataClassWithElements = dataClassWithElements;
+      harness.component.dataClassWithElements = dataClassWithElements;
+      harness.component.onRemovingElement(event);
+      expect(eventSpy).toHaveBeenCalledWith(expected);
+    });
 
-    harness.component.sourceTargetIntersections = {
-      dataAccessRequests: [
-        {
-          id: 'Access Request Id',
-          label: 'My Request',
-          domainType: CatalogueItemDomainType.DataModel,
-        },
-      ],
-      sourceTargetIntersections: [
-        {
-          sourceDataModelId: 'DataModelId',
-          targetDataModelId: 'Access Request Id',
-          intersects: ['Id'],
-        },
-      ],
-    };
+    it('should raise a remove class event', () => {
+      const expected: DataItemDeleteEvent = {
+        dataClassWithElements,
+      };
 
-    harness.detectChanges();
-    const dom = harness.fixture.debugElement;
-    const mdmDataElementRowComponent = dom.query(
-      (de) => de.name === 'mdm-data-element-row'
+      const eventSpy = jest.spyOn(harness.component.removingItem, 'emit');
+
+      harness.component.dataClassWithElements = dataClassWithElements;
+      harness.component.onRemovingClass();
+      expect(eventSpy).toHaveBeenCalledWith(expected);
+    });
+
+    it.each([true, false])(
+      'should raise an event when class checked to %p',
+      (checked) => {
+        const eventSpy = jest.spyOn(harness.component.classCheckedEvent, 'emit');
+
+        harness.component.dataClassWithElements = dataClassWithElements;
+        harness.component.dataClassWithElements.dataClass.isSelected = !checked;
+        harness.component.onClassChecked();
+
+        expect(eventSpy).toHaveBeenCalled();
+        expect(harness.component.classSelected).toStrictEqual({
+          changedBy: { instigator: 'parent' },
+          isSelected: checked,
+        });
+      }
     );
-    const emitSpy = jest.spyOn(component.requestAddDelete, 'emit');
-    const event: RequestElementAddDeleteEvent = {
-      adding: false,
-      dataModel: {
-        label: '',
-        domainType: CatalogueItemDomainType.DataModel,
-      },
-      dataElement: {
-        id: '1',
-        model: 'test',
-        dataClass: 'test',
-        label: 'test',
-        isBookmarked: false,
-      },
-    };
-    mdmDataElementRowComponent.triggerEventHandler('requestAddDelete', event);
-    expect(emitSpy).toHaveBeenCalledWith(event);
-  });
 
-  it('should raise a deleteEvent when mdm-data-element-row emits a delete event.', () => {
-    const component = harness.component;
-    harness.component.dataClassWithElements = dataClassWithElements;
+    it.each([true, false])(
+      'should raise an event when one element is checked to %p',
+      (checked) => {
+        const parentEventSpy = jest.spyOn(harness.component.checkedParent, 'emit');
+        const classCheckedEventSpy = jest.spyOn(
+          harness.component.classCheckedEvent,
+          'emit'
+        );
 
-    const item: DataElementSearchResult = {
-      id: '1',
-      label: 'test',
-      breadcrumbs: [],
-      dataClass: 'test',
-      model: 'test',
-      isSelected: false,
-      isBookmarked: false,
-    };
+        harness.component.dataClassWithElements = dataClassWithElements;
+        harness.component.ngOnInit();
 
-    harness.detectChanges();
-    const dom = harness.fixture.debugElement;
-    const mdmDataElementRowComponent = dom.query(
-      (de) => de.name === 'mdm-data-element-row'
+        harness.component.classElements.forEach((e) => (e.isSelected = checked));
+        harness.component.onElementSelected();
+
+        expect(harness.component.classSelected).toStrictEqual({
+          changedBy: { instigator: 'child' },
+          isSelected: checked,
+        });
+        expect(parentEventSpy).toHaveBeenCalled();
+        expect(classCheckedEventSpy).toHaveBeenCalledWith(checked);
+      }
     );
-    const emitSpy = jest.spyOn(component.deleteItemEvent, 'emit');
-    const triggerEvent: DataItemDeleteEvent = {
-      dataElement: item,
-    };
-    const expectedEvent: DataItemDeleteEvent = {
-      dataClassWithElements,
-      dataElement: item,
-    };
-    mdmDataElementRowComponent.triggerEventHandler('deleteItemEvent', triggerEvent);
-    expect(emitSpy).toHaveBeenCalledWith(expectedEvent);
   });
 });

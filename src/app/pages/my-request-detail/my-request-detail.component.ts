@@ -62,7 +62,7 @@ import {
   OkCancelDialogData,
   OkCancelDialogResponse,
 } from 'src/app/data-explorer/ok-cancel-dialog/ok-cancel-dialog.component';
-import { DataSchemaService } from 'src/app/mauro/data-schema-service';
+import { DataSchemaService } from 'src/app/data-explorer/data-schema.service';
 import { ResearchPluginService } from 'src/app/mauro/research-plugin.service';
 import { RequestElementAddDeleteEvent } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
 export interface RemoveSelectedResponse {
@@ -506,7 +506,6 @@ export class MyRequestDetailComponent implements OnInit, OnDestroy {
         finalize(() => (this.state = 'idle'))
       )
       .subscribe(([dataSchemas, intersections]) => {
-        this.dataSchemas = [];
         this.dataSchemas = dataSchemas;
         this.isEmpty =
           this.dataSchemaService.getDataRequestElements(this.dataSchemas).length === 0;
@@ -519,7 +518,7 @@ export class MyRequestDetailComponent implements OnInit, OnDestroy {
     dataSchemas: DataSchema[]
   ): Observable<DataAccessRequestsSourceTargetIntersections> {
     const dataElementIds: Uuid[] = this.dataSchemaService
-      .getDataRequestElements(dataSchemas)
+      .reduceDataElementsFromSchemas(dataSchemas)
       .map((element) => element.id);
 
     return of(this.request).pipe(
@@ -598,13 +597,13 @@ export class MyRequestDetailComponent implements OnInit, OnDestroy {
    */
   private getSelectedItems(): DataElementSearchResult[] {
     return this.dataSchemaService
-      .getDataRequestElements(this.dataSchemas)
+      .reduceDataElementsFromSchemas(this.dataSchemas)
       .filter((item) => item.isSelected);
   }
 
   private getSelectedClasses(): DataClass[] {
     return this.dataSchemaService
-      .getDataRequestClasses(this.dataSchemas)
+      .reduceDataClassesFromSchemas(this.dataSchemas)
       .filter(
         (dataClassWithElements) =>
           dataClassWithElements.dataElements.filter(
@@ -618,9 +617,9 @@ export class MyRequestDetailComponent implements OnInit, OnDestroy {
     return this.dataSchemas.filter(
       (dataSchema) =>
         this.dataSchemaService
-          .getDataSchemaElements(dataSchema)
+          .reduceDataElementsFromSchema(dataSchema)
           .filter((dataElement) => dataElement.isSelected).length ===
-        this.dataSchemaService.getDataSchemaElements(dataSchema).length
+        this.dataSchemaService.reduceDataElementsFromSchema(dataSchema).length
     );
   }
 
@@ -777,7 +776,7 @@ export class MyRequestDetailComponent implements OnInit, OnDestroy {
           dataSchemas.push(event.dataSchema);
         }
         return this.dataSchemaService
-          .getDataRequestElements(dataSchemas)
+          .reduceDataElementsFromSchemas(dataSchemas)
           .map((element) => element.label);
       }
       case 'dataClass': {

@@ -16,13 +16,17 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { fakeAsync, tick } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
+import { CatalogueItemDomainType } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
+import { DataRequest, DataSchema } from 'src/app/data-explorer/data-explorer.types';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { DataSchemaService } from 'src/app/data-explorer/data-schema.service';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { ResearchPluginService } from 'src/app/mauro/research-plugin.service';
 import { SecurityService } from 'src/app/security/security.service';
@@ -30,6 +34,11 @@ import { createBroadcastServiceStub } from 'src/app/testing/stubs/broadcast.stub
 import { createDataExplorerServiceStub } from 'src/app/testing/stubs/data-explorer.stub';
 import { createDataModelServiceStub } from 'src/app/testing/stubs/data-model.stub';
 import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
+import {
+  buildDataClass,
+  buildDataElement,
+  createDataSchemaServiceStub,
+} from 'src/app/testing/stubs/data-schema.stub';
 import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
 import { createResearchPluginServiceStub } from 'src/app/testing/stubs/research-plugin.stub';
 import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
@@ -42,8 +51,8 @@ import { MyRequestDetailComponent } from './my-request-detail.component';
 
 describe('MyRequestsComponent', () => {
   let harness: ComponentHarness<MyRequestDetailComponent>;
-  const securityStub = createSecurityServiceStub();
   const dataRequestsStub = createDataRequestsServiceStub();
+  const dataSchemaStub = createDataSchemaServiceStub();
   const dataModelsStub = createDataModelServiceStub();
   const toastrStub = createToastrServiceStub();
   const researchPluginStub = createResearchPluginServiceStub();
@@ -61,12 +70,12 @@ describe('MyRequestsComponent', () => {
     harness = await setupTestModuleForComponent(MyRequestDetailComponent, {
       providers: [
         {
-          provide: SecurityService,
-          useValue: securityStub,
-        },
-        {
           provide: DataRequestsService,
           useValue: dataRequestsStub,
+        },
+        {
+          provide: DataSchemaService,
+          useValue: dataSchemaStub,
         },
         {
           provide: DataModelService,
@@ -100,78 +109,101 @@ describe('MyRequestsComponent', () => {
     });
   });
 
+  const request: DataRequest = {
+    id: '1',
+    label: 'request 1',
+    domainType: CatalogueItemDomainType.DataModel,
+    status: 'unsent',
+  };
+
+  // const dataSchemas: DataSchema[] = [
+  //   {
+  //     schema: buildDataClass('schema 1'),
+  //     dataClasses: [
+  //       {
+  //         dataClass: buildDataClass('s1.class 1'),
+  //         dataElements: [
+  //           buildDataElement('s1.c1.element 1'),
+  //           buildDataElement('s1.c1.element 1'),
+  //         ],
+  //       },
+  //       {
+  //         dataClass: buildDataClass('s1.class 2'),
+  //         dataElements: [
+  //           buildDataElement('s1.c2.element 1'),
+  //           buildDataElement('s1.c2.element 1'),
+  //         ],
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     schema: buildDataClass('schema 2'),
+  //     dataClasses: [
+  //       {
+  //         dataClass: buildDataClass('s2.class 1'),
+  //         dataElements: [
+  //           buildDataElement('s2.c1.element 1'),
+  //           buildDataElement('s2.c1.element 1'),
+  //         ],
+  //       },
+  //     ],
+  //   },
+  // ];
+
   it('should create', () => {
     expect(harness.isComponentCreated).toBeTruthy();
     expect(harness.component.request).toBeUndefined();
     expect(harness.component.dataSchemas).toStrictEqual([]);
     expect(harness.component.state).toBe('idle');
+    expect(harness.component.allSelected).toStrictEqual({
+      changedBy: { instigator: 'parent' },
+      isSelected: false,
+    });
   });
-
-  /*
-  NOTE:
-  The tests need to be reviewed based on the new functionality. Some of these
-  may no longer be releavant, and additional tests will be required.
-  gh-244 has been raised to carry out this task.
 
   describe('initialisation', () => {
     beforeEach(() => {
-      dataRequestsStub.list.mockClear();
       toastrStub.error.mockClear();
-    });
-
-    it('should do nothing if there is no user', () => {
-      harness.component.ngOnInit();
-      expect(dataRequestsStub.list).not.toHaveBeenCalled();
+      dataRequestsStub.get.mockClear();
     });
 
     it('should have a request', () => {
-      const request: DataRequest = {
-        id: '1',
-        label: 'request 1',
-        domainType: CatalogueItemDomainType.DataModel,
-        status: 'unsent',
-      };
-
-      mockSignedInUser();
-
-      dataRequestsStub.get.mockImplementationOnce((id) => {
-        expect(id).toEqual(requestId);
-        expect(harness.component.state).toBe('loading');
+      dataRequestsStub.get.mockImplementationOnce(() => {
         return of(request);
       });
 
       harness.component.ngOnInit();
+      //tick();
 
       expect(harness.component.state).toBe('idle');
       expect(harness.component.request).toStrictEqual(request);
+      expect(dataRequestsStub.get).toHaveBeenCalledWith(requestId);
     });
 
-    it('should display an error if failed to get requests', () => {
-      mockSignedInUser();
+    // it('should display an error if failed to get requests', () => {
+    //   dataRequestsStub.list.mockImplementationOnce(() => throwError(() => new Error()));
 
-      dataRequestsStub.list.mockImplementationOnce(() => throwError(() => new Error()));
+    //   harness.component.ngOnInit();
 
-      harness.component.ngOnInit();
+    //   expect(harness.component.state).toBe('idle');
+    //   expect(toastrStub.error).toHaveBeenCalled();
+    //   expect(harness.component.request).toBeUndefined();
+    // });
 
-      expect(harness.component.state).toBe('idle');
-      expect(toastrStub.error).toHaveBeenCalled();
-      expect(harness.component.request).toBeUndefined();
-    });
+    // it('should handle having no requests available', () => {
+    //   dataRequestsStub.list.mockImplementationOnce(() => {
+    //     expect(harness.component.state).toBe('loading');
+    //     return of([]);
+    //   });
 
-    it('should handle having no requests available', () => {
-      mockSignedInUser();
+    //   harness.component.ngOnInit();
 
-      dataRequestsStub.list.mockImplementationOnce(() => {
-        expect(harness.component.state).toBe('loading');
-        return of([]);
-      });
-
-      harness.component.ngOnInit();
-
-      expect(harness.component.state).toBe('idle');
-      expect(harness.component.request).toBeUndefined();
-    });
+    //   expect(harness.component.state).toBe('idle');
+    //   expect(harness.component.request).toBeUndefined();
+    // });
   });
+
+  /*
 
   describe('submit request', () => {
     const request: DataRequest = {

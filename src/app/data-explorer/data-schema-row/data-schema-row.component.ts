@@ -21,12 +21,11 @@ import { RequestElementAddDeleteEvent } from 'src/app/shared/data-element-in-req
 import {
   DataElementSearchResult,
   DataItemDeleteEvent,
-  DataRequestQueryType,
   DataSchema,
   SelectionChange,
 } from '../data-explorer.types';
 import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.service';
-import { DataSchemaService } from 'src/app/mauro/data-schema-service';
+import { DataSchemaService } from 'src/app/data-explorer/data-schema.service';
 
 @Component({
   selector: 'mdm-data-schema-row',
@@ -35,8 +34,6 @@ import { DataSchemaService } from 'src/app/mauro/data-schema-service';
 })
 export class DataSchemaRowComponent implements OnInit {
   @Input() dataSchema?: DataSchema;
-  @Input() requestName = '';
-  @Input() requestId = '';
   @Input() suppressViewRequestsDialogButton = false;
   @Input() canDelete = true;
   @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
@@ -45,16 +42,13 @@ export class DataSchemaRowComponent implements OnInit {
   @Output() requestAddDelete = new EventEmitter<RequestElementAddDeleteEvent>();
   @Output() updateAllOrSomeChildrenSelected = new EventEmitter();
 
-  visible = true;
+  expanded = true;
 
   schemaSelected: SelectionChange = {
     changedBy: { instigator: 'parent' },
     isSelected: false,
   };
   schemaElements: DataElementSearchResult[] = [];
-
-  cohortQueryType: DataRequestQueryType = 'cohort';
-  dataQueryType: DataRequestQueryType = 'data';
 
   constructor(private dataSchemaService: DataSchemaService) {
     this.sourceTargetIntersections = {
@@ -65,12 +59,14 @@ export class DataSchemaRowComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.dataSchema) {
-      this.schemaElements = this.dataSchemaService.getDataSchemaElements(this.dataSchema);
+      this.schemaElements = this.dataSchemaService.reduceDataElementsFromSchema(
+        this.dataSchema
+      );
     }
   }
 
-  toggleCollapse(): void {
-    this.visible = !this.visible;
+  toggleExpanded(): void {
+    this.expanded = !this.expanded;
   }
 
   handleRequestAddDelete(event: RequestElementAddDeleteEvent) {
