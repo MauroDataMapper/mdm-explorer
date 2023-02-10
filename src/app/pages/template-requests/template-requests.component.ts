@@ -21,6 +21,15 @@ import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY, finalize, switchMap } from 'rxjs';
 import { DataRequest } from 'src/app/data-explorer/data-explorer.types';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { SortByOption } from 'src/app/data-explorer/sort-by/sort-by.component';
+import { Sort } from 'src/app/mauro/sort.type';
+
+/**
+ * These options must be of the form '{propertyToSortBy}-{order}' where propertyToSortBy
+ * can be any property on the objects you are sorting and order must be of type
+ * {@link SortOrder }
+ */
+export type TemplateRequestSortByOption = 'label-asc' | 'label-desc';
 
 @Component({
   selector: 'mdm-template-requests',
@@ -29,7 +38,15 @@ import { DataRequestsService } from 'src/app/data-explorer/data-requests.service
 })
 export class TemplateRequestsComponent implements OnInit {
   templateRequests: DataRequest[] = [];
+  filteredRequests: DataRequest[] = [];
   state: 'idle' | 'loading' = 'idle';
+
+  sortByOptions: SortByOption[] = [
+    { value: 'label-asc', displayName: 'Name (a-z)' },
+    { value: 'label-desc', displayName: 'Name (z-a)' },
+  ];
+  sortByDefaultOption: SortByOption = this.sortByOptions[0];
+  sortBy?: SortByOption;
 
   constructor(private dataRequests: DataRequestsService, private toastr: ToastrService) {}
 
@@ -47,7 +64,12 @@ export class TemplateRequestsComponent implements OnInit {
       )
       .subscribe((templateRequests) => {
         this.templateRequests = templateRequests;
+        this.filterAndSortRequests();
       });
+  }
+
+  selectSortBy(selected: SortByOption) {
+    this.filterAndSortRequests(selected);
   }
 
   copy(request: DataRequest) {
@@ -61,5 +83,15 @@ export class TemplateRequestsComponent implements OnInit {
         )
       )
       .subscribe();
+  }
+
+  private filterAndSortRequests(sortBy?: SortByOption) {
+    const filtered = this.templateRequests;
+
+    this.sortBy = sortBy ?? this.sortByDefaultOption;
+    const [property, order] = Sort.defineSortParams(this.sortBy.value);
+    const sorted = filtered.sort((a, b) => Sort.compareByString(a, b, property, order));
+
+    this.filteredRequests = sorted;
   }
 }
