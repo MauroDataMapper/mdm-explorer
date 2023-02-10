@@ -16,8 +16,8 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSelectChange } from '@angular/material/select';
 import { CatalogueItemDomainType } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { of, throwError } from 'rxjs';
@@ -206,24 +206,18 @@ describe('MyRequestsComponent', () => {
     });
 
     it('should display all requests if no filters are set', () => {
-      const event = {
-        source: { value: 'unsent' },
-        checked: false,
-      } as MatCheckboxChange;
+      const event = { value: 'all' } as MatSelectChange;
 
       harness.component.filterByStatus(event);
 
-      expect(harness.component.statusFilters).toStrictEqual([]);
+      expect(harness.component.statusFilters).toStrictEqual(['submitted', 'unsent']);
       expect(harness.component.filteredRequests).toStrictEqual(requests);
     });
 
     it.each<DataRequestStatus>(['unsent', 'submitted'])(
       'should display only requests of status %p',
       (status) => {
-        const event = {
-          source: { value: status },
-          checked: true,
-        } as MatCheckboxChange;
+        const event = { value: status } as MatSelectChange;
 
         harness.component.filterByStatus(event);
 
@@ -231,24 +225,6 @@ describe('MyRequestsComponent', () => {
         expect(harness.component.filteredRequests).toStrictEqual(
           requests.filter((r) => r.status === status)
         );
-      }
-    );
-
-    it.each<DataRequestStatus>(['unsent', 'submitted'])(
-      'should include more requests when status %p is removed',
-      (status) => {
-        harness.component.statusFilters = [status];
-        harness.component.filteredRequests = requests.filter((r) => r.status === status);
-
-        const event = {
-          source: { value: status },
-          checked: false,
-        } as MatCheckboxChange;
-
-        harness.component.filterByStatus(event);
-
-        expect(harness.component.statusFilters).toStrictEqual([]);
-        expect(harness.component.filteredRequests).toStrictEqual(requests);
       }
     );
   });
