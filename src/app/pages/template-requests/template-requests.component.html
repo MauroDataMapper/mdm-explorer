@@ -30,6 +30,14 @@ SPDX-License-Identifier: Apache-2.0
       </p>
     </div>
   </div>
+  <div class="mdm-template-requests__sort-row">
+    <span class="spacer"></span>
+    <mdm-sort-by
+      [value]="sortBy"
+      [options]="sortByOptions"
+      (valueChange)="selectSortBy($event)"
+    ></mdm-sort-by>
+  </div>
   <div *ngIf="state === 'loading'" class="mdm-template-requests__progress">
     <mat-progress-bar color="primary" mode="indeterminate"></mat-progress-bar>
   </div>
