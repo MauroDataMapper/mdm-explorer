@@ -74,9 +74,9 @@ export const dontAllowDuplicatedNames = (
   dataRequestService: DataRequestsService,
   requestInitialName?: string
 ): AsyncValidatorFn => {
-  return (c: AbstractControl): Observable<ValidationErrors | null> => {
-    if (c) {
-      const name: string = c.value;
+  return (control: AbstractControl): Observable<ValidationErrors | null> => {
+    if (control) {
+      const name: string = control.value;
       if (requestInitialName === name) {
         // If the name has not changed,
         // allow without looking for duplicates.

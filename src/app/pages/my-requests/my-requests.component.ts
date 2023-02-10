@@ -74,51 +74,6 @@ export class MyRequestsComponent implements OnInit {
     });
   }
 
-  /**
-   * Opens a dialog for the user to update a request.
-   * Then, updates {@link allRequests} and {@link filteredRequests}.
-   *
-   * @param name The name of the request to update.
-   * @param id The request to update.
-   * @param description The description of the request to update.
-   * @returns void
-   */
-  editRequest(name: string, id?: string, description?: string) {
-    if (!id) {
-      return;
-    }
-
-    this.dataRequests.updateWithDialog(id, name, description).subscribe((response) => {
-      if (!response) {
-        return;
-      }
-      // Update the list with the new content.
-      // All requests...
-      this.updateRequestList(id, this.allRequests, response.label, response.description);
-      // Filtered requests
-      this.updateRequestList(
-        id,
-        this.filteredRequests,
-        response.label,
-        response.description
-      );
-    });
-  }
-
-  private updateRequestList(
-    requestId: string,
-    listToUpdate: DataRequest[],
-    newLabel: string,
-    newDescription?: string
-  ) {
-    const allRequestsUpdatedIndex = listToUpdate.findIndex((r) => r.id === requestId);
-    if (allRequestsUpdatedIndex < 0) {
-      return;
-    }
-    listToUpdate[allRequestsUpdatedIndex].label = newLabel;
-    listToUpdate[allRequestsUpdatedIndex].description = newDescription;
-  }
-
   private getUserRequests() {
     const user = this.security.getSignedInUser();
     if (!user) {

@@ -68,9 +68,9 @@ export type DataModelForkVersionFn = (
   payload: ForkModelPayload
 ) => Observable<DataModelDetailResponse>;
 
-export type UpdateDataModelFn<P extends ModelUpdatePayload> = (
+export type UpdateDataModelFn<Payload extends ModelUpdatePayload> = (
   id: Uuid,
-  data: P,
+  data: Payload,
   options?: RequestSettings
 ) => Observable<DataModelDetailResponse>;
 

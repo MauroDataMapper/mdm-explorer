@@ -73,6 +73,9 @@ export class EditRequestDialogComponent implements OnInit {
 
       description: new FormControl(this.initialDescription),
     });
+
+    this.name?.setValue(this.initialName);
+    this.description?.setValue(this.initialDescription);
   }
 
   currentValuesAreTheSameAsInitialValues(): boolean {
