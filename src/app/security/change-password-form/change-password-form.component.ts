@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ChangePasswordPayload } from 'src/app/mauro/catalogue-user.service';
 import { mustMatch } from 'src/app/shared/mdm-validators';
 
@@ -60,7 +60,7 @@ export class ChangePasswordFormComponent {
 
   @Output() updateClicked = new EventEmitter<ChangePasswordPayload>();
 
-  formGroup: FormGroup;
+  formGroup: UntypedFormGroup;
 
   /**
    * Used to track certain state per form field
@@ -72,20 +72,20 @@ export class ChangePasswordFormComponent {
   };
 
   constructor() {
-    this.formGroup = new FormGroup(
+    this.formGroup = new UntypedFormGroup(
       {
-        currentPassword: new FormControl('', [
+        currentPassword: new UntypedFormControl('', [
           Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
         ]),
-        newPassword: new FormControl('', [
+        newPassword: new UntypedFormControl('', [
           Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
         ]),
-        confirmPassword: new FormControl('', [
+        confirmPassword: new UntypedFormControl('', [
           Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
         ]),
         // Non-visible control to trigger form validation, prevent a valid form if password strength
         // is not 100%
-        passwordStrength: new FormControl(null, [Validators.min(100)]),
+        passwordStrength: new UntypedFormControl(null, [Validators.min(100)]),
       },
       {
         validators: [mustMatch('newPassword', 'confirmPassword')],

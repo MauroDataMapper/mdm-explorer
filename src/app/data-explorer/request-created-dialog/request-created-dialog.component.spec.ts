@@ -34,7 +34,7 @@ import {
   RequestCreatedData,
   RequestCreatedDialogComponent,
 } from './request-created-dialog.component';
-import { MockComponent } from 'ng-mocks';
+import { MockDirective } from 'ng-mocks';
 
 describe('RequestCreatedDialogComponent', () => {
   let harness: ComponentHarness<RequestCreatedDialogComponent>;
@@ -46,7 +46,7 @@ describe('RequestCreatedDialogComponent', () => {
 
   const setupTestbed = async (data: RequestCreatedData) => {
     harness = await setupTestModuleForComponent(RequestCreatedDialogComponent, {
-      declarations: [MockComponent(MatDialogActions), MockComponent(MatDialogContent)],
+      declarations: [MockDirective(MatDialogActions), MockDirective(MatDialogContent)],
       providers: [
         {
           provide: MatDialogRef,

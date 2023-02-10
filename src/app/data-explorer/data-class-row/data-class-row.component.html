@@ -33,13 +33,15 @@ SPDX-License-Identifier: Apache-2.0
       <button
         *ngIf="canDelete"
         mat-raised-button
-        class="mdm-data-class-row__header-button fa fa-trash-alt"
+        class="mdm-data-class-row__header-button"
         color="primary"
         (click)="removeClass()"
-        matTooltip="Remove from Request"
+        matTooltip="Remove from request"
         matTooltipClass="mdm-request-icon-tooltip"
-        aria-label="Button that removes the data class from the request"
-      ></button>
+        aria-label="Remove from request"
+      >
+        <span class="fa-solid fa-trash-can"></span>
+      </button>
       <mdm-data-element-in-request
         class="mdm-data-class-row__header-button"
         *ngIf="sourceTargetIntersections.dataAccessRequests.length > 0"
@@ -52,10 +54,14 @@ SPDX-License-Identifier: Apache-2.0
       ></mdm-data-element-in-request>
       <button
         mat-button
-        class="mdm-data-class-row__header-button-updown fa-solid"
-        [ngClass]="{ 'fa-angle-up': visible, 'fa-angle-down': !visible }"
+        class="mdm-data-class-row__header-button-updown"
         (click)="toggleCollapse()"
-      ></button>
+      >
+        <span
+          class="fa-solid"
+          [ngClass]="{ 'fa-angle-up': visible, 'fa-angle-down': !visible }"
+        ></span>
+      </button>
     </span>
   </div>
   <div [hidden]="!visible" class="mdm-my-request__request-elements">

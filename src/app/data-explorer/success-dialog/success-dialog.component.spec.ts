@@ -22,7 +22,7 @@ import {
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
-import { MockComponent } from 'ng-mocks';
+import { MockDirective } from 'ng-mocks';
 import { createMatDialogRefStub } from 'src/app/testing/stubs/mat-dialog.stub';
 import {
   ComponentHarness,
@@ -41,7 +41,7 @@ describe('SuccessDialogComponent', () => {
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(SuccessDialogComponent, {
-      declarations: [MockComponent(MatDialogContent), MockComponent(MatDialogActions)],
+      declarations: [MockDirective(MatDialogContent), MockDirective(MatDialogActions)],
       providers: [
         {
           provide: MatDialogRef,

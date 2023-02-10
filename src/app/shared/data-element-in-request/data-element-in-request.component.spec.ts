@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { MockComponent } from 'ng-mocks';
+import { MockComponent, MockService } from 'ng-mocks';
 import { MatMenu } from '@angular/material/menu';
 import {
   ComponentHarness,
@@ -42,6 +42,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { UserDetails } from 'src/app/security/user-details.service';
 import { createBroadcastServiceStub } from 'src/app/testing/stubs/broadcast.stub';
 import { BroadcastService } from 'src/app/core/broadcast.service';
+import { MatDivider } from '@angular/material/divider';
 
 describe('DataElementInRequestComponent', () => {
   let harness: ComponentHarness<DataElementInRequestComponent>;
@@ -64,8 +65,12 @@ describe('DataElementInRequestComponent', () => {
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(DataElementInRequestComponent, {
-      declarations: [MockComponent(MatMenu), MockComponent(MatDialog)],
+      declarations: [MockComponent(MatMenu), MockComponent(MatDivider)],
       providers: [
+        {
+          provide: MatDialog,
+          useValue: MockService(MatDialog),
+        },
         {
           provide: DataModelService,
           useValue: dataModelsStub,

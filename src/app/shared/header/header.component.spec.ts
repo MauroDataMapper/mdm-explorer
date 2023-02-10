@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { TestBed } from '@angular/core/testing';
-import { RouterLink } from '@angular/router';
+import { RouterLink, ActivatedRoute } from '@angular/router';
 import { MockDirective } from 'ng-mocks';
 import {
   ComponentHarness,
@@ -33,6 +33,12 @@ describe('HeaderComponent', () => {
     TestBed.configureTestingModule({});
     harness = await setupTestModuleForComponent(HeaderComponent, {
       declarations: [MockDirective(ArrowDirective), MockDirective(RouterLink)],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {},
+        },
+      ],
     });
   });
 

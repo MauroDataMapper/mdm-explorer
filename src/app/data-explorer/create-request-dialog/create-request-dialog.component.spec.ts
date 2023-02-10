@@ -23,7 +23,7 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
-import { MockComponent } from 'ng-mocks';
+import { MockComponent, MockDirective } from 'ng-mocks';
 import { createMatDialogRefStub } from 'src/app/testing/stubs/mat-dialog.stub';
 import {
   ComponentHarness,
@@ -41,10 +41,10 @@ describe('CreateRequestDialogComponent', () => {
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(CreateRequestDialogComponent, {
       declarations: [
-        MockComponent(MatDialogContent),
-        MockComponent(MatDialogActions),
+        MockDirective(MatDialogContent),
+        MockDirective(MatDialogActions),
         MockComponent(MatFormField),
-        MockComponent(MatLabel),
+        MockDirective(MatLabel),
       ],
       providers: [
         {
