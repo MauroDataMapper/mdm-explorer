@@ -21,7 +21,6 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 import { CatalogueItemDomainType } from '@maurodatamapper/mdm-resources';
 import { MockComponent } from 'ng-mocks';
 import {
-  CreateRequestEvent,
   DataElementInRequestComponent,
   RequestElementAddDeleteEvent,
 } from 'src/app/shared/data-element-in-request/data-element-in-request.component';

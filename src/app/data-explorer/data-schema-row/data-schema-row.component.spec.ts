@@ -84,7 +84,7 @@ describe('DataSchemaRowComponent', () => {
         dataClasses: [
           {
             dataClass: buildDataClass('class1'),
-            dataElements: dataElements,
+            dataElements,
           },
         ],
       };

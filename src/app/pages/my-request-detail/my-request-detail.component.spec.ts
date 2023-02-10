@@ -16,32 +16,25 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { fakeAsync, tick } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { CatalogueItemDomainType } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import { of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
-import { DataRequest, DataSchema } from 'src/app/data-explorer/data-explorer.types';
+import { DataRequest } from 'src/app/data-explorer/data-explorer.types';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import { DataSchemaService } from 'src/app/data-explorer/data-schema.service';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { ResearchPluginService } from 'src/app/mauro/research-plugin.service';
-import { SecurityService } from 'src/app/security/security.service';
 import { createBroadcastServiceStub } from 'src/app/testing/stubs/broadcast.stub';
 import { createDataExplorerServiceStub } from 'src/app/testing/stubs/data-explorer.stub';
 import { createDataModelServiceStub } from 'src/app/testing/stubs/data-model.stub';
 import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
-import {
-  buildDataClass,
-  buildDataElement,
-  createDataSchemaServiceStub,
-} from 'src/app/testing/stubs/data-schema.stub';
+import { createDataSchemaServiceStub } from 'src/app/testing/stubs/data-schema.stub';
 import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
 import { createResearchPluginServiceStub } from 'src/app/testing/stubs/research-plugin.stub';
-import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { createToastrServiceStub } from 'src/app/testing/stubs/toastr.stub';
 import {
   ComponentHarness,
@@ -173,7 +166,7 @@ describe('MyRequestsComponent', () => {
       });
 
       harness.component.ngOnInit();
-      //tick();
+      // tick();
 
       expect(harness.component.state).toBe('idle');
       expect(harness.component.request).toStrictEqual(request);
