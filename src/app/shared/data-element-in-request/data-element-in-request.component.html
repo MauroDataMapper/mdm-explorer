@@ -48,6 +48,7 @@ SPDX-License-Identifier: Apache-2.0
               [value]="dataRequest.dataModel.id ?? ''"
               (click)="$event.stopPropagation()"
               (change)="changed($event, dataRequest.dataModel)"
+              [disabled]="processingChangedEvent"
               >{{ dataRequest.dataModel.label }}</mat-checkbox
             >
           </li>
@@ -61,6 +62,8 @@ SPDX-License-Identifier: Apache-2.0
         color="primary"
         (click)="onClickCreateRequest()"
         clickable
+        class="create-request-button"
+        [disabled]="processingChangedEvent"
       >
         Create new request
       </button>
