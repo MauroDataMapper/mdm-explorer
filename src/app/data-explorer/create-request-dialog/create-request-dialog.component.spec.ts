@@ -61,7 +61,7 @@ describe('CreateRequestDialogComponent', () => {
 
   it('should create', () => {
     expect(harness.isComponentCreated).toBeTruthy();
-    expect(harness.component.requestForm).toBeUndefined();
+    expect(harness.component.requestForm).toBeDefined();
     expect(harness.component.showDescription).toBeTruthy();
   });
 

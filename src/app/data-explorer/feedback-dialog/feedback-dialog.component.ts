@@ -16,8 +16,8 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { Component } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 
 export interface FeedbackDialogResponse {
@@ -29,23 +29,19 @@ export interface FeedbackDialogResponse {
   templateUrl: './feedback-dialog.component.html',
   styleUrls: ['./feedback-dialog.component.scss'],
 })
-export class FeedbackDialogComponent implements OnInit {
-  feedbackForm!: UntypedFormGroup;
+export class FeedbackDialogComponent {
+  feedbackForm = new FormGroup({
+    message: new FormControl('', [
+      Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
+    ]),
+  });
 
   constructor(
     private dialogRef: MatDialogRef<FeedbackDialogComponent, FeedbackDialogResponse>
   ) {}
 
   get message() {
-    return this.feedbackForm.get('message');
-  }
-
-  ngOnInit(): void {
-    this.feedbackForm = new UntypedFormGroup({
-      message: new UntypedFormControl('', [
-        Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
-      ]),
-    });
+    return this.feedbackForm.controls.message;
   }
 
   close() {
@@ -57,6 +53,6 @@ export class FeedbackDialogComponent implements OnInit {
       return;
     }
 
-    this.dialogRef.close({ message: this.message?.value });
+    this.dialogRef.close({ message: this.message.value ?? '' });
   }
 }

@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ChangePasswordPayload } from 'src/app/mauro/catalogue-user.service';
 import { mustMatch } from 'src/app/shared/mdm-validators';
 
@@ -60,7 +60,25 @@ export class ChangePasswordFormComponent {
 
   @Output() updateClicked = new EventEmitter<ChangePasswordPayload>();
 
-  formGroup: UntypedFormGroup;
+  formGroup = new FormGroup(
+    {
+      currentPassword: new FormControl('', [
+        Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
+      ]),
+      newPassword: new FormControl('', [
+        Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
+      ]),
+      confirmPassword: new FormControl('', [
+        Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
+      ]),
+      // Non-visible control to trigger form validation, prevent a valid form if password strength
+      // is not 100%
+      passwordStrength: new FormControl(0, [Validators.min(100)]),
+    },
+    {
+      validators: [mustMatch('newPassword', 'confirmPassword')],
+    }
+  );
 
   /**
    * Used to track certain state per form field
@@ -71,42 +89,20 @@ export class ChangePasswordFormComponent {
     confirmPassword: hiddenFieldState,
   };
 
-  constructor() {
-    this.formGroup = new UntypedFormGroup(
-      {
-        currentPassword: new UntypedFormControl('', [
-          Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
-        ]),
-        newPassword: new UntypedFormControl('', [
-          Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
-        ]),
-        confirmPassword: new UntypedFormControl('', [
-          Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
-        ]),
-        // Non-visible control to trigger form validation, prevent a valid form if password strength
-        // is not 100%
-        passwordStrength: new UntypedFormControl(null, [Validators.min(100)]),
-      },
-      {
-        validators: [mustMatch('newPassword', 'confirmPassword')],
-      }
-    );
-  }
-
   get currentPassword() {
-    return this.formGroup.get('currentPassword');
+    return this.formGroup.controls.currentPassword;
   }
 
   get newPassword() {
-    return this.formGroup.get('newPassword');
+    return this.formGroup.controls.newPassword;
   }
 
   get confirmPassword() {
-    return this.formGroup.get('confirmPassword');
+    return this.formGroup.controls.confirmPassword;
   }
 
   get passwordStrength() {
-    return this.formGroup.get('passwordStrength');
+    return this.formGroup.controls.passwordStrength;
   }
 
   toggleVisibility(control: string) {
@@ -115,7 +111,7 @@ export class ChangePasswordFormComponent {
   }
 
   passwordStrengthChanged(strength: number) {
-    this.passwordStrength?.setValue(strength);
+    this.passwordStrength.setValue(strength);
   }
 
   cancel() {
@@ -128,8 +124,8 @@ export class ChangePasswordFormComponent {
     }
 
     this.updateClicked.emit({
-      oldPassword: this.currentPassword?.value,
-      newPassword: this.newPassword?.value,
+      oldPassword: this.currentPassword.value ?? '',
+      newPassword: this.newPassword.value ?? '',
     });
   }
 }

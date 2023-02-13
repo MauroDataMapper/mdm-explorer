@@ -41,11 +41,6 @@ describe('ContactFormComponent', () => {
     expect(harness.component.formFieldAppearance).toBe('outline');
     expect(harness.component.data).toBeUndefined();
     expect(harness.component.state).toBe('idle');
-    expect(harness.component.contactForm).toBeUndefined();
-  });
-
-  it('should be initialised', () => {
-    harness.component.ngOnInit();
     expect(harness.component.contactForm).toBeDefined();
     expect(harness.component.firstName?.value).toBe('');
     expect(harness.component.lastName?.value).toBe('');
@@ -56,8 +51,6 @@ describe('ContactFormComponent', () => {
   });
 
   it('should disable the form if state is changed to "sending"', () => {
-    harness.component.ngOnInit();
-
     const spy = jest.spyOn(harness.component.contactForm, 'disable');
     const state: ContactFormState = 'sending';
 
@@ -68,8 +61,6 @@ describe('ContactFormComponent', () => {
   });
 
   it('should enable the form if state is changed to not "sending"', () => {
-    harness.component.ngOnInit();
-
     const spy = jest.spyOn(harness.component.contactForm, 'enable');
     const state: ContactFormState = 'idle';
 
@@ -80,8 +71,6 @@ describe('ContactFormComponent', () => {
   });
 
   it('should preset the form fields to the given data', () => {
-    harness.component.ngOnInit();
-
     const data: PluginResearchContactPayload = {
       firstName: 'test',
       lastName: 'person',
@@ -104,7 +93,6 @@ describe('ContactFormComponent', () => {
 
   it('should not raise a submit event with invalid form input', () => {
     const spy = jest.spyOn(harness.component.submitClicked, 'emit');
-    harness.component.ngOnInit();
     harness.component.submit();
     expect(spy).not.toHaveBeenCalled();
   });
@@ -121,11 +109,10 @@ describe('ContactFormComponent', () => {
       message: 'this is a test message',
     };
 
-    harness.component.ngOnInit();
-    harness.component.firstName?.setValue(data.firstName);
-    harness.component.lastName?.setValue(data.lastName);
-    harness.component.organisation?.setValue(data.organisation);
-    harness.component.email?.setValue(data.emailAddress);
+    harness.component.firstName?.setValue(data.firstName ?? '');
+    harness.component.lastName?.setValue(data.lastName ?? '');
+    harness.component.organisation?.setValue(data.organisation ?? '');
+    harness.component.email?.setValue(data.emailAddress ?? '');
     harness.component.subject?.setValue(data.subject);
     harness.component.message?.setValue(data.message);
 

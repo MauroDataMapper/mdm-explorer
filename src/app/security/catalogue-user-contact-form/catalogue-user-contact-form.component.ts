@@ -24,7 +24,7 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import {
   CatalogueUser,
   CatalogueUserContactPayload,
@@ -44,23 +44,21 @@ export class CatalogueUserContactFormComponent implements OnChanges {
 
   @Output() updateClicked = new EventEmitter<CatalogueUserContactPayload>();
 
-  formGroup: UntypedFormGroup;
-
-  constructor() {
-    this.formGroup = new UntypedFormGroup({
-      emailAddress: new UntypedFormControl('', [
-        Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
-      ]),
-    });
-  }
+  formGroup = new FormGroup({
+    emailAddress: new FormControl('', [
+      Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
+    ]),
+  });
 
   get emailAddress() {
-    return this.formGroup.get('emailAddress');
+    return this.formGroup.controls.emailAddress;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.user) {
-      this.setFormValues(this.user);
+      this.formGroup.patchValue({
+        emailAddress: this.user?.emailAddress ?? '',
+      });
     }
   }
 
@@ -74,11 +72,7 @@ export class CatalogueUserContactFormComponent implements OnChanges {
     }
 
     this.updateClicked.emit({
-      emailAddress: this.emailAddress?.value,
+      emailAddress: this.emailAddress.value ?? '',
     });
-  }
-
-  private setFormValues(user?: CatalogueUser) {
-    this.emailAddress?.setValue(user?.emailAddress ?? '');
   }
 }

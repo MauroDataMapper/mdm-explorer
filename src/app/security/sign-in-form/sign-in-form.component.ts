@@ -21,11 +21,10 @@ import {
   EventEmitter,
   Input,
   OnChanges,
-  OnInit,
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatFormFieldAppearance } from '@angular/material/form-field';
 import { PublicOpenIdConnectProvider } from '@maurodatamapper/mdm-resources';
 import { defaultEmailPattern } from 'src/app/core/core.types';
@@ -41,7 +40,7 @@ export interface SignInClickEvent {
   templateUrl: './sign-in-form.component.html',
   styleUrls: ['./sign-in-form.component.scss'],
 })
-export class SignInFormComponent implements OnInit, OnChanges {
+export class SignInFormComponent implements OnChanges {
   @Input() authenticating = false;
 
   @Input() formFieldAppearance: MatFormFieldAppearance = 'outline';
@@ -58,14 +57,22 @@ export class SignInFormComponent implements OnInit, OnChanges {
 
   @Output() openIdConnectClicked = new EventEmitter<PublicOpenIdConnectProvider>();
 
-  signInForm!: UntypedFormGroup;
+  signInForm = new FormGroup({
+    userName: new FormControl('', [
+      Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
+      Validators.pattern(this.emailPattern ?? defaultEmailPattern),
+    ]),
+    password: new FormControl('', [
+      Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
+    ]),
+  });
 
   get userName() {
-    return this.signInForm.get('userName');
+    return this.signInForm.controls.userName;
   }
 
   get password() {
-    return this.signInForm.get('password');
+    return this.signInForm.controls.password;
   }
 
   get signInErrorMessage() {
@@ -83,18 +90,6 @@ export class SignInFormComponent implements OnInit, OnChanges {
     }
   }
 
-  ngOnInit(): void {
-    this.signInForm = new UntypedFormGroup({
-      userName: new UntypedFormControl('', [
-        Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
-        Validators.pattern(this.emailPattern ?? defaultEmailPattern),
-      ]),
-      password: new UntypedFormControl('', [
-        Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
-      ]),
-    });
-  }
-
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.authenticating !== undefined && this.signInForm) {
       if (this.authenticating) {
@@ -106,13 +101,13 @@ export class SignInFormComponent implements OnInit, OnChanges {
   }
 
   signIn() {
-    if (this.signInForm.invalid) {
+    if (this.signInForm.invalid || !this.userName.value || !this.password.value) {
       return;
     }
 
     this.signInClicked.emit({
-      userName: this.userName?.value,
-      password: this.password?.value,
+      userName: this.userName.value,
+      password: this.password.value,
     });
   }
 

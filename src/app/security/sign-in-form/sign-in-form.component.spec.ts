@@ -16,13 +16,15 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { SimpleChange, SimpleChanges } from '@angular/core';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { PublicOpenIdConnectProvider } from '@maurodatamapper/mdm-resources';
 import { MockComponent, MockDirective } from 'ng-mocks';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from '../../testing/testing.helpers';
-import { SignInFormComponent } from './sign-in-form.component';
+import { SignInClickEvent, SignInFormComponent } from './sign-in-form.component';
 
 describe('SignInFormComponent', () => {
   let harness: ComponentHarness<SignInFormComponent>;
@@ -35,5 +37,62 @@ describe('SignInFormComponent', () => {
 
   it('should create', () => {
     expect(harness.isComponentCreated).toBeTruthy();
+    expect(harness.component.authenticating).toBe(false);
+    expect(harness.component.formFieldAppearance).toBe('outline');
+    expect(harness.component.signInError).toBeUndefined();
+  });
+
+  describe('on changes', () => {
+    const triggerChange = (authenticate: boolean) => {
+      const changes: SimpleChanges = {
+        authenticating: new SimpleChange(authenticate, authenticate, false),
+      };
+
+      harness.component.authenticating = authenticate;
+      harness.component.ngOnChanges(changes);
+    };
+
+    it('should disable the form when authenticating', () => {
+      expect(harness.component.signInForm.enabled).toBe(true);
+
+      triggerChange(true);
+      expect(harness.component.signInForm.enabled).toBe(false);
+    });
+
+    it('should enable the form when not authenticating', () => {
+      triggerChange(true);
+      expect(harness.component.signInForm.enabled).toBe(false);
+
+      triggerChange(false);
+      expect(harness.component.signInForm.enabled).toBe(true);
+    });
+  });
+
+  it('should raise an event when signing in', () => {
+    const expected: SignInClickEvent = {
+      userName: 'test@test.com',
+      password: '12345',
+    };
+
+    harness.component.userName.setValue(expected.userName);
+    harness.component.password.setValue(expected.password);
+
+    const eventSpy = jest.spyOn(harness.component.signInClicked, 'emit');
+
+    harness.component.signIn();
+    expect(eventSpy).toHaveBeenCalledWith(expected);
+  });
+
+  it('should raise an event when using openid connect', () => {
+    const expected: PublicOpenIdConnectProvider = {
+      id: '123',
+      label: 'test provider',
+      authorizationEndpoint: 'url',
+      standardProvider: true,
+    };
+
+    const eventSpy = jest.spyOn(harness.component.openIdConnectClicked, 'emit');
+    harness.component.authenticateWithOpenIdConnect(expected);
+    expect(eventSpy).toHaveBeenCalledWith(expected);
   });
 });
