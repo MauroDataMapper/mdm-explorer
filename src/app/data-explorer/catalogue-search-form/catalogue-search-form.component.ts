@@ -24,7 +24,7 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatFormFieldAppearance } from '@angular/material/form-field';
 import { ProfileField } from '@maurodatamapper/mdm-resources';
 import {
@@ -44,7 +44,7 @@ export class CatalogueSearchFormComponent implements OnChanges {
 
   @Output() searchClicked = new EventEmitter<DataElementSearchParameters>();
 
-  formGroup: FormGroup = new FormGroup({});
+  formGroup: UntypedFormGroup = new UntypedFormGroup({});
 
   get searchTerms() {
     return this.formGroup.get('searchTerms');
@@ -52,11 +52,11 @@ export class CatalogueSearchFormComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.profileFields || changes.routeSearchTerm) {
-      this.formGroup = new FormGroup({
-        searchTerms: new FormControl(this.routeSearchTerm),
+      this.formGroup = new UntypedFormGroup({
+        searchTerms: new UntypedFormControl(this.routeSearchTerm),
       });
       this.profileFields.forEach((field) => {
-        this.formGroup.addControl(field.metadataPropertyName, new FormControl(''));
+        this.formGroup.addControl(field.metadataPropertyName, new UntypedFormControl(''));
       });
     }
   }

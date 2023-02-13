@@ -25,7 +25,7 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatFormFieldAppearance } from '@angular/material/form-field';
 import { defaultEmailPattern } from 'src/app/core/core.types';
 
@@ -57,15 +57,15 @@ export class ForgotPasswordFormComponent implements OnInit, OnChanges {
 
   @Output() resetPasswordClicked = new EventEmitter<ResetPasswordClickEvent>();
 
-  resetForm!: FormGroup;
+  resetForm!: UntypedFormGroup;
 
   get email() {
     return this.resetForm.get('email');
   }
 
   ngOnInit(): void {
-    this.resetForm = new FormGroup({
-      email: new FormControl('', [
+    this.resetForm = new UntypedFormGroup({
+      email: new UntypedFormControl('', [
         Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
         Validators.pattern(this.emailPattern ?? defaultEmailPattern),
       ]),

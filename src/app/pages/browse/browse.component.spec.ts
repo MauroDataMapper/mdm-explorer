@@ -23,7 +23,7 @@ import {
   DataClass,
   DataModelDetail,
 } from '@maurodatamapper/mdm-resources';
-import { MockComponent } from 'ng-mocks';
+import { MockComponent, MockService } from 'ng-mocks';
 import { ToastrService } from 'ngx-toastr';
 import { Observable, of, throwError } from 'rxjs';
 import { DataModelService } from 'src/app/mauro/data-model.service';
@@ -84,12 +84,12 @@ describe('BrowseComponent', () => {
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(BrowseComponent, {
-      declarations: [
-        MockComponent(MatSelectionList),
-        MockComponent(MatMenu),
-        MockComponent(MatDialog),
-      ],
+      declarations: [MockComponent(MatSelectionList), MockComponent(MatMenu)],
       providers: [
+        {
+          provide: MatDialog,
+          useValue: MockService(MatDialog),
+        },
         {
           provide: DataModelService,
           useValue: dataModelStub,
