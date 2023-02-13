@@ -53,10 +53,6 @@ export class QueryBuilderComponent implements OnInit {
     /* eslint-disable */
     string: ['=', '!=', 'contains', 'like', 'startswith', 'endswith'],
     datetime: ['=', '!=', '>', '<', '=>', '=<'],
-    date: ['=', '!=', '>', '<', '=>', '=<'],
-    time: ['=', '>', '<', '=>', '=<'],
-    boolean: ['=', '!='],
-    number: ['=', '!=', '>', '<', '=>', '=<'],
     terminology: ['in', 'not in'],
     /* eslint-enable */
   };
