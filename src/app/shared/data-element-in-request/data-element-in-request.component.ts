@@ -220,6 +220,8 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
             .subscribe((action) => {
               if (action === 'view-requests') {
                 this.stateRouter.navigateToKnownPath('/requests');
+              } else if (action === 'view-request-detail') {
+                this.stateRouter.navigateTo(['/requests', item.id]);
               }
             });
         }); // eslint-disable-line @typescript-eslint/no-unsafe-argument
@@ -306,9 +308,11 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
 
     this.dataRequests
       .createWithDialogs(getDataElements, this.suppressViewRequestsDialogButton)
-      .subscribe((action) => {
-        if (action === 'view-requests') {
+      .subscribe((response) => {
+        if (response.action === 'view-requests') {
           this.stateRouter.navigateToKnownPath('/requests');
+        } else if (response.action === 'view-request-detail') {
+          this.stateRouter.navigateTo(['/requests', response.dataRequest.id]);
         }
         this.createRequestClicked.emit(event);
       });

@@ -29,7 +29,7 @@ export interface RequestUpdatedData {
   suppressViewRequests?: boolean;
 }
 
-export type RequestUpdatedAction = 'continue' | 'view-requests';
+export type RequestUpdatedAction = 'continue' | 'view-requests' | 'view-request-detail';
 
 @Component({
   selector: 'mdm-request-updated-dialog',

@@ -35,7 +35,7 @@ import {
   ForkDataRequestOptions,
 } from 'src/app/data-explorer/data-explorer.types';
 import { DataAccessRequestsSourceTargetIntersections } from 'src/app/data-explorer/data-requests.service';
-import { RequestCreatedAction } from 'src/app/data-explorer/request-created-dialog/request-created-dialog.component';
+import { RequestCreatedResponse } from 'src/app/data-explorer/request-created-dialog/request-created-dialog.component';
 import { UserDetails } from 'src/app/security/user-details.service';
 
 export type DataRequestsGetFn = (id: string) => Observable<DataModel>;
@@ -57,7 +57,7 @@ export type DataRequestsCreateFromDataElementsFn = (
 ) => Observable<DataRequest>;
 export type CreateFromDialogsFn = (
   callback: () => Observable<DataElementInstance[]>
-) => Observable<RequestCreatedAction | undefined>;
+) => Observable<RequestCreatedResponse>;
 export type DataAccessRequestsSourceTargetIntersectionsFn = (
   sourceDataModelId: Uuid
 ) => Observable<DataAccessRequestsSourceTargetIntersections>;
