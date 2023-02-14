@@ -41,7 +41,6 @@ describe('DataElementSearchService', () => {
   const dataExplorerStub = createDataExplorerServiceStub();
 
   const explorerConfig: DataExplorerConfiguration = {
-    rootDataModelPath: 'root',
     profileNamespace: 'test.namespace',
     profileServiceName: 'testProfile',
   };

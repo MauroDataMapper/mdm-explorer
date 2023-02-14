@@ -67,7 +67,6 @@ describe('DataElementComponent', () => {
   const profileStub = createProfileServiceStub();
   const terminologiesStub = createTerminologyServiceStub();
   const config: DataExplorerConfiguration = {
-    rootDataModelPath: 'my test model',
     profileServiceName: 'Profile Service',
     profileNamespace: 'Profile Namespace',
   };
