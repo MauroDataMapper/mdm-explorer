@@ -25,7 +25,7 @@ import {
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
-import { MockComponent } from 'ng-mocks';
+import { MockComponent, MockDirective } from 'ng-mocks';
 import { Observable, of } from 'rxjs';
 import { dontAllowDuplicatedNames } from 'src/app/shared/mdm-validators';
 import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
@@ -46,7 +46,7 @@ import {
   EditRequestDialogResponse,
 } from './edit-request-dialog.component';
 
-describe('CreateRequestDialogComponent', () => {
+describe('EditRequestDialogComponent', () => {
   let harness: ComponentHarness<EditRequestDialogComponent>;
   const dialogRefStub = createMatDialogRefStub<EditRequestDialogResponse>();
   const dataRequestsStub = createDataRequestsServiceStub();
@@ -67,10 +67,10 @@ describe('CreateRequestDialogComponent', () => {
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(EditRequestDialogComponent, {
       declarations: [
-        MockComponent(MatDialogContent),
-        MockComponent(MatDialogActions),
+        MockDirective(MatDialogContent),
+        MockDirective(MatDialogActions),
         MockComponent(MatFormField),
-        MockComponent(MatLabel),
+        MockDirective(MatLabel),
       ],
       providers: [
         {
