@@ -24,7 +24,7 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import {
   CatalogueUser,
   CatalogueUserContactPayload,
@@ -44,11 +44,11 @@ export class CatalogueUserContactFormComponent implements OnChanges {
 
   @Output() updateClicked = new EventEmitter<CatalogueUserContactPayload>();
 
-  formGroup: FormGroup;
+  formGroup: UntypedFormGroup;
 
   constructor() {
-    this.formGroup = new FormGroup({
-      emailAddress: new FormControl('', [
+    this.formGroup = new UntypedFormGroup({
+      emailAddress: new UntypedFormControl('', [
         Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
       ]),
     });

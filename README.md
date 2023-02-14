@@ -82,6 +82,18 @@ npm run license-check add
 npm run pr-checks
 ```
 
+# Running tests
+
+The `npm run test` and `npm run test:watch` commands will run the test suite via the terminal.
+
+If using VS Code, there are extensions available to integrate a test explorer and run/debug individual tests. If using one of those, you will need to uncomment this line in `src/setupJest.js`:
+
+```js
+import 'jest-preset-angular/setup-jest';
+```
+
+By default this is commented _out_ because `@angular-builders/jest` already does this - `npm run test` is an alias for `ng test`, which calls the Angular builder. However, running VS Code extensions do not run tests this way, meaning setup is required. If using an extension as a test explorer, remember to _comment out_ this line again before submitting a PR.
+
 # Code scaffolding
 
 Run `ng generate component component-name` to generate a new component. You can also use

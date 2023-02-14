@@ -24,7 +24,7 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { CatalogueUser, CatalogueUserPayload } from '../../mauro/catalogue-user.service';
 
 @Component({
@@ -41,20 +41,20 @@ export class CatalogueUserBasicFormComponent implements OnChanges {
 
   @Output() updateClicked = new EventEmitter<CatalogueUserPayload>();
 
-  formGroup: FormGroup;
+  formGroup: UntypedFormGroup;
 
   constructor() {
-    this.formGroup = new FormGroup({
-      firstName: new FormControl('', [
+    this.formGroup = new UntypedFormGroup({
+      firstName: new UntypedFormControl('', [
         Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
       ]),
-      lastName: new FormControl('', [
+      lastName: new UntypedFormControl('', [
         Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
       ]),
-      organisation: new FormControl('', [
+      organisation: new UntypedFormControl('', [
         Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
       ]),
-      role: new FormControl(''),
+      role: new UntypedFormControl(''),
     });
   }
 

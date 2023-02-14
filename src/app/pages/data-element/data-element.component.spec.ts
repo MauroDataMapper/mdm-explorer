@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { MockComponent } from 'ng-mocks';
+import { MockComponent, MockDirective } from 'ng-mocks';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
@@ -56,6 +56,7 @@ import { MatCard } from '@angular/material/card';
 import { MatTooltip } from '@angular/material/tooltip';
 import { createTerminologyServiceStub } from 'src/app/testing/stubs/terminology.stub';
 import { TerminologyService } from 'src/app/mauro/terminology.service';
+import { DataElementInRequestComponent } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
 
 describe('DataElementComponent', () => {
   let harness: ComponentHarness<DataElementComponent>;
@@ -85,12 +86,13 @@ describe('DataElementComponent', () => {
         MockComponent(MatTab),
         MockComponent(MatIcon),
         MockComponent(MatCard),
-        MockComponent(MatTooltip),
+        MockDirective(MatTooltip),
         BreadcrumbComponent,
         MockComponent(ClassifiersComponent),
         MockComponent(SummaryMetadataComponent),
         DataElementProfileComponent,
         BookmarkToggleComponent,
+        MockComponent(DataElementInRequestComponent),
       ],
       providers: [
         {

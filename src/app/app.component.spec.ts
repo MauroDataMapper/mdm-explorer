@@ -16,8 +16,8 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { RouterOutlet } from '@angular/router';
-import { MockComponent } from 'ng-mocks';
+import { ActivatedRoute, RouterOutlet } from '@angular/router';
+import { MockDirective } from 'ng-mocks';
 import { AppComponent } from './app.component';
 import { StateRouterService } from './core/state-router.service';
 import { DataRequestsService } from './data-explorer/data-requests.service';
@@ -41,8 +41,12 @@ describe('AppComponent', () => {
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(AppComponent, {
-      declarations: [HeaderComponent, FooterComponent, MockComponent(RouterOutlet)],
+      declarations: [HeaderComponent, FooterComponent, MockDirective(RouterOutlet)],
       providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {},
+        },
         {
           provide: DataRequestsService,
           useValue: dataRequestsStub,

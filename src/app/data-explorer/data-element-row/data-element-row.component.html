@@ -47,13 +47,15 @@ SPDX-License-Identifier: Apache-2.0
       <button
         *ngIf="canDelete"
         mat-raised-button
-        class="mdm-data-element-row__header-button fa fa-trash-alt"
+        class="mdm-data-element-row__header-button"
         color="primary"
         (click)="removeElement()"
-        matTooltip="Remove from Request"
+        matTooltip="Remove from request"
         matTooltipClass="mdm-request-icon-tooltip"
-        aria-label="Button that removes the data element from the request"
-      ></button>
+        aria-label="Remove from request"
+      >
+        <span class="fa-solid fa-trash-can"></span>
+      </button>
       <mdm-data-element-in-request
         class="mdm-data-element-row__header-button"
         *ngIf="sourceTargetIntersections.dataAccessRequests.length > 0"

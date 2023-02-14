@@ -27,6 +27,8 @@ import {
   DataModelSubsetPayload,
   ForkModelPayload,
   MdmIndexBody,
+  ModelUpdatePayload,
+  RequestSettings,
   SearchQueryParameters,
   SourceTargetIntersection,
   SourceTargetIntersectionPayload,
@@ -89,6 +91,11 @@ export type DataModelElementsInAnotherModelFn = (
 export type DataModelDataElementToBasicFn = (
   element: DataElementDto
 ) => DataElementInstance;
+export type UpdateDataModelFn = (
+  id: Uuid,
+  data: ModelUpdatePayload,
+  options?: RequestSettings
+) => Observable<DataModelDetail>;
 
 export interface DataModelServiceStub {
   getDataModelById: jest.MockedFunction<(id: Uuid) => Observable<DataModelDetail>>;
@@ -111,6 +118,7 @@ export interface DataModelServiceStub {
   moveToFolder: jest.MockedFunction<
     (modelId: Uuid, targetFolderId: Uuid) => Observable<DataModelDetail>
   >;
+  update: jest.MockedFunction<UpdateDataModelFn>;
 }
 
 export const createDataModelServiceStub = (): DataModelServiceStub => {
@@ -137,5 +145,6 @@ export const createDataModelServiceStub = (): DataModelServiceStub => {
       jest.fn() as jest.MockedFunction<DataModelElementsInAnotherModelFn>,
     dataElementToBasic: jest.fn() as jest.MockedFunction<DataModelDataElementToBasicFn>,
     moveToFolder: jest.fn(),
+    update: jest.fn() as jest.MockedFunction<UpdateDataModelFn>,
   };
 };

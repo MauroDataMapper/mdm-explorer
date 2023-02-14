@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { MatFormField, MatLabel } from '@angular/material/form-field';
-import { MockComponent } from 'ng-mocks';
+import { MockComponent, MockDirective } from 'ng-mocks';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
@@ -29,7 +29,7 @@ describe('ForgotPasswordFormComponent', () => {
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(ForgotPasswordFormComponent, {
-      declarations: [MockComponent(MatFormField), MockComponent(MatLabel)],
+      declarations: [MockComponent(MatFormField), MockDirective(MatLabel)],
     });
   });
 

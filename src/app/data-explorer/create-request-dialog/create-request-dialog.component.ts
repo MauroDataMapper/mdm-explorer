@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, Inject, OnInit, Optional } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 export interface CreateRequestDialogOptions {
@@ -35,7 +35,7 @@ export interface CreateRequestDialogResponse {
   styleUrls: ['./create-request-dialog.component.scss'],
 })
 export class CreateRequestDialogComponent implements OnInit {
-  requestForm!: FormGroup;
+  requestForm!: UntypedFormGroup;
   showDescription = true;
 
   constructor(
@@ -57,11 +57,11 @@ export class CreateRequestDialogComponent implements OnInit {
   ngOnInit(): void {
     this.showDescription = this.data?.showDescription ?? true;
 
-    this.requestForm = new FormGroup({
-      name: new FormControl('', [
+    this.requestForm = new UntypedFormGroup({
+      name: new UntypedFormControl('', [
         Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
       ]),
-      description: new FormControl(''),
+      description: new UntypedFormControl(''),
     });
   }
 

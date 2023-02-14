@@ -22,7 +22,7 @@ import {
 } from '@angular-material-extensions/password-strength';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
-import { MockComponent } from 'ng-mocks';
+import { MockComponent, MockDirective } from 'ng-mocks';
 import { ChangePasswordPayload } from 'src/app/mauro/catalogue-user.service';
 import {
   ComponentHarness,
@@ -41,7 +41,7 @@ describe('ChangePasswordFormComponent', () => {
     harness = await setupTestModuleForComponent(ChangePasswordFormComponent, {
       declarations: [
         MockComponent(MatFormField),
-        MockComponent(MatLabel),
+        MockDirective(MatLabel),
         MockComponent(MatIcon),
         MockComponent(MatPasswordStrengthComponent),
         MockComponent(MatPasswordStrengthInfoComponent),
