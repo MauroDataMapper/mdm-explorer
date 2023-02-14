@@ -50,8 +50,8 @@ export class QueryBuilderComponent implements OnInit {
   @Output() queryChange = new EventEmitter<QueryCondition>();
 
   operatorMap: { [key: string]: string[] } = {
-    //non-default data types require specifying operators in order to populate the operator drop down.
-    //Is also used to extend some default operators
+    // non-default data types require specifying operators in order to populate the operator drop down.
+    // Is also used to extend some default operators
     /* eslint-disable */
     string: ['=', '!=', 'contains', 'like', 'startswith', 'endswith'],
     datetime: ['=', '!=', '>', '<', '=>', '=<'],
