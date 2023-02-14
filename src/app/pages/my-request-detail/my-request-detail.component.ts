@@ -381,6 +381,29 @@ export class MyRequestDetailComponent implements OnInit {
     this.dataRequestsService.forkWithDialogs(this.request).subscribe();
   }
 
+  /**
+   * Opens a dialog for the user to update the request.
+   * Then, updates {@link request}.
+   *
+   * @returns void
+   */
+  editRequest() {
+    if (!this.request || !this.request.id) {
+      return;
+    }
+
+    this.dataRequestsService
+      .updateWithDialog(this.request.id, this.request.label, this.request.description)
+      .subscribe((response: DataModelDetail) => {
+        if (!response || !this.request) {
+          return;
+        }
+
+        this.request.description = response.description;
+        this.request.label = response.label;
+      });
+  }
+
   showCohortCreate() {
     return this.cohortQuery.rules.length === 0 && this.request?.status === 'unsent';
   }

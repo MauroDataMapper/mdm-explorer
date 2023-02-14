@@ -61,4 +61,10 @@ export class ResearchPluginService {
       .templateFolder()
       .pipe(map((response: FolderDetailResponse) => response.body));
   }
+
+  rootDataModel(): Observable<DataModelDetail> {
+    return this.endpoints.pluginResearch
+      .rootDataModel()
+      .pipe(map((response: FolderDetailResponse) => response.body));
+  }
 }

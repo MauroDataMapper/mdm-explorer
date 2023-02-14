@@ -76,6 +76,7 @@ export type DeleteDataElementsFromQueryFn = (
   type: DataRequestQueryType,
   dataElementLabels: string[]
 ) => Observable<DataRequestQueryPayload>;
+export type IsDataRequestNameAvailableFn = (name: string) => Observable<boolean>;
 
 export interface DataRequestsServiceStub {
   get: jest.MockedFunction<(id: Uuid) => Observable<DataRequest>>;
@@ -99,6 +100,7 @@ export interface DataRequestsServiceStub {
     (requestId: string, payload: DataRequestQueryPayload) => Observable<DataRequestQuery>
   >;
   deleteDataElementsFromQuery: jest.MockedFunction<DeleteDataElementsFromQueryFn>;
+  isDataRequestNameAvailable: jest.MockedFunction<IsDataRequestNameAvailableFn>;
 }
 
 export const createDataRequestsServiceStub = (): DataRequestsServiceStub => {
@@ -124,5 +126,7 @@ export const createDataRequestsServiceStub = (): DataRequestsServiceStub => {
     createOrUpdateQuery: jest.fn(),
     deleteDataElementsFromQuery:
       jest.fn() as jest.MockedFunction<DeleteDataElementsFromQueryFn>,
+    isDataRequestNameAvailable:
+      jest.fn() as jest.MockedFunction<IsDataRequestNameAvailableFn>,
   };
 };
