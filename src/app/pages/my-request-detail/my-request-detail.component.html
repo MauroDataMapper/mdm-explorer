@@ -32,8 +32,10 @@ SPDX-License-Identifier: Apache-2.0
         [showStatus]="true"
         [showSubmitButton]="request.status === 'unsent'"
         [showCopyButton]="request.status === 'submitted'"
+        [showEditButton]="request.status === 'unsent'"
         (submitClick)="submitRequest()"
         (copyClick)="copyRequest()"
+        (editClick)="editRequest()"
       ></mdm-data-request-row>
     </div>
 
