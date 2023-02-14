@@ -18,10 +18,12 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
 import {
+  CatalogueItemDomainType,
   DataClass,
   DataModel,
   DataModelCreatePayload,
   DataModelDetail,
+  ModelUpdatePayload,
   RuleRepresentationPayload,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
@@ -72,6 +74,7 @@ import { BroadcastService } from '../core/broadcast.service';
 import { DialogService } from './dialog.service';
 import { RulesService } from '../mauro/rules.service';
 import { ResearchPluginService } from '../mauro/research-plugin.service';
+import { EditRequestDialogOptions } from './edit-request-dialog/edit-request-dialog.component';
 
 /**
  * A collection data access requests and their intersections with target models.
@@ -118,6 +121,65 @@ export class DataRequestsService {
     return this.dataModels
       .getDataModelById(id)
       .pipe(map((dataModel) => mapToDataRequest(dataModel)));
+  }
+
+  /**
+   * Updates a single data request using a dialog.
+   * In the dialog the user can only update the name
+   * and description.
+   *
+   * @param id The id of the data request.
+   * @returns an observable containing a {@link DataModelDetail} instance
+   * with the updated data.
+   */
+  updateWithDialog(
+    id: Uuid,
+    name: string,
+    description?: string
+  ): Observable<DataModelDetail> {
+    const user = this.security.getSignedInUser();
+    if (!user) return EMPTY;
+
+    const editRequest: EditRequestDialogOptions = {
+      requestName: name,
+      requestDescription: description,
+    };
+
+    return this.dialogs
+      .openEditRequest(editRequest)
+      .afterClosed()
+      .pipe(
+        // Ensure we have a response.
+        filter((response) => !!response),
+        // Get data from the dialog and use it to create update request payload.
+        switchMap((response) => {
+          if (!response) return EMPTY;
+
+          this.broadcast.loading({
+            isLoading: true,
+            caption: 'Updating request ...',
+          });
+
+          const updatePayload: ModelUpdatePayload = {
+            description: response.description,
+            label: response.name,
+            id,
+            domainType: CatalogueItemDomainType.DataModel,
+          };
+
+          return this.dataModels.update(id, updatePayload);
+        }),
+        catchError((error) => {
+          this.toastr.error(
+            `There was a problem creating updating the request. ${error}`,
+            'Request edition error'
+          );
+          return EMPTY;
+        }),
+        finalize(() => {
+          this.broadcast.loading({ isLoading: false });
+        })
+      );
   }
 
   /**
@@ -718,6 +780,22 @@ export class DataRequestsService {
         });
 
         return this.createOrUpdateQuery(requestId, updatedQuery);
+      })
+    );
+  }
+
+  isDataRequestNameAvailable(name: string): Observable<boolean> {
+    if (!name) {
+      return of(false);
+    }
+
+    return this.list().pipe(
+      switchMap((dataRequests) => {
+        if (!dataRequests) {
+          return of(false);
+        }
+
+        return of(!dataRequests.some((element) => element.label === name));
       })
     );
   }

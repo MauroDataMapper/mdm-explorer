@@ -26,9 +26,11 @@ import {
   DataModelDetail,
   DataModelFull,
   DataModelSubsetPayload,
+  ModelUpdatePayload,
   SearchQueryParameters,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
+import { assert } from 'console';
 import { cold } from 'jest-marbles';
 import { DataElementDto } from '../data-explorer/data-explorer.types';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
@@ -745,6 +747,91 @@ describe('DataModelService', () => {
         },
         { label: nextModel.label }
       );
+      expect(actual$).toBeObservable(expected$);
+    });
+  });
+
+  describe('Update data model', () => {
+    it('should update data model', () => {
+      // Arrange
+      const label = 'edited label';
+      const description = 'edited description';
+
+      const expectedModel: DataModelDetail = {
+        id: '1',
+        label,
+        domainType: CatalogueItemDomainType.DataModel,
+        description,
+        availableActions: ['show'],
+        finalised: true,
+      };
+
+      endpointsStub.dataModel.update.mockImplementationOnce((id) => {
+        expect(id).toBe(expectedModel.id);
+        return cold('--a|', {
+          a: {
+            body: expectedModel,
+          },
+        });
+      });
+
+      if (!expectedModel.id) {
+        assert(expectedModel.id, 'expected model id is null');
+        return;
+      }
+      const request: ModelUpdatePayload = {
+        domainType: CatalogueItemDomainType.DataModel,
+        id: expectedModel.id,
+        label,
+        description,
+      };
+
+      const expected$ = cold('--a|', { a: expectedModel });
+
+      // Act
+      const actual$ = service.update(expectedModel.id, request);
+
+      // Assert
+      expect(actual$).toBeObservable(expected$);
+    });
+
+    it('should throw an error if empty id passed as parameter', () => {
+      // Arrange
+      const expected$ = cold('#', null, new Error());
+
+      const emptyId = '';
+
+      const request: ModelUpdatePayload = {
+        domainType: CatalogueItemDomainType.DataModel,
+        id: '1',
+        label: 'label',
+        description: 'description',
+      };
+
+      // Act
+      const actual$ = service.update(emptyId, request);
+
+      // Assert
+      expect(actual$).toBeObservable(expected$);
+    });
+
+    it('should throw an error if empty id passed in payload', () => {
+      // Arrange
+      const expected$ = cold('#', null, new Error());
+
+      const emptyId = '';
+
+      const request: ModelUpdatePayload = {
+        domainType: CatalogueItemDomainType.DataModel,
+        id: emptyId,
+        label: 'label',
+        description: 'description',
+      };
+
+      // Act
+      const actual$ = service.update('1', request);
+
+      // Assert
       expect(actual$).toBeObservable(expected$);
     });
   });
