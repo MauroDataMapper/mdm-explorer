@@ -24,14 +24,13 @@ import {
   ProfileSection,
 } from '@maurodatamapper/mdm-resources';
 import { catchError, map, Observable, of, switchMap, throwError } from 'rxjs';
-import { DataModelService } from '../mauro/data-model.service';
 import { ProfileService } from '../mauro/profile.service';
 import { ApiPropertiesService } from '../mauro/api-properties.service';
 import { DataExplorerConfiguration } from './data-explorer.types';
+import { ResearchPluginService } from '../mauro/research-plugin.service';
 
 export const configurationKeys = {
   category: 'Mauro Data Explorer',
-  rootDataModelPath: 'explorer.config.root_data_model_path',
   profileNamespace: 'explorer.config.profile_namespace',
   profileServiceName: 'explorer.config.profile_service_name',
 };
@@ -47,7 +46,6 @@ const getExplorerApiProperty = (
 
 const getExplorerApiProperties = (props: ApiProperty[]) => {
   return {
-    rootDataModelPath: getExplorerApiProperty(props, configurationKeys.rootDataModelPath),
     profileNamespace: getExplorerApiProperty(props, configurationKeys.profileNamespace),
     profileServiceName: getExplorerApiProperty(
       props,
@@ -64,8 +62,8 @@ export class DataExplorerService {
 
   constructor(
     private apiProperties: ApiPropertiesService,
-    private dataModels: DataModelService,
-    private profiles: ProfileService
+    private profiles: ProfileService,
+    private researchPlugin: ResearchPluginService
   ) {}
 
   initialise(): Observable<DataExplorerConfiguration> {
@@ -79,11 +77,7 @@ export class DataExplorerService {
       switchMap((properties) => {
         const explorerProps = getExplorerApiProperties(properties);
 
-        if (
-          !explorerProps.rootDataModelPath ||
-          !explorerProps.profileNamespace ||
-          !explorerProps.profileServiceName
-        ) {
+        if (!explorerProps.profileNamespace || !explorerProps.profileServiceName) {
           return throwError(() => {
             const lines = [
               'Cannot find all configuration keys in Mauro API properties',
@@ -92,14 +86,12 @@ export class DataExplorerService {
               '\n',
               configurationKeys.profileNamespace,
               configurationKeys.profileServiceName,
-              configurationKeys.rootDataModelPath,
             ];
             return new Error(lines.join('\n'));
           });
         }
 
         this.config = {
-          rootDataModelPath: explorerProps.rootDataModelPath.value,
           profileNamespace: explorerProps.profileNamespace.value,
           profileServiceName: explorerProps.profileServiceName.value,
         };
@@ -110,13 +102,7 @@ export class DataExplorerService {
   }
 
   getRootDataModel(): Observable<DataModelDetail> {
-    if (!this.config) {
-      return throwError(
-        () => new Error('DataExplorerService.initialise() has not been invoked')
-      );
-    }
-
-    return this.dataModels.getDataModel(this.config.rootDataModelPath);
+    return this.researchPlugin.rootDataModel();
   }
 
   getProfileFieldsForFilters(): Observable<ProfileField[]> {

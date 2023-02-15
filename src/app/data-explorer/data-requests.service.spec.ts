@@ -29,6 +29,7 @@ import {
   Rule,
   RuleRepresentation,
   Folder,
+  ModelUpdatePayload,
 } from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
 import { DataModelService } from '../mauro/data-model.service';
@@ -59,7 +60,7 @@ import { DataExplorerService } from './data-explorer.service';
 import { SecurityService } from '../security/security.service';
 import { ResearchPluginService } from '../mauro/research-plugin.service';
 import { createResearchPluginServiceStub } from '../testing/stubs/research-plugin.stub';
-import { of } from 'rxjs';
+import { EMPTY, of } from 'rxjs';
 import { CreateRequestDialogResponse } from './create-request-dialog/create-request-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { BroadcastService } from '../core/broadcast.service';
@@ -69,6 +70,7 @@ import { createBroadcastServiceStub } from '../testing/stubs/broadcast.stub';
 import { createToastrServiceStub } from '../testing/stubs/toastr.stub';
 import { createRulesServiceStub } from '../testing/stubs/rules.stub';
 import { RulesService } from '../mauro/rules.service';
+import { EditRequestDialogResponse } from './edit-request-dialog/edit-request-dialog.component';
 
 describe('DataRequestsService', () => {
   let service: DataRequestsService;
@@ -637,6 +639,189 @@ describe('DataRequestsService', () => {
     });
   });
 
+  describe('updateWithDialog', () => {
+    const newDescription = 'new description';
+    const newLabel = 'new label';
+    const modelId = '1';
+
+    const expectedModel: DataModelDetail = {
+      id: modelId,
+      label: newLabel,
+      description: newDescription,
+      domainType: CatalogueItemDomainType.DataModel,
+      availableActions: ['show'],
+      finalised: false,
+    };
+
+    const expectedPayload: ModelUpdatePayload = {
+      description: newDescription,
+      label: newLabel,
+      id: modelId,
+      domainType: CatalogueItemDomainType.DataModel,
+    };
+
+    const user: UserDetails = {
+      id: 'test',
+      firstName: 'test',
+      lastName: 'user',
+      email: 'test@test.com',
+    };
+    securityStub.getSignedInUser.mockImplementation(() => user);
+
+    const requestEdit: EditRequestDialogResponse = {
+      name: newLabel,
+      description: newDescription,
+    };
+
+    dialogStub.usage.afterClosed.mockImplementation(() => of(requestEdit));
+
+    beforeEach(() => {
+      securityStub.getSignedInUser.mockClear();
+      dataModelsStub.update.mockClear();
+      broadcastStub.loading.mockClear();
+    });
+
+    it('should return a complete notification if no user signed in', () => {
+      // arrange
+      securityStub.getSignedInUser.mockImplementationOnce(() => null);
+      const expected$ = cold('|');
+
+      // act
+      if (!expectedPayload.label) {
+        fail('expected payload is null or empty, that should not happen.');
+      }
+      const actual$ = service.updateWithDialog(
+        expectedPayload.id,
+        expectedPayload.label,
+        expectedPayload.description
+      );
+
+      // assert
+      expect(actual$).toBeObservable(expected$);
+    });
+
+    it('should return a complete notification if response is undefined', () => {
+      // arrange
+      dialogStub.usage.afterClosed.mockImplementationOnce(() => of(undefined));
+      const expected$ = cold('|');
+
+      // act
+      if (!expectedPayload.label) {
+        fail('expected payload is null or empty, that should not happen.');
+      }
+      const actual$ = service.updateWithDialog(
+        expectedPayload.id,
+        expectedPayload.label,
+        expectedPayload.description
+      );
+
+      // assert
+      expect(actual$).toBeObservable(expected$);
+    });
+
+    it('should fire a loading broadcast if dialog response retrieved', () => {
+      // arrange
+      const loadingSpy = jest.spyOn(broadcastStub, 'loading');
+
+      // act
+      if (!expectedPayload.label) {
+        fail('expected payload is null or empty, that should not happen.');
+      }
+      const actual$ = service.updateWithDialog(
+        expectedPayload.id,
+        expectedPayload.label,
+        expectedPayload.description
+      );
+
+      // assert
+      expect(actual$).toSatisfyOnFlush(() => {
+        expect(loadingSpy).toHaveBeenCalledWith({
+          isLoading: true,
+          caption: 'Updating request ...',
+        });
+      });
+    });
+
+    it('should display a toastr error and return a complete notification if update fails', () => {
+      // arrange
+      const toastrSpy = jest.spyOn(toastrStub, 'error');
+      const expected$ = cold('|');
+
+      // simulate a failure of dataModelService update.
+      dataModelsStub.update = jest.fn().mockReturnValueOnce(cold('#'));
+
+      // act
+      if (!expectedPayload.label) {
+        fail('expected payload is null or empty, that should not happen.');
+      }
+      const actual$ = service.updateWithDialog(
+        expectedPayload.id,
+        expectedPayload.label,
+        expectedPayload.description
+      );
+
+      // assert
+      expect(actual$).toBeObservable(expected$);
+
+      expect(actual$).toSatisfyOnFlush(() => {
+        expect(toastrSpy).toHaveBeenCalled();
+      });
+    });
+
+    it('should attempt to edit only the label and description with data from the dialog', () => {
+      // arrange
+      const updateDataModelSpy = jest.spyOn(dataModelsStub, 'update');
+      const loadingSpy = jest.spyOn(broadcastStub, 'loading');
+
+      // act
+      if (!expectedPayload.label) {
+        fail('expected payload is null or empty, that should not happen.');
+      }
+      const actual$ = service.updateWithDialog(
+        expectedPayload.id,
+        expectedPayload.label,
+        expectedPayload.description
+      );
+
+      // assert
+      expect(actual$).toSatisfyOnFlush(() => {
+        expect(loadingSpy).toHaveBeenCalledWith({ isLoading: false });
+        expect(updateDataModelSpy).toHaveBeenCalledWith(modelId, { ...expectedPayload });
+      });
+    });
+
+    it('should return the updated model after successful update', () => {
+      // arrange
+      const loadingSpy = jest.spyOn(broadcastStub, 'loading');
+      dataModelsStub.update.mockImplementationOnce(() => {
+        return cold('a|', {
+          a: expectedModel,
+        });
+      });
+
+      const expected$ = cold('a|', {
+        a: expectedModel,
+      });
+
+      // act
+      if (!expectedPayload.label) {
+        fail('expected payload is null or empty, that should not happen.');
+      }
+      const actual$ = service.updateWithDialog(
+        expectedPayload.id,
+        expectedPayload.label,
+        expectedPayload.description
+      );
+
+      // assert
+
+      expect(actual$).toSatisfyOnFlush(() => {
+        expect(loadingSpy).toBeCalledTimes(2);
+        expect(actual$).toBeObservable(expected$);
+      });
+    });
+  });
+
   describe('forkWithDialogs', () => {
     const originalRequest: DataRequest = {
       id: '123',
@@ -1093,6 +1278,137 @@ describe('DataRequestsService', () => {
         'field3',
       ]);
       expect(actual$).toBeObservable(expected$);
+    });
+  });
+
+  describe('isDataRequestNameAvailable', () => {
+    const dataRequests: DataRequest[] = [
+      {
+        label: 'label1',
+        id: 'id1',
+        status: 'unsent',
+        domainType: CatalogueItemDomainType.DataModel,
+      },
+      {
+        label: 'label2',
+        id: 'id2',
+        status: 'unsent',
+        domainType: CatalogueItemDomainType.DataModel,
+      },
+      {
+        label: 'label3',
+        id: 'id3',
+        status: 'submitted',
+        domainType: CatalogueItemDomainType.DataModel,
+      },
+      {
+        label: 'label4',
+        id: 'id4',
+        status: 'unsent',
+        domainType: CatalogueItemDomainType.DataModel,
+      },
+    ];
+
+    const emptyDataRequests: DataRequest[] = [];
+
+    it('Should return false if no none of the dataRequests is using the given name', () => {
+      // Arrange
+      const name = 'nameToLookFor';
+      // mocking dependancy on the list method of the service.
+      // List service is tested so it can be mocked safely here.
+      service.list = jest.fn().mockReturnValueOnce(
+        cold('a|', {
+          a: dataRequests,
+        })
+      );
+
+      // Act
+      const actual$ = service.isDataRequestNameAvailable(name);
+
+      // Assert
+      actual$.subscribe((response) => {
+        expect(response).toBeTruthy();
+      });
+    });
+
+    it('Should return true if any of the dataRequests is using the given name', () => {
+      // Arrange
+      const name = 'label3';
+      // mocking dependancy on the list method of the service.
+      // List service is tested so it can be mocked safely here.
+      service.list = jest.fn().mockReturnValueOnce(
+        cold('a|', {
+          a: dataRequests,
+        })
+      );
+
+      // Act
+      const actual$ = service.isDataRequestNameAvailable(name);
+
+      // Assert
+      actual$.subscribe((response) => {
+        expect(response).toBeFalsy();
+      });
+    });
+
+    it('Should return false if list returns empty', () => {
+      // Arrange
+      const name = 'label3';
+      // mocking dependancy on the list method of the service.
+      // List service is tested so it can be mocked safely here.
+      service.list = jest.fn().mockReturnValueOnce(
+        cold('a|', {
+          a: EMPTY,
+        })
+      );
+
+      // Act
+      const actual$ = service.isDataRequestNameAvailable(name);
+
+      // Assert
+      actual$.subscribe((response) => {
+        expect(response).toBeFalsy();
+      });
+    });
+
+    it('Should return true if dataRequests is empty', () => {
+      // Arrange
+      const name = 'label3';
+      // mocking dependancy on the list method of the service.
+      // List service is tested so it can be mocked safely here.
+      service.list = jest.fn().mockReturnValueOnce(
+        cold('a|', {
+          a: emptyDataRequests,
+        })
+      );
+
+      // Act
+      const actual$ = service.isDataRequestNameAvailable(name);
+
+      // Assert
+      actual$.subscribe((response) => {
+        expect(response).toBeTruthy();
+      });
+    });
+
+    it('Should return false if name is empty', () => {
+      // Arrange
+      const name = '';
+      // mocking dependancy on the list method of the service.
+      // List service is tested so it can be mocked safely here.
+      service.list = jest.fn().mockReturnValueOnce(
+        cold('a|', {
+          a: emptyDataRequests,
+        })
+      );
+
+      // Act
+      const actual$ = service.isDataRequestNameAvailable(name);
+
+      // Assert
+      actual$.subscribe((response) => {
+        expect(response).toBeFalsy();
+      });
     });
   });
 });

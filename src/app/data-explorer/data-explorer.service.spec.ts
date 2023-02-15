@@ -25,11 +25,11 @@ import {
 } from '@maurodatamapper/mdm-resources';
 import { cold } from 'jest-marbles';
 import { ApiPropertiesService } from '../mauro/api-properties.service';
-import { DataModelService } from '../mauro/data-model.service';
 import { ProfileService } from '../mauro/profile.service';
+import { ResearchPluginService } from '../mauro/research-plugin.service';
 import { createApiPropertiesServiceStub } from '../testing/stubs/api-properties.stub';
-import { createDataModelServiceStub } from '../testing/stubs/data-model.stub';
 import { createProfileServiceStub } from '../testing/stubs/profile.stub';
+import { createResearchPluginServiceStub } from '../testing/stubs/research-plugin.stub';
 import { setupTestModuleForService } from '../testing/testing.helpers';
 
 import { configurationKeys, DataExplorerService } from './data-explorer.service';
@@ -38,11 +38,10 @@ import { DataExplorerConfiguration } from './data-explorer.types';
 describe('DataExplorerService', () => {
   let service: DataExplorerService;
   const apiPropertiesStub = createApiPropertiesServiceStub();
-  const dataModelsStub = createDataModelServiceStub();
   const profilesStub = createProfileServiceStub();
+  const researchPluginStub = createResearchPluginServiceStub();
 
   const config: DataExplorerConfiguration = {
-    rootDataModelPath: 'my test model',
     profileServiceName: 'Profile Service',
     profileNamespace: 'Profile Namespace',
   };
@@ -59,8 +58,8 @@ describe('DataExplorerService', () => {
           useValue: profilesStub,
         },
         {
-          provide: DataModelService,
-          useValue: dataModelsStub,
+          provide: ResearchPluginService,
+          useValue: researchPluginStub,
         },
       ],
     });
@@ -109,11 +108,6 @@ describe('DataExplorerService', () => {
       const properties: ApiProperty[] = [
         {
           category: configurationKeys.category,
-          key: configurationKeys.rootDataModelPath,
-          value: 'rootDataModelPath',
-        },
-        {
-          category: configurationKeys.category,
           key: configurationKeys.profileNamespace,
           value: 'profileNamespace',
         },
@@ -131,7 +125,6 @@ describe('DataExplorerService', () => {
       );
 
       const expectedConfig: DataExplorerConfiguration = {
-        rootDataModelPath: 'rootDataModelPath',
         profileNamespace: 'profileNamespace',
         profileServiceName: 'profileServiceName',
       };
@@ -148,26 +141,17 @@ describe('DataExplorerService', () => {
   });
 
   describe('get root data model', () => {
-    it('should throw an error if service is not initialised', () => {
-      const expected$ = cold('#', null, new Error());
-      const actual$ = service.getRootDataModel();
-      expect(actual$).toBeObservable(expected$);
-    });
-
     it('should return the root data model', () => {
       const dataModel: DataModelDetail = {
-        label: config.rootDataModelPath,
+        label: 'root model',
         domainType: CatalogueItemDomainType.DataModel,
         availableActions: ['show'],
         finalised: false,
       };
 
-      mockInitialiseService();
-
-      dataModelsStub.getDataModel.mockImplementationOnce((path) => {
-        expect(path).toBe(config.rootDataModelPath);
-        return cold('--a|', { a: dataModel });
-      });
+      researchPluginStub.rootDataModel.mockImplementationOnce(() =>
+        cold('--a|', { a: dataModel })
+      );
 
       const expected$ = cold('--a|', {
         a: dataModel,
