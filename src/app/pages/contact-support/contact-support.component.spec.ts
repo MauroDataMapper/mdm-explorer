@@ -19,7 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 import { fakeAsync, tick } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
-import { MockComponent } from 'ng-mocks';
+import { MockComponent, MockDirective } from 'ng-mocks';
 import { of, throwError } from 'rxjs';
 import { ContactFormComponent } from 'src/app/data-explorer/contact-form/contact-form.component';
 import {
@@ -58,7 +58,7 @@ describe('ContactSupportComponent', () => {
       declarations: [
         ContactFormComponent,
         MockComponent(MatFormField),
-        MockComponent(MatLabel),
+        MockDirective(MatLabel),
       ],
       providers: [
         {

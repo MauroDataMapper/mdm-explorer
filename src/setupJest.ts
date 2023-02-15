@@ -16,7 +16,15 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-// If you want to run tests using Visual Studio Code extension
-// "Jest Test Explorer" restore the single line directly below. ** DO NOT commit this change. **
+
+/*
+Comment out the line below to run tests via a Jest test runner extension via VS Code.
+This is because the test runner needs to initialise with jest-preset-angular, but the
+@angular-builders/jest runner in angular.json already does this.
+
+This line _must_ remain commented out though when building via the npm run test command,
+especially when building via Jenkins CI.
+*/
 // import 'jest-preset-angular/setup-jest';
+
 // import './jestGlobalMocks'; // browser mocks globally available for every test

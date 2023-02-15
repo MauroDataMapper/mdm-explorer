@@ -32,9 +32,11 @@ export class DataRequestRowComponent {
   @Input() showLabel = true;
   @Input() showSubmitButton = false;
   @Input() showCopyButton = false;
+  @Input() showEditButton = false;
 
   @Output() submitClick = new EventEmitter<void>();
   @Output() copyClick = new EventEmitter<void>();
+  @Output() editClick = new EventEmitter<void>();
 
   onSubmitClick() {
     this.submitClick.emit();
@@ -42,5 +44,9 @@ export class DataRequestRowComponent {
 
   onCopyClick() {
     this.copyClick.emit();
+  }
+
+  onEditClick() {
+    this.editClick.emit();
   }
 }

@@ -41,6 +41,8 @@ import {
   DataModelSubsetPayload,
   ForkModelPayload,
   MdmIndexBody,
+  ModelUpdatePayload,
+  RequestSettings,
   SearchQueryParameters,
   SourceTargetIntersection,
   SourceTargetIntersectionPayload,
@@ -423,5 +425,27 @@ export class DataModelService {
       >,
       toArray()
     );
+  }
+
+  /**
+   * Update the contents of a data model.
+   *
+   * @param id The data model id to change.
+   * @param data The new content of the data model.
+   * @param options
+   * @returns An observable containing the updated {@link DataModel}.
+   */
+  update(
+    id: Uuid,
+    data: ModelUpdatePayload,
+    options?: RequestSettings
+  ): Observable<DataModelDetail> {
+    if (!id || !data.id) {
+      return throwError(() => new Error('No data model id provided'));
+    }
+
+    return this.endpoints.dataModel
+      .update(id, data, options)
+      .pipe(map((response: DataModelDetailResponse) => response.body));
   }
 }

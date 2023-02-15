@@ -20,26 +20,26 @@ SPDX-License-Identifier: Apache-2.0
   <div class="main-row hero">
     <h1>My Requests</h1>
   </div>
+  <div class="mdm-my-requests__sort-row">
+    <mat-form-field
+      *ngIf="hasMultipleRequestStatus && filteredRequests.length > 0"
+      appearance="outline"
+    >
+      <mat-label>Filter by status</mat-label>
+      <mat-select value="all" (selectionChange)="filterByStatus($event)">
+        <mat-option value="all">All</mat-option>
+        <mat-option value="submitted">Submitted</mat-option>
+        <mat-option value="unsent">Unsent</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mdm-sort-by
+      [value]="sortBy"
+      [options]="sortByOptions"
+      (valueChange)="selectSortBy($event)"
+    ></mdm-sort-by>
+  </div>
   <div *ngIf="state === 'loading'" class="mdm-my-requests__progress">
     <mat-progress-bar color="primary" mode="indeterminate"></mat-progress-bar>
-  </div>
-  <div *ngIf="hasMultipleRequestStatus && filteredRequests.length > 0" class="col-md-9">
-    <div class="mdm-my-requests__filter">
-      <mat-checkbox
-        color="primary"
-        value="submitted"
-        (change)="filterByStatus($event)"
-      ></mat-checkbox>
-      <label>submitted</label>
-    </div>
-    <div class="mdm-my-requests__filter">
-      <mat-checkbox
-        color="primary"
-        value="unsent"
-        (change)="filterByStatus($event)"
-      ></mat-checkbox>
-      <label>unsent</label>
-    </div>
   </div>
   <div *ngIf="!allRequests || allRequests.length === 0" class="row">
     <p class="text-center">
@@ -56,6 +56,7 @@ SPDX-License-Identifier: Apache-2.0
         <mdm-data-request-row
           [request]="request"
           [detailsRouterLink]="['/requests', request.id]"
+          [showEditButton]="false"
         ></mdm-data-request-row>
       </div>
     </div>

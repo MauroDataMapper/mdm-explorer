@@ -29,6 +29,11 @@ import {
   CreateRequestDialogResponse,
 } from './create-request-dialog/create-request-dialog.component';
 import {
+  EditRequestDialogComponent,
+  EditRequestDialogOptions,
+  EditRequestDialogResponse,
+} from './edit-request-dialog/edit-request-dialog.component';
+import {
   FeedbackDialogComponent,
   FeedbackDialogResponse,
 } from './feedback-dialog/feedback-dialog.component';
@@ -67,6 +72,14 @@ export class DialogService {
       minWidth: 500,
       data,
     });
+  }
+
+  openEditRequest(data: EditRequestDialogOptions) {
+    return this.matDialog.open<
+      EditRequestDialogComponent,
+      EditRequestDialogOptions,
+      EditRequestDialogResponse
+    >(EditRequestDialogComponent, { minWidth: 500, data });
   }
 
   openRequestCreated(data: RequestCreatedData) {

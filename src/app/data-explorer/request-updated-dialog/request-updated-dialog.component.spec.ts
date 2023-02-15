@@ -34,7 +34,7 @@ import {
   RequestUpdatedData,
   RequestUpdatedDialogComponent,
 } from './request-updated-dialog.component';
-import { MockComponent } from 'ng-mocks';
+import { MockDirective } from 'ng-mocks';
 
 describe('RequestUpdatedDialogComponent', () => {
   let harness: ComponentHarness<RequestUpdatedDialogComponent>;
@@ -46,7 +46,7 @@ describe('RequestUpdatedDialogComponent', () => {
 
   const setupTestbed = async (data: RequestUpdatedData) => {
     harness = await setupTestModuleForComponent(RequestUpdatedDialogComponent, {
-      declarations: [MockComponent(MatDialogActions), MockComponent(MatDialogContent)],
+      declarations: [MockDirective(MatDialogActions), MockDirective(MatDialogContent)],
       providers: [
         {
           provide: MatDialogRef,

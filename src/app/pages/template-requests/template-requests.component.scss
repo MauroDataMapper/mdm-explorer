@@ -16,3 +16,10 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+.mdm-template-requests {
+  &__sort-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
