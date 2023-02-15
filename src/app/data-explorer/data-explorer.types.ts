@@ -36,7 +36,6 @@ import { DataClassIdentifier } from '../mauro/mauro.types';
 export interface DataExplorerConfiguration {
   profileNamespace: string;
   profileServiceName: string;
-  rootDataModelPath: string;
 }
 
 export const DATA_EXPLORER_CONFIGURATION = new InjectionToken<DataExplorerConfiguration>(
