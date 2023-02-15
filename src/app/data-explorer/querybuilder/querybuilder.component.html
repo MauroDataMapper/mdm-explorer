@@ -162,6 +162,20 @@ SPDX-License-Identifier: Apache-2.0
           </mat-select>
         </mat-form-field>
       </ng-container>
+      <!-- DateTime -->
+      <ng-container *queryInput="let rule; type: 'datetime'; let onChange = onChange">
+        <mat-form-field
+          appearance="outline"
+          class="query-builder-input mat-form-field-no-padding"
+        >
+          <input
+            matInput
+            type="datetime-local"
+            [(ngModel)]="rule.value"
+            (ngModelChange)="onChange()"
+          />
+        </mat-form-field>
+      </ng-container>
       <!-- Date -->
       <ng-container *queryInput="let rule; type: 'date'; let onChange = onChange">
         <mat-form-field
