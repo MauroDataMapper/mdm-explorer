@@ -346,11 +346,25 @@ describe('QueryBuilderService', () => {
     ])('%s', (_, dataType, mappedType, isReferencedInQuery, expectedMappedType) => {
       const isMapped = mappedType !== undefined;
 
+      const schemaName = 'schema';
+      const className = 'class';
+      const entityName = `${schemaName}.${className}`;
+
       const expectedDataElementSearchResult: DataElementSearchResult[] = [
         {
           id: 'f-1',
           label: 'field',
           dataType,
+          breadcrumbs: [
+            {
+              domainType: CatalogueItemDomainType.DataClass,
+              label: schemaName,
+            },
+            {
+              domainType: CatalogueItemDomainType.DataClass,
+              label: className,
+            },
+          ],
         } as DataElementSearchResult,
       ];
 
@@ -383,6 +397,7 @@ describe('QueryBuilderService', () => {
                       ? false
                       : null,
                   name: `field (${expectedMappedType})`,
+                  entity: entityName,
                   options:
                     expectedMappedType === 'category'
                       ? [
@@ -399,6 +414,15 @@ describe('QueryBuilderService', () => {
                         ]
                       : [],
                   type: expectedMappedType,
+                },
+              }
+            : ({} as any),
+        entities:
+          expectedMappedType !== undefined
+            ? {
+                [entityName]: {
+                  name: `${schemaName} > ${className}`,
+                  value: entityName,
                 },
               }
             : ({} as any),
