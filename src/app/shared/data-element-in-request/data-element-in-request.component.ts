@@ -83,6 +83,7 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
   dataRequestMenuItems: DataAccessRequestMenuItem[] = [];
   elementLinkedToRequest = false;
   tooltipText = 'Assigned to Request';
+  processingChangedEvent = false;
 
   private user: UserDetails | null;
 
@@ -133,6 +134,8 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
    * @param event
    */
   changed(event: MatCheckboxChange, item: DataModel) {
+    this.processingChangedEvent = true;
+
     let dataElements: DataElementSearchResult[];
     if (this.dataElements && this.dataElements?.length !== 0) {
       const targetDataModelId = event.source.value;
@@ -182,6 +185,7 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
             );
           }),
           finalize(() => {
+            this.processingChangedEvent = false;
             this.broadcast.loading({ isLoading: false });
           })
         )
