@@ -27,23 +27,53 @@ $color-gray-90: #e6e6e6;
 $color-gray-85: #d7d7d7;
 $color-gray-75: #c4c4c4;
 $color-gray-38: #606060;
-$color-yellow: #ffe603;
-$color-light-blue: #008bce;
-$color-teal: #3dbaae;
 
-$color-mauro-dark-green: #19381f;
-$color-mauro-gold: #cdb980;
-$color-mauro-light-gold: #f3eee0;
-$color-dark-navy: #003752;
+/*
+----------------------------------
+Colour theming
+----------------------------------
+*/
+
+/*
+These colour values heavily relies on CSS custom properties to work. At runtime, the browser will locate colours/values
+using the CSS3 `var()` syntax.
+
+The variable values are set in ./src/app/shared/theme.service.cs, which must be called as the application starts.
+*/
+
+// Primary/accent colours - main colours of the app
+$color-primary: var(--theme-color-primary);
+$color-accent: var(--theme-color-accent);
+$color-warn: var(--theme-color-warn);
+
+// Light/dark variants of the primary/accent colours
+$color-primary-dark: var(--theme-color-primary-dark);
+$color-primary-light: var(--theme-color-primary-light);
+$color-accent-dark: var(--theme-color-accent-dark);
+$color-accent-light: var(--theme-color-accent-light);
+$color-warn-dark: var(--theme-color-warn-dark);
+$color-warn-light: var(--theme-color-warn-light);
+
+// Contrasting colours - base colour with matching compliment
+$color-page: var(--theme-color-page);
+$color-page-contrast: var(--theme-color-page-contrast);
+$color-unsentRequest: var(--theme-color-unsentRequest);
+$color-unsentRequest-contrast: var(--theme-color-unsentRequest-contrast);
+$color-submittedRequest: var(--theme-color-submittedRequest);
+$color-submittedRequest-contrast: var(--theme-color-submittedRequest-contrast);
+
+// Regular colours
+$color-hyperlink: var(--theme-color-hyperlink);
+$color-requestCount: var(--theme-color-requestCount);
 
 /*
 ----------------------------------
 Colour components
 ----------------------------------
 */
-$color-hero: $color-mauro-gold;
-$color-section-header: $color-mauro-gold;
-$color-highlight-box: $color-mauro-light-gold;
-$color-highlight-box-strong: $color-mauro-gold;
+$color-hero: $color-accent;
+$color-section-header: $color-accent;
+$color-highlight-box: $color-accent-light;
+$color-highlight-box-strong: $color-accent;
 $color-stroked-border: $color-black;
 $color-description-info-underline: $color-gray-85;

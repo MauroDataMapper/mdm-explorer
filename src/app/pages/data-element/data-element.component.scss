@@ -18,14 +18,14 @@ SPDX-License-Identifier: Apache-2.0
 */
 @import "../../../styles/base/all";
 
-$detail-heading-background-color: $color-mauro-dark-green;
+$detail-heading-background-color: $color-primary;
 $detail-heading-color: $color-white;
 $detail-header-padding: 0.2em 1.2em;
 
-$detail-content-color: $color-mauro-light-gold;
+$detail-content-color: $color-accent-light;
 $detail-content-padding: 1.2em 1.2em;
 
-$detail-identifiable-background-color: $color-mauro-gold;
+$detail-identifiable-background-color: $color-accent;
 
 h1 {
   line-height: 120%;
@@ -59,7 +59,7 @@ h1 {
     align-items: center;
     padding: $detail-header-padding;
     background-color: $detail-identifiable-background-color;
-    color: $color-mauro-dark-green;
+    color: $color-primary;
 
     h3 {
       display: inline-block;

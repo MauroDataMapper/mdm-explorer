@@ -23,8 +23,8 @@ $link-color: #ffffff;
 $screen-size-md: 1000px;
 $screen-size-sm: 620px;
 $profile-img-width: 32px;
-$header-background: $color-mauro-dark-green;
-$request-count-color: $color-yellow;
+$header-background: $color-primary;
+$request-count-color: $color-requestCount; //$color-yellow;
 
 .mdm-header {
   position: relative;
