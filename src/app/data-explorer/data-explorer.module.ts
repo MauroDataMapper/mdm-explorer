@@ -44,6 +44,7 @@ import { MeqlPipe } from './pipes/meql.pipe';
 import { MeqlOutputComponent } from './meql-output/meql-output.component';
 import { DataRequestRowComponent } from './data-request-row/data-request-row.component';
 import { DataQueryRowComponent } from './data-query-row/data-query-row.component';
+import { EditRequestDialogComponent } from './edit-request-dialog/edit-request-dialog.component';
 
 @NgModule({
   declarations: [
@@ -70,6 +71,7 @@ import { DataQueryRowComponent } from './data-query-row/data-query-row.component
     MeqlOutputComponent,
     DataRequestRowComponent,
     DataQueryRowComponent,
+    EditRequestDialogComponent,
   ],
   imports: [CoreModule, SharedModule, QueryBuilderModule],
   exports: [

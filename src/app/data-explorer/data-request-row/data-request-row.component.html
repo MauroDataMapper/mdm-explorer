@@ -41,6 +41,15 @@ SPDX-License-Identifier: Apache-2.0
       <span class="fa-solid fa-copy"></span>
       Copy
     </button>
+    <button
+      *ngIf="showEditButton"
+      mat-raised-button
+      color="primary"
+      (click)="onEditClick()"
+    >
+      <span class="fa-solid fa-pen-to-square"></span>
+      Edit
+    </button>
   </ng-container>
   <ng-container>
     <div *ngIf="request.description">
