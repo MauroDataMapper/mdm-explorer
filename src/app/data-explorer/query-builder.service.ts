@@ -180,6 +180,7 @@ export class QueryBuilderService {
     config.fields[dataElement.label] = {
       name: dataElement.label + ' (' + dataTypeString + ')',
       type: dataTypeString,
+      entity: this.getEntity(dataElement),
       options: this.getFieldOptions(dataElement),
       defaultValue: this.getDefaultValue(dataTypeString),
     };
@@ -198,10 +199,21 @@ export class QueryBuilderService {
       config.fields[dataElement.label] = {
         name: dataElement.label + ' (string)',
         type: 'string',
+        entity: this.getEntity(dataElement),
         options: [],
         defaultValue: '',
       };
     }
+  }
+
+  /**
+   * Identify the schema and class of a data element and use that as the entity for a field.
+   */
+  private getEntity(dataElement: DataElementSearchResult) {
+    return dataElement.breadcrumbs
+      ?.filter((bc) => bc.domainType !== CatalogueItemDomainType.DataModel)
+      .map((bc) => bc.label)
+      .join('.');
   }
 
   private getQueryFields(
@@ -223,6 +235,25 @@ export class QueryBuilderService {
         this.setupQueryFieldFromQuery(dataElement, config, queryCondition);
       }
     });
+
+    // Identify the distinct list of entities mapped to the fields (the schema/class levels)
+    // and provide these to the configuration for entity selection
+    const entities = [
+      ...new Set(
+        Object.values(config.fields)
+          .map((field) => field.entity ?? '')
+          .sort((a, b) => a.localeCompare(b))
+      ),
+    ];
+    config.entities = entities.reduce((prev, entity) => {
+      return {
+        ...prev,
+        [entity]: {
+          name: entity.replace('.', ' > '),
+          value: entity,
+        },
+      };
+    }, {});
 
     return {
       dataElementSearchResult: dataElements,

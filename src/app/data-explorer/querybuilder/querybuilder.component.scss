@@ -27,8 +27,14 @@ SPDX-License-Identifier: Apache-2.0
 
 $content-color: $color-mauro-light-gold;
 .query-builder {
+  &-entity {
+    // Style is tied to .q-inline-block-display class override in global styles/_querybuilder.scss
+    width: 100%;
+    padding-right: 12px;
+  }
+
   &-field {
-    width: 40%;
+    width: 20%;
   }
 
   &-operator {
@@ -38,11 +44,11 @@ $content-color: $color-mauro-light-gold;
 
   &-input,
   &-number {
-    width: 40%;
+    width: 25%;
   }
 
   &-autocomplete {
-    width: 40%;
+    width: 30%;
     vertical-align: top;
   }
 }
