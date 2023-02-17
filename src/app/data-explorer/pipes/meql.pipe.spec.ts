@@ -37,6 +37,28 @@ describe('MeqlPipe', () => {
     it('create an instance', () => {
       expect(pipe).toBeTruthy();
     });
+
+    it('should transform entities to their full field name', () => {
+      const query = {
+        condition: 'and',
+        rules: [
+          {
+            field: 'field name',
+            entity: 'some entity',
+            operator: '=',
+            value: 'String 1',
+          },
+        ],
+      };
+
+      const line1 = `(${newline}`;
+      const line2 = `${tab}"${query.rules[0].entity}.${query.rules[0].field}" ${query.rules[0].operator} "${query.rules[0].value}"${newline}`;
+      const line3 = ')';
+
+      const actual = pipe.transform(query);
+      const expected = `${line1}${line2}${line3}`;
+      expect(actual).toBe(expected);
+    });
   });
 
   describe('Single Condition Tests', () => {

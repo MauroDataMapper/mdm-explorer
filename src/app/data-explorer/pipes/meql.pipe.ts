@@ -114,9 +114,12 @@ export class MeqlPipe implements PipeTransform {
             );
           }
           break;
-        case 'field':
-          meql += this.formattedValue(value[key], true) + ' ';
+        case 'field': {
+          const entity = value.entity as string;
+          const fullName = entity ? `${entity}.${value[key]}` : value[key];
+          meql += this.formattedValue(fullName, true) + ' ';
           break;
+        }
         case 'value':
           meql += this.formattedValue(value[key], true);
           break;

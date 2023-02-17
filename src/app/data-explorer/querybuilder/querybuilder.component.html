@@ -94,6 +94,18 @@ SPDX-License-Identifier: Apache-2.0
           <mat-radio-button color="primary" value="or">OR</mat-radio-button>
         </mat-radio-group>
       </ng-container>
+      <!-- Entity Selector -->
+      <ng-container
+        *queryEntity="let rule; let entities = entities; let onChange = onChange"
+      >
+        <mat-form-field appearance="outline" class="query-builder-entity">
+          <mat-select [(ngModel)]="rule.entity" (ngModelChange)="onChange($event, rule)">
+            <mat-option *ngFor="let entity of entities" [value]="entity.value">
+              {{ entity.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
       <!-- Field Selector -->
       <ng-container
         *queryField="
