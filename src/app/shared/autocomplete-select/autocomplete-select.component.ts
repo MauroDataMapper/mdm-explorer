@@ -35,11 +35,11 @@ import {
 } from '@angular/core';
 import {
   ControlValueAccessor,
-  UntypedFormControl,
   FormGroupDirective,
   NgControl,
   NgForm,
   Validators,
+  FormControl,
 } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { ErrorStateMatcher, mixinErrorState } from '@angular/material/core';
@@ -302,7 +302,7 @@ export class AutocompleteSelectComponent
    */
   @Output() searchChange = new EventEmitter<string | undefined>();
 
-  searchCtrl = new UntypedFormControl();
+  searchCtrl = new FormControl('');
   focused = false;
   controlType?: string | undefined = 'mdm-autocomplete-select';
 
@@ -341,7 +341,7 @@ export class AutocompleteSelectComponent
     return (
       this.focused ||
       !this.empty ||
-      (this.searchCtrl.value && this.searchCtrl.value.length > 0)
+      (!!this.searchCtrl.value && this.searchCtrl.value.length > 0)
     );
   }
 
@@ -381,8 +381,8 @@ export class AutocompleteSelectComponent
         distinctUntilChanged(),
         filter((val) => typeof val === 'string')
       )
-      .subscribe((value: string | undefined) => {
-        this.searchChange.emit(value);
+      .subscribe((value) => {
+        this.searchChange.emit(value ?? '');
       });
   }
 

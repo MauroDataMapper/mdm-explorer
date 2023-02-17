@@ -94,7 +94,7 @@ describe('CatalogueUserBasicFormComponent', () => {
     harness.component.firstName?.setValue(payload.firstName);
     harness.component.lastName?.setValue(payload.lastName);
     harness.component.organisation?.setValue(payload.organisation);
-    harness.component.role?.setValue(payload.jobTitle);
+    harness.component.role?.setValue(payload.jobTitle ?? '');
 
     harness.component.update();
     expect(spy).toHaveBeenCalledWith(payload);

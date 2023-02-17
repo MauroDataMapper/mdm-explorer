@@ -60,11 +60,6 @@ describe('FeedbackDialogComponent', () => {
 
   it('should create', () => {
     expect(harness.isComponentCreated).toBeTruthy();
-    expect(harness.component.feedbackForm).toBeUndefined();
-  });
-
-  it('should initialise', () => {
-    harness.component.ngOnInit();
     expect(harness.component.feedbackForm).toBeDefined();
     expect(harness.component.message?.value).toBe('');
   });
@@ -75,7 +70,6 @@ describe('FeedbackDialogComponent', () => {
   });
 
   it('should not close when form is invalid', () => {
-    harness.component.ngOnInit();
     harness.component.send();
     expect(dialogRefStub.close).not.toHaveBeenCalled();
   });
@@ -85,7 +79,6 @@ describe('FeedbackDialogComponent', () => {
       message: 'test feedback',
     };
 
-    harness.component.ngOnInit();
     harness.component.message?.setValue(expected.message);
 
     harness.component.send();

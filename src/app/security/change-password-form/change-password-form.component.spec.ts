@@ -55,7 +55,7 @@ describe('ChangePasswordFormComponent', () => {
     expect(harness.component.currentPassword?.value).toBe('');
     expect(harness.component.newPassword?.value).toBe('');
     expect(harness.component.confirmPassword?.value).toBe('');
-    expect(harness.component.passwordStrength?.value).toBeNull();
+    expect(harness.component.passwordStrength?.value).toBe(0);
   });
 
   const fieldProperties = ['currentPassword', 'newPassword', 'confirmPassword'];
