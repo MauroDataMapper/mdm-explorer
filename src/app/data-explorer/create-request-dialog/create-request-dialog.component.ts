@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, Inject, OnInit, Optional } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 export interface CreateRequestDialogOptions {
@@ -35,7 +35,13 @@ export interface CreateRequestDialogResponse {
   styleUrls: ['./create-request-dialog.component.scss'],
 })
 export class CreateRequestDialogComponent implements OnInit {
-  requestForm!: UntypedFormGroup;
+  requestForm = new FormGroup({
+    name: new FormControl('', [
+      Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
+    ]),
+    description: new FormControl(''),
+  });
+
   showDescription = true;
 
   constructor(
@@ -47,22 +53,15 @@ export class CreateRequestDialogComponent implements OnInit {
   ) {}
 
   get name() {
-    return this.requestForm.get('name');
+    return this.requestForm.controls.name;
   }
 
   get description() {
-    return this.requestForm.get('description');
+    return this.requestForm.controls.description;
   }
 
   ngOnInit(): void {
     this.showDescription = this.data?.showDescription ?? true;
-
-    this.requestForm = new UntypedFormGroup({
-      name: new UntypedFormControl('', [
-        Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
-      ]),
-      description: new UntypedFormControl(''),
-    });
   }
 
   close() {
@@ -75,8 +74,8 @@ export class CreateRequestDialogComponent implements OnInit {
     }
 
     this.dialogRef.close({
-      name: this.name?.value,
-      description: this.description?.value,
+      name: this.name.value ?? '',
+      description: this.description.value ?? '',
     });
   }
 }

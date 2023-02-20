@@ -24,7 +24,7 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CatalogueUser, CatalogueUserPayload } from '../../mauro/catalogue-user.service';
 
 @Component({
@@ -41,42 +41,43 @@ export class CatalogueUserBasicFormComponent implements OnChanges {
 
   @Output() updateClicked = new EventEmitter<CatalogueUserPayload>();
 
-  formGroup: UntypedFormGroup;
-
-  constructor() {
-    this.formGroup = new UntypedFormGroup({
-      firstName: new UntypedFormControl('', [
-        Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
-      ]),
-      lastName: new UntypedFormControl('', [
-        Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
-      ]),
-      organisation: new UntypedFormControl('', [
-        Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
-      ]),
-      role: new UntypedFormControl(''),
-    });
-  }
+  formGroup = new FormGroup({
+    firstName: new FormControl('', [
+      Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
+    ]),
+    lastName: new FormControl('', [
+      Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
+    ]),
+    organisation: new FormControl('', [
+      Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
+    ]),
+    role: new FormControl(''),
+  });
 
   get firstName() {
-    return this.formGroup.get('firstName');
+    return this.formGroup.controls.firstName;
   }
 
   get lastName() {
-    return this.formGroup.get('lastName');
+    return this.formGroup.controls.lastName;
   }
 
   get organisation() {
-    return this.formGroup.get('organisation');
+    return this.formGroup.controls.organisation;
   }
 
   get role() {
-    return this.formGroup.get('role');
+    return this.formGroup.controls.role;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.user) {
-      this.setFormValues(this.user);
+      this.formGroup.patchValue({
+        firstName: this.user?.firstName ?? '',
+        lastName: this.user?.lastName ?? '',
+        organisation: this.user?.organisation ?? '',
+        role: this.user?.jobTitle ?? '',
+      });
     }
   }
 
@@ -90,17 +91,10 @@ export class CatalogueUserBasicFormComponent implements OnChanges {
     }
 
     this.updateClicked.emit({
-      firstName: this.firstName?.value,
-      lastName: this.lastName?.value,
-      organisation: this.organisation?.value,
-      jobTitle: this.role?.value,
+      firstName: this.firstName.value ?? '',
+      lastName: this.lastName.value ?? '',
+      organisation: this.organisation.value ?? '',
+      jobTitle: this.role.value ?? '',
     });
-  }
-
-  private setFormValues(user?: CatalogueUser) {
-    this.firstName?.setValue(user?.firstName ?? '');
-    this.lastName?.setValue(user?.lastName ?? '');
-    this.organisation?.setValue(user?.organisation ?? '');
-    this.role?.setValue(user?.jobTitle ?? '');
   }
 }

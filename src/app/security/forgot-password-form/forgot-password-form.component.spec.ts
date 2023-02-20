@@ -16,13 +16,18 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { SimpleChanges, SimpleChange } from '@angular/core';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MockComponent, MockDirective } from 'ng-mocks';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
-import { ForgotPasswordFormComponent } from './forgot-password-form.component';
+import {
+  ForgotPasswordFormComponent,
+  ForgotPasswordFormState,
+  ResetPasswordClickEvent,
+} from './forgot-password-form.component';
 
 describe('ForgotPasswordFormComponent', () => {
   let harness: ComponentHarness<ForgotPasswordFormComponent>;
@@ -35,5 +40,46 @@ describe('ForgotPasswordFormComponent', () => {
 
   it('should create', () => {
     expect(harness.isComponentCreated).toBeTruthy();
+    expect(harness.component.state).toBe('none');
+    expect(harness.component.formFieldAppearance).toBe('outline');
+  });
+
+  describe('on changes', () => {
+    const triggerChange = (state: ForgotPasswordFormState, isSending: boolean) => {
+      const changes: SimpleChanges = {
+        isSending: new SimpleChange(isSending, isSending, false),
+      };
+
+      harness.component.state = state;
+      harness.component.ngOnChanges(changes);
+    };
+
+    it('should disable the form when sending', () => {
+      expect(harness.component.resetForm.enabled).toBe(true);
+
+      triggerChange('sending-email', true);
+      expect(harness.component.resetForm.enabled).toBe(false);
+    });
+
+    it('should enable the form when not sending', () => {
+      triggerChange('sending-email', true);
+      expect(harness.component.resetForm.enabled).toBe(false);
+
+      triggerChange('email-sent', false);
+      expect(harness.component.resetForm.enabled).toBe(true);
+    });
+  });
+
+  it('should raise an event when resetting password', () => {
+    const expected: ResetPasswordClickEvent = {
+      email: 'test@test.com',
+    };
+
+    harness.component.email.setValue(expected.email);
+
+    const eventSpy = jest.spyOn(harness.component.resetPasswordClicked, 'emit');
+
+    harness.component.resetPassword();
+    expect(eventSpy).toHaveBeenCalledWith(expected);
   });
 });

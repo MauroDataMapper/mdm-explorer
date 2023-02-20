@@ -21,11 +21,10 @@ import {
   EventEmitter,
   Input,
   OnChanges,
-  OnInit,
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatFormFieldAppearance } from '@angular/material/form-field';
 import { defaultEmailPattern } from 'src/app/core/core.types';
 
@@ -44,7 +43,7 @@ export interface ResetPasswordClickEvent {
   templateUrl: './forgot-password-form.component.html',
   styleUrls: ['./forgot-password-form.component.scss'],
 })
-export class ForgotPasswordFormComponent implements OnInit, OnChanges {
+export class ForgotPasswordFormComponent implements OnChanges {
   @Input() state: ForgotPasswordFormState = 'none';
 
   @Input() formFieldAppearance: MatFormFieldAppearance = 'outline';
@@ -57,19 +56,15 @@ export class ForgotPasswordFormComponent implements OnInit, OnChanges {
 
   @Output() resetPasswordClicked = new EventEmitter<ResetPasswordClickEvent>();
 
-  resetForm!: UntypedFormGroup;
+  resetForm = new FormGroup({
+    email: new FormControl('', [
+      Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
+      Validators.pattern(this.emailPattern ?? defaultEmailPattern),
+    ]),
+  });
 
   get email() {
-    return this.resetForm.get('email');
-  }
-
-  ngOnInit(): void {
-    this.resetForm = new UntypedFormGroup({
-      email: new UntypedFormControl('', [
-        Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
-        Validators.pattern(this.emailPattern ?? defaultEmailPattern),
-      ]),
-    });
+    return this.resetForm.controls.email;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -83,10 +78,10 @@ export class ForgotPasswordFormComponent implements OnInit, OnChanges {
   }
 
   resetPassword() {
-    if (this.resetForm.invalid) {
+    if (this.resetForm.invalid || !this.email.value) {
       return;
     }
 
-    this.resetPasswordClicked.emit({ email: this.email?.value });
+    this.resetPasswordClicked.emit({ email: this.email.value });
   }
 }

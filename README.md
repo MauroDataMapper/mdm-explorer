@@ -19,10 +19,10 @@ contributions:
 
 # Requirements
 
-This codebase is built on Angular 13, so the following are required:
+This codebase is built on Angular 14, so the following are required:
 
-- NodeJS
-- NPM
+- NodeJS (minimum 16.10.0)
+- NPM (minimum 7.24.0)
 - [Angular CLI](https://github.com/angular/angular-cli)
 
 Also, you will need a Mauro backend instance running to communicate data between the

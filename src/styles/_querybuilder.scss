@@ -32,3 +32,8 @@ SPDX-License-Identifier: Apache-2.0
     padding: 10px;
   }
 }
+
+.q-inline-block-display {
+  /* Override width of rule entity selector which uses this class in an encapsulating div */
+  width: 25%;
+}
