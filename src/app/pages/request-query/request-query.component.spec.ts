@@ -27,6 +27,7 @@ import {
 import { ToastrService } from 'ngx-toastr';
 import { of, throwError } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
+import { StateRouterService } from 'src/app/core/state-router.service';
 import {
   DataElementSearchResult,
   DataRequest,
@@ -38,6 +39,7 @@ import {
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
 import { createBroadcastServiceStub } from 'src/app/testing/stubs/broadcast.stub';
 import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
+import { createStateRouterStub } from 'src/app/testing/stubs/state-router.stub';
 import { createToastrServiceStub } from 'src/app/testing/stubs/toastr.stub';
 import {
   ComponentHarness,
@@ -53,6 +55,7 @@ describe('RequestQueryComponent', () => {
   const toastrStub = createToastrServiceStub();
   const broadcastStub = createBroadcastServiceStub();
   const mdmResourcesConfiguration = new MdmResourcesConfiguration();
+  const stateRouterStub = createStateRouterStub();
 
   const requestId: Uuid = '1234';
 
@@ -85,6 +88,10 @@ describe('RequestQueryComponent', () => {
         {
           provide: MdmResourcesConfiguration,
           useValue: mdmResourcesConfiguration,
+        },
+        {
+          provide: StateRouterService,
+          useValue: stateRouterStub,
         },
       ],
     });
@@ -184,6 +191,31 @@ describe('RequestQueryComponent', () => {
       );
       expect(harness.component.query).toBeUndefined();
       expect(harness.component.condition.rules).toStrictEqual([]);
+    }));
+
+    it('should redirect back to request page if no data elements available', fakeAsync(() => {
+      dataRequestsStub.get.mockImplementationOnce((id) => {
+        expect(id).toBe(requestId);
+        return of(dataRequest);
+      });
+
+      dataRequestsStub.listDataElements.mockImplementationOnce((req) => {
+        expect(req).toStrictEqual(dataRequest);
+        return of([]);
+      });
+
+      dataRequestsStub.getQuery.mockImplementationOnce((id, t) => {
+        expect(id).toBe(requestId);
+        expect(t).toBe(type);
+        return of(undefined);
+      });
+
+      const routerSpy = jest.spyOn(stateRouterStub, 'navigateTo');
+
+      harness.component.ngOnInit();
+      tick();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/requests/', dataRequest.id]);
     }));
 
     it('should load request with existing query', fakeAsync(() => {

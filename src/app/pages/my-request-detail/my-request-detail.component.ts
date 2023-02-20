@@ -104,6 +104,7 @@ export class MyRequestDetailComponent implements OnInit {
     rules: [],
   };
   dataSchemas: DataSchema[] = [];
+  isEmpty = false;
 
   allSelected: SelectionChange = {
     changedBy: { instigator: 'parent' },
@@ -458,6 +459,8 @@ export class MyRequestDetailComponent implements OnInit {
       .subscribe(([dataSchemas, intersections]) => {
         this.dataSchemas = [];
         this.dataSchemas = dataSchemas;
+        this.isEmpty =
+          this.dataSchemaService.getDataRequestElements(this.dataSchemas).length === 0;
         this.sourceTargetIntersections = intersections;
       });
   }

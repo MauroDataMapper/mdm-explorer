@@ -44,14 +44,14 @@ SPDX-License-Identifier: Apache-2.0
     <mdm-data-query-row
       queryType="cohort"
       [condition]="cohortQuery"
-      [readOnly]="request.status === 'submitted'"
+      [readOnly]="request.status === 'submitted' || isEmpty"
       createRouterLink="queries/cohort"
       editRouterLink="queries/cohort"
     ></mdm-data-query-row>
     <mdm-data-query-row
       queryType="data"
       [condition]="dataQuery"
-      [readOnly]="request.status === 'submitted'"
+      [readOnly]="request.status === 'submitted' || isEmpty"
       createRouterLink="queries/data"
       editRouterLink="queries/data"
     ></mdm-data-query-row>
