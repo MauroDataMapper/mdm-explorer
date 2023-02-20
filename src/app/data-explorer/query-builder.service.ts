@@ -95,6 +95,16 @@ export class QueryBuilderService {
     );
   }
 
+  /**
+   * Identify the schema and class of a data element and use that as the entity for a field.
+   */
+  public getEntity(dataElement: DataElementSearchResult) {
+    return dataElement.breadcrumbs
+      ?.filter((bc) => bc.domainType !== CatalogueItemDomainType.DataModel)
+      .map((bc) => bc.label)
+      .join('.');
+  }
+
   private getQueryBuilderDatatype(dataType?: DataType): Observable<Profile> {
     if (dataType?.domainType === CatalogueItemDomainType.PrimitiveType) {
       const requestOptions = {
@@ -204,16 +214,6 @@ export class QueryBuilderService {
         defaultValue: '',
       };
     }
-  }
-
-  /**
-   * Identify the schema and class of a data element and use that as the entity for a field.
-   */
-  private getEntity(dataElement: DataElementSearchResult) {
-    return dataElement.breadcrumbs
-      ?.filter((bc) => bc.domainType !== CatalogueItemDomainType.DataModel)
-      .map((bc) => bc.label)
-      .join('.');
   }
 
   private getQueryFields(

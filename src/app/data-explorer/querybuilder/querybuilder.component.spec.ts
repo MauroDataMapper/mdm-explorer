@@ -32,13 +32,17 @@ import { MeqlOutputComponent } from '../meql-output/meql-output.component';
 import { MatCard } from '@angular/material/card';
 import { QueryCondition } from '../data-explorer.types';
 import { mapModelDataTypeToOptionsArray } from '../query-builder.service';
-import { CatalogueItemDomainType } from '@maurodatamapper/mdm-resources';
+import {
+  CatalogueItemDomainType,
+  MdmResourcesConfiguration,
+} from '@maurodatamapper/mdm-resources';
 import { of } from 'rxjs';
 import { AutocompleteSelectOptionSet } from 'src/app/shared/autocomplete-select/autocomplete-select.component';
 
 describe('QueryBuilderComponent', () => {
   let harness: ComponentHarness<QueryBuilderComponent>;
   const terminologyStub = createTerminologyServiceStub();
+  const mdmResourcesConfiguration = new MdmResourcesConfiguration();
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(QueryBuilderComponent, {
@@ -46,6 +50,10 @@ describe('QueryBuilderComponent', () => {
         {
           provide: TerminologyService,
           useValue: terminologyStub,
+        },
+        {
+          provide: MdmResourcesConfiguration,
+          useValue: mdmResourcesConfiguration,
         },
       ],
       declarations: [

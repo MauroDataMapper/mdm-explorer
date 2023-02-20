@@ -71,3 +71,36 @@ $horizontal-offset: 8px;
     0% 100%
   );
 }
+
+$vertical-offset-left: 8px;
+$horizontal-offset-left: 6px;
+
+::ng-deep div.mat-tooltip.mdm-selection-item-tooltip {
+  color: black;
+  font-size: small;
+  font-weight: normal;
+  text-align: center;
+  background: $color-mauro-gold;
+  padding-left: 1.1em;
+  margin-left: 0.2em;
+  margin-right: 8.1em;
+  width: 165px;
+  white-space: pre-line;
+
+  clip-path: polygon(
+    // Top left point
+    calc(0% + $horizontal-offset-left) 0%,
+    // Top right point
+    100% 0%,
+    // Bottom right point
+    100% 100%,
+    // Bottom left point
+    calc(0% + $horizontal-offset-left) 100%,
+    // Triangle bottom point
+    calc(0% + $horizontal-offset-left) calc(50% + $vertical-offset-left),
+    // Triangle centre point
+    0% 50%,
+    // Triangle top point
+    calc(0% + $horizontal-offset-left) calc(50% - $vertical-offset-left)
+  );
+}

@@ -29,7 +29,10 @@ import { ThemePalette } from '@angular/material/core';
 import { map } from 'rxjs';
 import { AutocompleteSelectOptionSet } from 'src/app/shared/autocomplete-select/autocomplete-select.component';
 import { TerminologyService } from 'src/app/mauro/terminology.service';
-import { mapOptionsArrayToModelDataType } from 'src/app/data-explorer/query-builder.service';
+import {
+  mapOptionsArrayToModelDataType,
+  QueryBuilderService,
+} from 'src/app/data-explorer/query-builder.service';
 
 @Component({
   selector: 'mdm-querybuilder',
@@ -66,7 +69,10 @@ export class QueryBuilderComponent implements OnInit {
    * */
   termSearchResults: { [field: string]: AutocompleteSelectOptionSet } = {};
 
-  constructor(private terminology: TerminologyService) {}
+  constructor(
+    private terminology: TerminologyService,
+    private queryBuilderService: QueryBuilderService
+  ) {}
 
   get hasFields(): boolean {
     return Object.keys(this.config.fields).length > 0;
@@ -120,5 +126,15 @@ export class QueryBuilderComponent implements OnInit {
       .subscribe((results: AutocompleteSelectOptionSet) => {
         this.termSearchResults[rule.field] = results;
       });
+  }
+
+  elementDescription(entity: string, label: string): string {
+    const result = this.dataElements.find(
+      (de) => de.label === label && entity === this.queryBuilderService.getEntity(de)
+    )?.description;
+    if (result) {
+      return result?.length > 300 ? result?.substring(0, 300) + '...' : result;
+    }
+    return 'No additional information available';
   }
 }
