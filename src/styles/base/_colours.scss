@@ -43,13 +43,16 @@ $color-primary: var(--theme-color-primary);
 $color-accent: var(--theme-color-accent);
 $color-warn: var(--theme-color-warn);
 
-// Light/dark variants of the primary/accent colours
+// Light/dark/contrast variants of the primary/accent colours
 $color-primary-dark: var(--theme-color-primary-dark);
 $color-primary-light: var(--theme-color-primary-light);
+$color-primary-contrast: var(--theme-color-primary-contrast);
 $color-accent-dark: var(--theme-color-accent-dark);
 $color-accent-light: var(--theme-color-accent-light);
+$color-accent-contrast: var(--theme-color-accent-contrast);
 $color-warn-dark: var(--theme-color-warn-dark);
 $color-warn-light: var(--theme-color-warn-light);
+$color-warn-contrast: var(--theme-color-warn-contrast);
 
 // Contrasting colours - base colour with matching compliment
 $color-page: var(--theme-color-page);

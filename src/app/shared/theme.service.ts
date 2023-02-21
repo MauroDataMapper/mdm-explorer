@@ -141,8 +141,8 @@ const defaultTheme: Theme = {
   },
   contrastColors: {
     page: '#fff',
-    unsentRequest: '#68d4ca',
-    submittedRequest: '#008bce',
+    unsentRequest: '#008bce',
+    submittedRequest: '#0e8f77',
   },
 };
 
@@ -333,10 +333,14 @@ export class ThemeService {
   }
 
   private computeAppCoreColors(name: string, baseHex: string) {
+    const color = tinycolor(baseHex);
     return {
-      [`--theme-color-${name}`]: tinycolor(baseHex).toHexString(),
-      [`--theme-color-${name}-light`]: tinycolor(baseHex).lighten(25).toHexString(),
-      [`--theme-color-${name}-dark`]: tinycolor(baseHex).darken(25).toHexString(),
+      [`--theme-color-${name}`]: color.toHexString(),
+      [`--theme-color-${name}-light`]: color.lighten(25).toHexString(),
+      [`--theme-color-${name}-dark`]: color.darken(25).toHexString(),
+      [`--theme-color-${name}-contrast`]: color.isLight()
+        ? lightContrastTextColor
+        : darkContrastTextColor,
     };
   }
 

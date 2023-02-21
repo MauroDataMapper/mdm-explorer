@@ -19,9 +19,9 @@ SPDX-License-Identifier: Apache-2.0
 @import "../../../styles/base/all";
 
 $footer-gap: 3rem;
-$muted-text-color: #6c757d;
 $footer-background-colour: $color-primary;
-$link-color: white;
+$footer-text-color: $color-primary-contrast;
+$link-color: $footer-text-color;
 $link-fontweight: 400;
 $link-fontsize: 80%;
 
@@ -31,7 +31,6 @@ $link-fontsize: 80%;
   background-color: $footer-background-colour;
 
   &__container {
-    border-top: 1px solid $muted-text-color;
     padding: 1.5rem;
     display: flex;
     justify-content: space-between;
@@ -75,16 +74,6 @@ $link-fontsize: 80%;
         font-size: $link-fontsize;
         font-weight: $link-fontweight;
       }
-    }
-  }
-
-  &__logo {
-    & p {
-      color: $muted-text-color;
-    }
-
-    &--mdm {
-      max-width: 180px;
     }
   }
 }
