@@ -24,13 +24,16 @@ SPDX-License-Identifier: Apache-2.0
   </ul>
 </mat-dialog-content>
 <mat-dialog-actions>
+  <button mat-stroked-button color="primary" (click)="close('view-request-detail')">
+    Open request
+  </button>
   <button
     *ngIf="!hideViewRequestsButton"
     mat-stroked-button
     color="primary"
     (click)="close('view-requests')"
   >
-    View requests
+    View all requests
   </button>
   <button mat-flat-button color="primary" (click)="close('continue')">
     Continue browsing

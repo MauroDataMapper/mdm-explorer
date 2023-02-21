@@ -25,7 +25,7 @@ import {
 } from '@maurodatamapper/mdm-resources';
 import { MockComponent, MockService } from 'ng-mocks';
 import { ToastrService } from 'ngx-toastr';
-import { Observable, of, throwError } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { createDataModelServiceStub } from 'src/app/testing/stubs/data-model.stub';
@@ -49,10 +49,10 @@ import { UserDetails } from 'src/app/security/user-details.service';
 import {
   DataElementDto,
   DataElementInstance,
+  DataRequest,
 } from 'src/app/data-explorer/data-explorer.types';
 import { createBroadcastServiceStub } from 'src/app/testing/stubs/broadcast.stub';
 import { BroadcastService } from 'src/app/core/broadcast.service';
-import { RequestCreatedAction } from 'src/app/data-explorer/request-created-dialog/request-created-dialog.component';
 
 describe('BrowseComponent', () => {
   let harness: ComponentHarness<BrowseComponent>;
@@ -398,19 +398,23 @@ describe('BrowseComponent', () => {
       },
     ];
 
-    dataRequestsStub.createWithDialogs.mockImplementation(
-      (): Observable<RequestCreatedAction> => {
-        return of('view-requests');
-      }
-    );
+    const dataRequest = { id: '999' } as DataRequest;
 
-    const routerSpy = jest.spyOn(stateRouterStub, 'navigateToKnownPath');
+    dataRequestsStub.createWithDialogs.mockImplementation(() => {
+      return of({
+        dataRequest,
+        action: 'view-requests',
+      });
+    });
+
+    const navigateKnownSpy = jest.spyOn(stateRouterStub, 'navigateToKnownPath');
+    const navigateToSpy = jest.spyOn(stateRouterStub, 'navigateTo');
 
     beforeEach(() => {
       dataRequestsStub.createWithDialogs.mockClear();
       broadcastStub.loading.mockClear();
       toastrStub.error.mockClear();
-      routerSpy.mockClear();
+      navigateKnownSpy.mockClear();
 
       dataModelStub.getDataElementsForDataClass.mockImplementationOnce((dc) => {
         expect(dc).toBe(selected);
@@ -439,22 +443,39 @@ describe('BrowseComponent', () => {
       harness.component.createRequest();
 
       // assert
-      expect(routerSpy).toHaveBeenCalledWith('/requests');
+      expect(navigateKnownSpy).toHaveBeenCalledWith('/requests');
     });
 
-    it('should not transition to requests page if RequestCreatedAction is \'continue\'', () => {
+    it('should transition to request detail page if RequestCreatedAction is \'view-request-detail\'', () => {
       // arrange
-      dataRequestsStub.createWithDialogs.mockImplementationOnce(
-        (): Observable<RequestCreatedAction> => {
-          return of('continue');
-        }
-      );
+      dataRequestsStub.createWithDialogs.mockImplementationOnce(() => {
+        return of({
+          dataRequest,
+          action: 'view-request-detail',
+        });
+      });
 
       // act
       harness.component.createRequest();
 
       // assert
-      expect(routerSpy).not.toHaveBeenCalled();
+      expect(navigateToSpy).toHaveBeenCalledWith(['/requests', dataRequest.id]);
+    });
+
+    it('should not transition to requests page if RequestCreatedAction is \'continue\'', () => {
+      // arrange
+      dataRequestsStub.createWithDialogs.mockImplementationOnce(() => {
+        return of({
+          dataRequest,
+          action: 'continue',
+        });
+      });
+
+      // act
+      harness.component.createRequest();
+
+      // assert
+      expect(navigateKnownSpy).not.toHaveBeenCalled();
     });
 
     it('should use the provided callback function to retrieve the dataElements to add', () => {
@@ -467,11 +488,12 @@ describe('BrowseComponent', () => {
         } as DataElementInstance;
       });
 
-      dataRequestsStub.createWithDialogs.mockImplementationOnce(
-        (): Observable<RequestCreatedAction> => {
-          return of('view-requests');
-        }
-      );
+      dataRequestsStub.createWithDialogs.mockImplementationOnce(() => {
+        return of({
+          dataRequest,
+          action: 'view-requests',
+        });
+      });
 
       // act
       harness.component.createRequest();
