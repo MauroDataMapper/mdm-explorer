@@ -23,6 +23,7 @@ import { QueryBuilderConfig } from 'angular2-query-builder';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY, finalize, forkJoin, switchMap } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
+import { StateRouterService } from 'src/app/core/state-router.service';
 import {
   DataElementSearchResult,
   DataRequest,
@@ -65,7 +66,8 @@ export class RequestQueryComponent implements OnInit, IModelPage {
     private dataRequests: DataRequestsService,
     private toastr: ToastrService,
     private broadcast: BroadcastService,
-    private queryBuilderService: QueryBuilderService
+    private queryBuilderService: QueryBuilderService,
+    private stateRouter: StateRouterService
   ) {}
 
   ngOnInit(): void {
@@ -97,6 +99,11 @@ export class RequestQueryComponent implements OnInit, IModelPage {
           return this.errorResponse('There was a problem finding your request queries.');
         }),
         switchMap(([dataElements, query]) => {
+          if (dataElements.length === 0) {
+            this.stateRouter.navigateTo([this.backRouterLink, this.backRouterRequestId]);
+            return EMPTY;
+          }
+
           return this.queryBuilderService.setupConfig(
             this.mapDataElements(dataElements),
             query

@@ -118,9 +118,12 @@ export class BrowseComponent implements OnInit {
 
     this.dataRequests
       .createWithDialogs(getDataElements, this.suppressViewRequestsDialogButton)
-      .subscribe((action) => {
-        if (action === 'view-requests') {
+      .subscribe((response) => {
+        console.log(response);
+        if (response.action === 'view-requests') {
           this.stateRouter.navigateToKnownPath('/requests');
+        } else if (response.action === 'view-request-detail') {
+          this.stateRouter.navigateTo(['/requests', response.dataRequest.id]);
         }
       });
   }
