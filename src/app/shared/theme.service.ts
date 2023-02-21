@@ -321,8 +321,8 @@ export class ThemeService {
     // and the 4th element is used, but TypeScript correctly points out that there is no 4th element in
     // tuple array (starting from zero). So the original JavaScript code was actually using "undefined"
     // as the value. Replicating this behaviour will produce the same results as original colour generator
-    //const baseTriad = tinycolor(baseHex).tetrad();
-    //const triad4 = tinycolor(baseTriad[4]); // DOES NOT WORK! No 4th element in tuple
+    // const baseTriad = tinycolor(baseHex).tetrad();
+    // const triad4 = tinycolor(baseTriad[4]); // DOES NOT WORK! No 4th element in tuple
 
     // This does work, produces expected results
     const triad4 = tinycolor(undefined);
@@ -399,6 +399,6 @@ export class ThemeService {
     rgb1.b = Math.floor((rgb1.b * rgb2.b) / 255);
     rgb1.g = Math.floor((rgb1.g * rgb2.g) / 255);
     rgb1.r = Math.floor((rgb1.r * rgb2.r) / 255);
-    return tinycolor('rgb ' + rgb1.r + ' ' + rgb1.g + ' ' + rgb1.b);
+    return tinycolor(`rgb ${rgb1.r} ${rgb1.g} ${rgb1.b}`);
   }
 }
