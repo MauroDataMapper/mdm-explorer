@@ -69,6 +69,11 @@ export class QueryBuilderComponent implements OnInit {
    * */
   termSearchResults: { [field: string]: AutocompleteSelectOptionSet } = {};
 
+  /**
+   * Associate field descriptions with their entity and label paths.
+   * */
+  descriptions: { [field: string]: string } = {};
+
   constructor(
     private terminology: TerminologyService,
     private queryBuilderService: QueryBuilderService
@@ -91,6 +96,8 @@ export class QueryBuilderComponent implements OnInit {
         rules: [],
       };
     }
+
+    this.setupDescriptions();
   }
 
   modelChanged(value: RuleSet) {
@@ -128,13 +135,18 @@ export class QueryBuilderComponent implements OnInit {
       });
   }
 
-  elementDescription(entity: string, label: string): string {
-    const result = this.dataElements.find(
-      (de) => de.label === label && entity === this.queryBuilderService.getEntity(de)
-    )?.description;
-    if (result) {
-      return result?.length > 300 ? result?.substring(0, 300) + '...' : result;
-    }
-    return 'No additional information available';
+  private setupDescriptions() {
+    this.dataElements.forEach((element) => {
+      const entity = this.queryBuilderService.getEntity(element);
+      const fullName = `${entity}.${element.label}`;
+
+      const description = element.description
+        ? element.description.length > 300
+          ? element.description.substring(0, 300) + '...'
+          : element.description
+        : 'No additional information available';
+
+      this.descriptions[fullName] = description;
+    });
   }
 }

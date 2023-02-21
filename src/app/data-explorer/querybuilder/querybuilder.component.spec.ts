@@ -177,6 +177,73 @@ describe('QueryBuilderComponent', () => {
       expect(harness.component.query).toStrictEqual(query);
     });
 
+    it('should map entity and labels to descriptions', () => {
+      harness.component.dataElements = [
+        {
+          isSelected: false,
+          id: '1',
+          model: 'test',
+          dataClass: 'Class 1',
+          label: 'testField1',
+          isBookmarked: false,
+          description: 'testField1 Description',
+          breadcrumbs: [
+            {
+              id: '11',
+              label: 'Schema 1',
+              domainType: CatalogueItemDomainType.DataClass,
+            },
+            {
+              id: '12',
+              label: 'Class 1',
+              domainType: CatalogueItemDomainType.DataClass,
+            },
+          ],
+        },
+        {
+          isSelected: false,
+          id: '2',
+          model: 'test',
+          dataClass: 'Class 2',
+          label: 'testField2',
+          isBookmarked: false,
+          description: 'testField2 Description',
+          breadcrumbs: [
+            {
+              id: '21',
+              label: 'Schema 2',
+              domainType: CatalogueItemDomainType.DataClass,
+            },
+            {
+              id: '22',
+              label: 'Class 2',
+              domainType: CatalogueItemDomainType.DataClass,
+            },
+          ],
+        },
+      ];
+
+      harness.component.config = {
+        fields: {
+          testField1: {
+            name: 'testField1',
+            type: 'terminology',
+          },
+          testField2: {
+            name: 'testField2',
+            type: 'terminology',
+          },
+        },
+      };
+
+      harness.component.ngOnInit();
+      const expected = {
+        'Schema 1.Class 1.testField1': 'testField1 Description',
+        'Schema 2.Class 2.testField2': 'testField2 Description',
+      };
+      expect(harness.component.descriptions).toStrictEqual(expected);
+    });
+
     describe('model changed', () => {
       it('should raise an event when the query changes', () => {
         const spy = jest.spyOn(harness.component.queryChange, 'emit');
