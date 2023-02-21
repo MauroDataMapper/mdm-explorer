@@ -18,9 +18,9 @@ SPDX-License-Identifier: Apache-2.0
 */
 @import "../../../styles/base/all";
 
-$row-header-background-color: $color-accent;
-$row-header-color: $color-accent-contrast;
-$row-header-border-color: $color-accent;
+$row-header-background-color: $color-classRow;
+$row-header-color: $color-classRow-contrast;
+$row-header-border-color: $color-classRow;
 $row-header-padding: 0.2em 1.2em;
 
 $row-padding: 0.75em 0em; //0.75em 1.2em;

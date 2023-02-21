@@ -46,6 +46,7 @@ export interface ThemeContrastColors {
   page: string;
   unsentRequest: string;
   submittedRequest: string;
+  classRow: string;
 }
 
 /**
@@ -143,6 +144,7 @@ const defaultTheme: Theme = {
     page: '#fff',
     unsentRequest: '#008bce',
     submittedRequest: '#0e8f77',
+    classRow: '#c4c4c4',
   },
 };
 

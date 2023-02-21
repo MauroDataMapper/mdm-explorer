@@ -125,6 +125,7 @@ describe('ThemeService', () => {
         page: '#fff',
         unsentRequest: '#68d4ca',
         submittedRequest: '#008bce',
+        classRow: '#c4c4c4',
       },
     };
 
@@ -277,6 +278,8 @@ describe('ThemeService', () => {
       expectCssVariable('--theme-color-unsentRequest-contrast', 'rgba(black, 0.87)');
       expectCssVariable('--theme-color-submittedRequest', '#008bce');
       expectCssVariable('--theme-color-submittedRequest-contrast', 'white');
+      expectCssVariable('--theme-color-classRow', '#c4c4c4');
+      expectCssVariable('--theme-color-classRow-contrast', 'rgba(black, 0.87)');
       expectCssVariable('--theme-color-hyperlink', '#003752');
       expectCssVariable('--theme-color-requestCount', '#ffe603');
     });
