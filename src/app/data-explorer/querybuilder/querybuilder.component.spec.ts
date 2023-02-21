@@ -32,13 +32,17 @@ import { MeqlOutputComponent } from '../meql-output/meql-output.component';
 import { MatCard } from '@angular/material/card';
 import { QueryCondition } from '../data-explorer.types';
 import { mapModelDataTypeToOptionsArray } from '../query-builder.service';
-import { CatalogueItemDomainType } from '@maurodatamapper/mdm-resources';
+import {
+  CatalogueItemDomainType,
+  MdmResourcesConfiguration,
+} from '@maurodatamapper/mdm-resources';
 import { of } from 'rxjs';
 import { AutocompleteSelectOptionSet } from 'src/app/shared/autocomplete-select/autocomplete-select.component';
 
 describe('QueryBuilderComponent', () => {
   let harness: ComponentHarness<QueryBuilderComponent>;
   const terminologyStub = createTerminologyServiceStub();
+  const mdmResourcesConfiguration = new MdmResourcesConfiguration();
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(QueryBuilderComponent, {
@@ -46,6 +50,10 @@ describe('QueryBuilderComponent', () => {
         {
           provide: TerminologyService,
           useValue: terminologyStub,
+        },
+        {
+          provide: MdmResourcesConfiguration,
+          useValue: mdmResourcesConfiguration,
         },
       ],
       declarations: [
@@ -167,6 +175,73 @@ describe('QueryBuilderComponent', () => {
       harness.component.query = query;
       harness.component.ngOnInit();
       expect(harness.component.query).toStrictEqual(query);
+    });
+
+    it('should map entity and labels to descriptions', () => {
+      harness.component.dataElements = [
+        {
+          isSelected: false,
+          id: '1',
+          model: 'test',
+          dataClass: 'Class 1',
+          label: 'testField1',
+          isBookmarked: false,
+          description: 'testField1 Description',
+          breadcrumbs: [
+            {
+              id: '11',
+              label: 'Schema 1',
+              domainType: CatalogueItemDomainType.DataClass,
+            },
+            {
+              id: '12',
+              label: 'Class 1',
+              domainType: CatalogueItemDomainType.DataClass,
+            },
+          ],
+        },
+        {
+          isSelected: false,
+          id: '2',
+          model: 'test',
+          dataClass: 'Class 2',
+          label: 'testField2',
+          isBookmarked: false,
+          description: 'testField2 Description',
+          breadcrumbs: [
+            {
+              id: '21',
+              label: 'Schema 2',
+              domainType: CatalogueItemDomainType.DataClass,
+            },
+            {
+              id: '22',
+              label: 'Class 2',
+              domainType: CatalogueItemDomainType.DataClass,
+            },
+          ],
+        },
+      ];
+
+      harness.component.config = {
+        fields: {
+          testField1: {
+            name: 'testField1',
+            type: 'terminology',
+          },
+          testField2: {
+            name: 'testField2',
+            type: 'terminology',
+          },
+        },
+      };
+
+      harness.component.ngOnInit();
+      const expected = {
+        'Schema 1.Class 1.testField1': 'testField1 Description',
+        'Schema 2.Class 2.testField2': 'testField2 Description',
+      };
+      expect(harness.component.descriptions).toStrictEqual(expected);
     });
 
     describe('model changed', () => {

@@ -29,7 +29,10 @@ import { ThemePalette } from '@angular/material/core';
 import { map } from 'rxjs';
 import { AutocompleteSelectOptionSet } from 'src/app/shared/autocomplete-select/autocomplete-select.component';
 import { TerminologyService } from 'src/app/mauro/terminology.service';
-import { mapOptionsArrayToModelDataType } from 'src/app/data-explorer/query-builder.service';
+import {
+  mapOptionsArrayToModelDataType,
+  QueryBuilderService,
+} from 'src/app/data-explorer/query-builder.service';
 
 @Component({
   selector: 'mdm-querybuilder',
@@ -66,7 +69,15 @@ export class QueryBuilderComponent implements OnInit {
    * */
   termSearchResults: { [field: string]: AutocompleteSelectOptionSet } = {};
 
-  constructor(private terminology: TerminologyService) {}
+  /**
+   * Associate field descriptions with their entity and label paths.
+   * */
+  descriptions: { [field: string]: string } = {};
+
+  constructor(
+    private terminology: TerminologyService,
+    private queryBuilderService: QueryBuilderService
+  ) {}
 
   get hasFields(): boolean {
     return Object.keys(this.config.fields).length > 0;
@@ -85,6 +96,8 @@ export class QueryBuilderComponent implements OnInit {
         rules: [],
       };
     }
+
+    this.setupDescriptions();
   }
 
   modelChanged(value: RuleSet) {
@@ -120,5 +133,20 @@ export class QueryBuilderComponent implements OnInit {
       .subscribe((results: AutocompleteSelectOptionSet) => {
         this.termSearchResults[rule.field] = results;
       });
+  }
+
+  private setupDescriptions() {
+    this.dataElements.forEach((element) => {
+      const entity = this.queryBuilderService.getEntity(element);
+      const fullName = `${entity}.${element.label}`;
+
+      const description = element.description
+        ? element.description.length > 300
+          ? element.description.substring(0, 300) + '...'
+          : element.description
+        : 'No additional information available';
+
+      this.descriptions[fullName] = description;
+    });
   }
 }
