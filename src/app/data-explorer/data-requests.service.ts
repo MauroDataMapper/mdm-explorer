@@ -68,7 +68,7 @@ import { DataRequest } from '../data-explorer/data-explorer.types';
 import { DataExplorerService } from './data-explorer.service';
 import { SecurityService } from '../security/security.service';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { RequestCreatedAction } from './request-created-dialog/request-created-dialog.component';
+import { RequestCreatedResponse } from './request-created-dialog/request-created-dialog.component';
 import { ToastrService } from 'ngx-toastr';
 import { BroadcastService } from '../core/broadcast.service';
 import { DialogService } from './dialog.service';
@@ -532,7 +532,7 @@ export class DataRequestsService {
   createWithDialogs(
     getDataElements: () => Observable<DataElementInstance[]>,
     suppressViewRequestsDialogButton: boolean = false
-  ): Observable<RequestCreatedAction | undefined> {
+  ): Observable<RequestCreatedResponse> {
     const user = this.security.getSignedInUser();
     if (!user) return EMPTY;
 
@@ -580,7 +580,12 @@ export class DataRequestsService {
               addedElements: dataElements,
               suppressViewRequests: suppressViewRequestsDialogButton,
             })
-            .afterClosed();
+            .afterClosed()
+            .pipe(
+              map((action) => {
+                return { dataRequest, action: action ?? 'continue' };
+              })
+            );
         }),
         finalize(() => this.broadcast.loading({ isLoading: false }))
       );
