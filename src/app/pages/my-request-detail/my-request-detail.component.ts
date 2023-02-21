@@ -17,7 +17,6 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import {
@@ -51,9 +50,6 @@ import {
   DataSchema,
   mapToDataRequest,
   QueryCondition,
-  SelectableDataElementSearchResultCheckedEvent,
-  SelectionChange,
-  SelectionChangedBy,
 } from 'src/app/data-explorer/data-explorer.types';
 import {
   DataAccessRequestsSourceTargetIntersections,
@@ -92,7 +88,6 @@ export class MyRequestDetailComponent implements OnInit {
   request?: DataRequest;
   state: 'idle' | 'loading' = 'idle';
   sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
-  removeSelectedButtonDisabled = true;
   cohortQueryType: DataRequestQueryType = 'cohort';
   cohortQuery: QueryCondition = {
     condition: 'and',
@@ -106,12 +101,15 @@ export class MyRequestDetailComponent implements OnInit {
   dataSchemas: DataSchema[] = [];
   isEmpty = false;
 
-  allSelected: SelectionChange = {
-    changedBy: { instigator: 'parent' },
-    isSelected: false,
-  };
+  // To store all dataElements of this request.
+  allElements?: DataElementSearchResult[];
 
-  selectAllElements = false;
+  // Binds to the checked property of the "select all" checkbox
+  allElementsSelected = false;
+
+  // When no element is selected (!anyElementSelected) the
+  // remove selected button is disabled.
+  anyElementSelected = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -120,8 +118,7 @@ export class MyRequestDetailComponent implements OnInit {
     private researchPlugin: ResearchPluginService,
     private dialogs: DialogService,
     private broadcastService: BroadcastService,
-    private dataSchemaService: DataSchemaService,
-    private changeDetectorRef: ChangeDetectorRef
+    private dataSchemaService: DataSchemaService
   ) {
     this.sourceTargetIntersections = {
       dataAccessRequests: [],
@@ -180,17 +177,27 @@ export class MyRequestDetailComponent implements OnInit {
       });
   }
 
-  handleSetRemoveSelectedButtonDisable() {
-    this.setRemoveSelectedButtonDisabled();
+  onSelectAll() {
+    if (this.allElementsSelected) {
+      this.selectOrUnselectAllDataElements(false);
+    } else {
+      this.selectOrUnselectAllDataElements(true);
+    }
+
+    this.updateAllOrSomeChildrenSelectedHandler();
   }
 
-  onSelectElement(event: SelectableDataElementSearchResultCheckedEvent) {
-    event.item.isSelected = event.checked;
-  }
-
-  onSelectAll(event: MatCheckboxChange) {
-    this.selectAll(event.checked, {
-      instigator: 'parent',
+  // Can mark all the children (schema, dataClass and dataElements)
+  // of this request as either selected or not.
+  selectOrUnselectAllDataElements(valueToSet: boolean) {
+    this.dataSchemas.forEach((dataSchema) => {
+      dataSchema.schema.isSelected = valueToSet;
+      dataSchema.dataClasses.forEach((dataClass) => {
+        dataClass.dataClass.isSelected = valueToSet;
+        dataClass.dataElements.forEach((dataElement) => {
+          dataElement.isSelected = valueToSet;
+        });
+      });
     });
   }
 
@@ -232,8 +239,6 @@ export class MyRequestDetailComponent implements OnInit {
           heading: 'Request submitted',
           message: `Your request "${this.request.label}" has been successfully submitted. It will now be reviewed and you will be contacted shortly to discuss further steps.`,
         });
-
-        this.setRemoveSelectedButtonDisabled();
       });
   }
 
@@ -408,6 +413,7 @@ export class MyRequestDetailComponent implements OnInit {
   showCohortCreate() {
     return this.cohortQuery.rules.length === 0 && this.request?.status === 'unsent';
   }
+
   showCohortEdit() {
     return this.cohortQuery.rules.length > 0 && this.request?.status === 'unsent';
   }
@@ -416,11 +422,36 @@ export class MyRequestDetailComponent implements OnInit {
     return this.dataQuery.rules.length > 0 && this.request?.status === 'unsent';
   }
 
-  onSelectSchema(/* event: SelectionChange*/) {
-    if (this.dataSchemas) {
-      const selectedItemList = this.dataSchemas.filter((item) => item.schema.isSelected);
-      this.selectAllElements = selectedItemList.length === this.dataSchemas.length;
+  /**
+   * Each time any of the childrens at any level (schema, data class
+   * or dataElement) is selected, it emits an event to update
+   * if all its children are selected. To keep tracks of the
+   * childrens, we check if all or any of the elements are selected
+   * and update the variables.
+   */
+  updateAllOrSomeChildrenSelectedHandler() {
+    this.updateAllElementsSelected();
+    this.updateAnyElementsSelected();
+  }
+
+  private updateAllElementsSelected() {
+    if (!this.allElements) {
+      this.allElements = this.dataSchemaService.getDataRequestElements(this.dataSchemas);
     }
+
+    this.allElementsSelected = this.allElements.every(
+      (dataElement) => dataElement.isSelected
+    );
+  }
+
+  private updateAnyElementsSelected() {
+    if (!this.allElements) {
+      this.allElements = this.dataSchemaService.getDataRequestElements(this.dataSchemas);
+    }
+
+    this.anyElementSelected = this.allElements.some(
+      (dataElement) => dataElement.isSelected
+    );
   }
 
   /**
@@ -498,17 +529,6 @@ export class MyRequestDetailComponent implements OnInit {
   }
 
   /**
-   * Disable the 'Remove Selected' button unless some elements are selected in the current request
-   */
-  private setRemoveSelectedButtonDisabled() {
-    const allElements = this.dataSchemaService.getDataRequestElements(this.dataSchemas);
-    this.removeSelectedButtonDisabled =
-      this.request?.status === 'submitted' ||
-      allElements.findIndex((dataElement) => dataElement.isSelected) === -1;
-    this.changeDetectorRef.detectChanges();
-  }
-
-  /**
    * Methods for managing the okCancel dialogs.
    */
   private confirmSumbitRequest(): MatDialogRef<OkCancelDialogData> {
@@ -546,16 +566,6 @@ export class MyRequestDetailComponent implements OnInit {
   /**
    * Methods for managing the selection of items.
    */
-  private selectAll(value: boolean, changedBy: SelectionChangedBy) {
-    this.selectAllElements = value;
-
-    const allSelected: SelectionChange = {
-      changedBy,
-      isSelected: value,
-    };
-    this.allSelected = allSelected;
-  }
-
   private getSelectedItems(): DataElementSearchResult[] {
     return this.dataSchemaService
       .getDataRequestElements(this.dataSchemas)
