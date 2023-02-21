@@ -19,7 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DataClass, DataModel } from '@maurodatamapper/mdm-resources';
-import { DataElementInstance } from '../data-explorer.types';
+import { DataElementInstance, DataRequest } from '../data-explorer.types';
 
 export interface RequestCreatedData {
   request: DataModel;
@@ -28,7 +28,12 @@ export interface RequestCreatedData {
   suppressViewRequests?: boolean;
 }
 
-export type RequestCreatedAction = 'continue' | 'view-requests';
+export type RequestCreatedAction = 'continue' | 'view-requests' | 'view-request-detail';
+
+export interface RequestCreatedResponse {
+  dataRequest: DataRequest;
+  action: RequestCreatedAction;
+}
 
 @Component({
   selector: 'mdm-request-created-dialog',

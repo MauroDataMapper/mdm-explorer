@@ -123,6 +123,9 @@ SPDX-License-Identifier: Apache-2.0
             <mat-option
               *ngFor="let field of getFields(rule.entity)"
               [value]="field.value"
+              [matTooltip]="descriptions[rule.entity + '.' + field.value]"
+              matTooltipClass="mdm-selection-item-tooltip"
+              matTooltipPosition="right"
             >
               {{ field.name }}
             </mat-option>

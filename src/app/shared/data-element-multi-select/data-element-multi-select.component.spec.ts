@@ -35,13 +35,15 @@ import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
 
 import { MatDialog } from '@angular/material/dialog';
 import { UserDetails } from 'src/app/security/user-details.service';
-import { DataElementSearchResult } from 'src/app/data-explorer/data-explorer.types';
-import { Observable, of } from 'rxjs';
+import {
+  DataElementSearchResult,
+  DataRequest,
+} from 'src/app/data-explorer/data-explorer.types';
+import { of } from 'rxjs';
 import { createBroadcastServiceStub } from 'src/app/testing/stubs/broadcast.stub';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { ToastrService } from 'ngx-toastr';
 import { createToastrServiceStub } from 'src/app/testing/stubs/toastr.stub';
-import { RequestCreatedAction } from 'src/app/data-explorer/request-created-dialog/request-created-dialog.component';
 import { CatalogueItemDomainType, DataModel } from '@maurodatamapper/mdm-resources';
 import { createMdmEndpointsStub } from 'src/app/testing/stubs/mdm-endpoints.stub';
 import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
@@ -135,12 +137,15 @@ describe('DataElementMultiSelectComponent', () => {
 
     const dataElements = [dataElement1, dataElement2];
 
-    const routerSpy = jest.spyOn(stateRouterStub, 'navigateToKnownPath');
+    const dataRequest = { id: '999' } as DataRequest;
+
+    const navigateKnownSpy = jest.spyOn(stateRouterStub, 'navigateToKnownPath');
+    const navigateToSpy = jest.spyOn(stateRouterStub, 'navigateTo');
 
     beforeEach(() => {
       dataRequestsStub.createWithDialogs.mockClear();
       broadcastStub.loading.mockClear();
-      routerSpy.mockClear();
+      navigateKnownSpy.mockClear();
     });
 
     it('should not call create request if there are no data elements', () => {
@@ -154,43 +159,62 @@ describe('DataElementMultiSelectComponent', () => {
 
     it('should transition to requests page if RequestCreatedAction is \'view-requests\'', () => {
       // arrange
-      dataRequestsStub.createWithDialogs.mockImplementationOnce(
-        (): Observable<RequestCreatedAction> => {
-          return of('view-requests');
-        }
-      );
+      dataRequestsStub.createWithDialogs.mockImplementationOnce(() => {
+        return of({
+          dataRequest,
+          action: 'view-requests',
+        });
+      });
 
       // act
       harness.component.createRequest(dataElements);
 
       // assert
-      expect(routerSpy).toHaveBeenCalledWith('/requests');
+      expect(navigateKnownSpy).toHaveBeenCalledWith('/requests');
+    });
+
+    it('should transition to request detail page if RequestCreatedAction is \'view-request-detail\'', () => {
+      // arrange
+      dataRequestsStub.createWithDialogs.mockImplementationOnce(() => {
+        return of({
+          dataRequest,
+          action: 'view-request-detail',
+        });
+      });
+
+      // act
+      harness.component.createRequest(dataElements);
+
+      // assert
+      expect(navigateToSpy).toHaveBeenCalledWith(['/requests', dataRequest.id]);
     });
 
     it('should not transition to requests page if RequestCreatedAction is \'continue\'', () => {
       // arrange
-      dataRequestsStub.createWithDialogs.mockImplementationOnce(
-        (): Observable<RequestCreatedAction> => {
-          return of('continue');
-        }
-      );
+      dataRequestsStub.createWithDialogs.mockImplementationOnce(() => {
+        return of({
+          dataRequest,
+          action: 'continue',
+        });
+      });
 
       // act
       harness.component.createRequest(dataElements);
 
       // assert
-      expect(routerSpy).not.toHaveBeenCalled();
+      expect(navigateKnownSpy).not.toHaveBeenCalled();
     });
 
     it('should use the provided callback function to retrieve the dataElements to add', () => {
       // arrange
       const createSpy = jest.spyOn(dataRequestsStub, 'createWithDialogs');
 
-      dataRequestsStub.createWithDialogs.mockImplementationOnce(
-        (): Observable<RequestCreatedAction> => {
-          return of('view-requests');
-        }
-      );
+      dataRequestsStub.createWithDialogs.mockImplementationOnce(() => {
+        return of({
+          dataRequest,
+          action: 'view-requests',
+        });
+      });
 
       // act
       harness.component.createRequest(dataElements);
