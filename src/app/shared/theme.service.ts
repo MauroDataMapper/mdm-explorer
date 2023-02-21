@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import tinycolor from 'tinycolor2';
+import tinycolor, { ColorFormats } from 'tinycolor2';
 
 /**
  * Represents the core colours to use for the colour palettes in an Angular Material theme.
@@ -306,21 +306,52 @@ export class ThemeService {
    * See https://material.angular.io/guide/theming for understanding the colour palette structure.
    */
   private computeMaterialPalette(baseHex: string): Color[] {
+    // Use "constantin" generation algorithm to produce higher contrast palette
+    // See https://github.com/mbitson/mcg/blob/master/scripts/controllers/ColorGeneratorCtrl.js
+    // and http://mcg.mbitson.com/#!?mcgpalette0=%2319381f&themename=mcgtheme
+    const baseLight = tinycolor('#ffffff');
+    const baseDark = ThemeService.multiply(
+      tinycolor(baseHex).toRgb(),
+      tinycolor(baseHex).toRgb()
+    );
+
+    // Note: there is a bug in the original source code, commented out below. A tetrad is retrieved
+    // and the 4th element is used, but TypeScript correctly points out that there is no 4th element in
+    // tuple array (starting from zero). So the original JavaScript code was actually using "undefined"
+    // as the value. Replicating this behaviour will produce the same results as original colour generator
+    //const baseTriad = tinycolor(baseHex).tetrad();
+    //const triad4 = tinycolor(baseTriad[4]); // DOES NOT WORK! No 4th element in tuple
+
+    // This does work, produces expected results
+    const triad4 = tinycolor(undefined);
+
     return [
-      this.getColorObject(tinycolor(baseHex).lighten(52), '50'),
-      this.getColorObject(tinycolor(baseHex).lighten(37), '100'),
-      this.getColorObject(tinycolor(baseHex).lighten(26), '200'),
-      this.getColorObject(tinycolor(baseHex).lighten(12), '300'),
-      this.getColorObject(tinycolor(baseHex).lighten(6), '400'),
-      this.getColorObject(tinycolor(baseHex), '500'),
-      this.getColorObject(tinycolor(baseHex).darken(6), '600'),
-      this.getColorObject(tinycolor(baseHex).darken(12), '700'),
-      this.getColorObject(tinycolor(baseHex).darken(18), '800'),
-      this.getColorObject(tinycolor(baseHex).darken(24), '900'),
-      this.getColorObject(tinycolor(baseHex).lighten(50).saturate(30), 'A100'),
-      this.getColorObject(tinycolor(baseHex).lighten(30).saturate(30), 'A200'),
-      this.getColorObject(tinycolor(baseHex).lighten(10).saturate(15), 'A400'),
-      this.getColorObject(tinycolor(baseHex).lighten(5).saturate(5), 'A700'),
+      this.getColorObject(tinycolor.mix(baseLight, baseHex, 12), '50'),
+      this.getColorObject(tinycolor.mix(baseLight, baseHex, 30), '100'),
+      this.getColorObject(tinycolor.mix(baseLight, baseHex, 50), '200'),
+      this.getColorObject(tinycolor.mix(baseLight, baseHex, 70), '300'),
+      this.getColorObject(tinycolor.mix(baseLight, baseHex, 85), '400'),
+      this.getColorObject(tinycolor.mix(baseLight, baseHex, 100), '500'),
+      this.getColorObject(tinycolor.mix(baseDark, baseHex, 87), '600'),
+      this.getColorObject(tinycolor.mix(baseDark, baseHex, 70), '700'),
+      this.getColorObject(tinycolor.mix(baseDark, baseHex, 54), '800'),
+      this.getColorObject(tinycolor.mix(baseDark, baseHex, 25), '900'),
+      this.getColorObject(
+        tinycolor.mix(baseDark, triad4, 15).saturate(80).lighten(65),
+        'A100'
+      ),
+      this.getColorObject(
+        tinycolor.mix(baseDark, triad4, 15).saturate(80).lighten(55),
+        'A200'
+      ),
+      this.getColorObject(
+        tinycolor.mix(baseDark, triad4, 15).saturate(100).lighten(45),
+        'A400'
+      ),
+      this.getColorObject(
+        tinycolor.mix(baseDark, triad4, 15).saturate(100).lighten(40),
+        'A700'
+      ),
     ];
   }
 
@@ -360,5 +391,12 @@ export class ThemeService {
       [`--theme-mat-typography-${name}-line-height`]: level.lineHeight,
       [`--theme-mat-typography-${name}-font-weight`]: level.fontWeight,
     };
+  }
+
+  private static multiply(rgb1: ColorFormats.RGBA, rgb2: ColorFormats.RGBA) {
+    rgb1.b = Math.floor((rgb1.b * rgb2.b) / 255);
+    rgb1.g = Math.floor((rgb1.g * rgb2.g) / 255);
+    rgb1.r = Math.floor((rgb1.r * rgb2.r) / 255);
+    return tinycolor('rgb ' + rgb1.r + ' ' + rgb1.g + ' ' + rgb1.b);
   }
 }
