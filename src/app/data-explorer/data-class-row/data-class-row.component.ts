@@ -48,7 +48,7 @@ export class DataClassRowComponent implements OnInit {
 
   classElements: DataElementSearchResult[] = [];
 
-  allChildrenSelected: boolean = false;
+  allChildrenSelected = false;
 
   constructor() {
     this.sourceTargetIntersections = {
@@ -69,7 +69,7 @@ export class DataClassRowComponent implements OnInit {
    * our state accordingly.  Also, after
    * changing our state we should comunicate
    * that to our ancestors for them to update
-   *  their state.
+   * their state.
    */
   updateAllChildrenSelectedHandler() {
     if (!this.dataClassWithElements) {
