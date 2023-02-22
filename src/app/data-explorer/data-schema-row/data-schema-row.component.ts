@@ -16,25 +16,14 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges,
-} from '@angular/core';
-import { MatCheckboxChange } from '@angular/material/checkbox';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { RequestElementAddDeleteEvent } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
 import {
-  DataClassWithElements,
   DataElementSearchResult,
   DataItemDeleteEvent,
   DataRequestQueryType,
   DataSchema,
   SelectionChange,
-  SelectionChangedBy,
 } from '../data-explorer.types';
 import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.service';
 import { DataSchemaService } from 'src/app/mauro/data-schema-service';
@@ -44,19 +33,17 @@ import { DataSchemaService } from 'src/app/mauro/data-schema-service';
   templateUrl: './data-schema-row.component.html',
   styleUrls: ['./data-schema-row.component.scss'],
 })
-export class DataSchemaRowComponent implements OnInit, OnChanges {
+export class DataSchemaRowComponent implements OnInit {
   @Input() dataSchema?: DataSchema;
   @Input() requestName = '';
   @Input() requestId = '';
   @Input() suppressViewRequestsDialogButton = false;
   @Input() canDelete = true;
   @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
-  @Input() allSelected?: SelectionChange;
 
   @Output() deleteItemEvent = new EventEmitter<DataItemDeleteEvent>();
   @Output() requestAddDelete = new EventEmitter<RequestElementAddDeleteEvent>();
-  @Output() schemaCheckedEvent = new EventEmitter();
-  @Output() setRemoveSelectedButtonDisabledEvent = new EventEmitter();
+  @Output() updateAllOrSomeChildrenSelected = new EventEmitter();
 
   visible = true;
 
@@ -82,24 +69,12 @@ export class DataSchemaRowComponent implements OnInit, OnChanges {
     }
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.allSelected) {
-      if (this.allSelected?.changedBy?.instigator === 'parent') {
-        this.selectSchema(this.allSelected.isSelected, { instigator: 'parent' });
-      }
-    }
-  }
-
   toggleCollapse(): void {
     this.visible = !this.visible;
   }
 
   handleRequestAddDelete(event: RequestElementAddDeleteEvent) {
     this.requestAddDelete.emit(event);
-  }
-
-  handleSetRemoveSelectedButtonDisable() {
-    this.setRemoveSelectedButtonDisabledEvent.emit();
   }
 
   handleDeleteItemEvent(event: DataItemDeleteEvent) {
@@ -115,48 +90,55 @@ export class DataSchemaRowComponent implements OnInit, OnChanges {
     }
   }
 
-  schemaChecked(event: MatCheckboxChange) {
+  /**
+   * When the schema checkbox is clicked
+   * we need to select or deselect all our
+   * descendents, and also emit the event
+   * for my ancestor to update its state.
+   */
+  onNgModelChange() {
     if (!this.dataSchema) {
       return;
     }
 
-    this.selectSchema(event.checked, {
-      instigator: 'parent',
-    });
-
-    this.schemaCheckedEvent.emit();
-  }
-
-  onSelectClass() {
-    if (this.dataSchema) {
-      const selectedItemList = this.dataSchema.dataClasses.filter(
-        (item) => item.dataClass.isSelected
-      );
-      this.setSchemaSelected(selectedItemList);
+    if (this.dataSchema.schema.isSelected) {
+      this.selectOrUnselectAllChildDataClassesAndItsChildren(true);
+    } else {
+      this.selectOrUnselectAllChildDataClassesAndItsChildren(false);
     }
+
+    this.updateAllOrSomeChildrenSelected.emit();
   }
 
   /**
-   * If all the elements are selected, select the parent class. If a single element is not
-   * selected, deselect the parent class.
+   * When any of the children component
+   * changes states, we need to update
+   * our state accordingly.  Also, after
+   * changing our state we should comunicate
+   * that to our ancestors for them to update
+   * their state.
    */
-  private setSchemaSelected(selectedItemList: DataClassWithElements[]) {
-    if (this.dataSchema) {
-      this.selectSchema(this.dataSchema.dataClasses.length === selectedItemList.length, {
-        instigator: 'child',
-      });
-      this.schemaCheckedEvent.emit(this.dataSchema.schema.isSelected);
+  updateAllChildrenSelectedHandler() {
+    if (!this.dataSchema) {
+      return;
     }
+    this.dataSchema.schema.isSelected = this.schemaElements.every(
+      (dataElement) => dataElement.isSelected
+    );
+
+    this.updateAllOrSomeChildrenSelected.emit();
   }
 
-  private selectSchema(value: boolean, changedBy: SelectionChangedBy) {
-    if (this.dataSchema) {
-      this.dataSchema.schema.isSelected = value;
+  private selectOrUnselectAllChildDataClassesAndItsChildren(valueToSet: boolean) {
+    if (!this.dataSchema?.dataClasses) {
+      return;
     }
-    const schemaSelected: SelectionChange = {
-      changedBy,
-      isSelected: value,
-    };
-    this.schemaSelected = schemaSelected;
+
+    this.dataSchema?.dataClasses.forEach((dataClass) => {
+      dataClass.dataClass.isSelected = valueToSet;
+      dataClass.dataElements.forEach((dataElement) => {
+        dataElement.isSelected = valueToSet;
+      });
+    });
   }
 }

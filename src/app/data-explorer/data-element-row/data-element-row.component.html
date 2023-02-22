@@ -26,8 +26,8 @@ SPDX-License-Identifier: Apache-2.0
         <mat-checkbox
           *ngIf="canDelete"
           class="mdm-data-element-row__header-title-checkbox"
-          [checked]="item.isSelected"
-          (change)="itemChecked($event)"
+          [(ngModel)]="item.isSelected"
+          (ngModelChange)="onNgModelChange()"
         ></mat-checkbox>
         <a
           class="mdm-data-element-row__header-link"

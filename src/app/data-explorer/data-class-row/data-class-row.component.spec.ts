@@ -61,14 +61,14 @@ describe('DataClassRowComponent', () => {
     expect(harness.component.dataClassWithElements).toBeUndefined();
   });
 
-  it('should not raise a classCheckedEvent when checked but has no data class', () => {
-    const emitSpy = jest.spyOn(harness.component.classCheckedEvent, 'emit');
-    harness.component.classChecked();
+  it('should not raise a updateAllChildrenSelected when model changes but has no data class', () => {
+    const emitSpy = jest.spyOn(harness.component.updateAllChildrenSelected, 'emit');
+    harness.component.ngModelOnChange();
     expect(emitSpy).not.toHaveBeenCalled();
   });
 
-  it('should raise a classCheckedEvent when has a data class is checked', () => {
-    const emitSpy = jest.spyOn(harness.component.classCheckedEvent, 'emit');
+  it('should raise a updateAllChildrenSelected when has a data class, and model changes', () => {
+    const emitSpy = jest.spyOn(harness.component.updateAllChildrenSelected, 'emit');
 
     const dataClassWithElements: DataClassWithElements = {
       dataClass: {
@@ -79,7 +79,7 @@ describe('DataClassRowComponent', () => {
     };
 
     harness.component.dataClassWithElements = dataClassWithElements;
-    harness.component.classChecked();
+    harness.component.ngModelOnChange();
 
     expect(emitSpy).toHaveBeenCalled();
   });
@@ -163,11 +163,8 @@ describe('DataClassRowComponent mdm-data-element-row', () => {
     const mdmDataElementRowComponent = dom.query(
       (de) => de.name === 'mdm-data-element-row'
     );
-    const emitSpy = jest.spyOn(component.setRemoveSelectedButtonDisabledEvent, 'emit');
-    mdmDataElementRowComponent.triggerEventHandler(
-      'setRemoveSelectedButtonDisabledEvent',
-      {}
-    );
+    const emitSpy = jest.spyOn(component.updateAllChildrenSelected, 'emit');
+    mdmDataElementRowComponent.triggerEventHandler('updateAllChildrenSelected', {});
     expect(emitSpy).toHaveBeenCalledWith();
   });
 
