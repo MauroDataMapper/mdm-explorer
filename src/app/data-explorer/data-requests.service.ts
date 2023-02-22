@@ -761,19 +761,19 @@ export class DataRequestsService {
    * @param type The type of query to get.
    * @param dataElementLabels the labels of the data elements to remove from the query.
    * @returns a {@link DataRequestQueryPayload} with the query after removing the
-   * data elements, or empty if the request or query cannot be found.
+   * data elements, or `undefined` if the request or query cannot be found.
    */
   deleteDataElementsFromQuery(
     requestId: Uuid,
     type: DataRequestQueryType,
     dataElementLabels: string[]
-  ): Observable<DataRequestQueryPayload> {
+  ): Observable<DataRequestQueryPayload | undefined> {
     let updatedQuery: DataRequestQueryPayload;
 
     return this.getQuery(requestId, type).pipe(
       switchMap((query) => {
         if (!query) {
-          return EMPTY;
+          return of(undefined);
         }
 
         updatedQuery = query;

@@ -265,8 +265,8 @@ export class MyRequestDetailComponent implements OnInit {
           cohortQuery,
           result,
         }: {
-          dataQuery: DataRequestQueryPayload;
-          cohortQuery: DataRequestQueryPayload;
+          dataQuery?: DataRequestQueryPayload;
+          cohortQuery?: DataRequestQueryPayload;
           result: DataElementOperationResult;
         }) => {
           this.refreshQueries(dataQuery, cohortQuery);
@@ -688,7 +688,7 @@ export class MyRequestDetailComponent implements OnInit {
   private removeDataElementFromQuery(
     dataElementLabels: string[],
     queryType: DataRequestQueryType
-  ): Observable<DataRequestQueryPayload> {
+  ): Observable<DataRequestQueryPayload | undefined> {
     if (!this.request?.id) {
       return EMPTY;
     }
@@ -701,14 +701,14 @@ export class MyRequestDetailComponent implements OnInit {
   }
 
   private refreshQueries(
-    dataQuery: DataRequestQueryPayload,
-    cohortQuery: DataRequestQueryPayload
+    dataQuery?: DataRequestQueryPayload,
+    cohortQuery?: DataRequestQueryPayload
   ) {
-    if (this.dataQuery !== dataQuery.condition) {
+    if (dataQuery && this.dataQuery !== dataQuery.condition) {
       this.dataQuery = dataQuery.condition;
     }
 
-    if (this.cohortQuery !== cohortQuery.condition) {
+    if (cohortQuery && this.cohortQuery !== cohortQuery.condition) {
       this.cohortQuery = cohortQuery.condition;
     }
   }
