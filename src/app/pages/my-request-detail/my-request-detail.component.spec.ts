@@ -109,49 +109,11 @@ describe('MyRequestsComponent', () => {
     status: 'unsent',
   };
 
-  // const dataSchemas: DataSchema[] = [
-  //   {
-  //     schema: buildDataClass('schema 1'),
-  //     dataClasses: [
-  //       {
-  //         dataClass: buildDataClass('s1.class 1'),
-  //         dataElements: [
-  //           buildDataElement('s1.c1.element 1'),
-  //           buildDataElement('s1.c1.element 1'),
-  //         ],
-  //       },
-  //       {
-  //         dataClass: buildDataClass('s1.class 2'),
-  //         dataElements: [
-  //           buildDataElement('s1.c2.element 1'),
-  //           buildDataElement('s1.c2.element 1'),
-  //         ],
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     schema: buildDataClass('schema 2'),
-  //     dataClasses: [
-  //       {
-  //         dataClass: buildDataClass('s2.class 1'),
-  //         dataElements: [
-  //           buildDataElement('s2.c1.element 1'),
-  //           buildDataElement('s2.c1.element 1'),
-  //         ],
-  //       },
-  //     ],
-  //   },
-  // ];
-
   it('should create', () => {
     expect(harness.isComponentCreated).toBeTruthy();
     expect(harness.component.request).toBeUndefined();
     expect(harness.component.dataSchemas).toStrictEqual([]);
     expect(harness.component.state).toBe('idle');
-    expect(harness.component.allSelected).toStrictEqual({
-      changedBy: { instigator: 'parent' },
-      isSelected: false,
-    });
   });
 
   describe('initialisation', () => {
@@ -166,7 +128,6 @@ describe('MyRequestsComponent', () => {
       });
 
       harness.component.ngOnInit();
-      // tick();
 
       expect(harness.component.state).toBe('idle');
       expect(harness.component.request).toStrictEqual(request);
@@ -196,6 +157,7 @@ describe('MyRequestsComponent', () => {
     // });
   });
 
+  /* TODO: uncomment this code and fix tests once it can be determined what they are for and how they should change */
   /*
 
   describe('submit request', () => {

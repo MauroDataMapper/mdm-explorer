@@ -16,7 +16,6 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { SimpleChange, SimpleChanges } from '@angular/core';
 import { CatalogueItemDomainType } from '@maurodatamapper/mdm-resources';
 import { MockComponent } from 'ng-mocks';
 import { RequestElementAddDeleteEvent } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
@@ -30,7 +29,6 @@ import {
   DataElementInstance,
   DataElementSearchResult,
   DataItemDeleteEvent,
-  SelectionChange,
 } from '../data-explorer.types';
 
 import { DataClassRowComponent } from './data-class-row.component';
@@ -109,15 +107,6 @@ describe('DataClassRowComponent', () => {
 
     it('should raise a updateAllChildrenSelected when has a data class, and model changes', () => {
       const emitSpy = jest.spyOn(harness.component.updateAllChildrenSelected, 'emit');
-
-      const dataClassWithElements: DataClassWithElements = {
-        dataClass: {
-          label: 'test',
-          domainType: CatalogueItemDomainType.DataClass,
-        },
-        dataElements: [],
-      };
-
       harness.component.dataClassWithElements = dataClassWithElements;
       harness.component.ngModelOnChange();
 

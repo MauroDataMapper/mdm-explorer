@@ -16,8 +16,6 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { SimpleChange, SimpleChanges } from '@angular/core';
-import { MatCheckboxChange } from '@angular/material/checkbox';
 import { CatalogueItemDomainType } from '@maurodatamapper/mdm-resources';
 import { RequestElementAddDeleteEvent } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
 import {
@@ -34,7 +32,6 @@ import {
   DataElementSearchResult,
   DataItemDeleteEvent,
   DataSchema,
-  SelectionChange,
 } from '../data-explorer.types';
 import { DataSchemaService } from '../data-schema.service';
 
@@ -211,16 +208,6 @@ describe('DataSchemaRowComponent', () => {
     });
 
     it('should raise a remove item event for an element', () => {
-      const dataSchema: DataSchema = {
-        schema: buildDataClass('schema1'),
-        dataClasses: [
-          {
-            dataClass: buildDataClass('class1'),
-            dataElements: [],
-          },
-        ],
-      };
-
       const event: DataItemDeleteEvent = {
         dataElement: dataElement as DataElementSearchResult,
       };
@@ -238,16 +225,6 @@ describe('DataSchemaRowComponent', () => {
     });
 
     it('should raise a remove item event for a schema', () => {
-      const dataSchema: DataSchema = {
-        schema: buildDataClass('schema1'),
-        dataClasses: [
-          {
-            dataClass: buildDataClass('class1'),
-            dataElements: [],
-          },
-        ],
-      };
-
       const expected: DataItemDeleteEvent = {
         dataSchema,
       };

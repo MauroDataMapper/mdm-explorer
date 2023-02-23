@@ -22,7 +22,6 @@ import {
   DataElementSearchResult,
   DataItemDeleteEvent,
   DataSchema,
-  SelectionChange,
 } from '../data-explorer.types';
 import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.service';
 import { DataSchemaService } from 'src/app/data-explorer/data-schema.service';
