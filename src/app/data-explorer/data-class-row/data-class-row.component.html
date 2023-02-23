@@ -23,10 +23,10 @@ SPDX-License-Identifier: Apache-2.0
         <mat-checkbox
           *ngIf="canDelete"
           class="mdm-data-class-row__header-title-checkbox"
-          [checked]="dataClassWithElements?.dataClass?.isSelected"
-          (change)="classChecked()"
+          [(ngModel)]="(dataClassWithElements?.dataClass)!.isSelected"
+          (ngModelChange)="ngModelOnChange()"
         ></mat-checkbox>
-        <h3>{{ dataClassWithElements?.dataClass?.label }}</h3>
+        <h3>{{ (dataClassWithElements?.dataClass)!.label }}</h3>
       </div>
     </span>
     <span class="mdm-data-class-row__header-button-panel">
@@ -73,10 +73,8 @@ SPDX-License-Identifier: Apache-2.0
       [sourceTargetIntersections]="sourceTargetIntersections"
       [suppressViewRequestsDialogButton]="true"
       (requestAddDelete)="handleRequestAddDelete($event)"
-      (checked)="onSelectElement($event)"
       [nestedPadding]="true"
-      [classSelected]="classSelected"
-      (setRemoveSelectedButtonDisabledEvent)="handleSetRemoveSelectedButtonDisable()"
+      (updateAllChildrenSelected)="updateAllChildrenSelectedHandler()"
     >
     </mdm-data-element-row>
   </div>
