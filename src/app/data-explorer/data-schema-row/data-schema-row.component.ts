@@ -34,6 +34,8 @@ import { DataSchemaService } from 'src/app/data-explorer/data-schema.service';
 })
 export class DataSchemaRowComponent implements OnInit {
   @Input() dataSchema?: DataSchema;
+  @Input() requestName = '';
+  @Input() requestId = '';
   @Input() suppressViewRequestsDialogButton = false;
   @Input() canDelete = true;
   @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;

@@ -454,7 +454,9 @@ export class MyRequestDetailComponent implements OnInit, OnDestroy {
 
   private updateAllElementsSelected() {
     if (!this.allElements) {
-      this.allElements = this.dataSchemaService.getDataRequestElements(this.dataSchemas);
+      this.allElements = this.dataSchemaService.reduceDataElementsFromSchemas(
+        this.dataSchemas
+      );
     }
 
     this.allElementsSelected = this.allElements.every(
@@ -464,7 +466,9 @@ export class MyRequestDetailComponent implements OnInit, OnDestroy {
 
   private updateAnyElementsSelected() {
     if (!this.allElements) {
-      this.allElements = this.dataSchemaService.getDataRequestElements(this.dataSchemas);
+      this.allElements = this.dataSchemaService.reduceDataElementsFromSchemas(
+        this.dataSchemas
+      );
     }
 
     this.anyElementSelected = this.allElements.some(
@@ -508,7 +512,8 @@ export class MyRequestDetailComponent implements OnInit, OnDestroy {
       .subscribe(([dataSchemas, intersections]) => {
         this.dataSchemas = dataSchemas;
         this.isEmpty =
-          this.dataSchemaService.getDataRequestElements(this.dataSchemas).length === 0;
+          this.dataSchemaService.reduceDataElementsFromSchemas(this.dataSchemas)
+            .length === 0;
         this.sourceTargetIntersections = intersections;
       });
   }

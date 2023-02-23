@@ -49,7 +49,7 @@ SPDX-License-Identifier: Apache-2.0
         mat-raised-button
         class="mdm-data-element-row__header-button"
         color="primary"
-        (click)="onRemovingElement()"
+        (click)="removeElement()"
         matTooltip="Remove from request"
         matTooltipClass="mdm-request-icon-tooltip"
         aria-label="Remove from request"
@@ -63,7 +63,8 @@ SPDX-License-Identifier: Apache-2.0
         [sourceTargetIntersections]="sourceTargetIntersections"
         [caption]="'Add to other requests'"
         [suppressViewRequestsDialogButton]="suppressViewRequestsDialogButton"
-        (requestAddDelete)="onModifyingElementsInRequest($event)"
+        (requestAddDelete)="handleRequestAddDelete($event)"
+        (createRequestClicked)="handleCreateRequest($event)"
       ></mdm-data-element-in-request>
       <button
         mat-button
