@@ -34,7 +34,7 @@ import {
 } from '../data-explorer.types';
 import { DataElementRowComponent } from './data-element-row.component';
 
-describe('DataElementRowComponent_DataElementInRequest', () => {
+describe('DataElementRowComponent', () => {
   let harness: ComponentHarness<DataElementRowComponent>;
 
   const item: DataElementSearchResult = {

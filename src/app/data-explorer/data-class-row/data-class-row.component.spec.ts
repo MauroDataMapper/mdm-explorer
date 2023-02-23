@@ -77,68 +77,85 @@ describe('DataClassRowComponent', () => {
     expect(harness.component.dataClassWithElements).toBeUndefined();
     expect(harness.component.suppressViewRequestsDialogButton).toBe(false);
     expect(harness.component.canDelete).toBe(true);
-    expect(harness.component.schemaSelected).toBeUndefined();
     expect(harness.component.sourceTargetIntersections).toStrictEqual({
       dataAccessRequests: [],
       sourceTargetIntersections: [],
     });
     expect(harness.component.expanded).toBe(true);
+    expect(harness.component.allChildrenSelected).toBe(false);
   });
 
-  it('should not raise a updateAllChildrenSelected when model changes but has no data class', () => {
-    const emitSpy = jest.spyOn(harness.component.updateAllChildrenSelected, 'emit');
-    harness.component.ngModelOnChange();
-    expect(emitSpy).not.toHaveBeenCalled();
-  });
+  describe('initialisation', () => {
+    it('should not set classElements without dataClassWithElementsSet', () => {
+      harness.component.ngOnInit();
+      expect(harness.component.classElements).toStrictEqual([]);
+    });
 
-  it('should raise a updateAllChildrenSelected when has a data class, and model changes', () => {
-    const emitSpy = jest.spyOn(harness.component.updateAllChildrenSelected, 'emit');
-
-    const dataClassWithElements: DataClassWithElements = {
-      dataClass: {
-        label: 'test',
-        domainType: CatalogueItemDomainType.DataClass,
-      },
-      dataElements: [],
-    };
-
-    harness.component.dataClassWithElements = dataClassWithElements;
-    harness.component.ngModelOnChange();
-
+    it('should set class elements', () => {
+      harness.component.dataClassWithElements = dataClassWithElements;
+      harness.component.ngOnInit();
       expect(harness.component.classElements).toStrictEqual(
         dataClassWithElements.dataElements
       );
     });
   });
 
-  describe('on changes', () => {
-    it('should select data class when parent data schema is selected', () => {
-      harness.component.dataClassWithElements = dataClassWithElements;
-      expect(harness.component.dataClassWithElements.dataClass.isSelected).toBe(false);
-      expect(harness.component.classSelected).toStrictEqual({
-        changedBy: { instigator: 'parent' },
-        isSelected: false,
-      });
+  describe('ngOnModelChange', () => {
+    it('should not raise a updateAllChildrenSelected when model changes but has no data class', () => {
+      const emitSpy = jest.spyOn(harness.component.updateAllChildrenSelected, 'emit');
+      harness.component.ngModelOnChange();
+      expect(emitSpy).not.toHaveBeenCalled();
+    });
 
-      const schemaSelected: SelectionChange = {
-        changedBy: {
-          instigator: 'parent',
+    it('should raise a updateAllChildrenSelected when has a data class, and model changes', () => {
+      const emitSpy = jest.spyOn(harness.component.updateAllChildrenSelected, 'emit');
+
+      const dataClassWithElements: DataClassWithElements = {
+        dataClass: {
+          label: 'test',
+          domainType: CatalogueItemDomainType.DataClass,
         },
-        isSelected: true,
+        dataElements: [],
       };
 
-      const changes: SimpleChanges = {
-        schemaSelected: new SimpleChange(null, null, false),
-      };
+      harness.component.dataClassWithElements = dataClassWithElements;
+      harness.component.ngModelOnChange();
 
-      harness.component.schemaSelected = schemaSelected;
-      harness.component.ngOnChanges(changes);
+      expect(emitSpy).toHaveBeenCalled();
+    });
+  });
 
+  describe('update all children selected handler', () => {
+    it('should not raise an event when there are no dataClassWithElements', () => {
+      const emitSpy = jest.spyOn(harness.component.updateAllChildrenSelected, 'emit');
+      harness.component.updateAllChildrenSelectedHandler();
+      expect(emitSpy).not.toHaveBeenCalled();
+    });
+
+    it('should raise an event and state dataClass is not selected when only some data elements are checked', () => {
+      const emitSpy = jest.spyOn(harness.component.updateAllChildrenSelected, 'emit');
+      harness.component.dataClassWithElements = dataClassWithElements;
+      harness.component.ngOnInit();
+
+      harness.component.classElements[0].isSelected = true;
+
+      harness.component.updateAllChildrenSelectedHandler();
+
+      expect(emitSpy).toHaveBeenCalled();
+      expect(harness.component.dataClassWithElements.dataClass.isSelected).toBe(false);
+    });
+
+    it('should raise an event and state dataClass is selected when all data elements are checked', () => {
+      const emitSpy = jest.spyOn(harness.component.updateAllChildrenSelected, 'emit');
+      harness.component.dataClassWithElements = dataClassWithElements;
+      harness.component.ngOnInit();
+
+      harness.component.classElements.forEach((e) => (e.isSelected = true));
+
+      harness.component.updateAllChildrenSelectedHandler();
+
+      expect(emitSpy).toHaveBeenCalled();
       expect(harness.component.dataClassWithElements.dataClass.isSelected).toBe(true);
-      expect(harness.component.classSelected).toStrictEqual({
-        changedBy: { instigator: 'parent' },
-        isSelected: true,
-      });
     });
   });
 
@@ -171,9 +188,9 @@ describe('DataClassRowComponent', () => {
         dataElement,
       };
 
-      const eventSpy = jest.spyOn(harness.component.modifyingElementsInRequest, 'emit');
+      const eventSpy = jest.spyOn(harness.component.requestAddDelete, 'emit');
 
-      harness.component.onModifyingElementsInRequest(event);
+      harness.component.handleRequestAddDelete(event);
       expect(eventSpy).toHaveBeenCalledWith(event);
     });
 
@@ -187,18 +204,10 @@ describe('DataClassRowComponent', () => {
         dataClassWithElements,
       };
 
-    harness.detectChanges();
-    const dom = harness.fixture.debugElement;
-    const mdmDataElementRowComponent = dom.query(
-      (de) => de.name === 'mdm-data-element-row'
-    );
-    const emitSpy = jest.spyOn(component.updateAllChildrenSelected, 'emit');
-    mdmDataElementRowComponent.triggerEventHandler('updateAllChildrenSelected', {});
-    expect(emitSpy).toHaveBeenCalledWith();
-  });
+      const eventSpy = jest.spyOn(harness.component.deleteItemEvent, 'emit');
 
       harness.component.dataClassWithElements = dataClassWithElements;
-      harness.component.onRemovingElement(event);
+      harness.component.handleDeleteItemEvent(event);
       expect(eventSpy).toHaveBeenCalledWith(expected);
     });
 
@@ -207,52 +216,11 @@ describe('DataClassRowComponent', () => {
         dataClassWithElements,
       };
 
-      const eventSpy = jest.spyOn(harness.component.removingItem, 'emit');
+      const eventSpy = jest.spyOn(harness.component.deleteItemEvent, 'emit');
 
       harness.component.dataClassWithElements = dataClassWithElements;
-      harness.component.onRemovingClass();
+      harness.component.removeClass();
       expect(eventSpy).toHaveBeenCalledWith(expected);
     });
-
-    it.each([true, false])(
-      'should raise an event when class checked to %p',
-      (checked) => {
-        const eventSpy = jest.spyOn(harness.component.classCheckedEvent, 'emit');
-
-        harness.component.dataClassWithElements = dataClassWithElements;
-        harness.component.dataClassWithElements.dataClass.isSelected = !checked;
-        harness.component.onClassChecked();
-
-        expect(eventSpy).toHaveBeenCalled();
-        expect(harness.component.classSelected).toStrictEqual({
-          changedBy: { instigator: 'parent' },
-          isSelected: checked,
-        });
-      }
-    );
-
-    it.each([true, false])(
-      'should raise an event when one element is checked to %p',
-      (checked) => {
-        const parentEventSpy = jest.spyOn(harness.component.checkedParent, 'emit');
-        const classCheckedEventSpy = jest.spyOn(
-          harness.component.classCheckedEvent,
-          'emit'
-        );
-
-        harness.component.dataClassWithElements = dataClassWithElements;
-        harness.component.ngOnInit();
-
-        harness.component.classElements.forEach((e) => (e.isSelected = checked));
-        harness.component.onElementSelected();
-
-        expect(harness.component.classSelected).toStrictEqual({
-          changedBy: { instigator: 'child' },
-          isSelected: checked,
-        });
-        expect(parentEventSpy).toHaveBeenCalled();
-        expect(classCheckedEventSpy).toHaveBeenCalledWith(checked);
-      }
-    );
   });
 });
