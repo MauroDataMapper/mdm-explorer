@@ -34,8 +34,6 @@ export class DataClassRowComponent implements OnInit {
   @Input() dataClassWithElements?: DataClassWithElements;
   @Input() suppressViewRequestsDialogButton = false;
   @Input() canDelete = true;
-  @Input() requestName = '';
-  @Input() requestId = '';
   @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 
   @Output() deleteItemEvent = new EventEmitter<DataItemDeleteEvent>();
