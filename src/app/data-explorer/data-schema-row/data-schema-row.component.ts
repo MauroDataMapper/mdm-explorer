@@ -44,10 +44,6 @@ export class DataSchemaRowComponent implements OnInit {
 
   expanded = true;
 
-  schemaSelected: SelectionChange = {
-    changedBy: { instigator: 'parent' },
-    isSelected: false,
-  };
   schemaElements: DataElementSearchResult[] = [];
 
   constructor(private dataSchemaService: DataSchemaService) {
