@@ -46,6 +46,7 @@
     "primeicons": "5.0.0",
     "primeng": "13.3.0",
     "rxjs": "7.4.0",
+    "tinycolor2": "1.6.0",
     "tslib": "2.3.1",
     "zone.js": "0.11.5"
   },
@@ -59,6 +60,7 @@
     "@angular/compiler-cli": "14.2.12",
     "@types/jest": "27.4.0",
     "@types/node": "12.20.54",
+    "@types/tinycolor2": "^1.4.3",
     "@typescript-eslint/eslint-plugin": "5.30.0",
     "@typescript-eslint/parser": "^5.50.0",
     "eslint": "8.16.0",

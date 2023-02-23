@@ -18,14 +18,14 @@ SPDX-License-Identifier: Apache-2.0
 */
 @import "../../../styles/base/all";
 
-$row-header-background-color: $color-mauro-dark-green;
-$row-header-color: $color-white;
-$row-header-border-color: $color-mauro-dark-green;
+$row-header-background-color: $color-primary;
+$row-header-color: $color-primary-contrast;
+$row-header-border-color: $color-primary;
 $row-header-padding: 0.2em 1.2em;
 
 $row-padding: 0.75em 1.2em;
 $row-footer-padding: 0.75em 1.2em;
-$row-footer-content-color: $color-mauro-light-gold;
+$row-footer-content-color: $color-accent-light;
 $row-border-radius: 4px;
 
 .mdm-data-schema-row {

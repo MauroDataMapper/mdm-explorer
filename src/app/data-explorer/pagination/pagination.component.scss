@@ -18,11 +18,11 @@ SPDX-License-Identifier: Apache-2.0
 */
 @import "../../../styles/base/all";
 
-$pager-color: $color-mauro-dark-green;
-$pager-background-color: $color-mauro-light-gold;
+$pager-color: $color-primary;
+$pager-background-color: $color-accent-light;
 
 $pager-active-color: $color-white;
-$pager-active-background-color: $color-mauro-dark-green;
+$pager-active-background-color: $color-primary;
 
 $pager-disabled-color: #6c757d;
 

@@ -19,12 +19,13 @@ SPDX-License-Identifier: Apache-2.0
 @import "../../../styles/base/all";
 
 $header-gap: 3rem;
-$link-color: #ffffff;
 $screen-size-md: 1000px;
 $screen-size-sm: 620px;
 $profile-img-width: 32px;
-$header-background: $color-mauro-dark-green;
-$request-count-color: $color-yellow;
+$header-background: $color-primary;
+$header-text: $color-primary-contrast;
+$request-count-color: $color-requestCount;
+$link-color: $header-text;
 
 .mdm-header {
   position: relative;
@@ -32,6 +33,7 @@ $request-count-color: $color-yellow;
   display: flex;
   padding: 0 $header-gap;
   background-color: $header-background;
+  color: $header-text;
   flex-wrap: wrap;
 
   &__containOverlay {
@@ -205,8 +207,6 @@ $request-count-color: $color-yellow;
         display: block;
         width: 100px;
         height: 50px;
-        background-color: $link-color;
-        color: $header-background;
         border-radius: 5px;
         padding: 15px;
         text-align: center;

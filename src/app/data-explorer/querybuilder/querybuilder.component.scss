@@ -25,7 +25,7 @@ SPDX-License-Identifier: Apache-2.0
 /* Set the query builder controls lengths. */
 @import "../../../styles/base/all";
 
-$content-color: $color-mauro-light-gold;
+$content-color: $color-accent-light;
 .query-builder {
   &-entity {
     // Style is tied to .q-inline-block-display class override in global styles/_querybuilder.scss

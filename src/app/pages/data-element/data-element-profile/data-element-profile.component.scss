@@ -19,10 +19,10 @@ SPDX-License-Identifier: Apache-2.0
 @import "../../../../styles/base/all";
 
 tr.mdm-data-element-profile-section-name {
-  background-color: $color-mauro-dark-green;
-  color: $color-white;
+  background-color: $color-primary;
+  color: $color-primary-contrast;
 }
 
 tr.mdm-data-element-profile-section-description {
-  background-color: $color-mauro-light-gold;
+  background-color: $color-accent-light;
 }
