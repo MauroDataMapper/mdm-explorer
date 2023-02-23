@@ -44,6 +44,21 @@ describe('DataSchemaRowComponent', () => {
   let harness: ComponentHarness<DataSchemaRowComponent>;
   const dataSchemasStub = createDataSchemaServiceStub();
 
+  const dataElements: DataElementSearchResult[] = [
+    buildDataElement('element1'),
+    buildDataElement('element2'),
+  ];
+
+  const dataSchema: DataSchema = {
+    schema: buildDataClass('schema1'),
+    dataClasses: [
+      {
+        dataClass: buildDataClass('class1'),
+        dataElements,
+      },
+    ],
+  };
+
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(DataSchemaRowComponent, {
       providers: [
@@ -64,7 +79,6 @@ describe('DataSchemaRowComponent', () => {
       dataAccessRequests: [],
       sourceTargetIntersections: [],
     });
-    expect(harness.component.allSelected).toBeUndefined();
   });
 
   describe('initialisation', () => {
@@ -74,21 +88,6 @@ describe('DataSchemaRowComponent', () => {
     });
 
     it('should set schema elements when input is set', () => {
-      const dataElements: DataElementSearchResult[] = [
-        buildDataElement('element1'),
-        buildDataElement('element2'),
-      ];
-
-      const dataSchema: DataSchema = {
-        schema: buildDataClass('schema1'),
-        dataClasses: [
-          {
-            dataClass: buildDataClass('class1'),
-            dataElements,
-          },
-        ],
-      };
-
       dataSchemasStub.reduceDataElementsFromSchema.mockImplementationOnce(() => {
         return dataElements;
       });
@@ -100,34 +99,6 @@ describe('DataSchemaRowComponent', () => {
     });
   });
 
-  describe('on changes', () => {
-    it('should select schema when all of parent is selected', () => {
-      expect(harness.component.schemaSelected).toStrictEqual({
-        changedBy: { instigator: 'parent' },
-        isSelected: false,
-      });
-
-      const allSelected: SelectionChange = {
-        changedBy: {
-          instigator: 'parent',
-        },
-        isSelected: true,
-      };
-
-      const changes: SimpleChanges = {
-        allSelected: new SimpleChange(null, null, false),
-      };
-
-      harness.component.allSelected = allSelected;
-      harness.component.ngOnChanges(changes);
-
-      expect(harness.component.schemaSelected).toStrictEqual({
-        changedBy: { instigator: 'parent' },
-        isSelected: true,
-      });
-    });
-  });
-
   it.each([true, false])(
     'should correctly set expanded state when initial state is %p',
     (initialState) => {
@@ -136,6 +107,82 @@ describe('DataSchemaRowComponent', () => {
       expect(harness.component.expanded).toBe(!initialState);
     }
   );
+
+  describe('ngOnModelChange', () => {
+    it('should not raise a updateAllOrSomeChildrenSelected when model changes but has no data schema', () => {
+      const emitSpy = jest.spyOn(
+        harness.component.updateAllOrSomeChildrenSelected,
+        'emit'
+      );
+      harness.component.onNgModelChange();
+      expect(emitSpy).not.toHaveBeenCalled();
+    });
+
+    it('should raise a updateAllOrSomeChildrenSelected when has a data schema, and model changes', () => {
+      const emitSpy = jest.spyOn(
+        harness.component.updateAllOrSomeChildrenSelected,
+        'emit'
+      );
+
+      harness.component.dataSchema = dataSchema;
+      harness.component.onNgModelChange();
+
+      expect(emitSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('update all children selected handler', () => {
+    it('should not raise an event when there is no dataSchema', () => {
+      const emitSpy = jest.spyOn(
+        harness.component.updateAllOrSomeChildrenSelected,
+        'emit'
+      );
+      harness.component.updateAllChildrenSelectedHandler();
+      expect(emitSpy).not.toHaveBeenCalled();
+    });
+
+    it('should raise an event and state dataSchema is not selected when only some data elements are checked', () => {
+      const emitSpy = jest.spyOn(
+        harness.component.updateAllOrSomeChildrenSelected,
+        'emit'
+      );
+
+      dataSchemasStub.reduceDataElementsFromSchema.mockImplementationOnce(() => {
+        return dataElements;
+      });
+
+      harness.component.dataSchema = dataSchema;
+      harness.component.ngOnInit();
+
+      harness.component.schemaElements[0].isSelected = true;
+
+      harness.component.updateAllChildrenSelectedHandler();
+
+      expect(emitSpy).toHaveBeenCalled();
+      expect(harness.component.dataSchema.schema.isSelected).toBe(false);
+    });
+
+    it('should raise an event and state dataSchema is selected when all data elements are checked', () => {
+      const emitSpy = jest.spyOn(
+        harness.component.updateAllOrSomeChildrenSelected,
+        'emit'
+      );
+
+      dataSchemasStub.reduceDataElementsFromSchema.mockImplementationOnce(() => {
+        return dataElements;
+      });
+
+      harness.component.dataSchema = dataSchema;
+      harness.component.ngOnInit();
+
+      harness.component.schemaElements.forEach((e) => (e.isSelected = true));
+
+      harness.component.updateAllChildrenSelectedHandler();
+
+      expect(emitSpy).toHaveBeenCalled();
+      expect(harness.component.dataSchema.schema.isSelected).toBe(true);
+    });
+  });
 
   describe('event handlers', () => {
     const dataElement: DataElementInstance = {
@@ -157,16 +204,10 @@ describe('DataSchemaRowComponent', () => {
         dataElement,
       };
 
-      const eventSpy = jest.spyOn(harness.component.modifyingElementsInRequest, 'emit');
+      const eventSpy = jest.spyOn(harness.component.requestAddDelete, 'emit');
 
-      harness.component.onModifyingElementsInRequest(event);
+      harness.component.handleRequestAddDelete(event);
       expect(eventSpy).toHaveBeenCalledWith(event);
-    });
-
-    it('should raise an event when parent is checked', () => {
-      const parentEventSpy = jest.spyOn(harness.component.checkedParent, 'emit');
-      harness.component.onCheckedParent();
-      expect(parentEventSpy).toHaveBeenCalled();
     });
 
     it('should raise a remove item event for an element', () => {
@@ -189,10 +230,10 @@ describe('DataSchemaRowComponent', () => {
         dataSchema,
       };
 
-      const eventSpy = jest.spyOn(harness.component.removingItem, 'emit');
+      const eventSpy = jest.spyOn(harness.component.deleteItemEvent, 'emit');
 
       harness.component.dataSchema = dataSchema;
-      harness.component.onRemovingItem(event);
+      harness.component.handleDeleteItemEvent(event);
       expect(eventSpy).toHaveBeenCalledWith(expected);
     });
 
@@ -211,65 +252,12 @@ describe('DataSchemaRowComponent', () => {
         dataSchema,
       };
 
-      const eventSpy = jest.spyOn(harness.component.removingItem, 'emit');
+      const eventSpy = jest.spyOn(harness.component.deleteItemEvent, 'emit');
 
       harness.component.dataSchema = dataSchema;
-      harness.component.onRemovingSchema();
+      harness.component.removeSchema();
 
       expect(eventSpy).toHaveBeenCalledWith(expected);
     });
-
-    it.each([true, false])(
-      'should raise an event when schema checked to %p',
-      (checked) => {
-        const eventSpy = jest.spyOn(harness.component.schemaCheckedEvent, 'emit');
-
-        harness.component.dataSchema = {
-          schema: buildDataClass('schema'),
-          dataClasses: [],
-        };
-
-        const event = { checked } as MatCheckboxChange;
-        harness.component.onSchemaChecked(event);
-
-        expect(eventSpy).toHaveBeenCalled();
-        expect(harness.component.schemaSelected).toStrictEqual({
-          changedBy: { instigator: 'parent' },
-          isSelected: checked,
-        });
-      }
-    );
-
-    it.each([true, false])(
-      'should raise an event when one class is checked to %p',
-      (checked) => {
-        const schemaCheckedEventSpy = jest.spyOn(
-          harness.component.schemaCheckedEvent,
-          'emit'
-        );
-
-        harness.component.dataSchema = {
-          schema: buildDataClass('schema'),
-          dataClasses: [
-            {
-              dataClass: buildDataClass('class '),
-              dataElements: [],
-            },
-          ],
-        };
-        harness.component.ngOnInit();
-
-        harness.component.dataSchema.dataClasses.forEach(
-          (dc) => (dc.dataClass.isSelected = checked)
-        );
-        harness.component.onSelectClass();
-
-        expect(harness.component.schemaSelected).toStrictEqual({
-          changedBy: { instigator: 'child' },
-          isSelected: checked,
-        });
-        expect(schemaCheckedEventSpy).toHaveBeenCalledWith(checked);
-      }
-    );
   });
 });
