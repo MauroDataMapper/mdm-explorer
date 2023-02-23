@@ -67,14 +67,14 @@ SPDX-License-Identifier: Apache-2.0
       *ngIf="request.status === 'unsent'"
       class="mdm-my-request__request-elements-selectall"
     >
-      <mat-checkbox (change)="onSelectAll($event)" [checked]="selectAllElements"
+      <mat-checkbox (change)="onSelectAll()" [checked]="allElementsSelected"
         >Select all</mat-checkbox
       >
       <button
         class="ms-4"
         mat-raised-button
         color="primary"
-        [disabled]="removeSelectedButtonDisabled"
+        [disabled]="!anyElementSelected"
         (click)="removeSelected()"
       >
         Remove selected ...
@@ -95,9 +95,7 @@ SPDX-License-Identifier: Apache-2.0
         [requestName]="request.label"
         [requestId]="request.id ?? ''"
         [sourceTargetIntersections]="sourceTargetIntersections"
-        [allSelected]="allSelected"
-        (schemaCheckedEvent)="onSelectSchema()"
-        (setRemoveSelectedButtonDisabledEvent)="handleSetRemoveSelectedButtonDisable()"
+        (updateAllOrSomeChildrenSelected)="updateAllOrSomeChildrenSelectedHandler()"
       >
       </mdm-data-schema-row>
     </div>

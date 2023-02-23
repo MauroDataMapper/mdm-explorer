@@ -16,21 +16,13 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges,
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import {
   CreateRequestEvent,
   RequestElementAddDeleteEvent,
 } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
 import { DataElementSearchResultComponent } from '../data-element-search-result/data-element-search-result.component';
-import { SelectionChange, DataItemDeleteEvent } from '../data-explorer.types';
+import { DataItemDeleteEvent } from '../data-explorer.types';
 
 @Component({
   selector: 'mdm-data-element-row',
@@ -39,17 +31,17 @@ import { SelectionChange, DataItemDeleteEvent } from '../data-explorer.types';
 })
 export class DataElementRowComponent
   extends DataElementSearchResultComponent
-  implements OnInit, OnChanges
+  implements OnInit
 {
   @Input() suppressViewRequestsDialogButton = false;
   @Input() canDelete = true;
   @Input() nestedPadding = false;
-  @Input() classSelected?: SelectionChange;
 
   @Output() deleteItemEvent = new EventEmitter<DataItemDeleteEvent>();
   @Output() requestAddDelete = new EventEmitter<RequestElementAddDeleteEvent>();
   @Output() requestCreated = new EventEmitter<CreateRequestEvent>();
   @Output() setRemoveSelectedButtonDisabledEvent = new EventEmitter();
+  @Output() updateAllChildrenSelected = new EventEmitter();
 
   padding = 'default';
 
@@ -57,13 +49,18 @@ export class DataElementRowComponent
     this.padding = this.nestedPadding ? 'nested' : 'default';
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.classSelected) {
-      if (this.item && this.classSelected?.changedBy?.instigator === 'parent') {
-        this.item.isSelected = this.classSelected.isSelected;
-        this.setRemoveSelectedButtonDisabledEvent.emit();
-      }
+  /**
+   * When the selection changes
+   * we emit this event for the
+   * ancestor components to refresh
+   * some of their variables.
+   */
+  onNgModelChange() {
+    if (!this.item) {
+      return;
     }
+
+    this.updateAllChildrenSelected.emit();
   }
 
   handleRequestAddDelete(event: RequestElementAddDeleteEvent) {
