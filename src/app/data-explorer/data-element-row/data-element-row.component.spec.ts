@@ -16,7 +16,6 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { SimpleChange, SimpleChanges } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { CatalogueItemDomainType } from '@maurodatamapper/mdm-resources';
 import { MockComponent } from 'ng-mocks';
@@ -32,7 +31,6 @@ import {
   DataElementSearchResult,
   DataItemDeleteEvent,
   SelectableDataElementSearchResultCheckedEvent,
-  SelectionChange,
 } from '../data-explorer.types';
 import { DataElementRowComponent } from './data-element-row.component';
 
@@ -54,59 +52,29 @@ describe('DataElementRowComponent_DataElementInRequest', () => {
     });
   });
 
-  /* Disabled for now. Unable to identify button. This needs to be restored.
-  it('should raise a delete event when "Remove" button is clicked', () => {
-    const component = harness.component;
-    const emitSpy = jest.spyOn(component.delete, 'emit');
-    const dom = harness.fixture.debugElement;
-    harness.detectChanges();
-    const button: DebugElement = dom.query(
-      (de) => de.name === 'button' && de.nativeElement.innerHTML === ' Remove '
-    );
-    const event: DataElementDeleteEvent = {
-      item: component.item!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-    };
-
-    button.triggerEventHandler('click', event);
-    expect(emitSpy).toHaveBeenCalledWith(event);
-  });
-  */
-
-  it('should raise a updateAllChildrenSelected event when ngModelChange is triggered', () => {
-    // Arrange
-    const component = harness.component;
-    const emitSpy = jest.spyOn(component.updateAllChildrenSelected, 'emit');
-
-    // Act
-    component.onNgModelChange();
-
-    // Assert
-    expect(emitSpy).toHaveBeenCalled();
+  describe('initialisation', () => {
+    it.each([
+      ['nested', true],
+      ['default', false],
+    ])('should set padding to %p when input set to %p', (expected, value) => {
+      harness.component.nestedPadding = value;
+      harness.component.ngOnInit();
+      expect(harness.component.padding).toBe(expected);
+    });
   });
 
-  describe('on changes', () => {
-    it('should select data element when parent data class is selected', () => {
+  describe('onNgModelChange', () => {
+    it('should not raise an updateAllChildrenSelected event when ngModelChange is triggered but there is no item', () => {
+      const emitSpy = jest.spyOn(harness.component.updateAllChildrenSelected, 'emit');
+      harness.component.onNgModelChange();
+      expect(emitSpy).not.toHaveBeenCalled();
+    });
+
+    it('should raise an updateAllChildrenSelected event when ngModelChange is triggered', () => {
+      const emitSpy = jest.spyOn(harness.component.updateAllChildrenSelected, 'emit');
       harness.component.item = item;
-      expect(harness.component.item.isSelected).toBe(false);
-
-      const classSelected: SelectionChange = {
-        changedBy: {
-          instigator: 'parent',
-        },
-        isSelected: true,
-      };
-
-      const changes: SimpleChanges = {
-        classSelected: new SimpleChange(null, null, false),
-      };
-
-      const checkedEventSpy = jest.spyOn(harness.component.checkedParent, 'emit');
-
-      harness.component.classSelected = classSelected;
-      harness.component.ngOnChanges(changes);
-
-      expect(harness.component.item.isSelected).toBe(true);
-      expect(checkedEventSpy).toHaveBeenCalled();
+      harness.component.onNgModelChange();
+      expect(emitSpy).toHaveBeenCalled();
     });
   });
 
@@ -135,9 +103,9 @@ describe('DataElementRowComponent_DataElementInRequest', () => {
         dataElement: item,
       };
 
-      const eventSpy = jest.spyOn(harness.component.modifyingElementsInRequest, 'emit');
+      const eventSpy = jest.spyOn(harness.component.requestAddDelete, 'emit');
 
-      harness.component.onModifyingElementsInRequest(event);
+      harness.component.handleRequestAddDelete(event);
       expect(eventSpy).toHaveBeenCalledWith(event);
     });
 
@@ -146,10 +114,10 @@ describe('DataElementRowComponent_DataElementInRequest', () => {
         dataElement: item,
       };
 
-      const eventSpy = jest.spyOn(harness.component.removingElement, 'emit');
+      const eventSpy = jest.spyOn(harness.component.deleteItemEvent, 'emit');
 
       harness.component.item = item;
-      harness.component.onRemovingElement();
+      harness.component.removeElement();
       expect(eventSpy).toHaveBeenCalledWith(event);
     });
   });
