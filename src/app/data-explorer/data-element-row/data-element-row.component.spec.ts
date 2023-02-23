@@ -89,27 +89,16 @@ describe('DataElementRowComponent_DataElementInRequest', () => {
   });
   */
 
-  it('should raise a checked event when checkbox is checked', () => {
+  it('should raise a updateAllChildrenSelected event when ngModelChange is triggered', () => {
+    // Arrange
     const component = harness.component;
-    const emitSpy = jest.spyOn(component.checked, 'emit');
-    const dom = harness.fixture.debugElement;
-    harness.detectChanges();
-    const checkboxElement = dom.query((de) => de.name === 'mat-checkbox');
-    const event: MatCheckboxChange = {
-      source: checkboxElement.nativeElement,
-      checked: true,
-    };
-    expect(component.item?.isSelected).toBe(false);
-    checkboxElement.triggerEventHandler('change', event);
-    expect(emitSpy).toHaveBeenCalledWith({ item: component.item, checked: true });
-    expect(component.item!.isSelected).toBe(true); // eslint-disable-line @typescript-eslint/no-non-null-assertion
+    const emitSpy = jest.spyOn(component.updateAllChildrenSelected, 'emit');
 
-    emitSpy.mockReset();
-    event.checked = false;
-    checkboxElement.nativeElement.value = false;
-    checkboxElement.triggerEventHandler('change', event);
-    expect(emitSpy).toHaveBeenCalledWith({ item: component.item, checked: false });
-    expect(component.item!.isSelected).toBe(false); // eslint-disable-line @typescript-eslint/no-non-null-assertion
+    // Act
+    component.onNgModelChange();
+
+    // Assert
+    expect(emitSpy).toHaveBeenCalled();
   });
 
   it('should raise an event when data-element-in-request emits a requestAddDelete event', () => {

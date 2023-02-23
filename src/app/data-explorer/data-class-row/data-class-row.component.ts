@@ -16,23 +16,12 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges,
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { RequestElementAddDeleteEvent } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
 import {
   DataClassWithElements,
   DataElementSearchResult,
   DataItemDeleteEvent,
-  SelectableDataElementSearchResultCheckedEvent,
-  SelectionChange,
-  SelectionChangedBy,
 } from '../data-explorer.types';
 import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.service';
 
@@ -41,29 +30,25 @@ import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.se
   templateUrl: './data-class-row.component.html',
   styleUrls: ['./data-class-row.component.scss'],
 })
-export class DataClassRowComponent implements OnInit, OnChanges {
+export class DataClassRowComponent implements OnInit {
   @Input() dataClassWithElements?: DataClassWithElements;
   @Input() suppressViewRequestsDialogButton = false;
   @Input() canDelete = true;
   @Input() requestName = '';
   @Input() requestId = '';
-  @Input() schemaSelected?: SelectionChange;
   @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
 
   @Output() deleteItemEvent = new EventEmitter<DataItemDeleteEvent>();
   @Output() requestAddDelete = new EventEmitter<RequestElementAddDeleteEvent>();
-  @Output() classCheckedEvent = new EventEmitter();
-  @Output() setRemoveSelectedButtonDisabledEvent = new EventEmitter();
+  @Output() updateAllChildrenSelected = new EventEmitter();
 
   state: 'idle' | 'loading' = 'idle';
 
   visible = true;
 
-  classSelected: SelectionChange = {
-    changedBy: { instigator: 'parent' },
-    isSelected: false,
-  };
   classElements: DataElementSearchResult[] = [];
+
+  allChildrenSelected = false;
 
   constructor() {
     this.sourceTargetIntersections = {
@@ -78,15 +63,23 @@ export class DataClassRowComponent implements OnInit, OnChanges {
     }
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.schemaSelected) {
-      if (
-        this.dataClassWithElements &&
-        this.schemaSelected?.changedBy?.instigator === 'parent'
-      ) {
-        this.selectClass(this.schemaSelected.isSelected, { instigator: 'parent' });
-      }
+  /**
+   * When any of the children component
+   * changes states, we need to update
+   * our state accordingly.  Also, after
+   * changing our state we should comunicate
+   * that to our ancestors for them to update
+   * their state.
+   */
+  updateAllChildrenSelectedHandler() {
+    if (!this.dataClassWithElements) {
+      return;
     }
+    this.dataClassWithElements.dataClass.isSelected = this.classElements.every(
+      (dataElement) => dataElement.isSelected
+    );
+
+    this.updateAllChildrenSelected.emit();
   }
 
   toggleCollapse(): void {
@@ -95,10 +88,6 @@ export class DataClassRowComponent implements OnInit, OnChanges {
 
   handleRequestAddDelete(event: RequestElementAddDeleteEvent) {
     this.requestAddDelete.emit(event);
-  }
-
-  handleSetRemoveSelectedButtonDisable() {
-    this.setRemoveSelectedButtonDisabled();
   }
 
   handleDeleteItemEvent(event: DataItemDeleteEvent) {
@@ -114,56 +103,43 @@ export class DataClassRowComponent implements OnInit, OnChanges {
     }
   }
 
-  classChecked() {
-    if (!this.dataClassWithElements) {
+  /**
+   * When the class checkbox is clicked
+   * we need to select or deselect all our
+   * children, and also emit the event
+   * for my ancestor to update its state.
+   */
+  ngModelOnChange() {
+    if (!this.dataClassWithElements?.dataClass) {
       return;
     }
 
-    this.selectClass(!this.dataClassWithElements?.dataClass?.isSelected ?? false, {
-      instigator: 'parent',
+    if (this.dataClassWithElements?.dataClass?.isSelected) {
+      this.checkAllChildDataElements();
+    } else {
+      this.uncheckAllChildDataElements();
+    }
+
+    this.updateAllChildrenSelected.emit();
+  }
+
+  private checkAllChildDataElements() {
+    if (!this.classElements) {
+      return;
+    }
+
+    this.classElements.forEach((element) => {
+      element.isSelected = true;
     });
-
-    this.classCheckedEvent.emit();
   }
 
-  onSelectElement(event: SelectableDataElementSearchResultCheckedEvent) {
-    event.item.isSelected = event.checked;
-    const selectedItemList = this.classElements.filter((item) => item.isSelected);
-    this.setClassSelected(selectedItemList);
-    this.setRemoveSelectedButtonDisabled();
-  }
-
-  /**
-   * Disable the 'Remove Selected' button unless some elements are selected in the current request
-   */
-  private setRemoveSelectedButtonDisabled() {
-    this.setRemoveSelectedButtonDisabledEvent.emit();
-  }
-
-  /**
-   * If all the elements are selected, select the parent class. If a single element is not
-   * selected, deselect the parent class.
-   */
-  private setClassSelected(selectedItemList: DataElementSearchResult[]) {
-    if (this.dataClassWithElements) {
-      this.selectClass(this.classElements.length === selectedItemList.length, {
-        instigator: 'child',
-      });
-      this.classCheckedEvent.emit(this.dataClassWithElements.dataClass.isSelected);
-    }
-  }
-
-  private selectClass(value: boolean, changedBy: SelectionChangedBy) {
-    if (this.dataClassWithElements) {
-      this.dataClassWithElements.dataClass.isSelected = value;
+  private uncheckAllChildDataElements() {
+    if (!this.classElements) {
+      return;
     }
 
-    if (this.classSelected) {
-      const classSelected: SelectionChange = {
-        changedBy,
-        isSelected: value,
-      };
-      this.classSelected = classSelected;
-    }
+    this.classElements.forEach((element) => {
+      element.isSelected = false;
+    });
   }
 }
