@@ -16,17 +16,17 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+@use "@angular/material" as mat;
 @import "ngx-toastr/toastr.css";
-@import "@angular/material/theming";
 
 // Include the common styles for Angular Material. Only required to include this once!
-@include mat-core();
+@include mat.core();
 
 /*
 Themes
 Import more theme SASS files here to make them available to the app
 */
-@import "styles/themes/default";
+@import "styles/themes/active";
 
 @import "styles/base/all";
 @import "styles/resets";

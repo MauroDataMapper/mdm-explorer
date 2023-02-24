@@ -18,11 +18,11 @@ SPDX-License-Identifier: Apache-2.0
 */
 @import "../../../styles/base/all";
 
-$search-result-heading-background-color: $color-mauro-dark-green;
-$search-result-heading-color: $color-white;
+$search-result-heading-background-color: $color-primary;
+$search-result-heading-color: $color-primary-contrast;
 $search-result-header-padding: 0.2em 1.2em;
 
-$search-result-content-color: $color-mauro-light-gold;
+$search-result-content-color: $color-accent-light;
 $search-result-content-padding: 0.2em 0;
 
 $search-result-border-radius: 4px;

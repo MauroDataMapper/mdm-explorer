@@ -20,11 +20,11 @@ SPDX-License-Identifier: Apache-2.0
 
 $header-padding: 0.5em 1.2em;
 $header-border-radius: 4px;
-$header-background-color: $color-mauro-dark-green;
-$header-color: $color-white;
+$header-background-color: $color-primary;
+$header-color: $color-primary-contrast;
 
 $content-padding: 0.75em 1.2em;
-$content-background-color: $color-mauro-light-gold;
+$content-background-color: $color-accent-light;
 
 .mdm-header-and-content-box {
   margin-bottom: 28px;
