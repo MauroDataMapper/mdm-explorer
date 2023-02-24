@@ -25,7 +25,7 @@ import {
   DataRequest,
   DataSchema,
 } from '../data-explorer/data-explorer.types';
-import { DataModelService } from './data-model.service';
+import { DataModelService } from '../mauro/data-model.service';
 
 @Injectable({
   providedIn: 'root',
@@ -33,7 +33,10 @@ import { DataModelService } from './data-model.service';
 export class DataSchemaService {
   constructor(private dataModels: DataModelService) {}
 
-  getDataRequestClasses(dataSchemas: DataSchema[]): DataClassWithElements[] {
+  /**
+   * Gets all data classes (with elements as children) from a list of data schemas as a flat list.
+   */
+  reduceDataClassesFromSchemas(dataSchemas: DataSchema[]): DataClassWithElements[] {
     const dataRequestClasses = dataSchemas.map((dataSchema) => dataSchema.dataClasses);
     return dataRequestClasses.reduce(
       (accumulator, value) => accumulator.concat(value),
@@ -41,9 +44,12 @@ export class DataSchemaService {
     );
   }
 
-  getDataRequestElements(dataSchemas: DataSchema[]): DataElementSearchResult[] {
+  /**
+   * Gets all data elements from a list of data schemas as a flat list.
+   */
+  reduceDataElementsFromSchemas(dataSchemas: DataSchema[]): DataElementSearchResult[] {
     const dataRequestElements = dataSchemas.map((dataSchema) =>
-      this.getDataSchemaElements(dataSchema)
+      this.reduceDataElementsFromSchema(dataSchema)
     );
     return dataRequestElements.reduce(
       (accumulator, value) => accumulator.concat(value),
@@ -51,7 +57,10 @@ export class DataSchemaService {
     );
   }
 
-  getDataSchemaElements(dataSchema: DataSchema): DataElementSearchResult[] {
+  /**
+   * Gets all data elements from a data schemas as a flat list.
+   */
+  reduceDataElementsFromSchema(dataSchema: DataSchema): DataElementSearchResult[] {
     const dataSchemaElements = dataSchema.dataClasses.map(
       (dataClass) => dataClass.dataElements
     );

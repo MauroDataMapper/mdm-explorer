@@ -55,23 +55,21 @@ SPDX-License-Identifier: Apache-2.0
       <button
         mat-button
         class="mdm-data-schema-row__header-button-updown"
-        (click)="toggleCollapse()"
+        (click)="toggleExpanded()"
       >
         <span
           class="fa-solid"
-          [ngClass]="{ 'fa-angle-up': visible, 'fa-angle-down': !visible }"
+          [ngClass]="{ 'fa-angle-up': expanded, 'fa-angle-down': !expanded }"
         ></span>
       </button>
     </span>
   </div>
-  <div [hidden]="!visible" class="mdm-my-request__request-elements">
+  <div [hidden]="!expanded" class="mdm-my-request__request-elements">
     <mdm-data-class-row
       *ngFor="let dataClass of dataSchema.dataClasses"
       [dataClassWithElements]="dataClass"
       [canDelete]="canDelete"
       (deleteItemEvent)="handleDeleteItemEvent($event)"
-      [requestName]="requestName"
-      [requestId]="requestId"
       [suppressViewRequestsDialogButton]="true"
       [sourceTargetIntersections]="sourceTargetIntersections"
       (requestAddDelete)="handleRequestAddDelete($event)"
