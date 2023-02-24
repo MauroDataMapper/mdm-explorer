@@ -26,7 +26,7 @@ import {
   QueryCondition,
 } from 'src/app/data-explorer/data-explorer.types';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
-import { DataSchemaService } from 'src/app/mauro/data-schema-service';
+import { DataSchemaService } from 'src/app/data-explorer/data-schema.service';
 
 @Component({
   selector: 'mdm-template-request-detail',

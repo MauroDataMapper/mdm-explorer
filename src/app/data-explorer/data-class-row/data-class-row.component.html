@@ -55,16 +55,16 @@ SPDX-License-Identifier: Apache-2.0
       <button
         mat-button
         class="mdm-data-class-row__header-button-updown"
-        (click)="toggleCollapse()"
+        (click)="toggleExpanded()"
       >
         <span
           class="fa-solid"
-          [ngClass]="{ 'fa-angle-up': visible, 'fa-angle-down': !visible }"
+          [ngClass]="{ 'fa-angle-up': expanded, 'fa-angle-down': !expanded }"
         ></span>
       </button>
     </span>
   </div>
-  <div [hidden]="!visible" class="mdm-my-request__request-elements">
+  <div [hidden]="!expanded" class="mdm-my-request__request-elements">
     <mdm-data-element-row
       *ngFor="let element of classElements"
       [item]="element"
