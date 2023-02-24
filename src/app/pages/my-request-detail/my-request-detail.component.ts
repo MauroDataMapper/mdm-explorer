@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import {
@@ -35,7 +35,9 @@ import {
   forkJoin,
   Observable,
   of,
+  Subject,
   switchMap,
+  takeUntil,
 } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import {
@@ -84,7 +86,7 @@ export type UserFacingText = {
   templateUrl: './my-request-detail.component.html',
   styleUrls: ['./my-request-detail.component.scss'],
 })
-export class MyRequestDetailComponent implements OnInit {
+export class MyRequestDetailComponent implements OnInit, OnDestroy {
   request?: DataRequest;
   state: 'idle' | 'loading' = 'idle';
   sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
@@ -111,6 +113,11 @@ export class MyRequestDetailComponent implements OnInit {
   // remove selected button is disabled.
   anyElementSelected = false;
 
+  /**
+   * Signal to attach to subscriptions to trigger when they should be unsubscribed.
+   */
+  private unsubscribe$ = new Subject<void>();
+
   constructor(
     private route: ActivatedRoute,
     private dataRequestsService: DataRequestsService,
@@ -128,6 +135,12 @@ export class MyRequestDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.initialiseRequest();
+    this.subscribeDataRequestChanges();
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   initialiseRequest(): void {
@@ -287,9 +300,14 @@ export class MyRequestDetailComponent implements OnInit {
   }
 
   // listens for external update to the request and refreshes if so
-  handlePossibleSelfDelete(event: RequestElementAddDeleteEvent) {
+  handleRequestElementsChange(event: RequestElementAddDeleteEvent) {
     if (event.dataModel?.id === this.request?.id) {
       this.setRequest(this.request);
+    } else {
+      this.loadIntersections(this.dataSchemas).subscribe((intersections) => {
+        this.sourceTargetIntersections = intersections;
+        this.broadcastService.dispatch('data-intersections-refreshed', intersections);
+      });
     }
   }
 
@@ -516,6 +534,18 @@ export class MyRequestDetailComponent implements OnInit {
         }
       })
     );
+  }
+
+  private subscribeDataRequestChanges() {
+    this.broadcastService
+      .on('data-request-added')
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(() => {
+        this.loadIntersections(this.dataSchemas).subscribe((intersections) => {
+          this.sourceTargetIntersections = intersections;
+          this.broadcastService.dispatch('data-intersections-refreshed', intersections);
+        });
+      });
   }
 
   private processRemoveDataElementResponse(result: boolean, message: string) {
