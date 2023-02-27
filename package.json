@@ -57,7 +57,7 @@
     "@angular-eslint/eslint-plugin-template": "14.4.0",
     "@angular/cli": "14.2.10",
     "@angular/compiler-cli": "14.2.12",
-    "@types/jest": "27.4.0",
+    "@types/jest": "27.5.2",
     "@types/node": "12.20.54",
     "@types/tinycolor2": "^1.4.3",
     "@typescript-eslint/eslint-plugin": "5.30.0",
