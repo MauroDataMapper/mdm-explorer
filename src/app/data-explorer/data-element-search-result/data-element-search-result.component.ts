@@ -60,12 +60,7 @@ export class DataElementSearchResultComponent {
   }
 
   itemChecked(event: MatCheckboxChange) {
-    if (!this.item) {
-      return;
-    }
-
-    this.item.isSelected = !this.item?.isSelected ?? false;
-    this.checked.emit({ item: this.item, checked: event.checked });
+    this.selectItem(event.checked);
   }
 
   toggleBookmark(selected: boolean) {
@@ -74,5 +69,14 @@ export class DataElementSearchResultComponent {
     }
 
     this.bookmark.emit({ item: this.item, selected });
+  }
+
+  protected selectItem(selected: boolean) {
+    if (!this.item) {
+      return;
+    }
+
+    this.item.isSelected = selected;
+    this.checked.emit({ item: this.item, checked: selected });
   }
 }

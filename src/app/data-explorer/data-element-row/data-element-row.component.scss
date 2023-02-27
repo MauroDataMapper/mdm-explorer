@@ -18,15 +18,15 @@ SPDX-License-Identifier: Apache-2.0
 */
 @import "../../../styles/base/all";
 
-$row-header-background-color: $color-mauro-light-gold;
-$row-header-color: $color-mauro-dark-green;
-$row-header-border-color: $color-mauro-dark-green;
+$row-header-background-color: $color-accent-light;
+$row-header-color: $color-accent-contrast;
+$row-header-border-color: $color-primary;
 $row-header-padding: 0.2em 1.2em;
 
 $row-padding-default: 0.75em 1.2em;
 $row-padding-nested: 0.75em 0em;
 $row-footer-padding: 0.75em 1.2em;
-$row-footer-content-color: $color-mauro-light-gold;
+$row-footer-content-color: $color-accent-light;
 $row-border-radius: 4px;
 
 .hidden {

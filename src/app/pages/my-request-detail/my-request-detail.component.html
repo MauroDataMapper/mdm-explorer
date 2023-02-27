@@ -91,9 +91,7 @@ SPDX-License-Identifier: Apache-2.0
         [canDelete]="request.status === 'unsent'"
         (deleteItemEvent)="removeItem($event)"
         [suppressViewRequestsDialogButton]="true"
-        (requestAddDelete)="handlePossibleSelfDelete($event)"
-        [requestName]="request.label"
-        [requestId]="request.id ?? ''"
+        (requestAddDelete)="handleRequestElementsChange($event)"
         [sourceTargetIntersections]="sourceTargetIntersections"
         (updateAllOrSomeChildrenSelected)="updateAllOrSomeChildrenSelectedHandler()"
       >

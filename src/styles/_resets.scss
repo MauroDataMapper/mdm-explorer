@@ -18,10 +18,15 @@ SPDX-License-Identifier: Apache-2.0
 */
 @import "./base/all";
 
+body {
+  background-color: $color-page;
+  color: $color-page-contrast;
+}
+
 a {
-  color: $color-dark-navy;
+  color: $color-hyperlink;
 
   &:hover {
-    color: darken($color-dark-navy, 20%);
+    color: hsl($color-hyperlink, 50%, 30%);
   }
 }

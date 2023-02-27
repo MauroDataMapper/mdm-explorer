@@ -40,6 +40,7 @@ import { UserDetails, UserDetailsService } from './security/user-details.service
 import { FooterLink } from './shared/footer/footer.component';
 import { HeaderImageLink, HeaderLink } from './shared/header/header.component';
 import { UserIdleService } from './external/user-idle.service';
+import { ThemeService } from './shared/theme.service';
 
 @Component({
   selector: 'mdm-root',
@@ -175,7 +176,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private stateRouter: StateRouterService,
     private toastr: ToastrService,
     private userIdle: UserIdleService,
-    private error: ErrorService
+    private error: ErrorService,
+    private themes: ThemeService
   ) {}
 
   @HostListener('window:mousemove', ['$event'])
@@ -184,6 +186,8 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.themes.loadTheme().subscribe((theme) => this.themes.applyTheme(theme));
+
     this.broadcast
       .on<HttpErrorResponse>('http-application-offline')
       .pipe(takeUntil(this.unsubscribe$))

@@ -18,165 +18,107 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { CatalogueItemDomainType } from '@maurodatamapper/mdm-resources';
+import { MockComponent } from 'ng-mocks';
 import {
-  CreateRequestEvent,
+  DataElementInRequestComponent,
   RequestElementAddDeleteEvent,
 } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
-import { DataElementSearchResult } from '../data-explorer.types';
-
+import {
+  DataElementSearchResult,
+  DataItemDeleteEvent,
+  SelectableDataElementSearchResultCheckedEvent,
+} from '../data-explorer.types';
 import { DataElementRowComponent } from './data-element-row.component';
-
-// Test output emitters including interaction with DataElementInRequest component
-describe('DataElementRowComponent_DataElementInRequest', () => {
-  let harness: ComponentHarness<DataElementRowComponent>;
-
-  beforeEach(async () => {
-    harness = await setupTestModuleForComponent(DataElementRowComponent);
-    const component = harness.component;
-    component.item = {
-      isSelected: false,
-      id: 'Id',
-      model: 'ModelId',
-      dataClass: 'ClassId',
-      label: 'Label',
-      isBookmarked: false,
-    };
-    component.sourceTargetIntersections = {
-      dataAccessRequests: [
-        {
-          id: 'Access Request Id',
-          label: 'My Request',
-          domainType: CatalogueItemDomainType.DataModel,
-        },
-      ],
-      sourceTargetIntersections: [
-        {
-          sourceDataModelId: 'DataModelId',
-          targetDataModelId: 'Access Request Id',
-          intersects: ['Id'],
-        },
-      ],
-    };
-  });
-
-  it('should initialise', () => {
-    harness.detectChanges();
-    const dom = harness.fixture.nativeElement;
-    const dataElementComponent = dom.querySelector('mdm-data-element-in-request');
-
-    expect(dataElementComponent).toBeTruthy();
-  });
-
-  /* Disabled for now. Unable to identify button. This needs to be restored.
-  it('should raise a delete event when "Remove" button is clicked', () => {
-    const component = harness.component;
-    const emitSpy = jest.spyOn(component.delete, 'emit');
-    const dom = harness.fixture.debugElement;
-    harness.detectChanges();
-    const button: DebugElement = dom.query(
-      (de) => de.name === 'button' && de.nativeElement.innerHTML === ' Remove '
-    );
-    const event: DataElementDeleteEvent = {
-      item: component.item!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-    };
-
-    button.triggerEventHandler('click', event);
-    expect(emitSpy).toHaveBeenCalledWith(event);
-  });
-  */
-
-  it('should raise a updateAllChildrenSelected event when ngModelChange is triggered', () => {
-    // Arrange
-    const component = harness.component;
-    const emitSpy = jest.spyOn(component.updateAllChildrenSelected, 'emit');
-
-    // Act
-    component.onNgModelChange();
-
-    // Assert
-    expect(emitSpy).toHaveBeenCalled();
-  });
-
-  it('should raise an event when data-element-in-request emits a requestAddDelete event', () => {
-    const component = harness.component;
-
-    harness.detectChanges();
-    const dom = harness.fixture.debugElement;
-    const dataElementInRequestComponent = dom.query(
-      (de) => de.name === 'mdm-data-element-in-request'
-    );
-    const emitSpy = jest.spyOn(component.requestAddDelete, 'emit');
-    const event: RequestElementAddDeleteEvent = {
-      adding: false,
-      dataModel: {
-        id: 'id',
-        label: 'label',
-        domainType: CatalogueItemDomainType.DataModel,
-      },
-      dataElement: component.item!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-    };
-    dataElementInRequestComponent.triggerEventHandler('requestAddDelete', event);
-    expect(emitSpy).toHaveBeenCalledWith(event);
-  });
-
-  it('should raise an event when data-element-in-request emits a createRequestClicked event', () => {
-    const component = harness.component;
-
-    harness.detectChanges();
-    const dom = harness.fixture.debugElement;
-    const dataElementInRequestComponent = dom.query(
-      (de) => de.name === 'mdm-data-element-in-request'
-    );
-    const emitSpy = jest.spyOn(component.requestCreated, 'emit');
-    const event: CreateRequestEvent = {
-      item: component.item!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-    };
-    dataElementInRequestComponent.triggerEventHandler('createRequestClicked', event);
-    expect(emitSpy).toHaveBeenCalledWith(event);
-  });
-});
 
 describe('DataElementRowComponent', () => {
   let harness: ComponentHarness<DataElementRowComponent>;
 
+  const item: DataElementSearchResult = {
+    id: '111',
+    label: 'element',
+    model: '222',
+    dataClass: '333',
+    isSelected: false,
+    isBookmarked: false,
+  };
+
   beforeEach(async () => {
-    harness = await setupTestModuleForComponent(DataElementRowComponent);
+    harness = await setupTestModuleForComponent(DataElementRowComponent, {
+      declarations: [MockComponent(DataElementInRequestComponent)],
+    });
   });
 
-  it('should create', () => {
-    expect(harness.isComponentCreated).toBeTruthy();
-    expect(harness.component.item).toBeUndefined();
+  describe('initialisation', () => {
+    it.each([
+      ['nested', true],
+      ['default', false],
+    ])('should set padding to %p when input set to %p', (expected, value) => {
+      harness.component.nestedPadding = value;
+      harness.component.ngOnInit();
+      expect(harness.component.padding).toBe(expected);
+    });
   });
 
-  it('should not raise an event when checked but has no item', () => {
-    const emitSpy = jest.spyOn(harness.component.checked, 'emit');
-    const event = {} as MatCheckboxChange;
-    harness.component.itemChecked(event);
-    expect(emitSpy).not.toHaveBeenCalled();
+  describe('onNgModelChange', () => {
+    it('should not raise an updateAllChildrenSelected event when ngModelChange is triggered but there is no item', () => {
+      const emitSpy = jest.spyOn(harness.component.updateAllChildrenSelected, 'emit');
+      harness.component.onNgModelChange();
+      expect(emitSpy).not.toHaveBeenCalled();
+    });
+
+    it('should raise an updateAllChildrenSelected event when ngModelChange is triggered', () => {
+      const emitSpy = jest.spyOn(harness.component.updateAllChildrenSelected, 'emit');
+      harness.component.item = item;
+      harness.component.onNgModelChange();
+      expect(emitSpy).toHaveBeenCalled();
+    });
   });
 
-  it.each([true, false])(
-    'should raise an event when has an item and checked is %p',
-    (checked) => {
-      const emitSpy = jest.spyOn(harness.component.checked, 'emit');
+  describe('event handlers', () => {
+    it.each([true, false])('should raise an event when item checked to %p', (checked) => {
+      const eventSpy = jest.spyOn(harness.component.checked, 'emit');
       const event = { checked } as MatCheckboxChange;
-      const item: DataElementSearchResult = {
-        id: '1',
-        model: '2',
-        dataClass: '3',
-        label: 'test',
-        isBookmarked: false,
-        isSelected: false,
+      const expected: SelectableDataElementSearchResultCheckedEvent = {
+        item,
+        checked,
       };
 
       harness.component.item = item;
       harness.component.itemChecked(event);
 
-      expect(emitSpy).toHaveBeenCalled();
-    }
-  );
+      expect(eventSpy).toHaveBeenCalledWith(expected);
+    });
+
+    it('should raise a request add or delete event', () => {
+      const event: RequestElementAddDeleteEvent = {
+        adding: true,
+        dataModel: {
+          label: 'model',
+          domainType: CatalogueItemDomainType.DataModel,
+        },
+        dataElement: item,
+      };
+
+      const eventSpy = jest.spyOn(harness.component.requestAddDelete, 'emit');
+
+      harness.component.handleRequestAddDelete(event);
+      expect(eventSpy).toHaveBeenCalledWith(event);
+    });
+
+    it('should raise a remove element event', () => {
+      const event: DataItemDeleteEvent = {
+        dataElement: item,
+      };
+
+      const eventSpy = jest.spyOn(harness.component.deleteItemEvent, 'emit');
+
+      harness.component.item = item;
+      harness.component.removeElement();
+      expect(eventSpy).toHaveBeenCalledWith(event);
+    });
+  });
 });

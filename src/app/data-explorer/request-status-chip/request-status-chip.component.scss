@@ -18,10 +18,6 @@ SPDX-License-Identifier: Apache-2.0
 */
 @import "../../../styles/base/all";
 
-$chip-unsent-color: $color-teal;
-$chip-submitted-color: $color-light-blue;
-$chip-text-color-light: $color-white;
-
 .mdm-request-status-chip {
   display: inline-block;
   padding: 2px 8px;
@@ -29,12 +25,12 @@ $chip-text-color-light: $color-white;
   margin: 5px 0 5px;
 
   &--unsent {
-    color: $chip-text-color-light;
-    background-color: $chip-unsent-color;
+    color: $color-unsentRequest-contrast;
+    background-color: $color-unsentRequest;
   }
 
   &--submitted {
-    color: $chip-text-color-light;
-    background-color: $chip-submitted-color;
+    color: $color-submittedRequest-contrast;
+    background-color: $color-submittedRequest;
   }
 }

@@ -43,7 +43,7 @@ export class DataElementRowComponent
   @Output() setRemoveSelectedButtonDisabledEvent = new EventEmitter();
   @Output() updateAllChildrenSelected = new EventEmitter();
 
-  padding = 'default';
+  padding: 'default' | 'nested' = 'default';
 
   ngOnInit(): void {
     this.padding = this.nestedPadding ? 'nested' : 'default';

@@ -16,17 +16,61 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { CatalogueItemDomainType, DataClass } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
-import { DataRequest, DataSchema } from 'src/app/data-explorer/data-explorer.types';
+import {
+  DataClassWithElements,
+  DataElementSearchResult,
+  DataRequest,
+  DataSchema,
+} from 'src/app/data-explorer/data-explorer.types';
 
-export type DataSchemaLoadFn = (request: DataRequest) => Observable<DataSchema[]>;
+export const buildDataClass = (label: string): DataClass => {
+  return {
+    label,
+    domainType: CatalogueItemDomainType.DataClass,
+  };
+};
+
+export const buildDataElement = (label: string): DataElementSearchResult => {
+  return {
+    id: label,
+    label,
+    isSelected: false,
+    isBookmarked: false,
+    model: '111',
+    dataClass: '222',
+  };
+};
 
 export interface DataSchemaServiceStub {
-  loadDataSchemas: jest.MockedFunction<DataSchemaLoadFn>;
+  reduceDataClassesFromSchemas: jest.MockedFunction<
+    (dataSchemas: DataSchema[]) => DataClassWithElements[]
+  >;
+  reduceDataElementsFromSchemas: jest.MockedFunction<
+    (dataSchemas: DataSchema[]) => DataElementSearchResult[]
+  >;
+  reduceDataElementsFromSchema: jest.MockedFunction<
+    (dataSchema: DataSchema) => DataElementSearchResult[]
+  >;
+  loadDataSchemas: jest.MockedFunction<
+    (request: DataRequest) => Observable<DataSchema[]>
+  >;
+  loadDataClasses: jest.MockedFunction<
+    (dataSchema: DataClass) => Observable<DataClassWithElements[]>
+  >;
+  loadDataClassElements: jest.MockedFunction<
+    (dataClass: DataClass) => Observable<DataClassWithElements>
+  >;
 }
 
 export const createDataSchemaServiceStub = (): DataSchemaServiceStub => {
   return {
-    loadDataSchemas: jest.fn() as jest.MockedFunction<DataSchemaLoadFn>,
+    reduceDataClassesFromSchemas: jest.fn(),
+    reduceDataElementsFromSchemas: jest.fn(),
+    reduceDataElementsFromSchema: jest.fn(),
+    loadDataSchemas: jest.fn(),
+    loadDataClasses: jest.fn(),
+    loadDataClassElements: jest.fn(),
   };
 };

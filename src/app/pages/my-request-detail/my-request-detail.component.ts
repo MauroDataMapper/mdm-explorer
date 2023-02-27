@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import {
@@ -35,7 +35,9 @@ import {
   forkJoin,
   Observable,
   of,
+  Subject,
   switchMap,
+  takeUntil,
 } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import {
@@ -60,7 +62,7 @@ import {
   OkCancelDialogData,
   OkCancelDialogResponse,
 } from 'src/app/data-explorer/ok-cancel-dialog/ok-cancel-dialog.component';
-import { DataSchemaService } from 'src/app/mauro/data-schema-service';
+import { DataSchemaService } from 'src/app/data-explorer/data-schema.service';
 import { ResearchPluginService } from 'src/app/mauro/research-plugin.service';
 import { RequestElementAddDeleteEvent } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
 export interface RemoveSelectedResponse {
@@ -84,7 +86,7 @@ export type UserFacingText = {
   templateUrl: './my-request-detail.component.html',
   styleUrls: ['./my-request-detail.component.scss'],
 })
-export class MyRequestDetailComponent implements OnInit {
+export class MyRequestDetailComponent implements OnInit, OnDestroy {
   request?: DataRequest;
   state: 'idle' | 'loading' = 'idle';
   sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
@@ -111,6 +113,11 @@ export class MyRequestDetailComponent implements OnInit {
   // remove selected button is disabled.
   anyElementSelected = false;
 
+  /**
+   * Signal to attach to subscriptions to trigger when they should be unsubscribed.
+   */
+  private unsubscribe$ = new Subject<void>();
+
   constructor(
     private route: ActivatedRoute,
     private dataRequestsService: DataRequestsService,
@@ -128,6 +135,12 @@ export class MyRequestDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.initialiseRequest();
+    this.subscribeDataRequestChanges();
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   initialiseRequest(): void {
@@ -287,9 +300,14 @@ export class MyRequestDetailComponent implements OnInit {
   }
 
   // listens for external update to the request and refreshes if so
-  handlePossibleSelfDelete(event: RequestElementAddDeleteEvent) {
+  handleRequestElementsChange(event: RequestElementAddDeleteEvent) {
     if (event.dataModel?.id === this.request?.id) {
       this.setRequest(this.request);
+    } else {
+      this.loadIntersections(this.dataSchemas).subscribe((intersections) => {
+        this.sourceTargetIntersections = intersections;
+        this.broadcastService.dispatch('data-intersections-refreshed', intersections);
+      });
     }
   }
 
@@ -436,7 +454,9 @@ export class MyRequestDetailComponent implements OnInit {
 
   private updateAllElementsSelected() {
     if (!this.allElements) {
-      this.allElements = this.dataSchemaService.getDataRequestElements(this.dataSchemas);
+      this.allElements = this.dataSchemaService.reduceDataElementsFromSchemas(
+        this.dataSchemas
+      );
     }
 
     this.allElementsSelected = this.allElements.every(
@@ -446,7 +466,9 @@ export class MyRequestDetailComponent implements OnInit {
 
   private updateAnyElementsSelected() {
     if (!this.allElements) {
-      this.allElements = this.dataSchemaService.getDataRequestElements(this.dataSchemas);
+      this.allElements = this.dataSchemaService.reduceDataElementsFromSchemas(
+        this.dataSchemas
+      );
     }
 
     this.anyElementSelected = this.allElements.some(
@@ -488,10 +510,10 @@ export class MyRequestDetailComponent implements OnInit {
         finalize(() => (this.state = 'idle'))
       )
       .subscribe(([dataSchemas, intersections]) => {
-        this.dataSchemas = [];
         this.dataSchemas = dataSchemas;
         this.isEmpty =
-          this.dataSchemaService.getDataRequestElements(this.dataSchemas).length === 0;
+          this.dataSchemaService.reduceDataElementsFromSchemas(this.dataSchemas)
+            .length === 0;
         this.sourceTargetIntersections = intersections;
       });
   }
@@ -501,7 +523,7 @@ export class MyRequestDetailComponent implements OnInit {
     dataSchemas: DataSchema[]
   ): Observable<DataAccessRequestsSourceTargetIntersections> {
     const dataElementIds: Uuid[] = this.dataSchemaService
-      .getDataRequestElements(dataSchemas)
+      .reduceDataElementsFromSchemas(dataSchemas)
       .map((element) => element.id);
 
     return of(this.request).pipe(
@@ -516,6 +538,18 @@ export class MyRequestDetailComponent implements OnInit {
         }
       })
     );
+  }
+
+  private subscribeDataRequestChanges() {
+    this.broadcastService
+      .on('data-request-added')
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(() => {
+        this.loadIntersections(this.dataSchemas).subscribe((intersections) => {
+          this.sourceTargetIntersections = intersections;
+          this.broadcastService.dispatch('data-intersections-refreshed', intersections);
+        });
+      });
   }
 
   private processRemoveDataElementResponse(result: boolean, message: string) {
@@ -568,13 +602,13 @@ export class MyRequestDetailComponent implements OnInit {
    */
   private getSelectedItems(): DataElementSearchResult[] {
     return this.dataSchemaService
-      .getDataRequestElements(this.dataSchemas)
+      .reduceDataElementsFromSchemas(this.dataSchemas)
       .filter((item) => item.isSelected);
   }
 
   private getSelectedClasses(): DataClass[] {
     return this.dataSchemaService
-      .getDataRequestClasses(this.dataSchemas)
+      .reduceDataClassesFromSchemas(this.dataSchemas)
       .filter(
         (dataClassWithElements) =>
           dataClassWithElements.dataElements.filter(
@@ -588,9 +622,9 @@ export class MyRequestDetailComponent implements OnInit {
     return this.dataSchemas.filter(
       (dataSchema) =>
         this.dataSchemaService
-          .getDataSchemaElements(dataSchema)
+          .reduceDataElementsFromSchema(dataSchema)
           .filter((dataElement) => dataElement.isSelected).length ===
-        this.dataSchemaService.getDataSchemaElements(dataSchema).length
+        this.dataSchemaService.reduceDataElementsFromSchema(dataSchema).length
     );
   }
 
@@ -747,7 +781,7 @@ export class MyRequestDetailComponent implements OnInit {
           dataSchemas.push(event.dataSchema);
         }
         return this.dataSchemaService
-          .getDataRequestElements(dataSchemas)
+          .reduceDataElementsFromSchemas(dataSchemas)
           .map((element) => element.label);
       }
       case 'dataClass': {

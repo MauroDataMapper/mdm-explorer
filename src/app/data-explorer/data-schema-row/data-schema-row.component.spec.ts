@@ -16,33 +16,52 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { MatDialog } from '@angular/material/dialog';
-import { MdmResourcesConfiguration } from '@maurodatamapper/mdm-resources';
-import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
+import { CatalogueItemDomainType } from '@maurodatamapper/mdm-resources';
+import { RequestElementAddDeleteEvent } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
+import {
+  buildDataClass,
+  buildDataElement,
+  createDataSchemaServiceStub,
+} from 'src/app/testing/stubs/data-schema.stub';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
+import {
+  DataElementInstance,
+  DataElementSearchResult,
+  DataItemDeleteEvent,
+  DataSchema,
+} from '../data-explorer.types';
+import { DataSchemaService } from '../data-schema.service';
 
 import { DataSchemaRowComponent } from './data-schema-row.component';
 
-// Look at data-class-row.component.spec.ts tests and repeat a lot of those tests here.
 describe('DataSchemaRowComponent', () => {
   let harness: ComponentHarness<DataSchemaRowComponent>;
+  const dataSchemasStub = createDataSchemaServiceStub();
 
-  const dialogStub = createMatDialogStub();
-  const mdmResourcesConfiguration = new MdmResourcesConfiguration();
+  const dataElements: DataElementSearchResult[] = [
+    buildDataElement('element1'),
+    buildDataElement('element2'),
+  ];
+
+  const dataSchema: DataSchema = {
+    schema: buildDataClass('schema1'),
+    dataClasses: [
+      {
+        dataClass: buildDataClass('class1'),
+        dataElements,
+      },
+    ],
+  };
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(DataSchemaRowComponent, {
       providers: [
         {
-          provide: MatDialog,
-          useValue: dialogStub,
-        },
-        {
-          provide: MdmResourcesConfiguration,
-          useValue: mdmResourcesConfiguration,
+          provide: DataSchemaService,
+          useValue: dataSchemasStub,
         },
       ],
     });
@@ -51,5 +70,171 @@ describe('DataSchemaRowComponent', () => {
   it('should create', () => {
     expect(harness.isComponentCreated).toBeTruthy();
     expect(harness.component.dataSchema).toBeUndefined();
+    expect(harness.component.suppressViewRequestsDialogButton).toBe(false);
+    expect(harness.component.canDelete).toBe(true);
+    expect(harness.component.sourceTargetIntersections).toStrictEqual({
+      dataAccessRequests: [],
+      sourceTargetIntersections: [],
+    });
+  });
+
+  describe('initialisation', () => {
+    it('should not set schema elements when no input set', () => {
+      harness.component.ngOnInit();
+      expect(harness.component.schemaElements).toStrictEqual([]);
+    });
+
+    it('should set schema elements when input is set', () => {
+      dataSchemasStub.reduceDataElementsFromSchema.mockImplementationOnce(() => {
+        return dataElements;
+      });
+
+      harness.component.dataSchema = dataSchema;
+      harness.component.ngOnInit();
+
+      expect(harness.component.schemaElements).toStrictEqual(dataElements);
+    });
+  });
+
+  it.each([true, false])(
+    'should correctly set expanded state when initial state is %p',
+    (initialState) => {
+      harness.component.expanded = initialState;
+      harness.component.toggleExpanded();
+      expect(harness.component.expanded).toBe(!initialState);
+    }
+  );
+
+  describe('ngOnModelChange', () => {
+    it('should not raise a updateAllOrSomeChildrenSelected when model changes but has no data schema', () => {
+      const emitSpy = jest.spyOn(
+        harness.component.updateAllOrSomeChildrenSelected,
+        'emit'
+      );
+      harness.component.onNgModelChange();
+      expect(emitSpy).not.toHaveBeenCalled();
+    });
+
+    it('should raise a updateAllOrSomeChildrenSelected when has a data schema, and model changes', () => {
+      const emitSpy = jest.spyOn(
+        harness.component.updateAllOrSomeChildrenSelected,
+        'emit'
+      );
+
+      harness.component.dataSchema = dataSchema;
+      harness.component.onNgModelChange();
+
+      expect(emitSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('update all children selected handler', () => {
+    it('should not raise an event when there is no dataSchema', () => {
+      const emitSpy = jest.spyOn(
+        harness.component.updateAllOrSomeChildrenSelected,
+        'emit'
+      );
+      harness.component.updateAllChildrenSelectedHandler();
+      expect(emitSpy).not.toHaveBeenCalled();
+    });
+
+    it('should raise an event and state dataSchema is not selected when only some data elements are checked', () => {
+      const emitSpy = jest.spyOn(
+        harness.component.updateAllOrSomeChildrenSelected,
+        'emit'
+      );
+
+      dataSchemasStub.reduceDataElementsFromSchema.mockImplementationOnce(() => {
+        return dataElements;
+      });
+
+      harness.component.dataSchema = dataSchema;
+      harness.component.ngOnInit();
+
+      harness.component.schemaElements[0].isSelected = true;
+
+      harness.component.updateAllChildrenSelectedHandler();
+
+      expect(emitSpy).toHaveBeenCalled();
+      expect(harness.component.dataSchema.schema.isSelected).toBe(false);
+    });
+
+    it('should raise an event and state dataSchema is selected when all data elements are checked', () => {
+      const emitSpy = jest.spyOn(
+        harness.component.updateAllOrSomeChildrenSelected,
+        'emit'
+      );
+
+      dataSchemasStub.reduceDataElementsFromSchema.mockImplementationOnce(() => {
+        return dataElements;
+      });
+
+      harness.component.dataSchema = dataSchema;
+      harness.component.ngOnInit();
+
+      harness.component.schemaElements.forEach((e) => (e.isSelected = true));
+
+      harness.component.updateAllChildrenSelectedHandler();
+
+      expect(emitSpy).toHaveBeenCalled();
+      expect(harness.component.dataSchema.schema.isSelected).toBe(true);
+    });
+  });
+
+  describe('event handlers', () => {
+    const dataElement: DataElementInstance = {
+      id: '111',
+      label: 'element',
+      model: '222',
+      dataClass: '333',
+      isBookmarked: false,
+      isSelected: false,
+    };
+
+    it('should raise a request add or delete event', () => {
+      const event: RequestElementAddDeleteEvent = {
+        adding: true,
+        dataModel: {
+          label: 'model',
+          domainType: CatalogueItemDomainType.DataModel,
+        },
+        dataElement,
+      };
+
+      const eventSpy = jest.spyOn(harness.component.requestAddDelete, 'emit');
+
+      harness.component.handleRequestAddDelete(event);
+      expect(eventSpy).toHaveBeenCalledWith(event);
+    });
+
+    it('should raise a remove item event for an element', () => {
+      const event: DataItemDeleteEvent = {
+        dataElement: dataElement as DataElementSearchResult,
+      };
+
+      const expected: DataItemDeleteEvent = {
+        ...event,
+        dataSchema,
+      };
+
+      const eventSpy = jest.spyOn(harness.component.deleteItemEvent, 'emit');
+
+      harness.component.dataSchema = dataSchema;
+      harness.component.handleDeleteItemEvent(event);
+      expect(eventSpy).toHaveBeenCalledWith(expected);
+    });
+
+    it('should raise a remove item event for a schema', () => {
+      const expected: DataItemDeleteEvent = {
+        dataSchema,
+      };
+
+      const eventSpy = jest.spyOn(harness.component.deleteItemEvent, 'emit');
+
+      harness.component.dataSchema = dataSchema;
+      harness.component.removeSchema();
+
+      expect(eventSpy).toHaveBeenCalledWith(expected);
+    });
   });
 });

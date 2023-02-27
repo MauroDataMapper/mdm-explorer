@@ -85,7 +85,7 @@ const materialModules = [
   ],
 })
 export class CoreModule {
-  themeCssSelector = 'default-theme';
+  themeCssSelector = 'active-theme';
 
   constructor(overlayContainer: OverlayContainer) {
     // Material theme is wrapped inside a CSS class but the overlay container is not part of Angular

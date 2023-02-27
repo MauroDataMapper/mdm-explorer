@@ -30,7 +30,7 @@ import {
   DataSchema,
 } from 'src/app/data-explorer/data-explorer.types';
 import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
-import { DataSchemaService } from 'src/app/mauro/data-schema-service';
+import { DataSchemaService } from 'src/app/data-explorer/data-schema.service';
 import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
 import { createDataSchemaServiceStub } from 'src/app/testing/stubs/data-schema.stub';
 import { createToastrServiceStub } from 'src/app/testing/stubs/toastr.stub';
