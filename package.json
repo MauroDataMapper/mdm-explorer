@@ -43,7 +43,7 @@
     "ngx-clipboard": "15.0.1",
     "ngx-json-viewer": "3.0.2",
     "ngx-toastr": "14.2.1",
-    "primeng": "14.2.2",
+    "primeng": "14.2.3",
     "rxjs": "7.4.0",
     "tinycolor2": "1.6.0",
     "tslib": "2.3.1",
