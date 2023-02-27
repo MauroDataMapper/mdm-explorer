@@ -18,6 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { DataModelDetail, FolderDetail, Uuid } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
+import { KeyValueIdentifier } from 'src/app/mauro/mauro.types';
 import { PluginResearchContactPayload } from 'src/app/mauro/plugins/plugin-research.resource';
 
 export type ResearchPluginContactFn = (
@@ -32,6 +33,7 @@ export interface ResearchPluginServiceStub {
   userFolder: jest.MockedFunction<ResearchPluginUserFolderFn>;
   templateFolder: jest.MockedFunction<() => Observable<FolderDetail>>;
   rootDataModel: jest.MockedFunction<() => Observable<DataModelDetail>>;
+  theme: jest.MockedFunction<() => Observable<KeyValueIdentifier[]>>;
 }
 
 export const createResearchPluginServiceStub = (): ResearchPluginServiceStub => {
@@ -41,5 +43,6 @@ export const createResearchPluginServiceStub = (): ResearchPluginServiceStub => 
     userFolder: jest.fn() as jest.MockedFunction<ResearchPluginUserFolderFn>,
     templateFolder: jest.fn(),
     rootDataModel: jest.fn(),
+    theme: jest.fn(),
   };
 };

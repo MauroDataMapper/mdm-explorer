@@ -178,7 +178,10 @@ export class AppComponent implements OnInit, OnDestroy {
     private userIdle: UserIdleService,
     private error: ErrorService,
     private themes: ThemeService
-  ) {}
+  ) {
+    // Load the theme into the DOM as the first thing to do
+    this.themes.loadTheme().subscribe((theme) => this.themes.applyTheme(theme));
+  }
 
   @HostListener('window:mousemove', ['$event'])
   onMouseMove() {
@@ -186,8 +189,6 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.themes.loadTheme().subscribe((theme) => this.themes.applyTheme(theme));
-
     this.broadcast
       .on<HttpErrorResponse>('http-application-offline')
       .pipe(takeUntil(this.unsubscribe$))

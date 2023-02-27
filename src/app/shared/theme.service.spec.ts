@@ -18,7 +18,10 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { setupTestModuleForService } from '../testing/testing.helpers';
 import { expect } from '@jest/globals';
-import { ThemeService } from './theme.service';
+import { defaultTheme, ThemeService } from './theme.service';
+import { createResearchPluginServiceStub } from '../testing/stubs/research-plugin.stub';
+import { ResearchPluginService } from '../mauro/research-plugin.service';
+import { cold, ObservableWithSubscriptions } from 'jest-marbles';
 
 const toHaveCssVariable = (
   style: CSSStyleDeclaration,
@@ -44,93 +47,111 @@ expect.extend({ toHaveCssVariable });
 declare module 'expect' {
   interface Matchers<R> {
     toHaveCssVariable(name: string, expected: string): R;
+    toBeObservable(observable: ObservableWithSubscriptions): void;
   }
 }
 
 describe('ThemeService', () => {
   let service: ThemeService;
+  const researchPluginStub = createResearchPluginServiceStub();
 
   beforeEach(() => {
-    service = setupTestModuleForService(ThemeService);
+    service = setupTestModuleForService(ThemeService, {
+      providers: [
+        {
+          provide: ResearchPluginService,
+          useValue: researchPluginStub,
+        },
+      ],
+    });
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
-  // TODO: write tests for loadTheme() when actively loading theme data from server
+  describe('load theme', () => {
+    it('should return the default theme if unable to fetch from server', () => {
+      researchPluginStub.theme.mockImplementationOnce(() =>
+        cold('#', null, new Error('Server error'))
+      );
+
+      const expected$ = cold('(a|)', { a: defaultTheme });
+      const actual$ = service.loadTheme();
+      expect(actual$).toBeObservable(expected$);
+    });
+
+    it('should return a non-default theme from the server and merged with defaults', () => {
+      // Arrange
+      const primaryColor = '#ff0000';
+      const accentColor = '#00ff00';
+      const warnColor = '#0000ff';
+      const fontFamily = 'Comic Sans';
+      const buttonTypeSettings = ['24px', '16px', '700'];
+      const pageColor = '#f0f0f0';
+
+      const changes = {
+        'material.colors.primary': primaryColor,
+        'material.colors.accent': accentColor,
+        'material.colors.warn': warnColor,
+        'material.typography.fontfamily': fontFamily,
+        'material.typography.button': buttonTypeSettings.join(', '),
+        'contrastcolors.page': pageColor,
+      };
+
+      researchPluginStub.theme.mockImplementationOnce(() => {
+        const items = Object.entries(changes).map(([key, value]) => {
+          return {
+            id: '123',
+            key,
+            value,
+          };
+        });
+        return cold('--a|', { a: items });
+      });
+
+      // Build an expected theme, starting with the default as a base and
+      // making some adjustments to show it's not entirely the same
+      const expectedTheme = {
+        ...defaultTheme,
+        material: {
+          colors: {
+            primary: primaryColor,
+            accent: accentColor,
+            warn: warnColor,
+          },
+          typography: {
+            ...defaultTheme.material.typography,
+            fontFamily,
+            button: {
+              fontSize: buttonTypeSettings[0],
+              lineHeight: buttonTypeSettings[1],
+              fontWeight: buttonTypeSettings[2],
+            },
+          },
+        },
+        contrastColors: {
+          ...defaultTheme.contrastColors,
+          page: pageColor,
+        },
+      };
+
+      // Act
+      const actual$ = service.loadTheme();
+
+      // Assert
+      const expected$ = cold('--a|', { a: expectedTheme });
+      expect(actual$).toBeObservable(expected$);
+    });
+  });
 
   const expectCssVariable = (name: string, expected: string) => {
     expect(document.documentElement.style).toHaveCssVariable(name, expected);
   };
 
   describe('apply theme', () => {
-    const theme = {
-      material: {
-        colors: {
-          primary: '#19381f',
-          accent: '#cdb980',
-          warn: '#a5122a',
-        },
-        // Default typography settings taken from
-        // https://github.com/angular/components/blob/main/src/material/core/typography/_typography.scss
-        typography: {
-          fontFamily: 'Roboto, "Helvetica Neue", sans-serif',
-          body1: {
-            fontSize: '14px',
-            lineHeight: '20px',
-            fontWeight: 400,
-          },
-          body2: {
-            fontSize: '14px',
-            lineHeight: '24px',
-            fontWeight: 500,
-          },
-          headline: {
-            fontSize: '24px',
-            lineHeight: '32px',
-            fontWeight: 400,
-          },
-          title: {
-            fontSize: '20px',
-            lineHeight: '32px',
-            fontWeight: 500,
-          },
-          subheading2: {
-            fontSize: '16px',
-            lineHeight: '28px',
-            fontWeight: 400,
-          },
-          subheading1: {
-            fontSize: '15px',
-            lineHeight: '24px',
-            fontWeight: 400,
-          },
-          button: {
-            fontSize: '14px',
-            lineHeight: '14px',
-            fontWeight: 500,
-          },
-          input: {
-            fontSize: 'inherit',
-            fontWeight: 400,
-          },
-        },
-      },
-      regularColors: {
-        hyperlink: '#003752',
-        requestCount: '#ffe603',
-      },
-      contrastColors: {
-        page: '#fff',
-        unsentRequest: '#68d4ca',
-        submittedRequest: '#008bce',
-        classRow: '#c4c4c4',
-      },
-    };
-
     beforeEach(() => {
-      service.applyTheme(theme);
+      service.applyTheme(defaultTheme);
     });
 
     it('should set the Material "primary" color palette', () => {
@@ -274,9 +295,9 @@ describe('ThemeService', () => {
 
       expectCssVariable('--theme-color-page', '#ffffff');
       expectCssVariable('--theme-color-page-contrast', 'rgba(black, 0.87)');
-      expectCssVariable('--theme-color-unsentRequest', '#68d4ca');
-      expectCssVariable('--theme-color-unsentRequest-contrast', 'rgba(black, 0.87)');
-      expectCssVariable('--theme-color-submittedRequest', '#008bce');
+      expectCssVariable('--theme-color-unsentRequest', '#008bce');
+      expectCssVariable('--theme-color-unsentRequest-contrast', 'white');
+      expectCssVariable('--theme-color-submittedRequest', '#0e8f77');
       expectCssVariable('--theme-color-submittedRequest-contrast', 'white');
       expectCssVariable('--theme-color-classRow', '#c4c4c4');
       expectCssVariable('--theme-color-classRow-contrast', 'rgba(black, 0.87)');

@@ -17,8 +17,10 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { catchError, map, Observable, of } from 'rxjs';
 import tinycolor, { ColorFormats } from 'tinycolor2';
+import { getKviValue, KeyValueIdentifier } from '../mauro/mauro.types';
+import { ResearchPluginService } from '../mauro/research-plugin.service';
 
 /**
  * Represents the core colours to use for the colour palettes in an Angular Material theme.
@@ -84,7 +86,7 @@ export interface Theme {
   contrastColors: ThemeContrastColors;
 }
 
-const defaultTheme: Theme = {
+export const defaultTheme: Theme = {
   material: {
     colors: {
       primary: '#19381f',
@@ -148,6 +150,31 @@ const defaultTheme: Theme = {
   },
 };
 
+const mapKviToTypographyLevel = (
+  items: KeyValueIdentifier[],
+  key: string,
+  defaultValue: ThemeMaterialTypographyLevel
+) => {
+  const value = getKviValue(items, key, '');
+  if (value === '') {
+    return defaultValue;
+  }
+
+  const parts = value.split(', ');
+  if (parts.length !== 3) {
+    console.warn(
+      `Theme value "${key}" does not have 3 values. Got "${value}", expected "fontSize, lineHeight, fontWeight"`
+    );
+    return defaultValue;
+  }
+
+  return {
+    fontSize: parts[0],
+    lineHeight: parts[1],
+    fontWeight: parts[2],
+  };
+};
+
 const lightContrastTextColor = 'rgba(black, 0.87)';
 const darkContrastTextColor = 'white';
 
@@ -164,14 +191,29 @@ interface Color {
   providedIn: 'root',
 })
 export class ThemeService {
+  constructor(private researchPlugin: ResearchPluginService) {}
+
+  private static multiply(rgb1: ColorFormats.RGBA, rgb2: ColorFormats.RGBA) {
+    rgb1.b = Math.floor((rgb1.b * rgb2.b) / 255);
+    rgb1.g = Math.floor((rgb1.g * rgb2.g) / 255);
+    rgb1.r = Math.floor((rgb1.r * rgb2.r) / 255);
+    return tinycolor(`rgb ${rgb1.r} ${rgb1.g} ${rgb1.b}`);
+  }
+
   /**
    * Load the theme data required to apply to the application.
    *
    * @returns A {@link Theme} object containing all color and typography information.
    */
   loadTheme(): Observable<Theme> {
-    // TODO: hardcoded for now, a later task must load this from the server
-    return of(defaultTheme);
+    return this.researchPlugin.theme().pipe(
+      catchError((error) => {
+        // Ensure that there is always a theme returned
+        console.error(error);
+        return of(undefined);
+      }),
+      map((props) => (props ? this.mapValuesToTheme(props) : defaultTheme))
+    );
   }
 
   /**
@@ -188,6 +230,104 @@ export class ThemeService {
     this.applyMaterialPaletteToCss('warn', theme.material.colors.warn);
     this.applyTypographyToCss(theme.material.typography);
     this.applyAppColorsToCss(theme);
+  }
+
+  private mapValuesToTheme(props: KeyValueIdentifier[]): Theme {
+    return {
+      material: {
+        colors: {
+          primary: getKviValue(
+            props,
+            'material.colors.primary',
+            defaultTheme.material.colors.primary
+          ),
+          accent: getKviValue(
+            props,
+            'material.colors.accent',
+            defaultTheme.material.colors.accent
+          ),
+          warn: getKviValue(
+            props,
+            'material.colors.warn',
+            defaultTheme.material.colors.warn
+          ),
+        },
+        typography: {
+          fontFamily: getKviValue(
+            props,
+            'material.typography.fontfamily',
+            defaultTheme.material.typography.fontFamily
+          ),
+          body1: mapKviToTypographyLevel(
+            props,
+            'material.typography.bodyone',
+            defaultTheme.material.typography.body1
+          ),
+          body2: mapKviToTypographyLevel(
+            props,
+            'material.typography.bodytwo',
+            defaultTheme.material.typography.body2
+          ),
+          headline: mapKviToTypographyLevel(
+            props,
+            'material.typography.headline',
+            defaultTheme.material.typography.headline
+          ),
+          title: mapKviToTypographyLevel(
+            props,
+            'material.typography.title',
+            defaultTheme.material.typography.title
+          ),
+          subheading1: mapKviToTypographyLevel(
+            props,
+            'material.typography.subheadingone',
+            defaultTheme.material.typography.subheading1
+          ),
+          subheading2: mapKviToTypographyLevel(
+            props,
+            'material.typography.subheadingtwo',
+            defaultTheme.material.typography.subheading2
+          ),
+          button: mapKviToTypographyLevel(
+            props,
+            'material.typography.button',
+            defaultTheme.material.typography.button
+          ),
+          // Intentionally use hardcoded values for input typography, required for Angular Material theme to compile
+          input: defaultTheme.material.typography.input,
+        },
+      },
+      regularColors: {
+        hyperlink: getKviValue(
+          props,
+          'regularcolors.hyperlink',
+          defaultTheme.regularColors.hyperlink
+        ),
+        requestCount: getKviValue(
+          props,
+          'regularcolors.requestcount',
+          defaultTheme.regularColors.requestCount
+        ),
+      },
+      contrastColors: {
+        page: getKviValue(props, 'contrastcolors.page', defaultTheme.contrastColors.page),
+        unsentRequest: getKviValue(
+          props,
+          'contrastcolors.unsentrequest',
+          defaultTheme.contrastColors.unsentRequest
+        ),
+        submittedRequest: getKviValue(
+          props,
+          'contrastcolors.submittedrequest',
+          defaultTheme.contrastColors.submittedRequest
+        ),
+        classRow: getKviValue(
+          props,
+          'contrastcolors.classrow',
+          defaultTheme.contrastColors.classRow
+        ),
+      },
+    };
   }
 
   /**
@@ -265,7 +405,7 @@ export class ThemeService {
     this.applyCss(warn);
 
     const contrastColors = Object.entries(theme.contrastColors)
-      .map(([property, value]) => this.computeContrastColors(property, value))
+      .map(([property, value]) => this.computeContrastColors(property, value as string))
       .reduce((prev, current) => {
         return {
           ...prev,
@@ -279,7 +419,7 @@ export class ThemeService {
       (prev, [property, value]) => {
         return {
           ...prev,
-          [`--theme-color-${property}`]: tinycolor(value).toHexString(),
+          [`--theme-color-${property}`]: tinycolor(value as string).toHexString(),
         };
       },
       {}
@@ -393,12 +533,5 @@ export class ThemeService {
       [`--theme-mat-typography-${name}-line-height`]: level.lineHeight,
       [`--theme-mat-typography-${name}-font-weight`]: level.fontWeight,
     };
-  }
-
-  private static multiply(rgb1: ColorFormats.RGBA, rgb2: ColorFormats.RGBA) {
-    rgb1.b = Math.floor((rgb1.b * rgb2.b) / 255);
-    rgb1.g = Math.floor((rgb1.g * rgb2.g) / 255);
-    rgb1.r = Math.floor((rgb1.r * rgb2.r) / 255);
-    return tinycolor(`rgb ${rgb1.r} ${rgb1.g} ${rgb1.b}`);
   }
 }
