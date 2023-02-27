@@ -38,6 +38,7 @@ import {
   Subject,
   switchMap,
   takeUntil,
+  tap,
 } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import {
@@ -270,33 +271,29 @@ export class MyRequestDetailComponent implements OnInit, OnDestroy {
     this.okCancelItem(userFacingText)
       .afterClosed()
       .pipe(
-        switchMap((response: OkCancelDialogResponse | undefined) => {
-          return this.deleteItem(event, response, userFacingText);
+        filter((response) => !!response?.result),
+        tap(() =>
+          this.broadcastService.loading({
+            isLoading: true,
+            caption: userFacingText?.loadingMessage,
+          })
+        ),
+        switchMap(() => {
+          return this.deleteItem(event);
         }),
         switchMap((result: DataElementOperationResult) => {
           return this.deleteElementsFromQueries(event, result);
-        })
+        }),
+        finalize(() => this.broadcastService.loading({ isLoading: false }))
       )
-      .subscribe(
-        ({
-          dataQuery,
-          cohortQuery,
-          result,
-        }: {
-          dataQuery?: DataRequestQueryPayload;
-          cohortQuery?: DataRequestQueryPayload;
-          result: DataElementOperationResult;
-        }) => {
-          this.refreshQueries(dataQuery, cohortQuery);
+      .subscribe(({ dataQuery, cohortQuery, result }) => {
+        this.refreshQueries(dataQuery, cohortQuery);
 
-          const message = result.success
-            ? `${userFacingText?.successMessage}`
-            : `${userFacingText?.failureMessage}${result.message}`;
-          this.processRemoveDataElementResponse(result.success, message);
-
-          this.broadcastService.loading({ isLoading: false });
-        }
-      );
+        const message = result.success
+          ? `${userFacingText?.successMessage}`
+          : `${userFacingText?.failureMessage}${result.message}`;
+        this.processRemoveDataElementResponse(result.success, message);
+      });
   }
 
   // listens for external update to the request and refreshes if so
@@ -888,40 +885,28 @@ export class MyRequestDetailComponent implements OnInit, OnDestroy {
     }
   }
 
-  private deleteItem(
-    event: DataItemDeleteEvent,
-    response: OkCancelDialogResponse | undefined,
-    userFacingText: UserFacingText
-  ) {
-    if (response?.result) {
-      this.broadcastService.loading({
-        isLoading: true,
-        caption: userFacingText?.loadingMessage,
-      });
-      switch (this.getItemType(event)) {
-        case 'dataSchema':
-          if (event.dataSchema) {
-            return this.dataRequestsService.deleteDataSchema(event.dataSchema.schema);
-          } else {
-            return EMPTY;
-          }
-        case 'dataClass':
-          return this.deleteDataClass(
-            event.dataClassWithElements?.dataClass,
-            event.dataSchema
-          );
-        case 'dataElement':
-          return this.deleteDataElement(
-            event.dataElement,
-            event.dataClassWithElements,
-            event.dataSchema
-          );
-        default:
-          return EMPTY;
-      }
-    } else {
-      return EMPTY;
+  private deleteItem(event: DataItemDeleteEvent) {
+    const itemType = this.getItemType(event);
+    if (itemType === 'dataSchema' && event.dataSchema) {
+      return this.dataRequestsService.deleteDataSchema(event.dataSchema.schema);
     }
+
+    if (itemType === 'dataClass') {
+      return this.deleteDataClass(
+        event.dataClassWithElements?.dataClass,
+        event.dataSchema
+      );
+    }
+
+    if (itemType === 'dataElement') {
+      return this.deleteDataElement(
+        event.dataElement,
+        event.dataClassWithElements,
+        event.dataSchema
+      );
+    }
+
+    return EMPTY;
   }
 
   private deleteElementsFromQueries(
