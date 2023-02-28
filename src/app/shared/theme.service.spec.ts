@@ -88,6 +88,7 @@ describe('ThemeService', () => {
       const warnColor = '#0000ff';
       const fontFamily = 'Comic Sans';
       const buttonTypeSettings = ['24px', '16px', '700'];
+      const body1TypeSettings = ['32px', '12px', '500'];
       const pageColor = '#f0f0f0';
 
       const changes = {
@@ -95,7 +96,8 @@ describe('ThemeService', () => {
         'material.colors.accent': accentColor,
         'material.colors.warn': warnColor,
         'material.typography.fontfamily': fontFamily,
-        'material.typography.button': buttonTypeSettings.join(', '),
+        'material.typography.button': buttonTypeSettings.join(', '), // Intentional: test with ", " separator
+        'material.typography.bodyone': body1TypeSettings.join(','), // Intentional: test with "," separator (without space)
         'contrastcolors.page': pageColor,
       };
 
@@ -127,6 +129,11 @@ describe('ThemeService', () => {
               fontSize: buttonTypeSettings[0],
               lineHeight: buttonTypeSettings[1],
               fontWeight: buttonTypeSettings[2],
+            },
+            body1: {
+              fontSize: body1TypeSettings[0],
+              lineHeight: body1TypeSettings[1],
+              fontWeight: body1TypeSettings[2],
             },
           },
         },

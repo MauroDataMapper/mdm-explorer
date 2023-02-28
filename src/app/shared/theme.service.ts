@@ -160,7 +160,9 @@ const mapKviToTypographyLevel = (
     return defaultValue;
   }
 
-  const parts = value.split(', ');
+  // Remove unecessary whitespace before comma split
+  // Format should be "fontSize, lineHeight, fontWeight"
+  const parts = value.replace(/\s/g, '').split(',');
   if (parts.length !== 3) {
     console.warn(
       `Theme value "${key}" does not have 3 values. Got "${value}", expected "fontSize, lineHeight, fontWeight"`
