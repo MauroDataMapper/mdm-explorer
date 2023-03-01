@@ -50,3 +50,17 @@ export const isDataClass = (
 
 export const isDataElement = (item: DataClass | DataElement): item is DataElement =>
   item.domainType === CatalogueItemDomainType.DataElement;
+
+export interface KeyValueIdentifier {
+  id: Uuid;
+  key: string;
+  value: string;
+}
+
+export const getKviValue = (
+  items: KeyValueIdentifier[],
+  key: string,
+  defaultValue: string
+) => {
+  return items.find((i) => i.key === key)?.value ?? defaultValue;
+};

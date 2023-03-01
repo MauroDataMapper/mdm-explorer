@@ -32,12 +32,18 @@ import {
 import { ComponentHarness, setupTestModuleForComponent } from './testing/testing.helpers';
 import { createDataElementSearchServiceStub } from './testing/stubs/data-element-search.stub';
 import { DataElementSearchService } from './data-explorer/data-element-search.service';
+import { createThemeServiceStub } from './testing/stubs/theme.stub';
+import { defaultTheme, ThemeService } from './shared/theme.service';
+import { of } from 'rxjs';
 
 describe('AppComponent', () => {
   let harness: ComponentHarness<AppComponent>;
   const dataRequestsStub = createDataRequestsServiceStub();
   const endpointsStub: MdmEndpointsServiceStub = createMdmEndpointsStub();
   const dataElementSearchStub = createDataElementSearchServiceStub();
+  const themesStub = createThemeServiceStub();
+
+  themesStub.loadTheme.mockImplementation(() => of(defaultTheme));
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(AppComponent, {
@@ -62,6 +68,10 @@ describe('AppComponent', () => {
         {
           provide: DataElementSearchService,
           useValue: dataElementSearchStub,
+        },
+        {
+          provide: ThemeService,
+          useValue: themesStub,
         },
       ],
     });

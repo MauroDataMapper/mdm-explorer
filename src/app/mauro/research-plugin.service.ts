@@ -22,9 +22,11 @@ import {
   DataModelDetailResponse,
   FolderDetail,
   FolderDetailResponse,
+  MdmIndexResponse,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { map, Observable, switchMap } from 'rxjs';
+import { KeyValueIdentifier } from './mauro.types';
 import { MdmEndpointsService } from './mdm-endpoints.service';
 import {
   PluginResearchContactPayload,
@@ -66,5 +68,11 @@ export class ResearchPluginService {
     return this.endpoints.pluginResearch
       .rootDataModel()
       .pipe(map((response: FolderDetailResponse) => response.body));
+  }
+
+  theme(): Observable<KeyValueIdentifier[]> {
+    return this.endpoints.pluginResearch
+      .theme()
+      .pipe(map((response: MdmIndexResponse<KeyValueIdentifier>) => response.body.items));
   }
 }

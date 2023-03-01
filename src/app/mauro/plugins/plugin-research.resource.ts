@@ -112,4 +112,18 @@ export class MdmPluginResearchResource extends MdmResource {
     const url = `${this.apiEndpoint}/explorer/rootDataModel`;
     return this.simpleGet(url, query, options);
   }
+
+  /**
+   * `HTTP GET` - Gets the theme settings configured via API properties.
+   *
+   * @param query Optional query parameters, if required.
+   * @param options Optional REST handler parameters, if required.
+   * @returns The result of the `GET` request:
+   *
+   * `200 OK` - will return a paged set of key/value pairs.
+   */
+  theme(query?: QueryParameters, options?: RequestSettings) {
+    const url = `${this.apiEndpoint}/explorer/theme`;
+    return this.simpleGet(url, query, options);
+  }
 }
