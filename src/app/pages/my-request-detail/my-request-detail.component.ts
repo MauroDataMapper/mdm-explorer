@@ -37,7 +37,6 @@ import {
   of,
   Subject,
   switchMap,
-  takeUntil,
   tap,
 } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
@@ -136,7 +135,6 @@ export class MyRequestDetailComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initialiseRequest();
-    this.subscribeDataRequestChanges();
   }
 
   ngOnDestroy(): void {
@@ -527,18 +525,6 @@ export class MyRequestDetailComponent implements OnInit, OnDestroy {
         }
       })
     );
-  }
-
-  private subscribeDataRequestChanges() {
-    this.broadcastService
-      .on('data-request-added')
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(() => {
-        this.loadIntersections(this.dataSchemas).subscribe((intersections) => {
-          this.sourceTargetIntersections = intersections;
-          this.broadcastService.dispatch('data-intersections-refreshed', intersections);
-        });
-      });
   }
 
   private processRemoveDataElementResponse(result: boolean, message: string) {

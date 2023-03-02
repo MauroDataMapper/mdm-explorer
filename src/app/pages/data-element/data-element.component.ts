@@ -28,7 +28,7 @@ import {
 } from '@maurodatamapper/mdm-resources';
 import { ProfileService } from 'src/app/mauro/profile.service';
 import { ToastrService } from 'ngx-toastr';
-import { switchMap, forkJoin, catchError, EMPTY, map } from 'rxjs';
+import { switchMap, forkJoin, catchError, EMPTY, map, takeUntil, Subject } from 'rxjs';
 import { BookmarkService } from 'src/app/data-explorer/bookmark.service';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import {
@@ -41,6 +41,7 @@ import {
   DataRequestsService,
 } from 'src/app/data-explorer/data-requests.service';
 import { TerminologyService } from 'src/app/mauro/terminology.service';
+import { BroadcastService } from 'src/app/core/broadcast.service';
 
 @Component({
   selector: 'mdm-data-element',
@@ -63,7 +64,10 @@ export class DataElementComponent implements OnInit {
   isBookmarked = false;
 
   sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
-
+  /**
+   * Signal to attach to subscriptions to trigger when they should be unsubscribed.
+   */
+  private unsubscribe$ = new Subject<void>();
   constructor(
     private route: ActivatedRoute,
     private dataModels: DataModelService,
@@ -72,6 +76,7 @@ export class DataElementComponent implements OnInit {
     private profileService: ProfileService,
     private toastr: ToastrService,
     private terminologies: TerminologyService,
+    private broadcast: BroadcastService,
     @Inject(DATA_EXPLORER_CONFIGURATION) private config: DataExplorerConfiguration
   ) {
     this.sourceTargetIntersections = {
@@ -117,6 +122,7 @@ export class DataElementComponent implements OnInit {
 
           this.setIdentifiableData();
           this.setDataTypeModel();
+          this.subscribeDataRequestChanges();
         }
       );
   }
@@ -246,5 +252,17 @@ export class DataElementComponent implements OnInit {
         })
         .filter((section) => section.fields.length > 0),
     };
+  }
+
+  private subscribeDataRequestChanges() {
+    this.broadcast
+      .on('data-request-added')
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(() => {
+        this.loadIntersections().subscribe((intersections) => {
+          this.sourceTargetIntersections = intersections;
+          this.broadcast.dispatch('data-intersections-refreshed', intersections);
+        });
+      });
   }
 }
