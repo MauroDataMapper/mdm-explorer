@@ -58,6 +58,7 @@ import {
   SearchFilterField,
 } from 'src/app/data-explorer/search-filters/search-filters.component';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { SelectionService } from 'src/app/data-explorer/selection.service';
 
 export type SearchListingSource = 'unknown' | 'browse' | 'search';
 export type SearchListingStatus = 'init' | 'loading' | 'ready' | 'error';
@@ -86,10 +87,11 @@ export class SearchListingComponent implements OnInit, OnDestroy {
   root?: DataClassDetail;
   searchTerms?: string;
   resultSet?: DataElementSearchResultSet;
-  selectedElements: DataElementSearchResult[] = [];
   userBookmarks: DataElementSearchResult[] = [];
   sortBy?: SortByOption;
   sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
+
+  areAllElementsSelected = false;
 
   /**
    * Each new option must have a {@link SearchListingSortByOption} as a value to ensure
@@ -116,7 +118,8 @@ export class SearchListingComponent implements OnInit, OnDestroy {
     private toastr: ToastrService,
     private stateRouter: StateRouterService,
     private bookmarks: BookmarkService,
-    private broadcast: BroadcastService
+    private broadcast: BroadcastService,
+    private selectionService: SelectionService
   ) {
     this.sourceTargetIntersections = {
       dataAccessRequests: [],
@@ -162,6 +165,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
           this.root = dataClass;
           this.resultSet = resultSet;
           this.userBookmarks = userBookmarks;
+          this.addIsSelectedToResults();
           this.addIsBookmarkedToResults();
           return this.loadIntersections();
         })
@@ -171,6 +175,10 @@ export class SearchListingComponent implements OnInit, OnDestroy {
         this.subscribeDataRequestChanges();
         this.status = 'ready';
       });
+
+    this.selectionService.list$.subscribe(() => {
+      this.addIsSelectedToResults();
+    });
   }
 
   ngOnDestroy(): void {
@@ -188,9 +196,11 @@ export class SearchListingComponent implements OnInit, OnDestroy {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   selectElement(event: SelectableDataElementSearchResultCheckedEvent) {
-    event.item.isSelected = event.checked;
-
-    this.updateSelectedElements();
+    if (event.checked) {
+      this.selectionService.add([event.item]);
+    } else {
+      this.selectionService.remove([event.item.id]);
+    }
   }
 
   bookmarkElement(event: DataElementBookmarkEvent) {
@@ -210,7 +220,6 @@ export class SearchListingComponent implements OnInit, OnDestroy {
       ...this.parameters,
       page,
     };
-    this.clearSelected();
     const params = mapSearchParametersToParams(next);
     this.stateRouter.navigateToKnownPath('/search/listing', params);
   }
@@ -263,22 +272,12 @@ export class SearchListingComponent implements OnInit, OnDestroy {
    */
   onSelectAll(event: MatCheckboxChange) {
     if (this.resultSet) {
-      this.resultSet.items = this.resultSet.items.map((item) => {
-        return { ...item, isSelected: event.checked };
-      });
-
-      this.updateSelectedElements();
+      if (event.checked) {
+        this.selectionService.add(this.resultSet.items);
+      } else {
+        this.selectionService.remove(this.resultSet.items.map((item) => item.id));
+      }
     }
-  }
-
-  private updateSelectedElements() {
-    if (!this.resultSet) {
-      return;
-    }
-
-    // Work out which elements are selected. Store as a property to data bind to mdm-data-element-multi-select
-    // and improve performance
-    this.selectedElements = this.resultSet.items.filter((element) => element.isSelected);
   }
 
   private loadDataClass() {
@@ -388,6 +387,19 @@ export class SearchListingComponent implements OnInit, OnDestroy {
     });
   }
 
+  private addIsSelectedToResults() {
+    if (!this.resultSet || !this.resultSet.items) return;
+
+    let allSelected = true;
+    this.resultSet.items = this.resultSet.items.map((item) => {
+      const isSelected = this.selectionService.isSelected(item.id);
+      allSelected &&= isSelected;
+      return isSelected !== item.isSelected ? { ...item, isSelected } : item;
+    });
+
+    this.areAllElementsSelected = allSelected;
+  }
+
   /**
    * Match route params sort and order to sortBy option or return the default value if not set.
    *
@@ -419,9 +431,5 @@ export class SearchListingComponent implements OnInit, OnDestroy {
 
   private getOrderFromSortByOptionString(sortBy: string) {
     return sortBy.split('-')[1] as SortOrder;
-  }
-
-  private clearSelected() {
-    this.selectedElements = [];
   }
 }
