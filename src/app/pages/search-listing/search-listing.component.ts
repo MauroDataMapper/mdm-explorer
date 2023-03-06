@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, Optional } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DataClassDetail, ProfileField, Uuid } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
@@ -41,6 +41,8 @@ import {
   DataElementSearchResultSet,
   mapParamMapToSearchParameters,
   mapSearchParametersToParams,
+  PaginationConfiguration,
+  PAGINATION_CONFIG,
   SelectableDataElementSearchResultCheckedEvent,
   SortOrder,
 } from 'src/app/data-explorer/data-explorer.types';
@@ -59,6 +61,7 @@ import {
 } from 'src/app/data-explorer/search-filters/search-filters.component';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { SelectionService } from 'src/app/data-explorer/selection.service';
+import { MatSelectChange } from '@angular/material/select';
 
 export type SearchListingSource = 'unknown' | 'browse' | 'search';
 export type SearchListingStatus = 'init' | 'loading' | 'ready' | 'error';
@@ -90,7 +93,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
   userBookmarks: DataElementSearchResult[] = [];
   sortBy?: SortByOption;
   sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
-
+  pageSize?: number;
   areAllElementsSelected = false;
 
   /**
@@ -119,12 +122,23 @@ export class SearchListingComponent implements OnInit, OnDestroy {
     private stateRouter: StateRouterService,
     private bookmarks: BookmarkService,
     private broadcast: BroadcastService,
-    private selectionService: SelectionService
+    private selectionService: SelectionService,
+    @Optional()
+    @Inject(PAGINATION_CONFIG)
+    private paginationConfig?: PaginationConfiguration
   ) {
     this.sourceTargetIntersections = {
       dataAccessRequests: [],
       sourceTargetIntersections: [],
     };
+  }
+
+  get pageSizeOptions() {
+    const defaultOptions = [10, 50, 500];
+    if (this.pageSize !== undefined && !defaultOptions.find((v) => v === this.pageSize)) {
+      return [...defaultOptions, this.pageSize].sort((a, b) => a - b);
+    }
+    return defaultOptions;
   }
 
   ngOnInit(): void {
@@ -134,6 +148,8 @@ export class SearchListingComponent implements OnInit, OnDestroy {
       .pipe(
         switchMap(([query, profileFields]) => {
           this.parameters = mapParamMapToSearchParameters(query, profileFields);
+          this.pageSize =
+            this.parameters.pageSize ?? this.paginationConfig?.defaultPageSize;
           this.searchTerms = this.parameters.search;
 
           this.filters = this.createSearchFiltersFromProfileFields(
@@ -250,6 +266,16 @@ export class SearchListingComponent implements OnInit, OnDestroy {
 
     next.filters[event.name] = event.value;
 
+    const params = mapSearchParametersToParams(next);
+    this.stateRouter.navigateToKnownPath('/search/listing', params);
+  }
+
+  pageSizeChanged(event: MatSelectChange) {
+    const next: DataElementSearchParameters = {
+      ...this.parameters,
+      page: 1,
+      pageSize: event.value,
+    };
     const params = mapSearchParametersToParams(next);
     this.stateRouter.navigateToKnownPath('/search/listing', params);
   }

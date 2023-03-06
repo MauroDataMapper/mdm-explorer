@@ -57,6 +57,16 @@ SPDX-License-Identifier: Apache-2.0
               {{ resultSet?.totalResults }} results found
             </ng-container>
           </div>
+          <div>
+            <mat-form-field appearance="outline">
+              <mat-label>Page size</mat-label>
+              <mat-select [value]="pageSize" (selectionChange)="pageSizeChanged($event)">
+                <mat-option *ngFor="let option of pageSizeOptions" [value]="option"
+                  >{{ option }} items</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+          </div>
           <div class="vertically-aligned">
             <mdm-sort-by
               [value]="sortBy"
