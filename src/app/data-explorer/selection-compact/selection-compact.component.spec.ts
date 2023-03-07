@@ -16,35 +16,91 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { MatDialog } from '@angular/material/dialog';
+import { MatIcon } from '@angular/material/icon';
+import { RouterLinkWithHref } from '@angular/router';
+import { MockComponent, MockDirective, ngMocks } from 'ng-mocks';
+import { DataElementMultiSelectComponent } from 'src/app/shared/data-element-multi-select/data-element-multi-select.component';
+import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
+import { DataElementSearchResult } from '../data-explorer.types';
+import { SelectionExpandedDialogComponent } from '../selection-expanded-dialog/selection-expanded-dialog.component';
+import { SelectionService } from '../selection.service';
 
 import { SelectionCompactComponent } from './selection-compact.component';
 
 describe('SearchFiltersComponent', () => {
   let harness: ComponentHarness<SelectionCompactComponent>;
+  let selectionService: SelectionService;
+  const dialogStub = createMatDialogStub();
 
   beforeEach(async () => {
-    harness = await setupTestModuleForComponent(SelectionCompactComponent);
+    harness = await setupTestModuleForComponent(SelectionCompactComponent, {
+      providers: [
+        {
+          provide: MatDialog,
+          useValue: dialogStub,
+        },
+      ],
+      declarations: [
+        MockComponent(DataElementMultiSelectComponent),
+        MockComponent(MatIcon),
+        MockDirective(RouterLinkWithHref),
+      ],
+    });
+    selectionService = harness.fixture.componentRef.injector.get(SelectionService);
   });
 
   it('should create', () => {
     expect(harness.isComponentCreated).toBeTruthy();
   });
 
-  describe('event handlers', () => {
-    /*
-    it('should ...', () => {
-      const spy = jest.spyOn(harness.component.filterChange, 'emit');
-      const name = 'testFilter';
-      const event = { value: 'val' } as MatSelectChange;
+  describe('behaviours', () => {
+    const startingSelection = [{ id: '1' } as DataElementSearchResult];
 
-      harness.component.selectionChanged(name, event);
-      expect(spy).toHaveBeenCalledWith({ name, value: event.value });
-    });    */
+    beforeEach(() => {
+      selectionService.clearSelection();
+      selectionService.add(startingSelection);
+      harness.detectChanges();
+    });
+
     // Clear all
+    it('should clear the selection', () => {
+      let selectedElements: DataElementSearchResult[] | undefined;
+      harness.component.selectedElements$.subscribe((v) => (selectedElements = v));
+      expect(selectedElements).not.toHaveLength(0);
+
+      const spy = jest.spyOn(selectionService, 'clearSelection');
+
+      harness.component.clearSelection();
+
+      expect(selectedElements).toHaveLength(0);
+      expect(spy).toHaveBeenCalled();
+    });
+
     // Open dialog
+    it('should open the expanded dialog', () => {
+      const spy = jest.spyOn(dialogStub, 'open');
+
+      harness.component.showSelection();
+
+      expect(spy).toHaveBeenCalledWith(
+        SelectionExpandedDialogComponent,
+        expect.anything()
+      );
+    });
+
+    it('should forward properties to mdm-data-element-multi-select', () => {
+      const withSelected = ngMocks.find<DataElementMultiSelectComponent>(
+        'mdm-data-element-multi-select'
+      ).componentInstance;
+      expect(withSelected.dataElements).toEqual(startingSelection);
+      expect(withSelected.sourceTargetIntersections).toEqual(
+        harness.component.sourceTargetIntersections
+      );
+    });
   });
 });

@@ -16,22 +16,28 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { MatCheckbox } from '@angular/material/checkbox';
 import {
   MatDialogActions,
   MatDialogContent,
   MatDialogRef,
+  MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
-import { MatFormField, MatLabel } from '@angular/material/form-field';
-import { MockComponent, MockDirective } from 'ng-mocks';
+import { MatIcon } from '@angular/material/icon';
+import { MockComponent, MockDirective, ngMocks } from 'ng-mocks';
+import { DataElementMultiSelectComponent } from 'src/app/shared/data-element-multi-select/data-element-multi-select.component';
 import { createMatDialogRefStub } from 'src/app/testing/stubs/mat-dialog.stub';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
+import { DataElementSearchResult } from '../data-explorer.types';
+import { SelectionService } from '../selection.service';
 import { SelectionExpandedDialogComponent } from './selection-expanded-dialog.component';
 
 describe('SelectionExpandedDialogComponent', () => {
   let harness: ComponentHarness<SelectionExpandedDialogComponent>;
+  let selectionService: SelectionService;
   const dialogRefStub = createMatDialogRefStub();
 
   beforeEach(async () => {
@@ -39,16 +45,22 @@ describe('SelectionExpandedDialogComponent', () => {
       declarations: [
         MockDirective(MatDialogContent),
         MockDirective(MatDialogActions),
-        MockComponent(MatFormField),
-        MockDirective(MatLabel),
+        MockComponent(DataElementMultiSelectComponent),
+        MockComponent(MatIcon),
+        MockComponent(MatCheckbox),
       ],
       providers: [
         {
           provide: MatDialogRef,
           useValue: dialogRefStub,
         },
+        {
+          provide: MAT_DIALOG_DATA,
+          useValue: [],
+        },
       ],
     });
+    selectionService = harness.fixture.componentRef.injector.get(SelectionService);
   });
 
   beforeEach(() => {
@@ -59,11 +71,56 @@ describe('SelectionExpandedDialogComponent', () => {
     expect(harness.isComponentCreated).toBeTruthy();
   });
 
-  it('should close', () => {
-    harness.component.close();
-    expect(dialogRefStub.close).toHaveBeenCalled();
-  });
+  describe('behaviours', () => {
+    const startingSelection = [{ id: '1' } as DataElementSearchResult];
 
-  // should clear selection
-  // should add to request
+    beforeEach(() => {
+      selectionService.clearSelection();
+      selectionService.add(startingSelection);
+      harness.detectChanges();
+    });
+
+    it('should close', () => {
+      harness.component.close();
+      expect(dialogRefStub.close).toHaveBeenCalled();
+    });
+
+    it('should clear the selection', () => {
+      let selectedElements: DataElementSearchResult[] | undefined;
+      harness.component.selectedElements$.subscribe((v) => (selectedElements = v));
+      expect(selectedElements).toHaveLength(startingSelection.length);
+
+      const spy = jest.spyOn(selectionService, 'clearSelection');
+
+      harness.component.clearSelection();
+
+      expect(selectedElements).toHaveLength(0);
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should remove individual selected items', () => {
+      const firstItem = { id: '1' } as DataElementSearchResult;
+      const secondItem = { id: '2' } as DataElementSearchResult;
+      selectionService.add([firstItem, secondItem]);
+
+      let selectedElements: DataElementSearchResult[] | undefined;
+      harness.component.selectedElements$.subscribe((v) => (selectedElements = v));
+      expect(selectedElements).toContainEqual(firstItem);
+      expect(selectedElements).toContainEqual(secondItem);
+
+      harness.component.deselectElement(firstItem.id);
+      expect(selectedElements).not.toContainEqual(firstItem);
+      expect(selectedElements).toContainEqual(secondItem);
+    });
+
+    it('should forward properties to mdm-data-element-multi-select', () => {
+      const withSelected = ngMocks.find<DataElementMultiSelectComponent>(
+        'mdm-data-element-multi-select'
+      ).componentInstance;
+      expect(withSelected.dataElements).toEqual(startingSelection);
+      expect(withSelected.sourceTargetIntersections).toEqual(
+        harness.component.sourceTargetIntersections
+      );
+    });
+  });
 });
