@@ -56,6 +56,9 @@ import {
 } from 'src/app/data-explorer/data-requests.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import { createDataExplorerServiceStub } from 'src/app/testing/stubs/data-explorer.stub';
+import { SelectionService } from 'src/app/data-explorer/selection.service';
+import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatSelectChange } from '@angular/material/select';
 
 describe('SearchListingComponent', () => {
   let harness: ComponentHarness<SearchListingComponent>;
@@ -347,10 +350,13 @@ describe('SearchListingComponent', () => {
       search: 'test',
     };
 
+    let selectionService: SelectionService;
+
     beforeEach(async () => {
       toastrStub.error.mockClear();
 
       harness = await setupComponentTest(parameters);
+      selectionService = harness.fixture.componentRef.injector.get(SelectionService);
     });
 
     const searchResults: DataElementSearchResultSet = {
@@ -406,29 +412,110 @@ describe('SearchListingComponent', () => {
       });
     };
 
-    it('should be in ready state once initialised with results sorted by the default sortBy option', fakeAsync(() => {
-      const spy = jest.spyOn(toastrStub, 'error');
+    describe('with successful search', () => {
+      beforeEach(() => {
+        implementProfileFieldsForFilters();
+        implementSearchReturns();
 
-      implementProfileFieldsForFilters();
-      implementSearchReturns();
+        bookmarkStub.index.mockImplementationOnce(() => of([]));
+        dataExplorerStub.getRootDataModel.mockImplementationOnce(() =>
+          of(mockedRootDataModel)
+        );
+        dataRequestsStub.getRequestsIntersections.mockImplementationOnce(() =>
+          of(mockedIntersections)
+        );
+      });
 
-      bookmarkStub.index.mockImplementationOnce(() => of([]));
-      dataExplorerStub.getRootDataModel.mockImplementationOnce(() =>
-        of(mockedRootDataModel)
-      );
-      dataRequestsStub.getRequestsIntersections.mockImplementationOnce(() =>
-        of(mockedIntersections)
-      );
-      harness.component.ngOnInit();
-      tick();
+      it('should be in ready state once initialised with results sorted by the default sortBy option', fakeAsync(() => {
+        const spy = jest.spyOn(toastrStub, 'error');
+        harness.component.ngOnInit();
+        tick();
 
-      expect(harness.component.source).toBe('search');
-      expect(harness.component.status).toBe('ready');
-      expect(harness.component.root).toBeUndefined();
-      expect(harness.component.sortBy).toBe(harness.component.sortByDefaultOption);
-      expect(harness.component.resultSet).toBe(sortedSearchResultsByLabelAsc);
-      expect(spy).not.toHaveBeenCalled();
-    }));
+        expect(harness.component.source).toBe('search');
+        expect(harness.component.status).toBe('ready');
+        expect(harness.component.root).toBeUndefined();
+        expect(harness.component.sortBy).toBe(harness.component.sortByDefaultOption);
+        expect(harness.component.resultSet).toBe(sortedSearchResultsByLabelAsc);
+        expect(spy).not.toHaveBeenCalled();
+      }));
+
+      it('should have backButton properties correctly set', () => {
+        harness.component.ngOnInit();
+
+        expect(harness.component.backRouterLink).toBe('/search');
+        expect(harness.component.backQueryParams).toStrictEqual({ search: 'test' });
+        expect(harness.component.backLabel).toBe('Back to search fields');
+      });
+
+      it('should respond to selection changes', fakeAsync(() => {
+        selectionService.clearSelection();
+
+        harness.component.ngOnInit();
+        tick();
+        expect(
+          harness.component.resultSet?.items.filter((i) => i.isSelected)
+        ).toHaveLength(0);
+
+        selectionService.add([searchResults.items[0]]);
+
+        expect(
+          harness.component.resultSet?.items.filter((i) => i.isSelected)
+        ).toHaveLength(1);
+        expect(
+          harness.component.resultSet?.items.find(
+            (i) => i.id === searchResults.items[0].id
+          )?.isSelected
+        ).toBe(true);
+
+        selectionService.remove([searchResults.items[0].id]);
+        expect(
+          harness.component.resultSet?.items.filter((i) => i.isSelected)
+        ).toHaveLength(0);
+      }));
+
+      it('should update selection service with new selections', fakeAsync(() => {
+        harness.component.ngOnInit();
+        tick();
+
+        const spy = jest.spyOn(selectionService, 'add');
+        harness.component.selectElement({ checked: true, item: searchResults.items[0] });
+
+        expect(spy).toHaveBeenCalledWith([searchResults.items[0]]);
+      }));
+
+      it('should update selection service with removed selections', fakeAsync(() => {
+        harness.component.ngOnInit();
+        tick();
+
+        const spy = jest.spyOn(selectionService, 'remove');
+        harness.component.selectElement({ checked: false, item: searchResults.items[0] });
+
+        expect(spy).toHaveBeenCalledWith([searchResults.items[0].id]);
+      }));
+
+      it('should update selection service after select entire page', fakeAsync(() => {
+        harness.component.ngOnInit();
+        tick();
+
+        const itemsBefore = harness.component.resultSet?.items;
+        const spy = jest.spyOn(selectionService, 'add');
+        harness.component.onSelectAll({ checked: true } as MatCheckboxChange);
+
+        expect(spy).toHaveBeenCalledWith(itemsBefore);
+      }));
+
+      it('should update selection service after de-select entire page', fakeAsync(() => {
+        harness.component.ngOnInit();
+        tick();
+
+        const spy = jest.spyOn(selectionService, 'remove');
+        harness.component.onSelectAll({ checked: false } as MatCheckboxChange);
+
+        expect(spy).toHaveBeenCalledWith(
+          harness.component.resultSet?.items.map((item) => item.id)
+        );
+      }));
+    });
 
     it('should raise an error if failed to get search results', () => {
       const spy = jest.spyOn(toastrStub, 'error');
@@ -449,23 +536,6 @@ describe('SearchListingComponent', () => {
       expect(harness.component.root).toBeUndefined();
       expect(harness.component.resultSet).toBeUndefined();
       expect(spy).not.toHaveBeenCalled();
-    });
-
-    it('should have backButton properties correctly set', () => {
-      implementProfileFieldsForFilters();
-      implementSearchReturns();
-      bookmarkStub.index.mockImplementationOnce(() => of([]));
-      dataExplorerStub.getRootDataModel.mockImplementationOnce(() =>
-        of(mockedRootDataModel)
-      );
-      dataRequestsStub.getRequestsIntersections.mockImplementationOnce(() =>
-        of(mockedIntersections)
-      );
-      harness.component.ngOnInit();
-
-      expect(harness.component.backRouterLink).toBe('/search');
-      expect(harness.component.backQueryParams).toStrictEqual({ search: 'test' });
-      expect(harness.component.backLabel).toBe('Back to search fields');
     });
   });
 
@@ -543,6 +613,10 @@ describe('SearchListingComponent', () => {
   });
 
   describe('selecting a new sortBy option', () => {
+    beforeEach(async () => {
+      harness = await setupComponentTest({});
+    });
+
     it('should fire off a state reload upon selection of a new sortBy option', () => {
       const selectedSortByOption = { value: 'label-asc', displayName: 'name' };
 
@@ -560,8 +634,9 @@ describe('SearchListingComponent', () => {
   });
 
   describe('changing filters', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       stateRouterStub.navigateToKnownPath.mockClear();
+      harness = await setupComponentTest({});
     });
 
     it('should fire off a state reload when a new filter value is set', () => {
@@ -589,5 +664,24 @@ describe('SearchListingComponent', () => {
         }
       );
     });
+
+    it('should fire off a state reload when a new page size is set', () => {
+      harness.component.pageSizeChanged({ value: 123 } as MatSelectChange);
+
+      expect(stateRouterStub.navigateToKnownPath).toHaveBeenCalledWith(
+        '/search/listing',
+        {
+          page: 1,
+          pageSize: 123,
+        }
+      );
+    });
+  });
+
+  it('should load the page size parameter from the query', async () => {
+    harness = await setupComponentTest({ pageSize: 456 });
+    implementProfileFieldsForFilters();
+    harness.component.ngOnInit();
+    expect(harness.component.parameters.pageSize).toBe(456);
   });
 });
