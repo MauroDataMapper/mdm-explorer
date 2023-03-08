@@ -18,6 +18,8 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
+import { DataElementSearchResult } from '../data-explorer.types';
 import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.service';
 import {
   SelectionExpandedDialogComponent,
@@ -32,15 +34,14 @@ import { SelectionService } from '../selection.service';
 })
 export class SelectionCompactComponent {
   @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
+  selectedElements$: Observable<DataElementSearchResult[]>;
+
   constructor(private selectionService: SelectionService, private matDialog: MatDialog) {
     this.sourceTargetIntersections = {
       dataAccessRequests: [],
       sourceTargetIntersections: [],
     };
-  }
-
-  get selectedElements$() {
-    return this.selectionService.list$;
+    this.selectedElements$ = this.selectionService.list$;
   }
 
   clearSelection() {

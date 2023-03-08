@@ -29,6 +29,7 @@ import { DataElementSearchResult } from './data-explorer.types';
  * Service to handle a temporary selection of data elements
  */
 export class SelectionService {
+  list$: Observable<DataElementSearchResult[]>;
   private selected: Map<Uuid, DataElementSearchResult>;
 
   private listSubject: Subject<DataElementSearchResult[]>;
@@ -45,15 +46,7 @@ export class SelectionService {
       this.listSubject = new BehaviorSubject<DataElementSearchResult[]>(storedSelection);
       this.selected = new Map(storedSelection.map((e) => [e.id, e]));
     }
-  }
-
-  /**
-   *
-   *
-   * @returns
-   */
-  public get list$(): Observable<DataElementSearchResult[]> {
-    return this.listSubject.asObservable();
+    this.list$ = this.listSubject.asObservable();
   }
 
   /**

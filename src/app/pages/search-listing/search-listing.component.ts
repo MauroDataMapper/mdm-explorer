@@ -192,7 +192,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
         this.status = 'ready';
       });
 
-    this.selectionService.list$.subscribe(() => {
+    this.selectionService.list$.pipe(takeUntil(this.unsubscribe$)).subscribe(() => {
       this.addIsSelectedToResults();
     });
   }
