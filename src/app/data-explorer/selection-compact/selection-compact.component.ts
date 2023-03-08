@@ -48,7 +48,7 @@ export class SelectionCompactComponent {
     this.selectionService.clearSelection();
   }
 
-  showSelection() {
+  showExpandedSelection() {
     if (this.sourceTargetIntersections !== undefined) {
       this.matDialog.open<SelectionExpandedDialogComponent, SelectionExpandedDialogData>(
         SelectionExpandedDialogComponent,

@@ -54,8 +54,11 @@ $selection-compact-clear-button-width: 40px;
     display: flex;
   }
 
-  &__popup-link mat-icon {
-    height: auto;
-    margin-left: 0.3em;
+  &__popup-link {
+    cursor: pointer;
+    mat-icon {
+      height: auto;
+      margin-left: 0.3em;
+    }
   }
 }

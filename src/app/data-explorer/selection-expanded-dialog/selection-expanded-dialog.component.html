@@ -27,13 +27,15 @@ SPDX-License-Identifier: Apache-2.0
   <p>{{ (selectedElements$ | async)?.length }} elements selected</p>
   <div *ngFor="let element of selectedElements$ | async">
     <mat-checkbox checked="checked" (click)="deselectElement(element.id)"> </mat-checkbox>
-    <span>{{ fullPathFor(element) }}</span>
+    <mdm-breadcrumb [item]="element"></mdm-breadcrumb>
   </div>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
+  <button mat-stroked-button color="warn" (click)="clearSelection()">
+    Clear selection
+  </button>
   <mdm-data-element-multi-select
     [sourceTargetIntersections]="sourceTargetIntersections"
     [dataElements]="(selectedElements$ | async) ?? []"
   ></mdm-data-element-multi-select>
-  <button mat-flat-button color="warn" (click)="clearSelection()">Clear selection</button>
 </mat-dialog-actions>

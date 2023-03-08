@@ -26,8 +26,8 @@ SPDX-License-Identifier: Apache-2.0
   <div class="mdm-selection-compact__controls">
     <p>
       <a
-        [routerLink]="[]"
-        (click)="showSelection()"
+        [routerLink]=""
+        (click)="showExpandedSelection()"
         class="mdm-selection-compact__popup-link"
         aria-label="show selected elements"
       >
@@ -38,8 +38,7 @@ SPDX-License-Identifier: Apache-2.0
       </a>
     </p>
     <div class="mdm-selection-compact__footer">
-      <!-- button mat-flat-button color="accent" (click)="showSelection()">Open</button-->
-      <button mat-flat-button color="warn" (click)="clearSelection()">Clear</button>
+      <button mat-stroked-button color="warn" (click)="clearSelection()">Clear</button>
       <mdm-data-element-multi-select
         [sourceTargetIntersections]="sourceTargetIntersections"
         [dataElements]="(selectedElements$ | async) ?? []"

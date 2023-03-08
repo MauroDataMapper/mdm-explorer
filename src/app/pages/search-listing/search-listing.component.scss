@@ -34,6 +34,10 @@ $no-results-background-color: $color-accent-light;
     .vertically-aligned {
       display: flex;
       align-items: center;
+
+      > * {
+        margin-left: 1em;
+      }
     }
   }
 

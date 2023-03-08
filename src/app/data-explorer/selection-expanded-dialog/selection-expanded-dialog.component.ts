@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, Inject, ViewEncapsulation } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { CatalogueItemDomainType, Uuid } from '@maurodatamapper/mdm-resources';
+import { Uuid } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
 import { DataElementSearchResult } from '../data-explorer.types';
 import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.service';
@@ -39,7 +39,7 @@ export class SelectionExpandedDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<SelectionExpandedDialogComponent>,
     private selectionService: SelectionService,
-    @Inject(MAT_DIALOG_DATA) private data: SelectionExpandedDialogData
+    @Inject(MAT_DIALOG_DATA) data: SelectionExpandedDialogData
   ) {
     this.selectedElements$ = selectionService.list$;
     this.sourceTargetIntersections = data.sourceTargetIntersections;
@@ -56,14 +56,5 @@ export class SelectionExpandedDialogComponent {
 
   deselectElement(elementId: Uuid) {
     this.selectionService.remove([elementId]);
-  }
-
-  fullPathFor(element: DataElementSearchResult) {
-    return [
-      ...(element.breadcrumbs
-        ?.filter((c) => c.domainType !== CatalogueItemDomainType.DataModel)
-        .map((c) => c.label) ?? []),
-      element.label,
-    ].join(' > ');
   }
 }

@@ -50,10 +50,9 @@ export class SelectionService {
   }
 
   /**
+   * Add the supplied elements to the selection (or replace any elements present with the same ID)
    *
-   *
-   * @param elements
-   * @returns
+   * @param elements The elements to add
    */
   public add(elements: DataElementSearchResult[]) {
     elements.forEach((e) => this.selected.set(e.id, e));
@@ -61,10 +60,9 @@ export class SelectionService {
   }
 
   /**
+   * Remove the elements matching the supplied IDs where present
    *
-   *
-   * @param elements
-   * @returns
+   * @param elementIds The element IDs to remove
    */
   public remove(elementIds: Uuid[]) {
     elementIds.forEach((id) => this.selected.delete(id));
@@ -72,9 +70,7 @@ export class SelectionService {
   }
 
   /**
-   *
-   *
-   * @returns
+   * Clear the entire selection
    */
   public clearSelection() {
     this.selected.clear();
@@ -82,8 +78,9 @@ export class SelectionService {
   }
 
   /**
+   * Returns true if an element with the given id in the selection
    *
-   * @param dataElementId
+   * @param dataElementId The data element id to test for the presence of
    * @returns a boolean indicating whether or not the element is selected by the signed in user
    */
   public isSelected(dataElementId: Uuid): boolean {
@@ -97,10 +94,4 @@ export class SelectionService {
 
     this.listSubject.next(selectionArray);
   }
-
-  // On hold: Do we really need per-user storage? It's complicated
-  // private security: SecurityService
-  /*  private storageKeyForUser(userId: string | undefined) {
-    return userId === undefined ? 'elementSelectionGuest' : 'elementSelection_' + userId;
-  }*/
 }

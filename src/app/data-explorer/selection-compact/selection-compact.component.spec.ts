@@ -67,7 +67,6 @@ describe('SearchFiltersComponent', () => {
       harness.detectChanges();
     });
 
-    // Clear all
     it('should clear the selection', () => {
       let selectedElements: DataElementSearchResult[] | undefined;
       harness.component.selectedElements$.subscribe((v) => (selectedElements = v));
@@ -81,11 +80,10 @@ describe('SearchFiltersComponent', () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    // Open dialog
     it('should open the expanded dialog', () => {
       const spy = jest.spyOn(dialogStub, 'open');
 
-      harness.component.showSelection();
+      harness.component.showExpandedSelection();
 
       expect(spy).toHaveBeenCalledWith(
         SelectionExpandedDialogComponent,
