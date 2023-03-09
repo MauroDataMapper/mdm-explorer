@@ -238,15 +238,42 @@ SPDX-License-Identifier: Apache-2.0
           </mat-select>
         </mat-form-field>
       </ng-container>
-      <!-- Number -->
+      <!-- Integer -->
       <ng-container
-        *queryInput="let rule; let field = field; type: 'number'; let onChange = onChange"
+        *queryInput="
+          let rule;
+          let field = field;
+          type: 'integer';
+          let onChange = onChange
+        "
       >
-        <mat-form-field appearance="outline" class="query-builder-number">
+        <mat-form-field appearance="outline">
           <input
             matInput
+            mdmNumberFormat
+            [numberFormat]="'integer'"
+            type="text"
             [(ngModel)]="rule.value"
-            type="number"
+            (ngModelChange)="onChange()"
+          />
+        </mat-form-field>
+      </ng-container>
+      <!-- Decimal -->
+      <ng-container
+        *queryInput="
+          let rule;
+          let field = field;
+          type: 'decimal';
+          let onChange = onChange
+        "
+      >
+        <mat-form-field appearance="outline">
+          <input
+            matInput
+            mdmNumberFormat
+            [numberFormat]="'decimal'"
+            [(ngModel)]="rule.value"
+            type="text"
             (ngModelChange)="onChange()"
           />
         </mat-form-field>

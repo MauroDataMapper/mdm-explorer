@@ -225,7 +225,7 @@ pipeline {
   post {
     always {
       outputTestResults()
-      zulipNotification(topic: 'mdm-explorer')
+      // zulipNotification(topic: 'mdm-explorer')
     }
   }
 }

@@ -57,6 +57,8 @@ export class QueryBuilderComponent implements OnInit {
     // Is also used to extend some default operators
     /* eslint-disable */
     string: ['=', '!=', 'contains', 'like', 'startswith', 'endswith'],
+    integer: ['=', '!=', '<', '<=', '>', '>='],
+    decimal: ['=', '!=', '<', '<=', '>', '>='],
     datetime: ['=', '!=', '>', '<', '=>', '=<'],
     terminology: ['in', 'not in'],
     /* eslint-enable */
@@ -84,7 +86,7 @@ export class QueryBuilderComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // For all 'terminology' fields, initialse the search result sets for the controls
+    // For all 'terminology' fields, initialise the search result sets for the controls
     Object.entries(this.config.fields)
       .filter(([_, field]) => field.type === 'terminology')
       .forEach(([name, _]) => (this.termSearchResults[name] = { count: 0, options: [] }));

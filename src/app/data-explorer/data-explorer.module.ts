@@ -44,6 +44,7 @@ import { MeqlPipe } from './pipes/meql.pipe';
 import { MeqlOutputComponent } from './meql-output/meql-output.component';
 import { DataRequestRowComponent } from './data-request-row/data-request-row.component';
 import { DataQueryRowComponent } from './data-query-row/data-query-row.component';
+import { NumberFormatDirective } from './querybuilder/directives/number-format.directive';
 import { EditRequestDialogComponent } from './edit-request-dialog/edit-request-dialog.component';
 import { SelectionExpandedDialogComponent } from './selection-expanded-dialog/selection-expanded-dialog.component';
 import { SelectionCompactComponent } from './selection-compact/selection-compact.component';
@@ -73,6 +74,7 @@ import { SelectionCompactComponent } from './selection-compact/selection-compact
     MeqlOutputComponent,
     DataRequestRowComponent,
     DataQueryRowComponent,
+    NumberFormatDirective,
     EditRequestDialogComponent,
     SelectionExpandedDialogComponent,
     SelectionCompactComponent,
@@ -96,6 +98,7 @@ import { SelectionCompactComponent } from './selection-compact/selection-compact
     MeqlOutputComponent,
     DataRequestRowComponent,
     DataQueryRowComponent,
+    NumberFormatDirective,
     SelectionCompactComponent,
   ],
   providers: [
