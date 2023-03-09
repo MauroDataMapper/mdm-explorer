@@ -17,55 +17,22 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 
-@import "../../../styles/base/all";
+.mdm-selection-expanded-dialog {
+  min-width: 60vw;
 
-$no-results-background-color: $color-accent-light;
-
-.mdm-search-listing {
-  &__search {
-    text-align: center;
-  }
-
-  &__sort-row {
+  .mat-dialog-title {
     display: flex;
     justify-content: space-between;
-    margin: 1em 0;
+    align-items: center;
+  }
 
-    .vertically-aligned {
-      display: flex;
-      align-items: center;
-
-      > * {
-        margin-left: 1em;
-      }
+  .mat-dialog-actions {
+    button {
+      margin: 0 0.3em;
     }
   }
 
-  &__search-input {
-    width: 50%;
-  }
-
-  &__loading {
-    mat-spinner {
-      margin: 2em auto;
-    }
-  }
-
-  &__error {
-    padding: 2em 3em;
-    text-align: center;
-  }
-
-  &__no-results {
-    background-color: $no-results-background-color;
-    padding: 2em 3em;
-    border-radius: 4px;
-  }
-
-  &__footer-row {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 1em;
+  .mat-checkbox-label {
+    margin-left: 0.5em;
   }
 }
