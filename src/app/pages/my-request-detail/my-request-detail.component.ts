@@ -144,53 +144,6 @@ export class MyRequestDetailComponent implements OnInit, OnDestroy {
     this.unsubscribe$.complete();
   }
 
-  initialiseRequest(): void {
-    this.route.params
-      .pipe(
-        switchMap((params) => {
-          const requestId: Uuid = params.requestId;
-          this.state = 'loading';
-          return this.dataRequestsService.get(requestId);
-        }),
-        catchError((error) => {
-          this.toastr.error(`Invalid Request Id. ${error}`);
-          this.state = 'idle';
-          return EMPTY;
-        }),
-        finalize(() => (this.state = 'idle'))
-      )
-      .subscribe((request) => {
-        this.setRequest(request);
-        this.initialiseRequestQueries();
-      });
-  }
-
-  initialiseRequestQueries() {
-    if (!this.request?.id) {
-      return;
-    }
-
-    this.dataRequestsService
-      .getQuery(this.request.id, this.cohortQueryType)
-      .subscribe((query) => {
-        if (!query) {
-          return;
-        }
-
-        this.cohortQuery = query.condition;
-      });
-
-    this.dataRequestsService
-      .getQuery(this.request.id, this.dataQueryType)
-      .subscribe((query) => {
-        if (!query) {
-          return;
-        }
-
-        this.dataQuery = query.condition;
-      });
-  }
-
   onSelectAll() {
     if (this.allElementsSelected) {
       this.selectOrUnselectAllDataElements(false);
@@ -199,20 +152,6 @@ export class MyRequestDetailComponent implements OnInit, OnDestroy {
     }
 
     this.updateAllOrSomeChildrenSelectedHandler();
-  }
-
-  // Can mark all the children (schema, dataClass and dataElements)
-  // of this request as either selected or not.
-  selectOrUnselectAllDataElements(valueToSet: boolean) {
-    this.dataSchemas.forEach((dataSchema) => {
-      dataSchema.schema.isSelected = valueToSet;
-      dataSchema.dataClasses.forEach((dataClass) => {
-        dataClass.dataClass.isSelected = valueToSet;
-        dataClass.dataElements.forEach((dataElement) => {
-          dataElement.isSelected = valueToSet;
-        });
-      });
-    });
   }
 
   submitRequest() {
@@ -297,6 +236,10 @@ export class MyRequestDetailComponent implements OnInit, OnDestroy {
   }
 
   // listens for external update to the request and refreshes if so
+  // TODO: Rename RequestElementAddDeleteEvent to better reflect its
+  // purpose. This event is not triggered by deletes
+  // its triggered when some element from the data request is
+  // copied to another request, and we need to reload intersections.
   handleRequestElementsChange(event: RequestElementAddDeleteEvent) {
     if (event.dataModel?.id === this.request?.id) {
       this.setRequest(this.request);
@@ -425,18 +368,6 @@ export class MyRequestDetailComponent implements OnInit, OnDestroy {
       });
   }
 
-  showCohortCreate() {
-    return this.cohortQuery.rules.length === 0 && this.request?.status === 'unsent';
-  }
-
-  showCohortEdit() {
-    return this.cohortQuery.rules.length > 0 && this.request?.status === 'unsent';
-  }
-
-  showDataEdit() {
-    return this.dataQuery.rules.length > 0 && this.request?.status === 'unsent';
-  }
-
   /**
    * Each time any of the childrens at any level (schema, data class
    * or dataElement) is selected, it emits an event to update
@@ -447,6 +378,67 @@ export class MyRequestDetailComponent implements OnInit, OnDestroy {
   updateAllOrSomeChildrenSelectedHandler() {
     this.updateAllElementsSelected();
     this.updateAnyElementsSelected();
+  }
+
+  // Can mark all the children (schema, dataClass and dataElements)
+  // of this request as either selected or not.
+  private selectOrUnselectAllDataElements(valueToSet: boolean) {
+    this.dataSchemas.forEach((dataSchema) => {
+      dataSchema.schema.isSelected = valueToSet;
+      dataSchema.dataClasses.forEach((dataClass) => {
+        dataClass.dataClass.isSelected = valueToSet;
+        dataClass.dataElements.forEach((dataElement) => {
+          dataElement.isSelected = valueToSet;
+        });
+      });
+    });
+  }
+
+  private initialiseRequest(): void {
+    this.route.params
+      .pipe(
+        switchMap((params) => {
+          const requestId: Uuid = params.requestId;
+          this.state = 'loading';
+          return this.dataRequestsService.get(requestId);
+        }),
+        catchError((error) => {
+          this.toastr.error(`Invalid Request Id. ${error}`);
+          this.state = 'idle';
+          return EMPTY;
+        }),
+        finalize(() => (this.state = 'idle'))
+      )
+      .subscribe((request) => {
+        this.setRequest(request);
+        this.initialiseRequestQueries();
+      });
+  }
+
+  private initialiseRequestQueries() {
+    if (!this.request?.id) {
+      return;
+    }
+
+    this.dataRequestsService
+      .getQuery(this.request.id, this.cohortQueryType)
+      .subscribe((query) => {
+        if (!query) {
+          return;
+        }
+
+        this.cohortQuery = query.condition;
+      });
+
+    this.dataRequestsService
+      .getQuery(this.request.id, this.dataQueryType)
+      .subscribe((query) => {
+        if (!query) {
+          return;
+        }
+
+        this.dataQuery = query.condition;
+      });
   }
 
   private updateAllElementsSelected() {

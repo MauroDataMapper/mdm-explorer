@@ -115,7 +115,8 @@ export class DataRequestsService {
    * Gets a single data requests as a {@link DataRequest} object.
    *
    * @param id The unique identifier of the data request.
-   * @returns an observable containing an array of data requests
+   * @returns an observable containing {@link DataRequest}
+   * @throws the underlaying API may return a {@link HttpErrorResponse}
    */
   get(id: Uuid): Observable<DataRequest> {
     return this.dataModels

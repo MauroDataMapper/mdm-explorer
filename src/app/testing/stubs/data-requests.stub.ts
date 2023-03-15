@@ -28,6 +28,7 @@ import {
   DataElementDto,
   DataElementInstance,
   DataElementMultipleOperationResult,
+  DataElementOperationResult,
   DataRequest,
   DataRequestQuery,
   DataRequestQueryPayload,
@@ -77,6 +78,12 @@ export type DeleteDataElementsFromQueryFn = (
   dataElementLabels: string[]
 ) => Observable<DataRequestQueryPayload>;
 export type IsDataRequestNameAvailableFn = (name: string) => Observable<boolean>;
+export type DeleteDataSchemaFn = (
+  dataSchema: DataClass
+) => Observable<DataElementOperationResult>;
+export type DeleteDataClassFn = (
+  dataClass: DataClass
+) => Observable<DataElementOperationResult>;
 
 export interface DataRequestsServiceStub {
   get: jest.MockedFunction<(id: Uuid) => Observable<DataRequest>>;
@@ -101,6 +108,8 @@ export interface DataRequestsServiceStub {
   >;
   deleteDataElementsFromQuery: jest.MockedFunction<DeleteDataElementsFromQueryFn>;
   isDataRequestNameAvailable: jest.MockedFunction<IsDataRequestNameAvailableFn>;
+  deleteDataSchema: jest.MockedFunction<DeleteDataSchemaFn>;
+  deleteDataClass: jest.MockedFunction<DeleteDataClassFn>;
 }
 
 export const createDataRequestsServiceStub = (): DataRequestsServiceStub => {
@@ -128,5 +137,7 @@ export const createDataRequestsServiceStub = (): DataRequestsServiceStub => {
       jest.fn() as jest.MockedFunction<DeleteDataElementsFromQueryFn>,
     isDataRequestNameAvailable:
       jest.fn() as jest.MockedFunction<IsDataRequestNameAvailableFn>,
+    deleteDataSchema: jest.fn() as jest.MockedFunction<DeleteDataSchemaFn>,
+    deleteDataClass: jest.fn() as jest.MockedFunction<DeleteDataClassFn>,
   };
 };
