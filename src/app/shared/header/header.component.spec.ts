@@ -102,7 +102,7 @@ describe('HeaderComponent', () => {
       {
         label: 'Bookmarks',
         routerLink: 'app.container.my-bookmarks',
-        imageSrc: '',
+        defaultImageSrc: '',
       },
     ];
     harness.component.accountLink = {

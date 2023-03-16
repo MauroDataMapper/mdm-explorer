@@ -62,7 +62,7 @@ export class AppComponent implements OnInit, OnDestroy {
   logoLink: HeaderImageLink = {
     label: 'Mauro Data Explorer',
     routerLink: '',
-    imageSrc: 'assets/images/mauro-data-explorer.svg',
+    defaultImageSrc: 'assets/images/mauro-data-explorer.svg',
   };
 
   helpMenuLinks: HeaderLink[] = [
@@ -120,7 +120,7 @@ export class AppComponent implements OnInit, OnDestroy {
     {
       label: 'Bookmarks',
       routerLink: '/bookmarks',
-      imageSrc: '',
+      defaultImageSrc: '',
     },
   ];
 
@@ -180,7 +180,10 @@ export class AppComponent implements OnInit, OnDestroy {
     private themes: ThemeService
   ) {
     // Load the theme into the DOM as the first thing to do
-    this.themes.loadTheme().subscribe((theme) => this.themes.applyTheme(theme));
+    this.themes.loadTheme().subscribe((theme) => {
+      this.themes.applyTheme(theme);
+      this.logoLink.customImageSrc = theme.images.header.logo.url;
+    });
   }
 
   @HostListener('window:mousemove', ['$event'])
