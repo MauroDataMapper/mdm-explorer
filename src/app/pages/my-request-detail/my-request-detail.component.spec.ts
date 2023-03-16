@@ -16,18 +16,42 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { HttpErrorResponse } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
-import { CatalogueItemDomainType } from '@maurodatamapper/mdm-resources';
+import {
+  CatalogueItemDomainType,
+  DataModelDetail,
+  Rule,
+  RuleRepresentation,
+} from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
-import { DataRequest } from 'src/app/data-explorer/data-explorer.types';
-import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import {
+  DataClassWithElements,
+  DataElementOperationResult,
+  DataElementSearchResult,
+  DataItemDeleteEvent,
+  DataRequest,
+  DataRequestQuery,
+  dataRequestQueryLanguage,
+  DataRequestQueryPayload,
+  DataRequestQueryType,
+  DataSchema,
+  QueryCondition,
+} from 'src/app/data-explorer/data-explorer.types';
+import {
+  DataAccessRequestsSourceTargetIntersections,
+  DataRequestsService,
+} from 'src/app/data-explorer/data-requests.service';
 import { DataSchemaService } from 'src/app/data-explorer/data-schema.service';
+import { OkCancelDialogResponse } from 'src/app/data-explorer/ok-cancel-dialog/ok-cancel-dialog.component';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { ResearchPluginService } from 'src/app/mauro/research-plugin.service';
+import { UserDetails } from 'src/app/security/user-details.service';
+import { RequestElementAddDeleteEvent } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
 import { createBroadcastServiceStub } from 'src/app/testing/stubs/broadcast.stub';
 import { createDataExplorerServiceStub } from 'src/app/testing/stubs/data-explorer.stub';
 import { createDataModelServiceStub } from 'src/app/testing/stubs/data-model.stub';
@@ -35,6 +59,7 @@ import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-reques
 import { createDataSchemaServiceStub } from 'src/app/testing/stubs/data-schema.stub';
 import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
 import { createResearchPluginServiceStub } from 'src/app/testing/stubs/research-plugin.stub';
+import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { createToastrServiceStub } from 'src/app/testing/stubs/toastr.stub';
 import {
   ComponentHarness,
@@ -52,6 +77,7 @@ describe('MyRequestsComponent', () => {
   const dialogsStub = createMatDialogStub();
   const broadcastStub = createBroadcastServiceStub();
   const explorerStub = createDataExplorerServiceStub();
+  const securityStub = createSecurityServiceStub();
   const requestId = '1';
   const activatedRoute: ActivatedRoute = {
     params: of({
@@ -109,65 +135,71 @@ describe('MyRequestsComponent', () => {
     status: 'unsent',
   };
 
-  it('should create', () => {
-    expect(harness.isComponentCreated).toBeTruthy();
-    expect(harness.component.request).toBeUndefined();
-    expect(harness.component.dataSchemas).toStrictEqual([]);
-    expect(harness.component.state).toBe('idle');
-  });
+  const user = { email: 'test@test.com' } as UserDetails;
+
+  const mockSignedInUser = () => {
+    securityStub.getSignedInUser.mockReturnValueOnce(user);
+  };
 
   describe('initialisation', () => {
     beforeEach(() => {
       toastrStub.error.mockClear();
       dataRequestsStub.get.mockClear();
+      dataRequestsStub.get.mockReset();
+    });
+
+    it('should create', () => {
+      expect(harness.isComponentCreated).toBeTruthy();
+      expect(harness.component.request).toBeUndefined();
+      expect(harness.component.dataSchemas).toStrictEqual([]);
+      expect(harness.component.state).toBe('idle');
     });
 
     it('should have a request', () => {
+      // Arrange
       dataRequestsStub.get.mockImplementationOnce(() => {
         return of(request);
       });
 
+      // Act
       harness.component.ngOnInit();
 
+      // Assert
       expect(harness.component.state).toBe('idle');
       expect(harness.component.request).toStrictEqual(request);
       expect(dataRequestsStub.get).toHaveBeenCalledWith(requestId);
     });
 
-    // it('should display an error if failed to get requests', () => {
-    //   dataRequestsStub.list.mockImplementationOnce(() => throwError(() => new Error()));
+    it('should display an error if failed to get requests', () => {
+      // Arrange
+      dataRequestsStub.get.mockImplementationOnce(() => throwError(() => new Error()));
 
-    //   harness.component.ngOnInit();
+      // Act
+      harness.component.ngOnInit();
 
-    //   expect(harness.component.state).toBe('idle');
-    //   expect(toastrStub.error).toHaveBeenCalled();
-    //   expect(harness.component.request).toBeUndefined();
-    // });
+      // Assert
+      expect(harness.component.state).toBe('idle');
+      expect(toastrStub.error).toHaveBeenCalled();
+      expect(harness.component.request).toBeUndefined();
+    });
 
-    // it('should handle having no requests available', () => {
-    //   dataRequestsStub.list.mockImplementationOnce(() => {
-    //     expect(harness.component.state).toBe('loading');
-    //     return of([]);
-    //   });
+    it('should handle having no requests available', () => {
+      // Arrange
+      dataRequestsStub.get.mockImplementationOnce(() =>
+        throwError(() => new HttpErrorResponse({}))
+      );
 
-    //   harness.component.ngOnInit();
+      // Act
+      harness.component.ngOnInit();
 
-    //   expect(harness.component.state).toBe('idle');
-    //   expect(harness.component.request).toBeUndefined();
-    // });
+      // Assert
+      expect(harness.component.state).toBe('idle');
+      expect(toastrStub.error).toHaveBeenCalled();
+      expect(harness.component.request).toBeUndefined();
+    });
   });
 
-  /* TODO: uncomment this code and fix tests once it can be determined what they are for and how they should change */
-  /*
-
   describe('submit request', () => {
-    const request: DataRequest = {
-      id: '123',
-      label: 'request',
-      domainType: CatalogueItemDomainType.DataModel,
-      status: 'unsent',
-    };
-
     beforeEach(() => {
       researchPluginStub.submitRequest.mockClear();
       toastrStub.error.mockClear();
@@ -191,6 +223,7 @@ describe('MyRequestsComponent', () => {
     });
 
     it('should raise error if failed to submit', () => {
+      // Arrange
       researchPluginStub.submitRequest.mockImplementationOnce((id) => {
         expect(id).toBe(request.id);
         return throwError(() => new Error());
@@ -202,13 +235,18 @@ describe('MyRequestsComponent', () => {
       dialogsStub.usage.afterClosed.mockReturnValue(of(okCancelResponse));
 
       harness.component.request = request;
+
+      // Act
       harness.component.submitRequest();
 
+      // Assert
       expect(researchPluginStub.submitRequest).toHaveBeenCalled();
+      expect(broadcastStub.loading).toHaveBeenCalledTimes(2);
       expect(toastrStub.error).toHaveBeenCalled();
     });
 
     it('should update status of current request once submitted', () => {
+      // Arrange
       const submittedDataModel: DataModelDetail = {
         id: request.id,
         label: request.label,
@@ -229,340 +267,664 @@ describe('MyRequestsComponent', () => {
       dialogsStub.usage.afterClosed.mockReturnValue(of(okCancelResponse));
 
       harness.component.request = request;
+
+      // Act
       harness.component.submitRequest();
 
+      // Assert
       expect(researchPluginStub.submitRequest).toHaveBeenCalled();
       expect(harness.component.request.status).toBe('submitted');
       expect(broadcastStub.dispatch).toHaveBeenCalledWith('data-request-submitted');
-      expect(broadcastStub.loading).toHaveBeenCalledWith({
-        isLoading: true,
-        caption: 'Submitting your request...',
-      });
+      expect(broadcastStub.loading).toHaveBeenCalledTimes(2);
+      expect(broadcastStub.loading.mock.calls).toEqual([
+        [
+          {
+            isLoading: true,
+            caption: 'Submitting your request...',
+          },
+        ],
+        [{ isLoading: false }],
+      ]);
+    });
+
+    it('should not submit request if dialog is not accepted', () => {
+      // Arrange
+      const okCancelResponse: OkCancelDialogResponse = {
+        result: false,
+      };
+      dialogsStub.usage.afterClosed.mockReturnValue(of(okCancelResponse));
+
+      harness.component.request = request;
+
+      // Act
+      harness.component.submitRequest();
+
+      // Assert
+      expect(researchPluginStub.submitRequest).toHaveBeenCalledTimes(0);
+      expect(harness.component.request.status).toBe('unsent');
+      expect(broadcastStub.dispatch).toHaveBeenCalledTimes(0);
       expect(broadcastStub.loading).toHaveBeenCalledWith({ isLoading: false });
     });
   });
 
-  describe('remove elements from requests', () => {
-    let elements: DataElementDto[];
-    let selectableElements: () => DataElementSearchResult[];
-    let request: DataRequest;
-    let requestMenuItem = {
-      dataModel: { id: '', label: '', domainType: CatalogueItemDomainType.DataModel },
-      containsElement: false,
+  describe('remove elements from requests and handling changes', () => {
+    const dataSchema: DataSchema = {
+      schema: {
+        id: 'schema1',
+        domainType: CatalogueItemDomainType.DataClass,
+        label: 'labelSchema',
+      },
+      dataClasses: [
+        {
+          dataClass: {
+            domainType: CatalogueItemDomainType.DataClass,
+            label: 'dataClassLabel',
+          },
+          dataElements: [
+            {
+              dataClass: 'class1',
+              id: 'idElement',
+              isBookmarked: false,
+              isSelected: false,
+              label: 'dataElementLabel',
+              model: 'model',
+            },
+          ],
+        },
+      ],
     };
-    let intersections = {} as DataAccessRequestsSourceTargetIntersections;
-    let component: MyRequestDetailComponent;
-    let dom: DebugElement;
+
+    const dataElements: DataElementSearchResult[] = [
+      {
+        dataClass: 'dataClassId0',
+        id: 'dataElmentId0',
+        isBookmarked: true,
+        label: 'label0',
+        isSelected: true,
+        model: 'modelId0',
+      },
+      {
+        dataClass: 'dataClassId1',
+        id: 'dataElmentId1',
+        isBookmarked: true,
+        label: 'label1',
+        isSelected: true,
+        model: 'modelId1',
+      },
+      {
+        dataClass: 'dataClassId2',
+        id: 'dataElmentId2',
+        isBookmarked: true,
+        label: 'label2',
+        isSelected: true,
+        model: 'modelId2',
+      },
+    ];
+
+    const dataClass: DataClassWithElements = {
+      dataClass: {
+        domainType: CatalogueItemDomainType.DataClass,
+        label: 'dataClass1',
+      },
+      dataElements,
+    };
+
+    const eventDeleteDataSchema: DataItemDeleteEvent = {
+      dataSchema,
+    };
+
+    const eventDeleteDataClass: DataItemDeleteEvent = {
+      dataSchema,
+      dataClassWithElements: dataClass,
+    };
+
+    const eventDeleteDataElementDataClassWith1Element: DataItemDeleteEvent = {
+      dataSchema,
+      dataClassWithElements: {
+        dataClass: {
+          domainType: CatalogueItemDomainType.DataClass,
+          label: 'dataClass1',
+        },
+        dataElements: [dataElements[0]],
+      },
+      dataElement: dataElements[0],
+    };
+
+    const eventDeleteDataElement: DataItemDeleteEvent = {
+      dataSchema,
+      dataClassWithElements: dataClass,
+      dataElement: dataElements[0],
+    };
+
+    const eventDeleteUndefinedDataSchema: DataItemDeleteEvent = {
+      dataSchema: undefined,
+    };
+
+    const deleteElementResult: DataElementOperationResult = {
+      item: {
+        dataClass: 'dataClassId2',
+        id: 'dataElmentId2',
+        isBookmarked: true,
+        label: 'label2',
+        isSelected: true,
+        model: 'modelId2',
+      },
+      message: '',
+      success: true,
+    };
+    const labels = dataElements.map((de) => de.label);
+
+    const okCancelResponse: OkCancelDialogResponse = {
+      result: true,
+    };
 
     beforeEach(() => {
       mockSignedInUser();
-      elements = [
+      toastrStub.error.mockClear();
+      broadcastStub.dispatch.mockClear();
+      broadcastStub.loading.mockClear();
+      dataRequestsStub.deleteDataClass.mockClear();
+      dataRequestsStub.deleteDataSchema.mockClear();
+      dataSchemaStub.loadDataSchemas.mockClear();
+    });
+
+    it('Wrong schema information should rise toastr error without opening dialog with user', () => {
+      // Arrange
+      harness.component.request = request;
+      const dialogSpy = jest.spyOn(dialogsStub, 'open');
+
+      // Act
+      harness.component.removeItem(eventDeleteUndefinedDataSchema);
+
+      // Assert
+      expect(toastrStub.error).toBeCalledWith(
+        'Data schema undefined',
+        'Unable to delete items'
+      );
+      expect(dialogSpy).toHaveBeenCalledTimes(0);
+    });
+
+    it('Should not attempt to delete anything if user cancels confirmation', () => {
+      // Arrange
+      harness.component.request = request;
+      const NotokCancelResponse: OkCancelDialogResponse = {
+        result: false,
+      };
+      dialogsStub.usage.afterClosed.mockReturnValue(of(NotokCancelResponse));
+
+      const dataRequestServiceSpy = jest.spyOn(dataRequestsStub, 'deleteDataSchema');
+
+      // Act
+      harness.component.removeItem(eventDeleteDataSchema);
+
+      // Assert
+      expect(dataRequestServiceSpy).toHaveBeenCalledTimes(0);
+    });
+
+    it('Should delete dataSchema correctly, also it should delete dataelements from queries', () => {
+      // Arrange
+      harness.component.request = request;
+
+      dataSchemaStub.reduceDataElementsFromSchemas.mockReturnValueOnce(dataElements);
+      dialogsStub.usage.afterClosed.mockReturnValue(of(okCancelResponse));
+
+      const dataRequestServiceSpy = jest.spyOn(dataRequestsStub, 'deleteDataSchema');
+
+      dataRequestsStub.deleteDataSchema.mockReturnValueOnce(of(deleteElementResult));
+      const dataRequestServiceDeleteFromQuerySpy = jest.spyOn(
+        dataRequestsStub,
+        'deleteDataElementsFromQuery'
+      );
+      const broadcastSpy = jest.spyOn(broadcastStub, 'loading');
+
+      // Act
+      harness.component.removeItem(eventDeleteDataSchema);
+
+      // Assert
+      expect(dataRequestServiceSpy).toHaveBeenCalledWith(
+        eventDeleteDataSchema.dataSchema?.schema
+      );
+      expect(broadcastSpy).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          isLoading: true,
+        })
+      );
+      expect(broadcastSpy).toHaveBeenNthCalledWith(2, { isLoading: false });
+      expect(dataRequestServiceDeleteFromQuerySpy).toHaveBeenNthCalledWith(
+        1,
+        request.id,
+        'data',
+        labels
+      );
+      expect(dataRequestServiceDeleteFromQuerySpy).toHaveBeenNthCalledWith(
+        2,
+        request.id,
+        'cohort',
+        labels
+      );
+    });
+
+    it('Should delete dataClass correctly, schema only has 1 class, then delete dataschema', () => {
+      // Arrange
+      harness.component.request = request;
+
+      dataSchemaStub.reduceDataElementsFromSchemas.mockReturnValueOnce(dataElements);
+
+      dialogsStub.usage.afterClosed.mockReturnValue(of(okCancelResponse));
+
+      const dataRequestServiceSpy = jest.spyOn(dataRequestsStub, 'deleteDataSchema');
+      const dataRequestDeleteDataClassSpy = jest.spyOn(
+        dataRequestsStub,
+        'deleteDataClass'
+      );
+
+      dataRequestsStub.deleteDataSchema.mockReturnValueOnce(of(deleteElementResult));
+      const dataRequestServiceDeleteFromQuerySpy = jest.spyOn(
+        dataRequestsStub,
+        'deleteDataElementsFromQuery'
+      );
+      const broadcastSpy = jest.spyOn(broadcastStub, 'loading');
+
+      // Act
+      harness.component.removeItem(eventDeleteDataClass);
+
+      // Assert
+      expect(dataRequestServiceSpy).toHaveBeenCalledWith(
+        eventDeleteDataSchema.dataSchema?.schema
+      );
+      expect(broadcastSpy).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          isLoading: true,
+        })
+      );
+      expect(broadcastSpy).toHaveBeenNthCalledWith(2, { isLoading: false });
+      expect(dataRequestServiceDeleteFromQuerySpy).toHaveBeenNthCalledWith(
+        1,
+        request.id,
+        'data',
+        labels
+      );
+      expect(dataRequestServiceDeleteFromQuerySpy).toHaveBeenNthCalledWith(
+        2,
+        request.id,
+        'cohort',
+        labels
+      );
+      expect(dataRequestDeleteDataClassSpy).toHaveBeenCalledTimes(0);
+    });
+
+    it('Should delete dataClass correctly, schema has multiple classes, so deleteDataClass is used', () => {
+      // Arrange
+      harness.component.request = request;
+
+      dataSchemaStub.reduceDataElementsFromSchemas.mockReturnValueOnce(dataElements);
+
+      dialogsStub.usage.afterClosed.mockReturnValue(of(okCancelResponse));
+
+      const dataRequestServiceSpy = jest.spyOn(dataRequestsStub, 'deleteDataSchema');
+      const dataRequestDeleteDataClassSpy = jest.spyOn(
+        dataRequestsStub,
+        'deleteDataClass'
+      );
+
+      dataRequestsStub.deleteDataSchema.mockReturnValueOnce(of(deleteElementResult));
+      const dataRequestServiceDeleteFromQuerySpy = jest.spyOn(
+        dataRequestsStub,
+        'deleteDataElementsFromQuery'
+      );
+      const broadcastSpy = jest.spyOn(broadcastStub, 'loading');
+
+      // Act
+      eventDeleteDataClass.dataSchema?.dataClasses.push(dataClass);
+      harness.component.removeItem(eventDeleteDataClass);
+
+      // Assert
+      expect(dataRequestServiceSpy).toHaveBeenCalledTimes(0);
+      expect(dataRequestDeleteDataClassSpy).toHaveBeenCalledTimes(1);
+      expect(broadcastSpy).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          isLoading: true,
+        })
+      );
+      expect(broadcastSpy).toHaveBeenNthCalledWith(2, { isLoading: false });
+      expect(dataRequestServiceDeleteFromQuerySpy).toHaveBeenNthCalledWith(
+        1,
+        request.id,
+        'data',
+        labels
+      );
+      expect(dataRequestServiceDeleteFromQuerySpy).toHaveBeenNthCalledWith(
+        2,
+        request.id,
+        'cohort',
+        labels
+      );
+    });
+
+    it('Should delete dataElements correctly, if last child of dataClass, should delete dataClass', () => {
+      // Arrange
+      harness.component.request = request;
+
+      dataSchemaStub.reduceDataElementsFromSchemas.mockReturnValueOnce(dataElements);
+
+      dialogsStub.usage.afterClosed.mockReturnValue(of(okCancelResponse));
+
+      const dataRequestDeleteDataSchemaSpy = jest.spyOn(
+        dataRequestsStub,
+        'deleteDataSchema'
+      );
+      const dataRequestDeleteElementMultipleSpy = jest.spyOn(
+        dataRequestsStub,
+        'deleteDataElementMultiple'
+      );
+      const dataRequestDeleteDataClassSpy = jest.spyOn(
+        dataRequestsStub,
+        'deleteDataClass'
+      );
+
+      dataRequestsStub.deleteDataSchema.mockReturnValueOnce(of(deleteElementResult));
+      const dataRequestServiceDeleteFromQuerySpy = jest.spyOn(
+        dataRequestsStub,
+        'deleteDataElementsFromQuery'
+      );
+      const broadcastSpy = jest.spyOn(broadcastStub, 'loading');
+
+      // Act
+      harness.component.removeItem(eventDeleteDataElementDataClassWith1Element);
+
+      // Assert
+      expect(dataRequestDeleteDataSchemaSpy).toHaveBeenCalledTimes(0);
+      expect(dataRequestDeleteElementMultipleSpy).toHaveBeenCalledTimes(0);
+      expect(dataRequestDeleteDataClassSpy).toHaveBeenCalledTimes(1);
+      expect(broadcastSpy).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          isLoading: true,
+        })
+      );
+      expect(broadcastSpy).toHaveBeenNthCalledWith(2, { isLoading: false });
+      expect(dataRequestServiceDeleteFromQuerySpy).toHaveBeenNthCalledWith(
+        1,
+        request.id,
+        'data',
+        labels
+      );
+      expect(dataRequestServiceDeleteFromQuerySpy).toHaveBeenNthCalledWith(
+        2,
+        request.id,
+        'cohort',
+        labels
+      );
+    });
+
+    it('Should delete dataElements correctly', () => {
+      // Arrange
+      harness.component.request = request;
+
+      dataSchemaStub.reduceDataElementsFromSchemas.mockReturnValueOnce(dataElements);
+
+      dialogsStub.usage.afterClosed.mockReturnValue(of(okCancelResponse));
+
+      const dataRequestDeleteDataSchemaSpy = jest.spyOn(
+        dataRequestsStub,
+        'deleteDataSchema'
+      );
+      const dataRequestDeleteElementMultipleSpy = jest.spyOn(
+        dataRequestsStub,
+        'deleteDataElementMultiple'
+      );
+      const dataRequestDeleteDataClassSpy = jest.spyOn(
+        dataRequestsStub,
+        'deleteDataClass'
+      );
+
+      dataRequestsStub.deleteDataSchema.mockReturnValueOnce(of(deleteElementResult));
+      const dataRequestServiceDeleteFromQuerySpy = jest.spyOn(
+        dataRequestsStub,
+        'deleteDataElementsFromQuery'
+      );
+      const broadcastSpy = jest.spyOn(broadcastStub, 'loading');
+
+      // Act
+      harness.component.removeItem(eventDeleteDataElement);
+
+      // Assert
+      expect(dataRequestDeleteDataSchemaSpy).toHaveBeenCalledTimes(0);
+      expect(dataRequestDeleteElementMultipleSpy).toHaveBeenCalledTimes(1);
+      expect(dataRequestDeleteDataClassSpy).toHaveBeenCalledTimes(0);
+      expect(broadcastSpy).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          isLoading: true,
+        })
+      );
+      expect(broadcastSpy).toHaveBeenNthCalledWith(2, { isLoading: false });
+      expect(dataRequestServiceDeleteFromQuerySpy).toHaveBeenNthCalledWith(
+        1,
+        request.id,
+        'data',
+        labels
+      );
+      expect(dataRequestServiceDeleteFromQuerySpy).toHaveBeenNthCalledWith(
+        2,
+        request.id,
+        'cohort',
+        labels
+      );
+    });
+
+    it('Refresh request when data element is added via DataElementInRequest component, if changed element is current request, reload request', () => {
+      // Arrange
+      const event: RequestElementAddDeleteEvent = {
+        adding: true,
+        dataElement: dataElements[0],
+        dataModel: request,
+      };
+      const intersections: DataAccessRequestsSourceTargetIntersections = {
+        dataAccessRequests: [request],
+        sourceTargetIntersections: [
+          {
+            intersects: [],
+            sourceDataModelId: 'model1',
+            targetDataModelId: 'model2',
+          },
+        ],
+      };
+
+      dataSchemaStub.loadDataSchemas.mockReturnValueOnce(of([dataSchema]));
+      dataSchemaStub.reduceDataElementsFromSchemas.mockReturnValueOnce(dataElements);
+      dataRequestsStub.getRequestsIntersections.mockReturnValueOnce(of(intersections));
+      const broadcastDispatchSpy = jest.spyOn(broadcastStub, 'dispatch');
+      harness.component.request = request;
+
+      // Act:
+      harness.component.handleRequestElementsChange(event);
+
+      // Assert
+      expect(harness.component.state).toBe('idle');
+      expect(harness.component.dataSchemas).toEqual([dataSchema]);
+      expect(harness.component.isEmpty).toBeFalsy();
+      expect(harness.component.sourceTargetIntersections).toBe(intersections);
+      expect(broadcastDispatchSpy).toHaveBeenCalledTimes(0);
+    });
+
+    it('Refresh request when data element is added via DataElementInRequest component, if changed element is a different request, reload intersections only and dispatch notification', () => {
+      // Arrange
+      const request2: DataRequest = {
+        id: '2',
+        label: 'request 2',
+        domainType: CatalogueItemDomainType.DataModel,
+        status: 'unsent',
+      };
+      const event: RequestElementAddDeleteEvent = {
+        adding: true,
+        dataElement: dataElements[0],
+        dataModel: request2,
+      };
+      const intersections: DataAccessRequestsSourceTargetIntersections = {
+        dataAccessRequests: [request],
+        sourceTargetIntersections: [
+          {
+            intersects: [],
+            sourceDataModelId: 'model1',
+            targetDataModelId: 'model2',
+          },
+        ],
+      };
+
+      dataSchemaStub.reduceDataElementsFromSchemas.mockReturnValueOnce(dataElements);
+      dataRequestsStub.getRequestsIntersections.mockReturnValueOnce(of(intersections));
+      const broadcastDispatchSpy = jest.spyOn(broadcastStub, 'dispatch');
+      const dataSchemaLoadSchemasSpy = jest.spyOn(dataSchemaStub, 'loadDataSchemas');
+      harness.component.request = request;
+
+      // Act:
+      harness.component.handleRequestElementsChange(event);
+
+      // Assert
+      expect(harness.component.state).toBe('idle');
+      expect(harness.component.sourceTargetIntersections).toBe(intersections);
+      expect(dataSchemaLoadSchemasSpy).toHaveBeenCalledTimes(0);
+      expect(broadcastDispatchSpy).toHaveBeenCalledWith(
+        'data-intersections-refreshed',
+        intersections
+      );
+    });
+  });
+
+  describe('Handles states of buttons and actions', () => {
+    const intersections: DataAccessRequestsSourceTargetIntersections = {
+      dataAccessRequests: [request],
+      sourceTargetIntersections: [
         {
-          id: '1',
-          label: 'element 1',
-          domainType: CatalogueItemDomainType.DataElement,
+          intersects: [],
+          sourceDataModelId: 'model1',
+          targetDataModelId: 'model2',
+        },
+      ],
+    };
+
+    let dataSchemaWithDataElements: DataSchema[] = [];
+    let dataElementsNotSelected: DataElementSearchResult[] = [];
+
+    beforeEach(() => {
+      toastrStub.error.mockClear();
+      dataRequestsStub.get.mockClear();
+      dataSchemaStub.reduceDataElementsFromSchemas.mockClear();
+      dataSchemaStub.reduceDataElementsFromSchemas.mockReset();
+      dataSchemaStub.loadDataSchemas.mockReset();
+      dataRequestsStub.get.mockReset();
+
+      // The test below change values from this elements, so we need
+      // to reset them before each test to ensure clean state.
+      dataElementsNotSelected = [
+        {
+          dataClass: 'dataClassId0',
+          id: 'dataElmentId0',
+          isBookmarked: true,
+          label: 'label0',
+          isSelected: false,
+          model: 'modelId0',
         },
         {
-          id: '2',
-          label: 'element 2',
-          domainType: CatalogueItemDomainType.DataElement,
+          dataClass: 'dataClassId1',
+          id: 'dataElmentId1',
+          isBookmarked: true,
+          label: 'label1',
+          isSelected: false,
+          model: 'modelId1',
+        },
+        {
+          dataClass: 'dataClassId2',
+          id: 'dataElmentId2',
+          isBookmarked: true,
+          label: 'label2',
+          isSelected: false,
+          model: 'modelId2',
         },
       ];
 
-      selectableElements = () => {
-        return elements.map((e) => {
-          return {
-            ...e,
-            isSelected: false,
-            isBookmarked: false,
-          } as DataElementSearchResult;
-        });
-      };
-
-      request = { id: '1', status: 'unsent', label: 'request 1' } as DataRequest;
-      requestMenuItem = {
-        dataModel: {
-          id: '1',
-          label: 'request 1',
-          domainType: CatalogueItemDomainType.DataModel,
-        },
-        containsElement: true,
-      };
-
-      dataRequestsStub.listDataElements.mockImplementation((req) => {
-        expect(req).toStrictEqual(request);
-        expect(component.state).toBe('loading');
-        return of(elements);
-      });
-
-      dataRequestsStub.list.mockImplementation(() => of([request]));
-
-      dataRequestsStub.getRequestsIntersections.mockImplementation((model: string) => {
-        intersections = {
-          dataAccessRequests: [
+      dataSchemaWithDataElements = [
+        {
+          schema: {
+            id: 'schema1',
+            domainType: CatalogueItemDomainType.DataClass,
+            label: 'labelSchema',
+          },
+          dataClasses: [
             {
-              label: 'data model',
-              id: model,
-              domainType: CatalogueItemDomainType.DataModel,
+              dataClass: {
+                domainType: CatalogueItemDomainType.DataClass,
+                label: 'dataClassLabel',
+              },
+              dataElements: dataElementsNotSelected,
             },
           ],
+        },
+      ];
 
-          sourceTargetIntersections: [],
-        };
-        return of(intersections);
-      });
-
-      explorerStub.getRootDataModel.mockImplementation(() => {
-        return of({
-          label: 'root model',
-          id: 'root model id',
-          domainType: CatalogueItemDomainType.DataModel,
-          finalised: false,
-          availableActions: [],
-        });
-      });
-
-      dataModelsStub.elementsInAnotherModel.mockImplementation((model, innerElements) =>
-        of(innerElements)
+      dataSchemaStub.reduceDataElementsFromSchemas.mockReturnValue(
+        dataElementsNotSelected
       );
-      dataModelsStub.dataElementToBasic.mockImplementation((element) => {
-        return {
-          id: element.id ?? '',
-          dataClass: element.dataClass ?? '',
-          model: element.model ?? '',
-          label: element.label,
-          isBookmarked: false,
-          breadcrumbs: element.breadcrumbs,
-        };
-      });
 
-      dataRequestsStub.get.mockImplementationOnce((id) => {
-        expect(id).toEqual(requestId);
-        expect(harness.component.state).toBe('loading');
+      dataRequestsStub.get.mockImplementationOnce(() => {
         return of(request);
       });
-
-      component = harness.component;
-      component.ngOnInit();
-      harness.detectChanges();
-      dom = harness.fixture.debugElement;
     });
 
-    it('Refresh request when data element is deleted via DataElementInRequest component', () => {
-      // Not Sure if these two tests are still needed, can something externally modify a request?
-      // pick the first row and trigger the RequestAddDelete event
-      const dataElementRow: DebugElement = dom.query(
-        (de) => de.name === 'mdm-data-element-row'
-      );
-      const requestAddDeleteEvent: RequestElementAddDeleteEvent = {
-        adding: false,
-        dataModel: requestMenuItem.dataModel,
-        dataElement: selectableElements()[0],
-      };
-      // Pretend to delete 1 element
-      dataRequestsStub.listDataElements.mockImplementation((req) => {
-        expect(req).toStrictEqual(request);
-        expect(component.state).toBe('loading');
-        return of(elements.slice(0, 1));
-      });
-      dataElementRow.triggerEventHandler('requestAddDelete', requestAddDeleteEvent);
-      expect(component.requestElements).toStrictEqual(selectableElements().slice(0, 1));
-    });
+    it('Should start with everything unselected', () => {
+      // Arrange
 
-    it('Refresh request when data element is added via DataElementInRequest component', () => {
-      // pick the first row and trigger the RequestAddDelete event
-      const dataElementRow: DebugElement = dom.query(
-        (de) => de.name === 'mdm-data-element-row'
-      );
-      requestMenuItem.containsElement = false;
-      const requestAddDeleteEvent: RequestElementAddDeleteEvent = {
-        adding: true,
-        dataModel: requestMenuItem.dataModel,
-        dataElement: selectableElements()[0],
-      };
-      // Pretend to add 1 element
-      elements.push({
-        id: '3',
-        label: 'element 3',
-        domainType: CatalogueItemDomainType.DataElement,
-      });
-      dataRequestsStub.listDataElements.mockImplementation((req) => {
-        expect(req).toStrictEqual(request);
-        expect(component.state).toBe('loading');
-        return of(elements);
-      });
+      // Act
+      harness.component.ngOnInit();
 
-      // expected elements are the original first 2 request elements
-      expect(component.requestElements).toStrictEqual(selectableElements().slice(0, 2));
-      dataElementRow.triggerEventHandler('requestAddDelete', requestAddDeleteEvent);
-      // after refresh, expected elements are all 3 of the request elements
-      expect(component.requestElements).toStrictEqual(selectableElements());
+      // Assert
+      expect(harness.component.allElementsSelected).toBeFalsy();
+      expect(harness.component.anyElementSelected).toBeFalsy();
     });
 
     it('Should select all data elements when Select All is clicked', () => {
-      // Find the Select All checkbox
-      const matCheckbox: DebugElement = dom.query(
-        (de) => de.name === 'mat-checkbox' && de.nativeElement.innerHTML === 'Select all'
-      );
-      const matCheckboxChange: MatCheckboxChange = {
-        source: {} as MatCheckbox,
-        checked: true,
-      };
-      // Should already be false, but this future-proofs against changes to setup
-      component.requestElements.forEach((element) => (element.isSelected = false));
-      matCheckbox.triggerEventHandler('change', matCheckboxChange);
-      expect(component.requestElements).toHaveLength(2);
-      expect(component.requestElements[0].isSelected).toBe(true);
-      expect(component.requestElements[1].isSelected).toBe(true);
+      // Arrange
+      dataSchemaStub.loadDataSchemas.mockReturnValueOnce(of(dataSchemaWithDataElements));
+      dataRequestsStub.getRequestsIntersections.mockReturnValueOnce(of(intersections));
+
+      // Act
+      harness.component.ngOnInit();
+      harness.component.onSelectAll();
+
+      // Assert
+      expect(harness.component.allElements).toEqual(dataElementsNotSelected);
+      expect(harness.component.allElementsSelected).toBeTruthy();
+      expect(harness.component.anyElementSelected).toBeTruthy();
     });
 
-    it('Should enable RemoveSelected button on when there is a request, there are request elements and at least 1 is selected', () => {
-      const savRequest = component.request;
-      const savRequestElements = component.requestElements;
+    it('Should display action button when any element is selected', () => {
+      // Arrange
+      dataSchemaStub.loadDataSchemas.mockReturnValueOnce(of(dataSchemaWithDataElements));
+      dataRequestsStub.getRequestsIntersections.mockReturnValueOnce(of(intersections));
 
-      component.request = undefined;
-      component.requestElements = [];
+      // Act
+      harness.component.ngOnInit();
+      harness.component.updateAllOrSomeChildrenSelectedHandler();
+      // avoid eslint warnings
+      if (!harness.component.allElements) {
+        expect(harness.component.allElements).toBeDefined();
+      } else {
+        harness.component.allElements[0].isSelected = true;
+      }
+      harness.component.updateAllOrSomeChildrenSelectedHandler();
 
-      expect(component.removeSelectedButtonDisabled).toBeTruthy();
-
-      component.request = savRequest;
-      expect(component.removeSelectedButtonDisabled).toBeTruthy();
-      component.requestElements = savRequestElements;
-      expect(component.removeSelectedButtonDisabled).toBeTruthy();
-      component.onSelectElement({ item: component.requestElements[0], checked: true });
-      expect(component.removeSelectedButtonDisabled).toBeFalsy();
-      component.onSelectElement({ item: component.requestElements[1], checked: true });
-      expect(component.removeSelectedButtonDisabled).toBeFalsy();
-      component.onSelectElement({ item: component.requestElements[0], checked: false });
-      expect(component.removeSelectedButtonDisabled).toBeFalsy();
-      component.onSelectElement({ item: component.requestElements[1], checked: false });
-      expect(component.removeSelectedButtonDisabled).toBeTruthy();
-    });
-
-    it('Should open OK/Cancel dialogue, show spinner, call into DataRequestsService.deleteDataElementMultiple with a single item and refresh the request list when Remove button is clicked', () => {
-      // Find any data element row from which to trigger an event
-      const dataElementRow: DebugElement = dom.query(
-        (de) => de.name === 'mdm-data-element-row'
-      );
-      const dataElementDeleteEvent: DataElementDeleteEvent = {
-        item: selectableElements()[0],
-      };
-      // spy on OK/Cancel, broadcast service .loading and DataRequestsService.deleteDataElementMultiple
-      dialogsStub.usage.afterClosed.mockReset();
-      const okCancelResponse: OkCancelDialogResponse = {
-        result: true,
-      };
-      dialogsStub.open = jest.fn().mockReturnValue(dialogsStub.usage);
-      dialogsStub.usage.afterClosed.mockReturnValue(of(okCancelResponse));
-      const deleteResult: DataElementMultipleOperationResult = {
-        successes: [
-          {
-            success: true,
-            message: '',
-            item: component.requestElements[0],
-          },
-        ],
-        failures: [],
-      };
-
-      const deleteFromQueryResult: DataRequestQueryPayload = {
-        ruleId: 'id1',
-        representationId: 'representationId1',
-        type: 'cohort',
-        condition: {
-          condition: 'and',
-          rules: [],
-        },
-      };
-      dataRequestsStub.deleteDataElementMultiple.mockReset();
-      dataRequestsStub.deleteDataElementMultiple.mockReturnValue(of(deleteResult));
-      dataRequestsStub.deleteDataElementsFromQuery.mockReturnValue(
-        of(deleteFromQueryResult)
-      );
-      broadcastStub.loading.mockReset();
-
-      // Pretend to delete first element
-      dataRequestsStub.listDataElements.mockImplementation(() => {
-        return of(elements.slice(1, 2));
-      });
-      // Raise the delete event
-      dataElementRow.triggerEventHandler('delete', dataElementDeleteEvent);
-
-      // check the fallout
-      expect(dialogsStub.open).toHaveBeenCalledTimes(1);
-      expect(broadcastStub.loading).toHaveBeenCalledTimes(2);
-      expect(dataRequestsStub.deleteDataElementsFromQuery).toBeCalledTimes(2);
-      expect(dataRequestsStub.deleteDataElementMultiple).toHaveBeenCalledTimes(1);
-      expect(dataRequestsStub.deleteDataElementMultiple.mock.calls[0][0]).toStrictEqual([
-        selectableElements()[0],
-      ]);
-      expect(dataRequestsStub.deleteDataElementMultiple.mock.calls[0][1].id).toBe(
-        request.id
-      );
-      expect(dataRequestsStub.deleteDataElementMultiple.mock.calls[0][1].label).toBe(
-        request.label
-      );
-      expect(component.requestElements.length).toBe(1);
-      expect(component.requestElements[0]).toStrictEqual(selectableElements()[1]);
-    });
-
-    it('Should open OK/Cancel dialogue, show spinner, call into DataRequestsService.deleteDataElementMultiple with 2 items and refresh the request list when Remove Selected is clicked', () => {
-      // Find Remove Selected button to click for event trigger
-      const dataElementRow: DebugElement = dom.query(
-        (de) =>
-          de.name === 'button' && de.nativeElement.innerHTML === ' Remove selected ... '
-      );
-      // Select request elements
-      component.requestElements.forEach((el) => (el.isSelected = true));
-      // spy on OK/Cancel, broadcast service .loading and DataRequestsService.deleteDataElementMultiple
-      dialogsStub.usage.afterClosed.mockReset();
-      const okCancelResponse: OkCancelDialogResponse = {
-        result: true,
-      };
-      dialogsStub.open = jest.fn().mockReturnValue(dialogsStub.usage);
-      dialogsStub.usage.afterClosed.mockReturnValue(of(okCancelResponse));
-      const deleteResult: DataElementMultipleOperationResult = {
-        successes: [
-          {
-            success: true,
-            message: '',
-            item: component.requestElements[0],
-          },
-        ],
-        failures: [],
-      };
-      dataRequestsStub.deleteDataElementMultiple.mockReset();
-      dataRequestsStub.deleteDataElementMultiple.mockReturnValue(of(deleteResult));
-      broadcastStub.loading.mockReset();
-
-      // Pretend to delete all elements
-      dataRequestsStub.listDataElements.mockImplementation(() => {
-        return of([]);
-      });
-      // Raise the click event
-      dataElementRow.triggerEventHandler('click', {});
-
-      // check the fallout
-      expect(dialogsStub.open).toHaveBeenCalledTimes(1);
-      expect(broadcastStub.loading).toHaveBeenCalledTimes(2);
-      expect(dataRequestsStub.deleteDataElementMultiple).toHaveBeenCalledTimes(1);
-      const expectedDeleteItems = selectableElements();
-      expectedDeleteItems.forEach((el) => (el.isSelected = true));
-      expect(dataRequestsStub.deleteDataElementMultiple.mock.calls[0][0]).toStrictEqual(
-        expectedDeleteItems
-      );
-      expect(dataRequestsStub.deleteDataElementMultiple.mock.calls[0][1].id).toBe(
-        request.id
-      );
-      expect(dataRequestsStub.deleteDataElementMultiple.mock.calls[0][1].label).toBe(
-        request.label
-      );
-      expect(component.requestElements.length).toBe(0);
+      // Assert
+      expect(harness.component.allElements).toEqual(dataElementsNotSelected);
+      expect(harness.component.allElementsSelected).toBeFalsy();
+      expect(harness.component.anyElementSelected).toBeTruthy();
     });
   });
 
   describe('Should Check for Queries', () => {
-    const request = { id: '1', status: 'unsent', label: 'request 1' } as DataRequest;
     const condition: QueryCondition = { condition: 'or', rules: [] };
 
     const representation: RuleRepresentation = {
@@ -576,12 +938,73 @@ describe('MyRequestsComponent', () => {
       ruleRepresentations: [representation],
     };
 
+    const dataElementsNotSelected = [
+      {
+        dataClass: 'dataClassId0',
+        id: 'dataElmentId0',
+        isBookmarked: true,
+        label: 'label0',
+        isSelected: false,
+        model: 'modelId0',
+      },
+      {
+        dataClass: 'dataClassId1',
+        id: 'dataElmentId1',
+        isBookmarked: true,
+        label: 'label1',
+        isSelected: false,
+        model: 'modelId1',
+      },
+      {
+        dataClass: 'dataClassId2',
+        id: 'dataElmentId2',
+        isBookmarked: true,
+        label: 'label2',
+        isSelected: false,
+        model: 'modelId2',
+      },
+    ];
+
+    const dataSchemaWithDataElements = [
+      {
+        schema: {
+          id: 'schema1',
+          domainType: CatalogueItemDomainType.DataClass,
+          label: 'labelSchema',
+        },
+        dataClasses: [
+          {
+            dataClass: {
+              domainType: CatalogueItemDomainType.DataClass,
+              label: 'dataClassLabel',
+            },
+            dataElements: dataElementsNotSelected,
+          },
+        ],
+      },
+    ];
+
+    const intersections: DataAccessRequestsSourceTargetIntersections = {
+      dataAccessRequests: [request],
+      sourceTargetIntersections: [
+        {
+          intersects: [],
+          sourceDataModelId: 'model1',
+          targetDataModelId: 'model2',
+        },
+      ],
+    };
+
     beforeEach(() => {
-      dataRequestsStub.list.mockClear();
-      harness.component.request = request;
+      dataRequestsStub.get.mockImplementationOnce(() => {
+        return of(request);
+      });
+      dataSchemaStub.loadDataSchemas.mockReturnValueOnce(of(dataSchemaWithDataElements));
+      dataRequestsStub.getRequestsIntersections.mockReturnValueOnce(of(intersections));
     });
 
     it('should get the Cohort Query if available', () => {
+      // Arrange
       const queryType: DataRequestQueryType = 'cohort';
       const payload: DataRequestQueryPayload = {
         ruleId: rule.id,
@@ -598,11 +1021,16 @@ describe('MyRequestsComponent', () => {
       dataRequestsStub.getQuery.mockImplementation(() => {
         return of(returned);
       });
-      harness.component.initialiseRequestQueries();
+
+      // Act
+      harness.component.ngOnInit();
+
+      // Assert
       expect(harness.component.cohortQuery).toEqual(condition);
     });
 
     it('should get the data Query if available', () => {
+      // Arrange
       const queryType: DataRequestQueryType = 'data';
       const payload: DataRequestQueryPayload = {
         ruleId: rule.id,
@@ -619,8 +1047,12 @@ describe('MyRequestsComponent', () => {
       dataRequestsStub.getQuery.mockImplementation(() => {
         return of(returned);
       });
-      harness.component.initialiseRequestQueries();
+
+      // Act
+      harness.component.ngOnInit();
+
+      // Assert
       expect(harness.component.dataQuery).toEqual(condition);
     });
-  });*/
+  });
 });

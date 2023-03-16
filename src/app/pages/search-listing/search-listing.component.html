@@ -58,6 +58,14 @@ SPDX-License-Identifier: Apache-2.0
             </ng-container>
           </div>
           <div class="vertically-aligned">
+            <mat-form-field appearance="outline">
+              <mat-label>Page size</mat-label>
+              <mat-select [value]="pageSize" (selectionChange)="pageSizeChanged($event)">
+                <mat-option *ngFor="let option of pageSizeOptions" [value]="option"
+                  >{{ option }} items</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
             <mdm-sort-by
               [value]="sortBy"
               [options]="searchListingSortByOptions"
@@ -69,6 +77,9 @@ SPDX-License-Identifier: Apache-2.0
     </div>
     <div *ngIf="resultSet" class="row">
       <div class="col-md-3">
+        <mdm-selection-compact
+          [sourceTargetIntersections]="sourceTargetIntersections"
+        ></mdm-selection-compact>
         <mdm-search-filters
           [fields]="filters"
           (filterChange)="filterChanged($event)"
@@ -88,11 +99,11 @@ SPDX-License-Identifier: Apache-2.0
         <div class="mdm-search-listing__footer-row">
           <ng-container *ngIf="resultSet.totalResults > 0">
             <div class="float-start">
-              <mat-checkbox (change)="onSelectAll($event)">Select all</mat-checkbox>
-              <mdm-data-element-multi-select
-                [sourceTargetIntersections]="sourceTargetIntersections"
-                [dataElements]="selectedElements"
-              ></mdm-data-element-multi-select>
+              <mat-checkbox
+                (change)="onSelectAll($event)"
+                [checked]="areAllElementsSelected"
+                >Select entire page</mat-checkbox
+              >
             </div>
           </ng-container>
           <mdm-pagination
