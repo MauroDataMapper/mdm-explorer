@@ -447,10 +447,10 @@ describe('MyRequestsComponent', () => {
     it('Should not attempt to delete anything if user cancels confirmation', () => {
       // Arrange
       harness.component.request = request;
-      const NotokCancelResponse: OkCancelDialogResponse = {
+      const noToOkCancelResponse: OkCancelDialogResponse = {
         result: false,
       };
-      dialogsStub.usage.afterClosed.mockReturnValue(of(NotokCancelResponse));
+      dialogsStub.usage.afterClosed.mockReturnValue(of(noToOkCancelResponse));
 
       const dataRequestServiceSpy = jest.spyOn(dataRequestsStub, 'deleteDataSchema');
 

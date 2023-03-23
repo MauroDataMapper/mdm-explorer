@@ -17,18 +17,12 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import {
-  ApiProperty,
-  ApiPropertyIndexResponse,
-  Uuid,
-} from '@maurodatamapper/mdm-resources';
-import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, filter, map, Observable, of, switchMap } from 'rxjs';
+import { catchError, map, Observable, of } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import tinycolor, { ColorFormats } from 'tinycolor2';
 import { getKviValue, KeyValueIdentifier } from '../mauro/mauro.types';
-import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { ResearchPluginService } from '../mauro/research-plugin.service';
+import { isUuid } from './types/shared.types';
 
 /**
  * Represents the core colours to use for the colour palettes in an Angular Material theme.
@@ -214,8 +208,6 @@ export interface ThemeImageUrl {
   url?: string;
 }
 
-let themeImageUrls: ThemeImageUrl[] = [];
-
 /**
  * Service for managing theming of the application.
  */
@@ -223,13 +215,7 @@ let themeImageUrls: ThemeImageUrl[] = [];
   providedIn: 'root',
 })
 export class ThemeService {
-  constructor(
-    private researchPlugin: ResearchPluginService,
-    private endpoints: MdmEndpointsService,
-    private toastr: ToastrService
-  ) {
-    //this.loadImageIdsFromServer();
-  }
+  constructor(private researchPlugin: ResearchPluginService) {}
 
   private static multiply(rgb1: ColorFormats.RGBA, rgb2: ColorFormats.RGBA) {
     rgb1.b = Math.floor((rgb1.b * rgb2.b) / 255);
@@ -268,84 +254,10 @@ export class ThemeService {
     this.applyMaterialPaletteToCss('warn', theme.material.colors.warn);
     this.applyTypographyToCss(theme.material.typography);
     this.applyAppColorsToCss(theme);
-    //this.getImageUrls(theme);
-  }
-
-  /*
-  getImageUrls(theme: Theme) {
-    theme.
-  }*/
-
-  /*
-  getThemeImage(apiPropertyKey: string): string | undefined {
-    let themeImage = themeImages.find((themeImage) => {
-      themeImage.apiPropertyKey === apiPropertyKey;
-    });
-
-    const url: string | undefined = themeImage
-      ? `${environment.apiEndpoint}/admin/properties/${themeImage.apiPropertyId}/image`
-      : undefined;
-    return url;
-  }*/
-
-  /*
-      return this.endpoints.apiProperties
-      .listPublic()
-      .pipe(map((response: ApiPropertyIndexResponse) => response.body.items));
-  */
-  /*
-  loadThemeImageUrls(): Observable<ThemeImage[]> {
-    return this.endpoints.apiProperties.listPublic().pipe(
-      switchMap((response: ApiPropertyIndexResponse) => {
-        return response.body.items.filter((prop) =>
-          prop.key.startsWith('explorer.theme.image')
-        );
-      }),
-      switchMap((apiProperties: ApiProperty[]) => {
-        return apiProperties.map((apiProperty) => {
-          return {
-            apiPropertyKey: apiProperty.key,
-            imageUrl:
-              apiProperty.value && this.isUUID(apiProperty.value)
-                ? `${environment.apiEndpoint}/admin/properties/${apiProperty.id}/image`
-                : undefined,
-          } as ThemeImage;
-        });
-      }),
-      catchError(() => {
-        this.toastr.error(
-          'There was a problem getting the configuration properties for images.'
-        );
-        return EMPTY;
-      })
-    );
-    / *
-      .subscribe((response: ApiPropertyIndexResponse) => {
-        const featureFlags = response.body.items.filter((prop) =>
-          prop.key.startsWith('explorer.theme.image')
-        );
-
-        themeImages = featureFlags.map((apiProperty) => {
-          return {
-            apiPropertyKey: apiProperty.key,
-            imageUrl: (apiProperty.value && isUUID(apiProperty.value))
-            ? `${environment.apiEndpoint}/admin/properties/${themeImage.apiPropertyId}/image`
-            : undefined;
-          } as ThemeImage;
-        });
-      });* /
-  }*/
-
-  private isUUID(value: string): boolean {
-    return (
-      value.match(
-        '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
-      ) !== null
-    );
   }
 
   private getImageUrl(value: string): string | undefined {
-    return value && this.isUUID(value)
+    return value && isUuid(value)
       ? `${environment.apiEndpoint}/themeImageFiles/${value}`
       : undefined;
   }
