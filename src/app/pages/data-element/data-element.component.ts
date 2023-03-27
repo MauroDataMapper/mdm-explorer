@@ -254,15 +254,18 @@ export class DataElementComponent implements OnInit {
     };
   }
 
+
   private subscribeDataRequestChanges() {
     this.broadcast
       .on('data-request-added')
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(() => {
-        this.loadIntersections().subscribe((intersections) => {
-          this.sourceTargetIntersections = intersections;
-          this.broadcast.dispatch('data-intersections-refreshed', intersections);
-        });
+      .pipe(
+        takeUntil(this.unsubscribe$),
+        switchMap(() => this.loadIntersections()),
+        map((intersections) => (this.sourceTargetIntersections = intersections))
+      )
+      .subscribe((intersections) => {
+        this.broadcast.dispatch('data-intersections-refreshed', intersections);
       });
-  }
+}
+
 }

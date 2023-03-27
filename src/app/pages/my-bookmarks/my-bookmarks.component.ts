@@ -20,7 +20,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { Uuid } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import { forkJoin, of, Subject, switchMap, takeUntil, throwError } from 'rxjs';
+import { forkJoin, map, of, Subject, switchMap, takeUntil, throwError } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { BookmarkService } from 'src/app/data-explorer/bookmark.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
@@ -131,15 +131,17 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
    * When a data request is added, reload all intersections (which ensures we pick up intersections with the
    * new data request) and tell all data-element-in-request components about the new intersections.
    */
+
   private subscribeDataRequestChanges() {
     this.broadcast
       .on('data-request-added')
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(() => {
-        this.loadIntersections(this.userBookmarks).subscribe((intersections) => {
-          this.sourceTargetIntersections = intersections;
-          this.broadcast.dispatch('data-intersections-refreshed', intersections);
-        });
+      .pipe(
+        takeUntil(this.unsubscribe$),
+        switchMap(() => this.loadIntersections(this.userBookmarks)),
+        map((intersections) => (this.sourceTargetIntersections = intersections))
+      )
+      .subscribe((intersections) => {
+        this.broadcast.dispatch('data-intersections-refreshed', intersections);
       });
   }
 
