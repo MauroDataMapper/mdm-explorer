@@ -4,6 +4,7 @@ Theming of the Mauro Data Explorer is made up of a few concepts which are custom
 
 1. An [Angular Material theme](https://material.angular.io/guide/theming) to control the colours for the Angular Material components - buttons, form controls etc.
 2. Additional colours for the application as whole, based on the core colours from the Angular Material theme with some extensions.
+3. Images to replace areas such as logos in the header.
 
 All theme settings are controlled via the `ThemeService` in the `./src/app/shared` module.
 
@@ -15,6 +16,7 @@ In essence, the theme is applied to the application as follows:
 2. The `ThemeService` will create [CSS3 custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/--*) and add them to the document root element of the DOM so they can be referenced through the entire page.
 3. Stylesheets under the `./src/styles` folder then use the [var()](https://developer.mozilla.org/en-US/docs/Web/CSS/var) CSS syntax to refer to the theme variables.
 4. At runtime, the browser then uses the CSS custom properties as the realtime values for things such as colours or other CSS rules.
+5. Finally, image sources are replaced where appropriate.
 
 Changing the theme (e.g. colour scheme) is then simply a matter of swapping some values in the `Theme` object to apply across the entire document _without_ having to re-compile `mdm-explorer`.
 
@@ -22,7 +24,13 @@ All CSS theme properties can be inspected from the browser using the browser too
 
 # Loading a theme
 
-**TODO: loading a `Theme` object is a future task, so this documentation must also be updated then**
+The following endpoint from `mdm-plugin-explorer` will locate all Mauro API properties and return a key/value list:
+
+```
+GET /api/explorer/theme
+```
+
+The `ThemeService` then maps this list to a `Theme` object. This can then be applied to the application.
 
 # Applying a theme
 
@@ -146,3 +154,19 @@ For any colours that don't fit inside the core colours above, more colour variab
   "--theme-color-page-contrast": "rgba(black, 0.87)"
 }
 ```
+
+## Images
+
+Custom images are referenced via URL, which is the Mauro endpoint:
+
+```
+GET /api/themeImageFiles/{id}
+```
+
+Where `{id}` is the ID of a stored image in Mauro. IDs are mapped to API properties, such as `explorer.theme.images.header.logo`.
+
+### Header Logo
+
+The logo in the header can be changed by uploading an image via the Mauro Data Mapper (as an administrator) to the `explorer.theme.images.header.logo` API property.
+
+The logo image should be no larger than 260 x 100 pixels to ensure it fits correctly in the header layout.

@@ -19,7 +19,10 @@ SPDX-License-Identifier: Apache-2.0
 <header class="mdm-header">
   <div class="mdm-header__logo">
     <a [routerLink]="logoLink?.routerLink ?? ''">
-      <img [src]="logoLink?.imageSrc" [alt]="logoLink?.label" />
+      <img
+        [src]="logoLink?.customImageSrc || logoLink?.defaultImageSrc"
+        [alt]="logoLink?.label"
+      />
     </a>
   </div>
   <div class="mdm-header__links">

@@ -18,9 +18,11 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
 import { catchError, map, Observable, of } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import tinycolor, { ColorFormats } from 'tinycolor2';
 import { getKviValue, KeyValueIdentifier } from '../mauro/mauro.types';
 import { ResearchPluginService } from '../mauro/research-plugin.service';
+import { isUuid } from './types/shared.types';
 
 /**
  * Represents the core colours to use for the colour palettes in an Angular Material theme.
@@ -84,6 +86,15 @@ export interface Theme {
   material: ThemeMaterial;
   regularColors: ThemeRegularColors;
   contrastColors: ThemeContrastColors;
+  images: ThemeImages;
+}
+
+export interface ThemeImages {
+  header: ThemeHeaderImages;
+}
+
+export interface ThemeHeaderImages {
+  logo: ThemeImageUrl;
 }
 
 export const defaultTheme: Theme = {
@@ -148,6 +159,13 @@ export const defaultTheme: Theme = {
     submittedRequest: '#0e8f77',
     classRow: '#c4c4c4',
   },
+  images: {
+    header: {
+      logo: {
+        url: undefined,
+      },
+    },
+  },
 };
 
 const mapKviToTypographyLevel = (
@@ -184,6 +202,10 @@ interface Color {
   name: string;
   hex: string;
   isLight: boolean;
+}
+
+export interface ThemeImageUrl {
+  url?: string;
 }
 
 /**
@@ -232,6 +254,12 @@ export class ThemeService {
     this.applyMaterialPaletteToCss('warn', theme.material.colors.warn);
     this.applyTypographyToCss(theme.material.typography);
     this.applyAppColorsToCss(theme);
+  }
+
+  private getImageUrl(value: string): string | undefined {
+    return value && isUuid(value)
+      ? `${environment.apiEndpoint}/themeImageFiles/${value}`
+      : undefined;
   }
 
   private mapValuesToTheme(props: KeyValueIdentifier[]): Theme {
@@ -328,6 +356,13 @@ export class ThemeService {
           'contrastcolors.classrow',
           defaultTheme.contrastColors.classRow
         ),
+      },
+      images: {
+        header: {
+          logo: {
+            url: this.getImageUrl(getKviValue(props, 'images.header.logo', '')),
+          },
+        },
       },
     };
   }

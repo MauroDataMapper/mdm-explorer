@@ -34,3 +34,8 @@ export interface IModelPage {
  * Alias for Angular Router link information
  */
 export type RouterLinkRef = any[] | string | null | undefined;
+
+export const isUuid = (value: string) =>
+  /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/i.test(
+    value
+  );
