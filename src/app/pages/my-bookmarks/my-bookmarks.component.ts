@@ -20,7 +20,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { Uuid } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import { forkJoin, map, of, Subject, switchMap, takeUntil, throwError } from 'rxjs';
+import { forkJoin, of, Subject, switchMap, takeUntil, throwError } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { BookmarkService } from 'src/app/data-explorer/bookmark.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
@@ -137,10 +137,10 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
       .on('data-request-added')
       .pipe(
         takeUntil(this.unsubscribe$),
-        switchMap(() => this.loadIntersections(this.userBookmarks)),
-        map((intersections) => (this.sourceTargetIntersections = intersections))
+        switchMap(() => this.loadIntersections(this.userBookmarks))
       )
       .subscribe((intersections) => {
+        this.sourceTargetIntersections = intersections;
         this.broadcast.dispatch('data-intersections-refreshed', intersections);
       });
   }

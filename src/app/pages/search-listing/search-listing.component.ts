@@ -30,7 +30,6 @@ import {
   takeUntil,
   combineLatest,
   throwError,
-  map,
 } from 'rxjs';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { KnownRouterPath, StateRouterService } from 'src/app/core/state-router.service';
@@ -389,13 +388,13 @@ export class SearchListingComponent implements OnInit, OnDestroy {
       .on('data-request-added')
       .pipe(
         takeUntil(this.unsubscribe$),
-        switchMap(() => this.loadIntersections()),
-        map((intersections) => (this.sourceTargetIntersections = intersections))
+        switchMap(() => this.loadIntersections())
       )
       .subscribe((intersections) => {
+        this.sourceTargetIntersections = intersections;
         this.broadcast.dispatch('data-intersections-refreshed', intersections);
       });
-}
+  }
 
   private setBackButtonProperties(source: string, search?: string) {
     this.backRouterLink = source === 'browse' ? '/browse' : '/search';

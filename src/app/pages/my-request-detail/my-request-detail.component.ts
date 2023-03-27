@@ -33,7 +33,6 @@ import {
   filter,
   finalize,
   forkJoin,
-  map,
   Observable,
   of,
   Subject,
@@ -545,10 +544,10 @@ export class MyRequestDetailComponent implements OnInit, OnDestroy {
       .on('data-request-added')
       .pipe(
         takeUntil(this.unsubscribe$),
-        switchMap(() => this.loadIntersections(this.dataSchemas)),
-        map((intersections) => (this.sourceTargetIntersections = intersections))
+        switchMap(() => this.loadIntersections(this.dataSchemas))
       )
       .subscribe((intersections) => {
+        this.sourceTargetIntersections = intersections;
         this.broadcastService.dispatch('data-intersections-refreshed', intersections);
       });
   }
