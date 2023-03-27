@@ -200,6 +200,9 @@ export class DataElementInRequestComponent implements OnInit, OnDestroy {
               };
               this.requestAddDelete.emit(addDeleteEventData);
             });
+            // Really this is an update rather than add, but broadcasting data-request-added has the effect we want
+            // i.e. forcing intersections to be refreshed
+            this.broadcast.dispatch('data-request-added');
           }
 
           const dataElementInstances: DataElementInstance[] = dataElements

@@ -529,18 +529,6 @@ export class MyRequestDetailComponent implements OnInit, OnDestroy {
     );
   }
 
-  private subscribeDataRequestChanges() {
-    this.broadcastService
-      .on('data-request-added')
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(() => {
-        this.loadIntersections(this.dataSchemas).subscribe((intersections) => {
-          this.sourceTargetIntersections = intersections;
-          this.broadcastService.dispatch('data-intersections-refreshed', intersections);
-        });
-      });
-  }
-
   private processRemoveDataElementResponse(result: boolean, message: string) {
     if (result === false) {
       this.toastr.error(message, 'Data element removal');
@@ -549,6 +537,19 @@ export class MyRequestDetailComponent implements OnInit, OnDestroy {
     }
     // refresh the request
     this.setRequest(this.request);
+  }
+
+  private subscribeDataRequestChanges() {
+    this.broadcastService
+      .on('data-request-added')
+      .pipe(
+        takeUntil(this.unsubscribe$),
+        switchMap(() => this.loadIntersections(this.dataSchemas))
+      )
+      .subscribe((intersections) => {
+        this.sourceTargetIntersections = intersections;
+        this.broadcastService.dispatch('data-intersections-refreshed', intersections);
+      });
   }
 
   /**

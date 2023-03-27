@@ -382,15 +382,17 @@ export class SearchListingComponent implements OnInit, OnDestroy {
    * When a data request is added, reload all intersections (which ensures we pick up intersections with the
    * new data request) and tell all data-element-in-request components about the new intersections.
    */
+
   private subscribeDataRequestChanges() {
     this.broadcast
       .on('data-request-added')
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(() => {
-        this.loadIntersections().subscribe((intersections) => {
-          this.sourceTargetIntersections = intersections;
-          this.broadcast.dispatch('data-intersections-refreshed', intersections);
-        });
+      .pipe(
+        takeUntil(this.unsubscribe$),
+        switchMap(() => this.loadIntersections())
+      )
+      .subscribe((intersections) => {
+        this.sourceTargetIntersections = intersections;
+        this.broadcast.dispatch('data-intersections-refreshed', intersections);
       });
   }
 
