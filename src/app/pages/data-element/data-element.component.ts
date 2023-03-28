@@ -37,9 +37,9 @@ import {
 } from 'src/app/data-explorer/data-explorer.types';
 import { DataElementSearchResult } from 'src/app/data-explorer/data-explorer.types';
 import {
-  DataAccessRequestsSourceTargetIntersections,
-  DataRequestsService,
-} from 'src/app/data-explorer/data-requests.service';
+  DataSpecificationSourceTargetIntersections,
+  DataSpecificationService,
+} from 'src/app/data-explorer/data-specification.service';
 import { TerminologyService } from 'src/app/mauro/terminology.service';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 
@@ -63,7 +63,7 @@ export class DataElementComponent implements OnInit {
 
   isBookmarked = false;
 
-  sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
+  sourceTargetIntersections: DataSpecificationSourceTargetIntersections;
   /**
    * Signal to attach to subscriptions to trigger when they should be unsubscribed.
    */
@@ -71,7 +71,7 @@ export class DataElementComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private dataModels: DataModelService,
-    private dataRequests: DataRequestsService,
+    private dataSpecification: DataSpecificationService,
     private bookmarks: BookmarkService,
     private profileService: ProfileService,
     private toastr: ToastrService,
@@ -80,7 +80,7 @@ export class DataElementComponent implements OnInit {
     @Inject(DATA_EXPLORER_CONFIGURATION) private config: DataExplorerConfiguration
   ) {
     this.sourceTargetIntersections = {
-      dataAccessRequests: [],
+      dataSpecifications: [],
       sourceTargetIntersections: [],
     };
   }
@@ -122,7 +122,7 @@ export class DataElementComponent implements OnInit {
 
           this.setIdentifiableData();
           this.setDataTypeModel();
-          this.subscribeDataRequestChanges();
+          this.subscribeDataSpecificationChanges();
         }
       );
   }
@@ -178,12 +178,12 @@ export class DataElementComponent implements OnInit {
   }
 
   private loadIntersections() {
-    return this.dataRequests
-      .getRequestsIntersections(this.dataModelId, [this.dataElementId])
+    return this.dataSpecification
+      .getDataSpecificationIntersections(this.dataModelId, [this.dataElementId])
       .pipe(
         catchError((error) => {
           console.log(error);
-          this.toastr.error('Unable to retrieve requests.');
+          this.toastr.error('Unable to retrieve data specifications.');
           return EMPTY;
         })
       );
@@ -254,9 +254,9 @@ export class DataElementComponent implements OnInit {
     };
   }
 
-  private subscribeDataRequestChanges() {
+  private subscribeDataSpecificationChanges() {
     this.broadcast
-      .on('data-request-added')
+      .on('data-specification-added')
       .pipe(
         takeUntil(this.unsubscribe$),
         switchMap(() => this.loadIntersections())

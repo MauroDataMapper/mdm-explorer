@@ -51,9 +51,9 @@ SPDX-License-Identifier: Apache-2.0
     </div>
     <div class="flex-container__card">
       <div class="sub-heading-with-actions clearfix">
-        <h2>Your current data requests</h2>
+        <h2>Your current data specifications</h2>
         <a href="#" class="float-right"
-          ><span class="fa-solid fa-circle-info"></span> What are requests?</a
+          ><span class="fa-solid fa-circle-info"></span> What are data specifications?</a
         >
       </div>
       <p>
@@ -64,23 +64,28 @@ SPDX-License-Identifier: Apache-2.0
       <p>
         <a routerLink="/search">Search</a> or <a routerLink="/browse">browse</a> our
         catalogue to identify further data points of interest. You can also use our
-        <a routerLink="/templates">request templates</a>, curated to represent common
-        scenarios, as a starting point for your own data requests.
+        <a routerLink="/templates">data specification templates</a>, curated to represent
+        common scenarios, as a starting point for your own data specifications.
       </p>
-      <p *ngIf="currentUserRequests.length === 0" class="text-center">
-        No active requests yet? Search the catalogue to start, or review our templates.
+      <p *ngIf="currentUserDataSpecifications.length === 0" class="text-center">
+        No active data specifications yet? Search the catalogue to start, or review our
+        templates.
       </p>
-      <div *ngIf="currentUserRequests.length > 0">
-        <p-carousel [value]="currentUserRequests" [numVisible]="3" [numScroll]="3">
-          <ng-template let-request pTemplate="item">
+      <div *ngIf="currentUserDataSpecifications.length > 0">
+        <p-carousel
+          [value]="currentUserDataSpecifications"
+          [numVisible]="3"
+          [numScroll]="3"
+        >
+          <ng-template let-dataSpecification pTemplate="item">
             <div
-              class="mdm-dashboard__request-card"
-              routerLink="/requests/{{ request.id }}"
+              class="mdm-dashboard__data-specification-card"
+              routerLink="/dataSpecifications/{{ dataSpecification.id }}"
               [ngStyle]="{ height: currentCardsHeightString }"
             >
-              <h3>{{ request.label }}</h3>
+              <h3>{{ dataSpecification.label }}</h3>
               <p [ngStyle]="{ '-webkit-line-clamp': itemCardNumerOfLinesToShow }">
-                {{ request.description }}
+                {{ dataSpecification.description }}
               </p>
             </div>
           </ng-template>

@@ -35,8 +35,8 @@ import { BreadcrumbComponent } from 'src/app/data-explorer/breadcrumb/breadcrumb
 import { BookmarkToggleComponent } from 'src/app/shared/bookmark-toggle/bookmark-toggle.component';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { BookmarkService } from 'src/app/data-explorer/bookmark.service';
-import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
-import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { createDataSpecificationServiceStub } from 'src/app/testing/stubs/data-specifications.stub';
+import { DataSpecificationService } from 'src/app/data-explorer/data-specification.service';
 import {
   DataElementSearchResult,
   DataExplorerConfiguration,
@@ -56,14 +56,14 @@ import { MatCard } from '@angular/material/card';
 import { MatTooltip } from '@angular/material/tooltip';
 import { createTerminologyServiceStub } from 'src/app/testing/stubs/terminology.stub';
 import { TerminologyService } from 'src/app/mauro/terminology.service';
-import { DataElementInRequestComponent } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
+import { DataElementInDataSpecificationComponent } from '../../shared/data-element-in-data-specification/data-element-in-data-specification.component';
 
 describe('DataElementComponent', () => {
   let harness: ComponentHarness<DataElementComponent>;
   const dataModelStub = createDataModelServiceStub();
   const bookmarkStub = createBookmarkServiceStub();
   const toastrStub = createToastrServiceStub();
-  const dataRequestsStub = createDataRequestsServiceStub();
+  const dataSpecificationStub = createDataSpecificationServiceStub();
   const profileStub = createProfileServiceStub();
   const terminologiesStub = createTerminologyServiceStub();
   const config: DataExplorerConfiguration = {
@@ -92,7 +92,7 @@ describe('DataElementComponent', () => {
         MockComponent(SummaryMetadataComponent),
         DataElementProfileComponent,
         BookmarkToggleComponent,
-        MockComponent(DataElementInRequestComponent),
+        MockComponent(DataElementInDataSpecificationComponent),
       ],
       providers: [
         {
@@ -124,8 +124,8 @@ describe('DataElementComponent', () => {
           useValue: config,
         },
         {
-          provide: DataRequestsService,
-          useValue: dataRequestsStub,
+          provide: DataSpecificationService,
+          useValue: dataSpecificationStub,
         },
       ],
     });
@@ -183,9 +183,9 @@ describe('DataElementComponent', () => {
     profileStub.get.mockReturnValue(of(profile));
   };
 
-  const setupDataRequestsService = () => {
-    dataRequestsStub.getRequestsIntersections.mockReturnValue(
-      of({ dataAccessRequests: [], sourceTargetIntersections: [] })
+  const setupDataSpecificationService = () => {
+    dataSpecificationStub.getDataSpecificationIntersections.mockReturnValue(
+      of({ dataSpecifications: [], sourceTargetIntersections: [] })
     );
   };
 
@@ -193,7 +193,7 @@ describe('DataElementComponent', () => {
     harness = await setupComponentTest();
     setupDataModelService();
     setupProfileService();
-    setupDataRequestsService();
+    setupDataSpecificationService();
     bookmarkStub.isBookmarked.mockReturnValue(of(false));
   });
 

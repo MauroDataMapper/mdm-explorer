@@ -30,7 +30,7 @@ export interface UserDetails {
   email: string;
   role?: string;
   needsToResetPassword?: boolean;
-  requestFolder?: FolderDetail;
+  dataSpecificationFolder?: FolderDetail;
 }
 
 /**
@@ -52,7 +52,7 @@ export class UserDetailsService {
     if (!userEmail || userEmail.length === 0) {
       return null;
     }
-    const requestFolder = localStorage.getItem('requestFolder');
+    const dataSpecificationFolder = localStorage.getItem('dataSpecificationFolder');
 
     return {
       id: localStorage.getItem('userId') ?? '',
@@ -62,14 +62,14 @@ export class UserDetailsService {
       email: localStorage.getItem('email') ?? '',
       role: localStorage.getItem('role') ?? undefined,
       needsToResetPassword: Boolean(localStorage.getItem('needsToResetPassword')),
-      requestFolder: requestFolder
-        ? (JSON.parse(requestFolder) as FolderDetail)
+      dataSpecificationFolder: dataSpecificationFolder
+        ? (JSON.parse(dataSpecificationFolder) as FolderDetail)
         : undefined,
     };
   }
 
   /**
-   * Sets the current user in use and adds an additional property, dataRequestsFolderName.
+   * Sets the current user in use and adds an additional property, dataSpecificationFolder.
    */
   set(user: UserDetails) {
     localStorage.setItem('userId', user.id);
@@ -82,7 +82,10 @@ export class UserDetailsService {
       'needsToResetPassword',
       (user.needsToResetPassword ?? false).toString()
     );
-    localStorage.setItem('requestFolder', JSON.stringify(user.requestFolder));
+    localStorage.setItem(
+      'dataSpecificationFolder',
+      JSON.stringify(user.dataSpecificationFolder)
+    );
   }
 
   /**
@@ -96,6 +99,6 @@ export class UserDetailsService {
     localStorage.removeItem('email');
     localStorage.removeItem('role');
     localStorage.removeItem('needsToResetPassword');
-    localStorage.removeItem('requestFolder');
+    localStorage.removeItem('dataSpecificationFolder');
   }
 }

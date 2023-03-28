@@ -23,7 +23,7 @@ import {
   ValidatorFn,
 } from '@angular/forms';
 import { map, Observable, of } from 'rxjs';
-import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { DataSpecificationService } from 'src/app/data-explorer/data-specification.service';
 
 /**
  * Validates that a form control has a value that matches another form control.
@@ -65,24 +65,24 @@ export const mustMatch = (
 
 /**
  * Async validator that prevents the user to attempt to use an existing
- * name for a Data Request.
+ * name for a data specification.
  *
- * @param dataRequestService A {@link DataRequestsService} instance to list existing data requests.
+ * @param dataSpecificationService A {@link DataSpecificationService} instance to list existing data specifications.
  * @returns An observable with a boolean that indicates if there is any other element with that label.
  */
 export const dontAllowDuplicatedNames = (
-  dataRequestService: DataRequestsService,
-  requestInitialName?: string
+  dataSpecificationService: DataSpecificationService,
+  dataSpecificationInitialName?: string
 ): AsyncValidatorFn => {
   return (control: AbstractControl): Observable<ValidationErrors | null> => {
     if (control) {
       const name: string = control.value;
-      if (requestInitialName === name) {
+      if (dataSpecificationInitialName === name) {
         // If the name has not changed,
         // allow without looking for duplicates.
         return of(null);
       }
-      return dataRequestService.isDataRequestNameAvailable(name).pipe(
+      return dataSpecificationService.isDataSpecificationNameAvailable(name).pipe(
         map((isAvailableResponse) => {
           if (!isAvailableResponse) {
             return { duplicatedNames: true };

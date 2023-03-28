@@ -33,7 +33,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { HomeComponent } from './home/home.component';
 import { ContactSupportComponent } from './contact-support/contact-support.component';
 import { NgxJsonViewerModule } from 'ngx-json-viewer';
-import { MyRequestsComponent } from './my-requests/my-requests.component';
+import { MyDataSpecificationsComponent } from './my-data-specifications/my-data-specifications.component';
 import { DataExplorerModule } from '../data-explorer/data-explorer.module';
 import { ErrorComponent } from './error/error.component';
 import { NotImplementedComponent } from './error/not-implemented/not-implemented.component';
@@ -43,10 +43,10 @@ import { ServerErrorComponent } from './error/server-error/server-error.componen
 import { DataElementProfileComponent } from './data-element/data-element-profile/data-element-profile.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ChangePasswordComponent } from './change-password/change-password.component';
-import { RequestQueryComponent } from './request-query/request-query.component';
-import { MyRequestDetailComponent } from './my-request-detail/my-request-detail.component';
-import { TemplateRequestsComponent } from './template-requests/template-requests.component';
-import { TemplateRequestDetailComponent } from './template-request-detail/template-request-detail.component';
+import { DataSpecificationQueryComponent } from './data-specification-query/data-specification-query.component';
+import { MyDataSpecificationDetailComponent } from './my-data-specification-detail/my-data-specification-detail.component';
+import { TemplateDataSpecificationsComponent } from './template-data-specifications/template-data-specifications.component';
+import { TemplateDataSpecificationDetailComponent } from './template-data-specification-detail/template-data-specification-detail.component';
 
 @NgModule({
   declarations: [
@@ -68,12 +68,12 @@ import { TemplateRequestDetailComponent } from './template-request-detail/templa
     DashboardComponent,
     HomeComponent,
     ContactSupportComponent,
-    MyRequestsComponent,
+    MyDataSpecificationsComponent,
     ChangePasswordComponent,
-    RequestQueryComponent,
-    MyRequestDetailComponent,
-    TemplateRequestsComponent,
-    TemplateRequestDetailComponent,
+    DataSpecificationQueryComponent,
+    MyDataSpecificationDetailComponent,
+    TemplateDataSpecificationsComponent,
+    TemplateDataSpecificationDetailComponent,
   ],
   imports: [
     CoreModule,

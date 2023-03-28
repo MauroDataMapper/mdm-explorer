@@ -28,7 +28,7 @@ import {
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { SecurityService } from 'src/app/security/security.service';
-import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { DataSpecificationService } from 'src/app/data-explorer/data-specification.service';
 import { DialogService } from 'src/app/data-explorer/dialog.service';
 import { FolderService } from 'src/app/mauro/folder.service';
 
@@ -47,7 +47,7 @@ export class MyAccountComponent implements OnInit {
   constructor(
     private security: SecurityService,
     private catalogueUser: CatalogueUserService,
-    private dataRequests: DataRequestsService,
+    private dataSpecification: DataSpecificationService,
     private stateRouter: StateRouterService,
     private toastr: ToastrService,
     private broadcast: BroadcastService,
@@ -152,7 +152,10 @@ export class MyAccountComponent implements OnInit {
           return EMPTY;
         }),
         switchMap((user) => {
-          return forkJoin([of(user), this.dataRequests.getRequestsFolder()]);
+          return forkJoin([
+            of(user),
+            this.dataSpecification.getDataSpecificationFolder(),
+          ]);
         }),
         switchMap(([user, folder]) => {
           if (!folder.id) {
@@ -160,7 +163,9 @@ export class MyAccountComponent implements OnInit {
           }
           return this.folder.update(folder.id, {
             id: folder.id,
-            label: this.dataRequests.getDataRequestsFolderName(user.emailAddress),
+            label: this.dataSpecification.getDataSpecificationFolderName(
+              user.emailAddress
+            ),
           });
         })
       )

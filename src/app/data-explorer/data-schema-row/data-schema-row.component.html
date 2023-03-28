@@ -36,22 +36,24 @@ SPDX-License-Identifier: Apache-2.0
         class="mdm-data-schema-row__header-button"
         color="primary"
         (click)="removeSchema()"
-        matTooltip="Remove from request"
-        matTooltipClass="mdm-request-icon-tooltip"
-        aria-label="Remove from request"
+        matTooltip="Remove from data specification"
+        matTooltipClass="mdm-data-specification-icon-tooltip"
+        aria-label="Remove from data specification"
       >
         <span class="fa-solid fa-trash-can"></span>
       </button>
 
-      <mdm-data-element-in-request
+      <mdm-data-element-in-data-specification
         class="mdm-data-schema-row__header-button"
-        *ngIf="sourceTargetIntersections.dataAccessRequests.length > 0"
+        *ngIf="sourceTargetIntersections.dataSpecifications.length > 0"
         [dataElements]="schemaElements"
         [sourceTargetIntersections]="sourceTargetIntersections"
-        [caption]="'Add to other requests'"
-        [suppressViewRequestsDialogButton]="suppressViewRequestsDialogButton"
-        (requestAddDelete)="handleRequestAddDelete($event)"
-      ></mdm-data-element-in-request>
+        [caption]="'Add to other data specifications'"
+        [suppressViewDataSpecificationsDialogButton]="
+          suppressViewDataSpecificationsDialogButton
+        "
+        (dataSpecificationAddDelete)="handleDataSpecificationAddDelete($event)"
+      ></mdm-data-element-in-data-specification>
       <button
         mat-button
         class="mdm-data-schema-row__header-button-updown"
@@ -64,15 +66,15 @@ SPDX-License-Identifier: Apache-2.0
       </button>
     </span>
   </div>
-  <div [hidden]="!expanded" class="mdm-my-request__request-elements">
+  <div [hidden]="!expanded" class="mdm-my-data-specification__specification-elements">
     <mdm-data-class-row
       *ngFor="let dataClass of dataSchema.dataClasses"
       [dataClassWithElements]="dataClass"
       [canDelete]="canDelete"
       (deleteItemEvent)="handleDeleteItemEvent($event)"
-      [suppressViewRequestsDialogButton]="true"
+      [suppressViewDataSpecificationsDialogButton]="true"
       [sourceTargetIntersections]="sourceTargetIntersections"
-      (requestAddDelete)="handleRequestAddDelete($event)"
+      (dataSpecificationAddDelete)="handleDataSpecificationAddDelete($event)"
       (updateAllChildrenSelected)="updateAllChildrenSelectedHandler()"
     >
     </mdm-data-class-row>

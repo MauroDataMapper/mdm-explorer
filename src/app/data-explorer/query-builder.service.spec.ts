@@ -30,7 +30,7 @@ import { ProfileService } from '../mauro/profile.service';
 import { QueryBuilderService, QueryConfiguration } from './query-builder.service';
 import {
   DataElementSearchResult,
-  DataRequestQueryPayload,
+  DataSpecificationQueryPayload,
 } from '../data-explorer/data-explorer.types';
 import { QueryBuilderConfig } from 'angular2-query-builder';
 import { createProfileServiceStub } from '../testing/stubs/profile.stub';
@@ -368,7 +368,7 @@ describe('QueryBuilderService', () => {
         } as DataElementSearchResult,
       ];
 
-      const expectedQuery: DataRequestQueryPayload | undefined = isReferencedInQuery
+      const expectedQuery: DataSpecificationQueryPayload | undefined = isReferencedInQuery
         ? ({
             condition: {
               condition: 'and',
@@ -380,7 +380,7 @@ describe('QueryBuilderService', () => {
                 },
               ],
             },
-          } as DataRequestQueryPayload)
+          } as DataSpecificationQueryPayload)
         : undefined;
 
       const expectedQueryBuilderConfig: QueryBuilderConfig = {
@@ -464,7 +464,8 @@ describe('QueryBuilderService', () => {
 
       const expectedResult: QueryConfiguration = {
         dataElementSearchResult: expectedDataElementSearchResult,
-        dataRequestQueryPayload: expectedQuery as Required<DataRequestQueryPayload>,
+        dataSpecificationQueryPayload:
+          expectedQuery as Required<DataSpecificationQueryPayload>,
         config: expectedQueryBuilderConfig,
       };
 

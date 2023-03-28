@@ -25,14 +25,14 @@ import { PaginationComponent } from './pagination/pagination.component';
 import { ContactFormComponent } from './contact-form/contact-form.component';
 import { FeedbackDialogComponent } from './feedback-dialog/feedback-dialog.component';
 import { PAGINATION_CONFIG } from './data-explorer.types';
-import { RequestStatusChipComponent } from './request-status-chip/request-status-chip.component';
+import { DataSpecificationStatusChipComponent } from './data-specification-status-chip/data-specification-status-chip.component';
 import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { DataElementRowComponent } from './data-element-row/data-element-row.component';
 import { DataClassRowComponent } from './data-class-row/data-class-row.component';
 import { DataSchemaRowComponent } from './data-schema-row/data-schema-row.component';
-import { CreateRequestDialogComponent } from './create-request-dialog/create-request-dialog.component';
-import { RequestCreatedDialogComponent } from './request-created-dialog/request-created-dialog.component';
-import { RequestUpdatedDialogComponent } from './request-updated-dialog/request-updated-dialog.component';
+import { CreateDataSpecificationDialogComponent } from './create-data-specification-dialog/create-data-specification-dialog.component';
+import { DataSpecificationCreatedDialogComponent } from './data-specification-created-dialog/data-specification-created-dialog.component';
+import { DataSpecificationUpdatedDialogComponent } from './data-specification-updated-dialog/data-specification-updated-dialog.component';
 import { SuccessDialogComponent } from './success-dialog/success-dialog.component';
 import { IdentifiableDataIconComponent } from './identifiable-data-icon/identifiable-data-icon.component';
 import { SearchFiltersComponent } from './search-filters/search-filters.component';
@@ -42,10 +42,10 @@ import { QueryBuilderComponent } from '../data-explorer/querybuilder/querybuilde
 import { QueryBuilderModule } from 'angular2-query-builder';
 import { MeqlPipe } from './pipes/meql.pipe';
 import { MeqlOutputComponent } from './meql-output/meql-output.component';
-import { DataRequestRowComponent } from './data-request-row/data-request-row.component';
+import { DataSpecificationRowComponent } from './data-specification-row/data-specification-row.component';
 import { DataQueryRowComponent } from './data-query-row/data-query-row.component';
 import { NumberFormatDirective } from './querybuilder/directives/number-format.directive';
-import { EditRequestDialogComponent } from './edit-request-dialog/edit-request-dialog.component';
+import { EditDataSpecificationDialogComponent } from './edit-data-specification-dialog/edit-data-specification-dialog.component';
 import { SelectionExpandedDialogComponent } from './selection-expanded-dialog/selection-expanded-dialog.component';
 import { SelectionCompactComponent } from './selection-compact/selection-compact.component';
 
@@ -55,15 +55,15 @@ import { SelectionCompactComponent } from './selection-compact/selection-compact
     DataElementRowComponent,
     DataClassRowComponent,
     DataSchemaRowComponent,
-    RequestStatusChipComponent,
+    DataSpecificationStatusChipComponent,
     PaginationComponent,
     SortByComponent,
     ContactFormComponent,
     FeedbackDialogComponent,
     BreadcrumbComponent,
-    CreateRequestDialogComponent,
-    RequestCreatedDialogComponent,
-    RequestUpdatedDialogComponent,
+    CreateDataSpecificationDialogComponent,
+    DataSpecificationCreatedDialogComponent,
+    DataSpecificationUpdatedDialogComponent,
     SuccessDialogComponent,
     IdentifiableDataIconComponent,
     SearchFiltersComponent,
@@ -72,10 +72,10 @@ import { SelectionCompactComponent } from './selection-compact/selection-compact
     QueryBuilderComponent,
     MeqlPipe,
     MeqlOutputComponent,
-    DataRequestRowComponent,
+    DataSpecificationRowComponent,
     DataQueryRowComponent,
     NumberFormatDirective,
-    EditRequestDialogComponent,
+    EditDataSpecificationDialogComponent,
     SelectionExpandedDialogComponent,
     SelectionCompactComponent,
   ],
@@ -89,14 +89,14 @@ import { SelectionCompactComponent } from './selection-compact/selection-compact
     SortByComponent,
     ContactFormComponent,
     FeedbackDialogComponent,
-    RequestStatusChipComponent,
+    DataSpecificationStatusChipComponent,
     BreadcrumbComponent,
     IdentifiableDataIconComponent,
     SearchFiltersComponent,
     CatalogueSearchFormComponent,
     QueryBuilderComponent,
     MeqlOutputComponent,
-    DataRequestRowComponent,
+    DataSpecificationRowComponent,
     DataQueryRowComponent,
     NumberFormatDirective,
     SelectionCompactComponent,

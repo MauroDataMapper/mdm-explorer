@@ -32,7 +32,7 @@ import {
 import { environment } from '../environments/environment';
 import { BroadcastEvent, BroadcastService } from './core/broadcast.service';
 import { StateRouterService } from './core/state-router.service';
-import { DataRequestsService } from './data-explorer/data-requests.service';
+import { DataSpecificationService } from './data-explorer/data-specification.service';
 import { ErrorService } from './pages/error/error.service';
 import { MdmHttpError } from './mauro/mauro.types';
 import { SecurityService } from './security/security.service';
@@ -53,7 +53,7 @@ export class AppComponent implements OnInit, OnDestroy {
   isLoading = false;
   loadingCaption = '';
 
-  unsentRequestsCount = 0;
+  unsentDataSpecificationsCount = 0;
 
   signedInUserProfileImageSrc?: string;
 
@@ -125,8 +125,8 @@ export class AppComponent implements OnInit, OnDestroy {
   ];
 
   accountLink: HeaderLink = {
-    label: 'My requests',
-    routerLink: '/requests',
+    label: 'My Data Specifications',
+    routerLink: '/dataSpecifications',
     arrow: 'angle-down',
   };
 
@@ -172,7 +172,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private broadcast: BroadcastService,
     private security: SecurityService,
     private userDetails: UserDetailsService,
-    private dataRequests: DataRequestsService,
+    private dataSpecification: DataSpecificationService,
     private stateRouter: StateRouterService,
     private toastr: ToastrService,
     private userIdle: UserIdleService,
@@ -207,9 +207,12 @@ export class AppComponent implements OnInit, OnDestroy {
         takeUntil(this.unsubscribe$),
         switchMap((userSignedIn) => {
           this.setupSignedInUser(userSignedIn);
-          return this.getUnsentRequestCount();
+          return this.getUnsentDataSpecificationCount();
         }),
-        map((unsentRequestsCount) => (this.unsentRequestsCount = unsentRequestsCount))
+        map(
+          (unsentDataSpecificationsCount) =>
+            (this.unsentDataSpecificationsCount = unsentDataSpecificationsCount)
+        )
       )
       .subscribe(() => {});
 
@@ -221,8 +224,9 @@ export class AppComponent implements OnInit, OnDestroy {
     const user = this.userDetails.get();
     if (user) {
       this.setupSignedInUser(user);
-      this.getUnsentRequestCount().subscribe(
-        (unsentRequestsCount) => (this.unsentRequestsCount = unsentRequestsCount)
+      this.getUnsentDataSpecificationCount().subscribe(
+        (unsentDataSpecificationsCount) =>
+          (this.unsentDataSpecificationsCount = unsentDataSpecificationsCount)
       );
     }
 
@@ -233,7 +237,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subscribeHttpErrorEvent('http-not-implemented', '/not-implemented');
     this.subscribeHttpErrorEvent('http-server-error', '/server-error');
 
-    this.subscribeDataRequestChanges();
+    this.subscribeDataSpecificationChanges();
 
     this.broadcast
       .onLoading()
@@ -292,34 +296,42 @@ export class AppComponent implements OnInit, OnDestroy {
       : undefined;
   }
 
-  private getUnsentRequestCount() {
-    return this.dataRequests.list().pipe(
+  private getUnsentDataSpecificationCount() {
+    return this.dataSpecification.list().pipe(
       catchError(() => {
-        this.toastr.error('There was a problem locating your current requests.');
+        this.toastr.error(
+          'There was a problem locating your current data specifications.'
+        );
         return EMPTY;
       }),
-      map((requests) => {
-        return requests.filter((req) => req.status === 'unsent').length;
+      map((dataSpecifications) => {
+        return dataSpecifications.filter((req) => req.status === 'unsent').length;
       })
     );
   }
 
-  private subscribeDataRequestChanges() {
+  private subscribeDataSpecificationChanges() {
     this.broadcast
-      .on('data-request-added')
+      .on('data-specification-added')
       .pipe(
         takeUntil(this.unsubscribe$),
-        switchMap(() => this.getUnsentRequestCount()),
-        map((unsentRequestsCount) => (this.unsentRequestsCount = unsentRequestsCount))
+        switchMap(() => this.getUnsentDataSpecificationCount()),
+        map(
+          (unsentDataSpecificationsCount) =>
+            (this.unsentDataSpecificationsCount = unsentDataSpecificationsCount)
+        )
       )
       .subscribe(() => {});
 
     this.broadcast
-      .on('data-request-submitted')
+      .on('data-specification-submitted')
       .pipe(
         takeUntil(this.unsubscribe$),
-        switchMap(() => this.getUnsentRequestCount()),
-        map((unsentRequestsCount) => (this.unsentRequestsCount = unsentRequestsCount))
+        switchMap(() => this.getUnsentDataSpecificationCount()),
+        map(
+          (unsentDataSpecificationsCount) =>
+            (this.unsentDataSpecificationsCount = unsentDataSpecificationsCount)
+        )
       )
       .subscribe(() => {});
   }

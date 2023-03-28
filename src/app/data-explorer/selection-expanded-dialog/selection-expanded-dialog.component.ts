@@ -21,11 +21,11 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Uuid } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
 import { DataElementSearchResult } from '../data-explorer.types';
-import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.service';
+import { DataSpecificationSourceTargetIntersections } from '../data-specification.service';
 import { SelectionService } from '../selection.service';
 
 export interface SelectionExpandedDialogData {
-  sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
+  sourceTargetIntersections: DataSpecificationSourceTargetIntersections;
 }
 
 @Component({
@@ -35,7 +35,7 @@ export interface SelectionExpandedDialogData {
 })
 export class SelectionExpandedDialogComponent {
   selectedElements$: Observable<DataElementSearchResult[]>;
-  sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
+  sourceTargetIntersections: DataSpecificationSourceTargetIntersections;
   constructor(
     public dialogRef: MatDialogRef<SelectionExpandedDialogComponent>,
     private selectionService: SelectionService,

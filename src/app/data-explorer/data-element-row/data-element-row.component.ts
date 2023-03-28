@@ -18,9 +18,9 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import {
-  CreateRequestEvent,
-  RequestElementAddDeleteEvent,
-} from 'src/app/shared/data-element-in-request/data-element-in-request.component';
+  CreateDataSpecificationEvent,
+  DataSpecificationElementAddDeleteEvent,
+} from '../../shared/data-element-in-data-specification/data-element-in-data-specification.component';
 import { DataElementSearchResultComponent } from '../data-element-search-result/data-element-search-result.component';
 import { DataItemDeleteEvent } from '../data-explorer.types';
 
@@ -33,13 +33,14 @@ export class DataElementRowComponent
   extends DataElementSearchResultComponent
   implements OnInit
 {
-  @Input() suppressViewRequestsDialogButton = false;
+  @Input() suppressViewDataSpecificationsDialogButton = false;
   @Input() canDelete = true;
   @Input() nestedPadding = false;
 
   @Output() deleteItemEvent = new EventEmitter<DataItemDeleteEvent>();
-  @Output() requestAddDelete = new EventEmitter<RequestElementAddDeleteEvent>();
-  @Output() requestCreated = new EventEmitter<CreateRequestEvent>();
+  @Output() dataSpecificationAddDelete =
+    new EventEmitter<DataSpecificationElementAddDeleteEvent>();
+  @Output() dataSpecificationCreated = new EventEmitter<CreateDataSpecificationEvent>();
   @Output() setRemoveSelectedButtonDisabledEvent = new EventEmitter();
   @Output() updateAllChildrenSelected = new EventEmitter();
 
@@ -63,12 +64,12 @@ export class DataElementRowComponent
     this.updateAllChildrenSelected.emit();
   }
 
-  handleRequestAddDelete(event: RequestElementAddDeleteEvent) {
-    this.requestAddDelete.emit(event);
+  handleDataSpecificationAddDelete(event: DataSpecificationElementAddDeleteEvent) {
+    this.dataSpecificationAddDelete.emit(event);
   }
 
-  handleCreateRequest(event: CreateRequestEvent) {
-    this.requestCreated.emit(event);
+  handleCreateDataSpecification(event: CreateDataSpecificationEvent) {
+    this.dataSpecificationCreated.emit(event);
   }
 
   removeElement() {

@@ -39,7 +39,7 @@ import { DataClassIdentifier } from 'src/app/mauro/mauro.types';
 import {
   DataElementDto,
   DataElementInstance,
-  DataRequest,
+  DataSpecification,
 } from 'src/app/data-explorer/data-explorer.types';
 
 export type DataModelGetDataModelFn = (path: string) => Observable<DataModelDetail>;
@@ -61,7 +61,7 @@ export type DataModelSearchDataModelFn = (
 ) => Observable<MdmIndexBody<CatalogueItemSearchResult>>;
 export type DataModelListInFolderFn = (folderId: Uuid) => Observable<DataModel[]>;
 export type DataModelGetHierarchyFn = (
-  request: DataRequest
+  dataSpecification: DataSpecification
 ) => Observable<DataElementDto[]>;
 export type DataModelAddToFolderFn = (
   folderId: Uuid,

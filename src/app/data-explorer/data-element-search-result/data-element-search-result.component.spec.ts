@@ -35,7 +35,7 @@ import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
 import { MockComponent } from 'ng-mocks';
 import { BookmarkToggleComponent } from 'src/app/shared/bookmark-toggle/bookmark-toggle.component';
 import { IdentifiableDataIconComponent } from '../identifiable-data-icon/identifiable-data-icon.component';
-import { DataElementInRequestComponent } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
+import { DataElementInDataSpecificationComponent } from '../../shared/data-element-in-data-specification/data-element-in-data-specification.component';
 import { HeaderAndContentBoxComponent } from 'src/app/shared/header-and-content-box/header-and-content-box.component';
 
 describe('DataElementSearchResultComponent', () => {
@@ -63,7 +63,7 @@ describe('DataElementSearchResultComponent', () => {
       declarations: [
         MockComponent(BookmarkToggleComponent),
         MockComponent(IdentifiableDataIconComponent),
-        MockComponent(DataElementInRequestComponent),
+        MockComponent(DataElementInDataSpecificationComponent),
         MockComponent(HeaderAndContentBoxComponent),
         MockComponent(MatCheckbox),
       ],

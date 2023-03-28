@@ -27,7 +27,7 @@ import { QueryBuilderConfig } from 'angular2-query-builder';
 import { catchError, forkJoin, map, Observable, of } from 'rxjs';
 import {
   DataElementSearchResult,
-  DataRequestQueryPayload,
+  DataSpecificationQueryPayload,
   QueryCondition,
   QueryExpression,
 } from '../data-explorer/data-explorer.types';
@@ -36,7 +36,7 @@ import { ProfileService } from '../mauro/profile.service';
 
 export interface QueryConfiguration {
   dataElementSearchResult: DataElementSearchResult[];
-  dataRequestQueryPayload: Required<DataRequestQueryPayload> | undefined;
+  dataSpecificationQueryPayload: Required<DataSpecificationQueryPayload> | undefined;
   config: QueryBuilderConfig;
 }
 
@@ -70,9 +70,9 @@ export class QueryBuilderService {
 
   public setupConfig(
     dataElements: DataElementSearchResult[],
-    query?: DataRequestQueryPayload
+    query?: DataSpecificationQueryPayload
   ): Observable<QueryConfiguration> {
-    const requests$ = dataElements.map((dataElement) => {
+    const dataSpecifications$ = dataElements.map((dataElement) => {
       const profile$ = this.getQueryBuilderDatatype(dataElement.dataType).pipe(
         catchError((error) => {
           if (error.status === 404) {
@@ -88,7 +88,7 @@ export class QueryBuilderService {
       return forkJoin([profile$, dataElement$]);
     });
 
-    return forkJoin(requests$).pipe(
+    return forkJoin(dataSpecifications$).pipe(
       map((items) => {
         return this.getQueryFields(items, dataElements, query);
       })
@@ -173,7 +173,7 @@ export class QueryBuilderService {
       : null;
   }
 
-  private getQueryCondition(query?: DataRequestQueryPayload): QueryCondition {
+  private getQueryCondition(query?: DataSpecificationQueryPayload): QueryCondition {
     return query
       ? query.condition
       : {
@@ -219,7 +219,7 @@ export class QueryBuilderService {
   private getQueryFields(
     items: [Profile, DataElementSearchResult][],
     dataElements: DataElementSearchResult[],
-    query?: DataRequestQueryPayload
+    query?: DataSpecificationQueryPayload
   ): QueryConfiguration {
     const queryCondition: QueryCondition = this.getQueryCondition(query);
 
@@ -257,7 +257,7 @@ export class QueryBuilderService {
 
     return {
       dataElementSearchResult: dataElements,
-      dataRequestQueryPayload: query as Required<DataRequestQueryPayload>,
+      dataSpecificationQueryPayload: query as Required<DataSpecificationQueryPayload>,
       config,
     };
   }

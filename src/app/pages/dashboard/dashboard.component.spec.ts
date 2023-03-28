@@ -23,11 +23,11 @@ import { ToastrService } from 'ngx-toastr';
 import { Carousel } from 'primeng/carousel';
 import { of, throwError } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
-import { DataRequest } from 'src/app/data-explorer/data-explorer.types';
-import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { DataSpecification } from 'src/app/data-explorer/data-explorer.types';
+import { DataSpecificationService } from 'src/app/data-explorer/data-specification.service';
 import { SecurityService } from 'src/app/security/security.service';
 import { UserDetails } from 'src/app/security/user-details.service';
-import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
+import { createDataSpecificationServiceStub } from 'src/app/testing/stubs/data-specifications.stub';
 import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { createStateRouterStub } from 'src/app/testing/stubs/state-router.stub';
 import { createToastrServiceStub } from 'src/app/testing/stubs/toastr.stub';
@@ -42,7 +42,7 @@ describe('DashboardComponent', () => {
   let harness: ComponentHarness<DashboardComponent>;
   const securityStub = createSecurityServiceStub();
   const stateRouterStub = createStateRouterStub();
-  const dataRequestsStub = createDataRequestsServiceStub();
+  const dataSpecificationStub = createDataSpecificationServiceStub();
   const toastrStub = createToastrServiceStub();
 
   beforeEach(async () => {
@@ -62,8 +62,8 @@ describe('DashboardComponent', () => {
           useValue: stateRouterStub,
         },
         {
-          provide: DataRequestsService,
-          useValue: dataRequestsStub,
+          provide: DataSpecificationService,
+          useValue: dataSpecificationStub,
         },
         {
           provide: ToastrService,
@@ -90,42 +90,42 @@ describe('DashboardComponent', () => {
       expect(spy).toHaveBeenCalledWith('/home');
     });
 
-    it('should initialize the currentUserRequests list upon successful retrieval of requests', () => {
+    it('should initialize the currentUserDataSpecifications list upon successful retrieval of data specifications', () => {
       securityStub.getSignedInUser.mockImplementationOnce(() => {
         return { email: 'email' } as UserDetails;
       });
 
-      const openRequests = [
+      const openDataSpecifications = [
         { label: 'dataModel-1', status: 'unsent' },
         { label: 'dataModel-2', status: 'unsent' },
         { label: 'dataModel-3', status: 'submitted' },
-      ] as DataRequest[];
+      ] as DataSpecification[];
 
-      dataRequestsStub.list.mockImplementationOnce(() => {
-        return of(openRequests);
+      dataSpecificationStub.list.mockImplementationOnce(() => {
+        return of(openDataSpecifications);
       });
 
       harness.component.ngOnInit();
 
-      const expected = openRequests.filter((r) => r.status === 'unsent');
-      expect(harness.component.currentUserRequests).toEqual(expected);
+      const expected = openDataSpecifications.filter((r) => r.status === 'unsent');
+      expect(harness.component.currentUserDataSpecifications).toEqual(expected);
     });
   });
 
-  describe('loadRequests', () => {
-    it('should raise a toastr message if something goes wrong and not set currentUserRequests', () => {
+  describe('loadDataSpecifications', () => {
+    it('should raise a toastr message if something goes wrong and not set currentUserDataSpecifications', () => {
       const spy = jest.spyOn(toastrStub, 'error');
 
-      dataRequestsStub.list.mockImplementationOnce(() => {
+      dataSpecificationStub.list.mockImplementationOnce(() => {
         return throwError(() => {});
       });
 
-      harness.component.loadRequests();
+      harness.component.loadDataSpecifications();
 
       expect(spy).toHaveBeenCalledWith(
-        'Unable to retrieve your current requests from the server.'
+        'Unable to retrieve your current data specifications from the server.'
       );
-      expect(harness.component.currentUserRequests).toEqual([]);
+      expect(harness.component.currentUserDataSpecifications).toEqual([]);
     });
   });
 

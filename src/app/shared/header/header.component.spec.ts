@@ -79,14 +79,14 @@ describe('HeaderComponent', () => {
     const signInElement = dom.querySelector('#signIn');
     const signOutElement = dom.querySelector('.mdm-header__overlayUserInitials');
     const bookmarks = dom.querySelector('#app.container.my-bookmarks');
-    const requests = dom.querySelector('#app.container.my-requests');
+    const dataSpecifications = dom.querySelector('#app.container.my-data-specifications');
     expect(signInElement).toBeTruthy();
     expect(signOutElement).toBeFalsy();
     expect(bookmarks).toBeFalsy();
-    expect(requests).toBeFalsy();
+    expect(dataSpecifications).toBeFalsy();
   });
 
-  it('should display Sign Out link, bookmarks and requests when signed in', () => {
+  it('should display Sign Out link, bookmarks and data specifications when signed in', () => {
     const dom = harness.fixture.nativeElement;
     harness.component.signInLink = {
       routerLink: 'test',
@@ -106,8 +106,8 @@ describe('HeaderComponent', () => {
       },
     ];
     harness.component.accountLink = {
-      label: 'My requests',
-      routerLink: 'app.container.my-requests',
+      label: 'My data specifications',
+      routerLink: 'app.container.my-data-specifications',
       arrow: 'angle-down',
     };
     harness.detectChanges();
@@ -115,11 +115,13 @@ describe('HeaderComponent', () => {
     const signInElement = dom.querySelector('#signIn');
     const signOutElement = dom.querySelector('.mdm-header__overlayUserInitials');
     const bookmarks = dom.querySelector('#app\\.container\\.my-bookmarks');
-    const requests = dom.querySelector('#app\\.container\\.my-requests');
+    const dataSpecifications = dom.querySelector(
+      '#app\\.container\\.my-data-specifications'
+    );
     expect(signInElement).toBeFalsy();
     expect(signOutElement).toBeTruthy();
     expect(bookmarks).toBeTruthy();
-    expect(requests).toBeTruthy();
+    expect(dataSpecifications).toBeTruthy();
     // check that the user initials are correct
     expect(signOutElement.innerHTML).toBe(' TP ');
   });

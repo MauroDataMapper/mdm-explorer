@@ -49,11 +49,11 @@ import {
 
 import { SearchListingComponent } from './search-listing.component';
 import { DataElementBookmarkEvent } from 'src/app/data-explorer/data-explorer.types';
-import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
+import { createDataSpecificationServiceStub } from 'src/app/testing/stubs/data-specifications.stub';
 import {
-  DataRequestsService,
-  DataAccessRequestsSourceTargetIntersections,
-} from 'src/app/data-explorer/data-requests.service';
+  DataSpecificationService,
+  DataSpecificationSourceTargetIntersections,
+} from 'src/app/data-explorer/data-specification.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import { createDataExplorerServiceStub } from 'src/app/testing/stubs/data-explorer.stub';
 import { SelectionService } from 'src/app/data-explorer/selection.service';
@@ -68,7 +68,7 @@ describe('SearchListingComponent', () => {
   const dataElementSearchStub = createDataElementSearchServiceStub();
   const toastrStub = createToastrServiceStub();
   const stateRouterStub = createStateRouterStub();
-  const dataRequestsStub = createDataRequestsServiceStub();
+  const dataSpecificationStub = createDataSpecificationServiceStub();
   const dataExplorerStub = createDataExplorerServiceStub();
 
   const mockedRootDataModel: DataModelDetail = {
@@ -79,12 +79,12 @@ describe('SearchListingComponent', () => {
     availableActions: ['show'],
   };
 
-  const mockedSourceTargetIntersections: DataAccessRequestsSourceTargetIntersections = {
-    dataAccessRequests: [],
+  const mockedSourceTargetIntersections: DataSpecificationSourceTargetIntersections = {
+    dataSpecifications: [],
     sourceTargetIntersections: [],
   };
 
-  const mockedIntersections: DataAccessRequestsSourceTargetIntersections =
+  const mockedIntersections: DataSpecificationSourceTargetIntersections =
     mockedSourceTargetIntersections;
 
   const profileFieldsForFilters: ProfileField[] = [
@@ -137,8 +137,8 @@ describe('SearchListingComponent', () => {
           useValue: bookmarkStub,
         },
         {
-          provide: DataRequestsService,
-          useValue: dataRequestsStub,
+          provide: DataSpecificationService,
+          useValue: dataSpecificationStub,
         },
         {
           provide: DataExplorerService,
@@ -264,7 +264,7 @@ describe('SearchListingComponent', () => {
       dataExplorerStub.getRootDataModel.mockImplementationOnce(() =>
         of(mockedRootDataModel)
       );
-      dataRequestsStub.getRequestsIntersections.mockImplementationOnce(() =>
+      dataSpecificationStub.getDataSpecificationIntersections.mockImplementationOnce(() =>
         of(mockedIntersections)
       );
       harness.component.ngOnInit();
@@ -289,7 +289,7 @@ describe('SearchListingComponent', () => {
       dataExplorerStub.getRootDataModel.mockImplementationOnce(() =>
         of(mockedRootDataModel)
       );
-      dataRequestsStub.getRequestsIntersections.mockImplementationOnce(() =>
+      dataSpecificationStub.getDataSpecificationIntersections.mockImplementationOnce(() =>
         of(mockedIntersections)
       );
       harness.component.ngOnInit();
@@ -312,7 +312,7 @@ describe('SearchListingComponent', () => {
       dataExplorerStub.getRootDataModel.mockImplementationOnce(() =>
         of(mockedRootDataModel)
       );
-      dataRequestsStub.getRequestsIntersections.mockImplementationOnce(() =>
+      dataSpecificationStub.getDataSpecificationIntersections.mockImplementationOnce(() =>
         of(mockedIntersections)
       );
       harness.component.ngOnInit();
@@ -334,7 +334,7 @@ describe('SearchListingComponent', () => {
       dataExplorerStub.getRootDataModel.mockImplementationOnce(() =>
         of(mockedRootDataModel)
       );
-      dataRequestsStub.getRequestsIntersections.mockImplementationOnce(() =>
+      dataSpecificationStub.getDataSpecificationIntersections.mockImplementationOnce(() =>
         of(mockedIntersections)
       );
       harness.component.ngOnInit();
@@ -421,8 +421,8 @@ describe('SearchListingComponent', () => {
         dataExplorerStub.getRootDataModel.mockImplementationOnce(() =>
           of(mockedRootDataModel)
         );
-        dataRequestsStub.getRequestsIntersections.mockImplementationOnce(() =>
-          of(mockedIntersections)
+        dataSpecificationStub.getDataSpecificationIntersections.mockImplementationOnce(
+          () => of(mockedIntersections)
         );
       });
 
@@ -527,7 +527,7 @@ describe('SearchListingComponent', () => {
       dataExplorerStub.getRootDataModel.mockImplementationOnce(() =>
         of(mockedRootDataModel)
       );
-      dataRequestsStub.getRequestsIntersections.mockImplementationOnce(() =>
+      dataSpecificationStub.getDataSpecificationIntersections.mockImplementationOnce(() =>
         of(mockedIntersections)
       );
       harness.component.ngOnInit();

@@ -20,7 +20,7 @@ import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
-import { DataRequestQueryType } from '../data-explorer.types';
+import { DataSpecificationQueryType } from '../data-explorer.types';
 
 import { DataQueryRowComponent } from './data-query-row.component';
 
@@ -40,7 +40,7 @@ describe('DataQueryRowComponent', () => {
     expect(harness.component.editRouterLink).toBeUndefined();
   });
 
-  it.each<[DataRequestQueryType | undefined, string | null]>([
+  it.each<[DataSpecificationQueryType | undefined, string | null]>([
     ['cohort', 'Cohort query'],
     ['data', 'Data query'],
     [undefined, null],

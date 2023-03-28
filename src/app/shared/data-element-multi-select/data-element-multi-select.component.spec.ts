@@ -26,9 +26,9 @@ import { DataElementMultiSelectComponent } from './data-element-multi-select.com
 import { SecurityService } from 'src/app/security/security.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { DataModelService } from 'src/app/mauro/data-model.service';
-import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { DataSpecificationService } from 'src/app/data-explorer/data-specification.service';
 import { createDataModelServiceStub } from 'src/app/testing/stubs/data-model.stub';
-import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
+import { createDataSpecificationServiceStub } from 'src/app/testing/stubs/data-specifications.stub';
 import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { createStateRouterStub } from 'src/app/testing/stubs/state-router.stub';
 import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
@@ -37,7 +37,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { UserDetails } from 'src/app/security/user-details.service';
 import {
   DataElementSearchResult,
-  DataRequest,
+  DataSpecification,
 } from 'src/app/data-explorer/data-explorer.types';
 import { of } from 'rxjs';
 import { createBroadcastServiceStub } from 'src/app/testing/stubs/broadcast.stub';
@@ -51,7 +51,7 @@ import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
 describe('DataElementMultiSelectComponent', () => {
   let harness: ComponentHarness<DataElementMultiSelectComponent>;
   const dataModelsStub = createDataModelServiceStub();
-  const dataRequestsStub = createDataRequestsServiceStub();
+  const dataSpecificationStub = createDataSpecificationServiceStub();
   const securityStub = createSecurityServiceStub();
   const stateRouterStub = createStateRouterStub();
   const matDialogStub = createMatDialogStub();
@@ -81,8 +81,8 @@ describe('DataElementMultiSelectComponent', () => {
           useValue: dataModelsStub,
         },
         {
-          provide: DataRequestsService,
-          useValue: dataRequestsStub,
+          provide: DataSpecificationService,
+          useValue: dataSpecificationStub,
         },
         {
           provide: StateRouterService,
@@ -116,7 +116,7 @@ describe('DataElementMultiSelectComponent', () => {
     expect(harness?.isComponentCreated).toBeTruthy();
   });
 
-  describe('creating requests', () => {
+  describe('creating data specifications', () => {
     const dataElement1: DataElementSearchResult = {
       id: '1',
       dataClass: '2',
@@ -137,69 +137,72 @@ describe('DataElementMultiSelectComponent', () => {
 
     const dataElements = [dataElement1, dataElement2];
 
-    const dataRequest = { id: '999' } as DataRequest;
+    const dataSpecification = { id: '999' } as DataSpecification;
 
     const navigateKnownSpy = jest.spyOn(stateRouterStub, 'navigateToKnownPath');
     const navigateToSpy = jest.spyOn(stateRouterStub, 'navigateTo');
 
     beforeEach(() => {
-      dataRequestsStub.createWithDialogs.mockClear();
+      dataSpecificationStub.createWithDialogs.mockClear();
       broadcastStub.loading.mockClear();
       navigateKnownSpy.mockClear();
     });
 
-    it('should not call create request if there are no data elements', () => {
+    it('should not call create data specification if there are no data elements', () => {
       harness.component.dataElements = [];
-      const spy = jest.spyOn(harness.component, 'createRequest');
+      const spy = jest.spyOn(harness.component, 'createDataSpecification');
 
-      harness.component.onClickCreateRequest();
+      harness.component.onClickCreateDataSpecification();
 
       expect(spy).not.toHaveBeenCalled();
     });
 
-    it('should transition to requests page if RequestCreatedAction is \'view-requests\'', () => {
+    it('should transition to data specifications page if DataSpecificationCreatedAction is \'view-data-specifications\'', () => {
       // arrange
-      dataRequestsStub.createWithDialogs.mockImplementationOnce(() => {
+      dataSpecificationStub.createWithDialogs.mockImplementationOnce(() => {
         return of({
-          dataRequest,
-          action: 'view-requests',
+          dataSpecification,
+          action: 'view-data-specifications',
         });
       });
 
       // act
-      harness.component.createRequest(dataElements);
+      harness.component.createDataSpecification(dataElements);
 
       // assert
-      expect(navigateKnownSpy).toHaveBeenCalledWith('/requests');
+      expect(navigateKnownSpy).toHaveBeenCalledWith('/dataSpecifications');
     });
 
-    it('should transition to request detail page if RequestCreatedAction is \'view-request-detail\'', () => {
+    it('should transition to data specification detail page if DataSpecificationCreatedAction is \'view-data-specification-detail\'', () => {
       // arrange
-      dataRequestsStub.createWithDialogs.mockImplementationOnce(() => {
+      dataSpecificationStub.createWithDialogs.mockImplementationOnce(() => {
         return of({
-          dataRequest,
-          action: 'view-request-detail',
+          dataSpecification,
+          action: 'view-data-specification-detail',
         });
       });
 
       // act
-      harness.component.createRequest(dataElements);
+      harness.component.createDataSpecification(dataElements);
 
       // assert
-      expect(navigateToSpy).toHaveBeenCalledWith(['/requests', dataRequest.id]);
+      expect(navigateToSpy).toHaveBeenCalledWith([
+        '/dataSpecifications',
+        dataSpecification.id,
+      ]);
     });
 
-    it('should not transition to requests page if RequestCreatedAction is \'continue\'', () => {
+    it('should not transition to data specifications page if DataSpecificationCreatedAction is \'continue\'', () => {
       // arrange
-      dataRequestsStub.createWithDialogs.mockImplementationOnce(() => {
+      dataSpecificationStub.createWithDialogs.mockImplementationOnce(() => {
         return of({
-          dataRequest,
+          dataSpecification,
           action: 'continue',
         });
       });
 
       // act
-      harness.component.createRequest(dataElements);
+      harness.component.createDataSpecification(dataElements);
 
       // assert
       expect(navigateKnownSpy).not.toHaveBeenCalled();
@@ -207,17 +210,17 @@ describe('DataElementMultiSelectComponent', () => {
 
     it('should use the provided callback function to retrieve the dataElements to add', () => {
       // arrange
-      const createSpy = jest.spyOn(dataRequestsStub, 'createWithDialogs');
+      const createSpy = jest.spyOn(dataSpecificationStub, 'createWithDialogs');
 
-      dataRequestsStub.createWithDialogs.mockImplementationOnce(() => {
+      dataSpecificationStub.createWithDialogs.mockImplementationOnce(() => {
         return of({
-          dataRequest,
-          action: 'view-requests',
+          dataSpecification,
+          action: 'view-data-specifications',
         });
       });
 
       // act
-      harness.component.createRequest(dataElements);
+      harness.component.createDataSpecification(dataElements);
 
       // assert
 
@@ -225,7 +228,7 @@ describe('DataElementMultiSelectComponent', () => {
       // createSpy.mock.calls is an array containing the call arguments of all calls that have been made to this mock function.
       // Each item in the array is an array of arguments that were passed during the call. For example, createSpy.mock.calls[0][0]
       // gets the first argument of the first call to this mock function. In this case, this is the callback function used to retrieve
-      // the Observable<DataElementBasic[]> containing the dataElements to be added to the new request.
+      // the Observable<DataElementBasic[]> containing the dataElements to be added to the new data specification.
       const call = createSpy.mock.calls[0];
       const callback = call[0];
       let returnedDataElements;
@@ -237,13 +240,13 @@ describe('DataElementMultiSelectComponent', () => {
     });
   });
 
-  describe('add to existing requests', () => {
+  describe('add to existing data specifications', () => {
     beforeEach(() => {
       broadcastStub.dispatch.mockClear();
       broadcastStub.loading.mockClear();
     });
 
-    it('should add expected data elements to a data request', () => {
+    it('should add expected data elements to a data specification', () => {
       const sourceDataModelId = '123';
       const targetDataModelId = '456';
 
@@ -260,9 +263,9 @@ describe('DataElementMultiSelectComponent', () => {
 
       harness.component.dataElements = dataElements;
 
-      const request: DataModel = {
+      const dataSpecification: DataModel = {
         id: targetDataModelId,
-        label: 'request',
+        label: 'data specification',
         domainType: CatalogueItemDomainType.DataModel,
       };
 
@@ -273,15 +276,15 @@ describe('DataElementMultiSelectComponent', () => {
           additions: dataElements.map((de) => de.id),
           deletions: [],
         });
-        return of({ ...request, availableActions: [], finalised: false });
+        return of({ ...dataSpecification, availableActions: [], finalised: false });
       });
 
-      harness.component.onClickAddSelectedToRequest(request);
+      harness.component.onClickAddSelectedToDataSpecification(dataSpecification);
 
-      expect(broadcastStub.dispatch).toHaveBeenCalledWith('data-request-added');
+      expect(broadcastStub.dispatch).toHaveBeenCalledWith('data-specification-added');
       expect(broadcastStub.loading).toHaveBeenCalledWith({
         isLoading: true,
-        caption: 'Updating your request...',
+        caption: 'Updating your data specification...',
       });
       expect(broadcastStub.loading).toHaveBeenCalledWith({ isLoading: false });
     });

@@ -29,11 +29,11 @@ SPDX-License-Identifier: Apache-2.0
         <h3>{{ dataElement.label }}</h3>
       </span>
       <span>
-        <mdm-data-element-in-request
+        <mdm-data-element-in-data-specification
           *ngIf="dataElementSearchResult"
           [dataElements]="dataElementSearchResult"
           [sourceTargetIntersections]="sourceTargetIntersections"
-        ></mdm-data-element-in-request>
+        ></mdm-data-element-in-data-specification>
         <mdm-bookmark-toggle
           (toggle)="toggleBookmark($event)"
           [selected]="isBookmarked"

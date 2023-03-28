@@ -20,10 +20,10 @@ import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, map, throwError } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
-import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { DataSpecificationService } from 'src/app/data-explorer/data-specification.service';
 import {
   DataElementSearchParameters,
-  DataRequest,
+  DataSpecification,
   mapSearchParametersToParams,
 } from 'src/app/data-explorer/data-explorer.types';
 import { SecurityService } from 'src/app/security/security.service';
@@ -35,14 +35,14 @@ import { SecurityService } from 'src/app/security/security.service';
 })
 export class DashboardComponent implements OnInit {
   searchTerms = '';
-  currentUserRequests: DataRequest[] = [];
+  currentUserDataSpecifications: DataSpecification[] = [];
   itemCardNumerOfLinesToShow = 6;
   currentCardsHeight = 1;
 
   constructor(
     private security: SecurityService,
     private stateRouter: StateRouterService,
-    private dataRequests: DataRequestsService,
+    private dataSpecification: DataSpecificationService,
     private toastr: ToastrService
   ) {}
 
@@ -57,22 +57,26 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
-    this.loadRequests();
+    this.loadDataSpecifications();
   }
 
-  loadRequests() {
-    this.dataRequests
+  loadDataSpecifications() {
+    this.dataSpecification
       .list()
       .pipe(
         catchError((error) => {
-          this.toastr.error('Unable to retrieve your current requests from the server.');
+          this.toastr.error(
+            'Unable to retrieve your current data specifications from the server.'
+          );
           return throwError(() => error);
         }),
-        map((requests) => requests.filter((req) => req.status === 'unsent'))
+        map((dataSpecifications) =>
+          dataSpecifications.filter((req) => req.status === 'unsent')
+        )
       )
-      .subscribe((dataRequests: DataRequest[]) => {
-        this.currentUserRequests = [...dataRequests];
-        this.calculateLinesToShow(this.currentUserRequests);
+      .subscribe((dataSpecifications: DataSpecification[]) => {
+        this.currentUserDataSpecifications = [...dataSpecifications];
+        this.calculateLinesToShow(this.currentUserDataSpecifications);
       });
   }
 
@@ -85,33 +89,33 @@ export class DashboardComponent implements OnInit {
     this.stateRouter.navigateToKnownPath('/search/listing', params);
   }
 
-  private calculateLinesToShow(currentUserRequests: DataRequest[]) {
+  private calculateLinesToShow(currentUserDataSpecifications: DataSpecification[]) {
     let approximateCharactersPerLine: number;
 
-    // when there is only 1 request, the width of the
+    // when there is only 1 data specification, the width of the
     // card item is 100% so it can fit more characters per line.
     // When 2 elements, is 50%ish, and then 3 or more around 30%.
     // baseNumberOfCharacters is pure empiric tesing driven
     // there is no way to know for sure, as different combination
     // of letters can ocuppy different space (except in monospace fonts)
     const baseNumberOfCharacters = 30;
-    if (currentUserRequests.length < 1) {
+    if (currentUserDataSpecifications.length < 1) {
       return;
-    } else if (currentUserRequests.length < 2) {
+    } else if (currentUserDataSpecifications.length < 2) {
       approximateCharactersPerLine = baseNumberOfCharacters * 3;
-    } else if (currentUserRequests.length < 3) {
+    } else if (currentUserDataSpecifications.length < 3) {
       approximateCharactersPerLine = baseNumberOfCharacters * 3;
     } else {
       approximateCharactersPerLine = baseNumberOfCharacters;
     }
 
-    // Get the maximum length of the current requests
+    // Get the maximum length of the current data specifications
     // if description is undefined, use 1.
-    // Minumum 1, even if no dataRequests.
+    // Minumum 1, even if no dataSpecifications.
     const longestDescription: number =
-      currentUserRequests.length > 0
+      currentUserDataSpecifications.length > 0
         ? Math.max(
-            ...currentUserRequests.map((x) => {
+            ...currentUserDataSpecifications.map((x) => {
               return x.description ? x.description.length : 0;
             })
           )

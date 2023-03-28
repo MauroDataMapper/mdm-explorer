@@ -38,26 +38,26 @@ Feature: Dashboard
     When I click on the link "help guides"
     Then I go to the help page
 
-  Scenario: View help on requests
-    When I click on the link "What are requests?"
-    Then I go to the requests help page
+  Scenario: View help on data specifications
+    When I click on the link "What are data specifications?"
+    Then I go to the data specifications help page
 
-  Scenario: Manage my requests
-    Given I have 1 or more data requests
-    When I click on the button "Manage my requests"
-    Then I go to the requests page
+  Scenario: Manage my data specifications
+    Given I have 1 or more data specifications
+    When I click on the button "Manage my data specifications"
+    Then I go to the data specifications page
 
-  Scenario: Scroll through my requests
-    Given I have 4 or more data requests
-    When I click the arrow buttons in the requests scroll area
-    Then The requests scroll to show more
+  Scenario: Scroll through my data specifications
+    Given I have 4 or more data specifications
+    When I click the arrow buttons in the data specifications scroll area
+    Then The data specifications scroll to show more
 
-  Scenario: Browse the catalogue when there are no requests
-    Given I have no data requests
+  Scenario: Browse the catalogue when there are no data specifications
+    Given I have no data specifications
     When I click the link "browse"
     Then I go to the browse page
 
-  Scenario: Search the catalogue when there are no requests
-    Given I have no data requests
+  Scenario: Search the catalogue when there are no data specifications
+    Given I have no data specifications
     When I click the link "search"
     Then I go to the search page

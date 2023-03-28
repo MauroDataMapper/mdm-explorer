@@ -779,7 +779,7 @@ describe('DataModelService', () => {
         assert(expectedModel.id, 'expected model id is null');
         return;
       }
-      const request: ModelUpdatePayload = {
+      const dataSpecification: ModelUpdatePayload = {
         domainType: CatalogueItemDomainType.DataModel,
         id: expectedModel.id,
         label,
@@ -789,7 +789,7 @@ describe('DataModelService', () => {
       const expected$ = cold('--a|', { a: expectedModel });
 
       // Act
-      const actual$ = service.update(expectedModel.id, request);
+      const actual$ = service.update(expectedModel.id, dataSpecification);
 
       // Assert
       expect(actual$).toBeObservable(expected$);
@@ -801,7 +801,7 @@ describe('DataModelService', () => {
 
       const emptyId = '';
 
-      const request: ModelUpdatePayload = {
+      const dataSpecification: ModelUpdatePayload = {
         domainType: CatalogueItemDomainType.DataModel,
         id: '1',
         label: 'label',
@@ -809,7 +809,7 @@ describe('DataModelService', () => {
       };
 
       // Act
-      const actual$ = service.update(emptyId, request);
+      const actual$ = service.update(emptyId, dataSpecification);
 
       // Assert
       expect(actual$).toBeObservable(expected$);
@@ -821,7 +821,7 @@ describe('DataModelService', () => {
 
       const emptyId = '';
 
-      const request: ModelUpdatePayload = {
+      const dataSpecification: ModelUpdatePayload = {
         domainType: CatalogueItemDomainType.DataModel,
         id: emptyId,
         label: 'label',
@@ -829,7 +829,7 @@ describe('DataModelService', () => {
       };
 
       // Act
-      const actual$ = service.update('1', request);
+      const actual$ = service.update('1', dataSpecification);
 
       // Assert
       expect(actual$).toBeObservable(expected$);

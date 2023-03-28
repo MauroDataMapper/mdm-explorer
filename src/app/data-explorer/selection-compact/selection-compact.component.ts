@@ -20,7 +20,7 @@ import { Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { DataElementSearchResult } from '../data-explorer.types';
-import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.service';
+import { DataSpecificationSourceTargetIntersections } from '../data-specification.service';
 import {
   SelectionExpandedDialogComponent,
   SelectionExpandedDialogData,
@@ -33,12 +33,12 @@ import { SelectionService } from '../selection.service';
   styleUrls: ['./selection-compact.component.scss'],
 })
 export class SelectionCompactComponent {
-  @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
+  @Input() sourceTargetIntersections: DataSpecificationSourceTargetIntersections;
   selectedElements$: Observable<DataElementSearchResult[]>;
 
   constructor(private selectionService: SelectionService, private matDialog: MatDialog) {
     this.sourceTargetIntersections = {
-      dataAccessRequests: [],
+      dataSpecifications: [],
       sourceTargetIntersections: [],
     };
     this.selectedElements$ = this.selectionService.list$;

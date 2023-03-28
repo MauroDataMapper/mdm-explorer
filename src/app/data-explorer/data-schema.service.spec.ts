@@ -23,7 +23,11 @@ import { isDataModel } from '../mauro/mauro.types';
 import { createDataModelServiceStub } from '../testing/stubs/data-model.stub';
 import { buildDataClass, buildDataElement } from '../testing/stubs/data-schema.stub';
 import { setupTestModuleForService } from '../testing/testing.helpers';
-import { DataClassWithElements, DataRequest, DataSchema } from './data-explorer.types';
+import {
+  DataClassWithElements,
+  DataSpecification,
+  DataSchema,
+} from './data-explorer.types';
 import { DataSchemaService } from './data-schema.service';
 
 describe('DataSchemaService', () => {
@@ -156,10 +160,10 @@ describe('DataSchemaService', () => {
     });
   });
 
-  it('should load all data schemas for a request', () => {
-    const request: DataRequest = {
+  it('should load all data schemas for a data specification', () => {
+    const dataSpecification: DataSpecification = {
       id: '123',
-      label: 'request',
+      label: 'data specification',
       domainType: CatalogueItemDomainType.DataModel,
       status: 'unsent',
     };
@@ -188,11 +192,11 @@ describe('DataSchemaService', () => {
     });
 
     const expected$ = cold('-------(a|)', { a: schemas });
-    const actual$ = service.loadDataSchemas(request);
+    const actual$ = service.loadDataSchemas(dataSpecification);
     expect(actual$).toBeObservable(expected$);
     expect(actual$).toSatisfyOnFlush(() => {
-      // Request
-      expect(dataModelsStub.getDataClasses).toHaveBeenNthCalledWith(1, request);
+      // Data specification
+      expect(dataModelsStub.getDataClasses).toHaveBeenNthCalledWith(1, dataSpecification);
 
       // Schemas
       expect(dataModelsStub.getDataClasses).toHaveBeenNthCalledWith(

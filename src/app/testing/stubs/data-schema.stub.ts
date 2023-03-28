@@ -21,7 +21,7 @@ import { Observable } from 'rxjs';
 import {
   DataClassWithElements,
   DataElementSearchResult,
-  DataRequest,
+  DataSpecification,
   DataSchema,
 } from 'src/app/data-explorer/data-explorer.types';
 
@@ -54,7 +54,7 @@ export interface DataSchemaServiceStub {
     (dataSchema: DataSchema) => DataElementSearchResult[]
   >;
   loadDataSchemas: jest.MockedFunction<
-    (request: DataRequest) => Observable<DataSchema[]>
+    (dataSpecification: DataSpecification) => Observable<DataSchema[]>
   >;
   loadDataClasses: jest.MockedFunction<
     (dataSchema: DataClass) => Observable<DataClassWithElements[]>

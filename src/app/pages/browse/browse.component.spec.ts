@@ -41,15 +41,15 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatMenu } from '@angular/material/menu';
 import { createDataExplorerServiceStub } from 'src/app/testing/stubs/data-explorer.stub';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
-import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
-import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { createDataSpecificationServiceStub } from 'src/app/testing/stubs/data-specifications.stub';
+import { DataSpecificationService } from 'src/app/data-explorer/data-specification.service';
 import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { SecurityService } from 'src/app/security/security.service';
 import { UserDetails } from 'src/app/security/user-details.service';
 import {
   DataElementDto,
   DataElementInstance,
-  DataRequest,
+  DataSpecification,
 } from 'src/app/data-explorer/data-explorer.types';
 import { createBroadcastServiceStub } from 'src/app/testing/stubs/broadcast.stub';
 import { BroadcastService } from 'src/app/core/broadcast.service';
@@ -61,7 +61,7 @@ describe('BrowseComponent', () => {
   const stateRouterStub = createStateRouterStub();
   const toastrStub = createToastrServiceStub();
   const matDialogStub = createMatDialogStub();
-  const dataRequestsStub = createDataRequestsServiceStub();
+  const dataSpecificationStub = createDataSpecificationServiceStub();
   const securityStub = createSecurityServiceStub();
   const broadcastStub = createBroadcastServiceStub();
 
@@ -111,8 +111,8 @@ describe('BrowseComponent', () => {
           useValue: matDialogStub,
         },
         {
-          provide: DataRequestsService,
-          useValue: dataRequestsStub,
+          provide: DataSpecificationService,
+          useValue: dataSpecificationStub,
         },
         {
           provide: SecurityService,
@@ -379,7 +379,7 @@ describe('BrowseComponent', () => {
     });
   });
 
-  describe('create request from data class', () => {
+  describe('create data specification from data class', () => {
     const selected: DataClass = {
       id: '123',
       label: 'test class',
@@ -398,12 +398,12 @@ describe('BrowseComponent', () => {
       },
     ];
 
-    const dataRequest = { id: '999' } as DataRequest;
+    const dataSpecification = { id: '999' } as DataSpecification;
 
-    dataRequestsStub.createWithDialogs.mockImplementation(() => {
+    dataSpecificationStub.createWithDialogs.mockImplementation(() => {
       return of({
-        dataRequest,
-        action: 'view-requests',
+        dataSpecification,
+        action: 'view-data-specifications',
       });
     });
 
@@ -411,7 +411,7 @@ describe('BrowseComponent', () => {
     const navigateToSpy = jest.spyOn(stateRouterStub, 'navigateTo');
 
     beforeEach(() => {
-      dataRequestsStub.createWithDialogs.mockClear();
+      dataSpecificationStub.createWithDialogs.mockClear();
       broadcastStub.loading.mockClear();
       toastrStub.error.mockClear();
       navigateKnownSpy.mockClear();
@@ -430,49 +430,52 @@ describe('BrowseComponent', () => {
       const spy = jest.spyOn(toastrStub, 'error');
 
       // act
-      harness.component.createRequest();
+      harness.component.createDataSpecification();
 
       // assert
       expect(spy).toHaveBeenCalledWith(
-        'You must have selected an element to create a request with.'
+        'You must have selected an element to create a data specification with.'
       );
     });
 
-    it('should transition to requests page if RequestCreatedAction is \'view-requests\'', () => {
+    it('should transition to dataSpecifications page if DataSpecificationCreatedAction is \'view-data-specifications\'', () => {
       // act
-      harness.component.createRequest();
+      harness.component.createDataSpecification();
 
       // assert
-      expect(navigateKnownSpy).toHaveBeenCalledWith('/requests');
+      expect(navigateKnownSpy).toHaveBeenCalledWith('/dataSpecifications');
     });
 
-    it('should transition to request detail page if RequestCreatedAction is \'view-request-detail\'', () => {
+    it('should transition to data specification detail page if DataSpecificationCreatedAction is \'view-data-specification-detail\'', () => {
       // arrange
-      dataRequestsStub.createWithDialogs.mockImplementationOnce(() => {
+      dataSpecificationStub.createWithDialogs.mockImplementationOnce(() => {
         return of({
-          dataRequest,
-          action: 'view-request-detail',
+          dataSpecification,
+          action: 'view-data-specification-detail',
         });
       });
 
       // act
-      harness.component.createRequest();
+      harness.component.createDataSpecification();
 
       // assert
-      expect(navigateToSpy).toHaveBeenCalledWith(['/requests', dataRequest.id]);
+      expect(navigateToSpy).toHaveBeenCalledWith([
+        '/dataSpecifications',
+        dataSpecification.id,
+      ]);
     });
 
-    it('should not transition to requests page if RequestCreatedAction is \'continue\'', () => {
+    it('should not transition to dataSpecifications page if DataSpecificationCreatedAction is \'continue\'', () => {
       // arrange
-      dataRequestsStub.createWithDialogs.mockImplementationOnce(() => {
+      dataSpecificationStub.createWithDialogs.mockImplementationOnce(() => {
         return of({
-          dataRequest,
+          dataSpecification,
           action: 'continue',
         });
       });
 
       // act
-      harness.component.createRequest();
+      harness.component.createDataSpecification();
 
       // assert
       expect(navigateKnownSpy).not.toHaveBeenCalled();
@@ -480,7 +483,7 @@ describe('BrowseComponent', () => {
 
     it('should use the provided callback function to retrieve the dataElements to add', () => {
       // arrange
-      const createSpy = jest.spyOn(dataRequestsStub, 'createWithDialogs');
+      const createSpy = jest.spyOn(dataSpecificationStub, 'createWithDialogs');
       const expectedDataElements = dataElements.map<DataElementInstance>((de) => {
         return {
           ...de,
@@ -488,15 +491,15 @@ describe('BrowseComponent', () => {
         } as DataElementInstance;
       });
 
-      dataRequestsStub.createWithDialogs.mockImplementationOnce(() => {
+      dataSpecificationStub.createWithDialogs.mockImplementationOnce(() => {
         return of({
-          dataRequest,
-          action: 'view-requests',
+          dataSpecification,
+          action: 'view-data-specifications',
         });
       });
 
       // act
-      harness.component.createRequest();
+      harness.component.createDataSpecification();
 
       // assert
 
@@ -504,7 +507,7 @@ describe('BrowseComponent', () => {
       // createSpy.mock.calls is an array containing the call arguments of all calls that have been made to this mock function.
       // Each item in the array is an array of arguments that were passed during the call. For example, createSpy.mock.calls[0][0]
       // gets the first argument of the first call to this mock function. In this case, this is the callback function used to retrieve
-      // the Observable<DataElementBasic[]> containing the dataElements to be added to the new request.
+      // the Observable<DataElementBasic[]> containing the dataElements to be added to the new data specification.
       const call = createSpy.mock.calls[0];
       const callback = call[0];
       let returnedDataElements;
