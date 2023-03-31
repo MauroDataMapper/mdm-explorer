@@ -71,7 +71,7 @@ export class DashboardComponent implements OnInit {
           return throwError(() => error);
         }),
         map((dataSpecifications) =>
-          dataSpecifications.filter((req) => req.status === 'unsent')
+          dataSpecifications.filter((specification) => specification.status === 'unsent')
         )
       )
       .subscribe((dataSpecifications: DataSpecification[]) => {

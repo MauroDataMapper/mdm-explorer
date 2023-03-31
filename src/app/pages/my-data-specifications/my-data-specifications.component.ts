@@ -61,7 +61,9 @@ export class MyDataSpecificationsComponent implements OnInit {
   ) {}
 
   get hasMultipleStatuses() {
-    const statuses = this.allDataSpecifications.map((req) => req.status);
+    const statuses = this.allDataSpecifications.map(
+      (specification) => specification.status
+    );
     const distinct = new Set(statuses);
     return distinct.size > 1;
   }
@@ -111,8 +113,8 @@ export class MyDataSpecificationsComponent implements OnInit {
     const filtered =
       this.statusFilters.length === 0
         ? this.allDataSpecifications
-        : this.allDataSpecifications.filter((req) =>
-            this.statusFilters.includes(req.status)
+        : this.allDataSpecifications.filter((specification) =>
+            this.statusFilters.includes(specification.status)
           );
 
     this.sortBy = sortBy ?? this.sortByDefaultOption;

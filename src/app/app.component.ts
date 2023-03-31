@@ -305,7 +305,9 @@ export class AppComponent implements OnInit, OnDestroy {
         return EMPTY;
       }),
       map((dataSpecifications) => {
-        return dataSpecifications.filter((req) => req.status === 'unsent').length;
+        return dataSpecifications.filter(
+          (specification) => specification.status === 'unsent'
+        ).length;
       })
     );
   }

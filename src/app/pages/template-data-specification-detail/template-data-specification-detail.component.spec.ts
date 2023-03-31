@@ -181,8 +181,8 @@ describe('TemplateDataSpecificationDetailComponent', () => {
 
       dataSpecificationStub.get.mockImplementationOnce(() => of(template));
 
-      dataSchemaStub.loadDataSchemas.mockImplementationOnce((req) => {
-        expect(req).toBe(template);
+      dataSchemaStub.loadDataSchemas.mockImplementationOnce((specification) => {
+        expect(specification).toBe(template);
         expect(harness.component.state).toBe('loading');
         return of(dataSchemas);
       });

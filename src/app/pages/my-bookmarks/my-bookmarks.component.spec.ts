@@ -57,12 +57,12 @@ describe('MyBookmarkComponent', () => {
     return { ...bm, isSelected: false };
   });
   const rootDataModel = { id: 'ID' } as DataModelDetail;
-  const dar1 = {} as DataModel;
-  const dar2 = {} as DataModel;
+  const dataSpecification1 = {} as DataModel;
+  const dataSpecification2 = {} as DataModel;
   const sti1 = {} as SourceTargetIntersection;
   const sti2 = {} as SourceTargetIntersection;
   const intersections: DataSpecificationSourceTargetIntersections = {
-    dataSpecifications: [dar1, dar2],
+    dataSpecifications: [dataSpecification1, dataSpecification2],
     sourceTargetIntersections: [sti1, sti2],
   };
 
@@ -137,10 +137,10 @@ describe('MyBookmarkComponent', () => {
         harness.component.sourceTargetIntersections.sourceTargetIntersections.length
       ).toBe(2);
       expect(harness.component.sourceTargetIntersections.dataSpecifications[0]).toBe(
-        dar1
+        dataSpecification1
       );
       expect(harness.component.sourceTargetIntersections.dataSpecifications[1]).toBe(
-        dar2
+        dataSpecification2
       );
       expect(
         harness.component.sourceTargetIntersections.sourceTargetIntersections[0]

@@ -327,8 +327,8 @@ describe('DataSpecificationService', () => {
         ],
       };
 
-      dataModelsStub.getDataModelHierarchy.mockImplementationOnce((req) => {
-        expect(req).toBe(dataSpecification.id);
+      dataModelsStub.getDataModelHierarchy.mockImplementationOnce((specification) => {
+        expect(specification).toBe(dataSpecification.id);
         return cold('--a|', {
           a: hierarchy,
         });

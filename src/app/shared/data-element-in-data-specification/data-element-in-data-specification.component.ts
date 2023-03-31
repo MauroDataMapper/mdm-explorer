@@ -257,11 +257,11 @@ export class DataElementInDataSpecificationComponent implements OnInit, OnDestro
             .map((sti) => sti.targetDataModelId);
 
     this.dataSpecificationMenuItems = this.sourceTargetIntersections.dataSpecifications
-      .map((req) => {
+      .map((specification) => {
         return {
-          dataModel: req,
+          dataModel: specification,
           containsElement: idsOfDataSpecificationsContainingElement.includes(
-            req.id ?? ''
+            specification.id ?? ''
           ),
         };
       })

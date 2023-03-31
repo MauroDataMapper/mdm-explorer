@@ -44,7 +44,7 @@ The primary use case of the Mauro Data Explorer is to:
 3. Submit this user data specification to the organisation running this instance to gain access to the real data sets owned by the organisation, 
    based on the data elements specified.
 
-The current implementation considers user data specification to be _data models_ in their own right - they are created under the access level of the user signed-in to the Mauro Data Explorer, then populated with data elements before they are submitted. The sections below go into further detail.
+The current implementation considers user data specifications to be _data models_ in their own right - they are created under the access level of the user signed-in to the Mauro Data Explorer, then populated with data elements before they are submitted. The sections below go into further detail.
 
 ## Data Specifications Folder
 
@@ -116,7 +116,7 @@ It is possible for a user to create a new version of a previously submitted data
 
 # Template Requests
 
-Instead of creating User Data Specifications from scratch, it is possible to base a data specification off of a _template_. This is a pre-made data specification that is finalised and can be forked to make a copy from.
+Instead of creating user data specifications from scratch, it is possible to base a data specification off of a _template_. This is a pre-made data specification that is finalised and can be forked to make a copy from.
 
 ## Templates Folder
 
@@ -126,4 +126,4 @@ The `mdm-plugin-explorer` will automatically:
 2. Secure this folder to only be read by the "Explorer Readers" user group.
 3. Install the API property `explorer.config.root_-_template_folder` pointing to this folder.
 
-This will be the root folder to store any finalised template data specifications. The Mauro Data Explorer `/templates` page route will list all available templates and allow the user to inspect them and copy from them. Copying involves forking the Data Model data specification to build the copy, which is then automatically moved to the current user's personal data specification folder.
+This will be the root folder to store any finalised template data specifications. The Mauro Data Explorer `/templates` page route will list all available templates and allow the user to inspect them and copy from them. Copying involves forking the template data specification to build the copy, which is then automatically moved to the current user's personal data specification folder.

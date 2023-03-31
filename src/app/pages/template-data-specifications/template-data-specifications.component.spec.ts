@@ -117,16 +117,18 @@ describe('TemplateDataSpecificationsComponent', () => {
     });
 
     it('should copy a template to a new data specification', () => {
-      dataSpecificationStub.forkWithDialogs.mockImplementationOnce((req, options) => {
-        expect(req).toBe(dataSpecification);
-        expect(options?.targetFolder).toBe(dataSpecificationFolder);
-        return of({
-          ...dataSpecification,
-          id: '3',
-          label: 'copied data specification',
-          status: 'unsent',
-        });
-      });
+      dataSpecificationStub.forkWithDialogs.mockImplementationOnce(
+        (specification, options) => {
+          expect(specification).toBe(dataSpecification);
+          expect(options?.targetFolder).toBe(dataSpecificationFolder);
+          return of({
+            ...dataSpecification,
+            id: '3',
+            label: 'copied data specification',
+            status: 'unsent',
+          });
+        }
+      );
 
       harness.component.copy(dataSpecification);
 

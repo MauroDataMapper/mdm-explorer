@@ -173,8 +173,8 @@ describe('DataSpecificationQueryComponent', () => {
         return of(dataSpecification);
       });
 
-      dataSpecificationStub.listDataElements.mockImplementationOnce((req) => {
-        expect(req).toStrictEqual(dataSpecification);
+      dataSpecificationStub.listDataElements.mockImplementationOnce((specification) => {
+        expect(specification).toStrictEqual(dataSpecification);
         return of(dataElements);
       });
 
@@ -201,8 +201,8 @@ describe('DataSpecificationQueryComponent', () => {
         return of(dataSpecification);
       });
 
-      dataSpecificationStub.listDataElements.mockImplementationOnce((req) => {
-        expect(req).toStrictEqual(dataSpecification);
+      dataSpecificationStub.listDataElements.mockImplementationOnce((specification) => {
+        expect(specification).toStrictEqual(dataSpecification);
         return of([]);
       });
 
@@ -229,8 +229,8 @@ describe('DataSpecificationQueryComponent', () => {
         return of(dataSpecification);
       });
 
-      dataSpecificationStub.listDataElements.mockImplementationOnce((req) => {
-        expect(req).toStrictEqual(dataSpecification);
+      dataSpecificationStub.listDataElements.mockImplementationOnce((specification) => {
+        expect(specification).toStrictEqual(dataSpecification);
         return of(dataElements);
       });
 
