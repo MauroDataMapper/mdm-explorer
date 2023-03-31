@@ -244,7 +244,7 @@ export const getDataSpecificationStatus = (model: DataModel): DataSpecificationS
 };
 
 /**
- * Define a Data Specification, which is an extension of a {@link DataModel}.
+ * Define a data specification, which is an extension of a {@link DataModel}.
  */
 export interface DataSpecification extends DataModel {
   /**
