@@ -58,7 +58,7 @@ The user's folder is named after the user's email address for uniqueness.
 > 
 > For a user signed-in with the email address `user@test.com`
 >
-> The user data specification folder will be located under `explorer.config.root_data_specification_folder` and named `user[at]test.com`.
+> The user's data specification folder will be located under `explorer.config.root_data_specification_folder` and named `user[at]test.com`.
 
 This data specification folder is created along with a new user group containing that user. This group is then assigned to the [editor role](https://maurodatamapper.github.io/user-guides/permissions/permissions/#editor) to allow that user (normally with a read-only role) to create catalogue items underneath it.
 
