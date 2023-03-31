@@ -75,7 +75,7 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
         .list()
         .subscribe((dataSpecifications: DataSpecification[]) => {
           this.openDataSpecifications = [
-            ...dataSpecifications.filter((req) => req.status === 'unsent'),
+            ...dataSpecifications.filter((dataSpecification) => dataSpecification.status === 'unsent'),
           ];
         });
     }
