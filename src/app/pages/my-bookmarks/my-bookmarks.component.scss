@@ -22,14 +22,14 @@ SPDX-License-Identifier: Apache-2.0
 $header-border: 1px solid $color-primary;
 $header-border-radius: 4px;
 
-$request-elements-max-height: 500px;
+$data-specification-elements-max-height: 500px;
 
 .mdm-my-bookmarks {
   border: $header-border;
   border-radius: $header-border-radius;
 
   overflow-y: scroll;
-  max-height: $request-elements-max-height;
+  max-height: $data-specification-elements-max-height;
 
   &__select-all {
     margin-left: 1.3em;

@@ -17,13 +17,13 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { RequestElementAddDeleteEvent } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
+import { DataSpecificationElementAddDeleteEvent } from '../../shared/data-element-in-data-specification/data-element-in-data-specification.component';
 import {
   DataClassWithElements,
   DataElementSearchResult,
   DataItemDeleteEvent,
 } from '../data-explorer.types';
-import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.service';
+import { DataSpecificationSourceTargetIntersections } from '../data-specification.service';
 
 @Component({
   selector: 'mdm-data-class-row',
@@ -32,12 +32,13 @@ import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.se
 })
 export class DataClassRowComponent implements OnInit {
   @Input() dataClassWithElements?: DataClassWithElements;
-  @Input() suppressViewRequestsDialogButton = false;
+  @Input() suppressViewDataSpecificationsDialogButton = false;
   @Input() canDelete = true;
-  @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
+  @Input() sourceTargetIntersections: DataSpecificationSourceTargetIntersections;
 
   @Output() deleteItemEvent = new EventEmitter<DataItemDeleteEvent>();
-  @Output() requestAddDelete = new EventEmitter<RequestElementAddDeleteEvent>();
+  @Output() dataSpecificationAddDelete =
+    new EventEmitter<DataSpecificationElementAddDeleteEvent>();
   @Output() updateAllChildrenSelected = new EventEmitter();
 
   expanded = true;
@@ -48,7 +49,7 @@ export class DataClassRowComponent implements OnInit {
 
   constructor() {
     this.sourceTargetIntersections = {
-      dataAccessRequests: [],
+      dataSpecifications: [],
       sourceTargetIntersections: [],
     };
   }
@@ -82,8 +83,8 @@ export class DataClassRowComponent implements OnInit {
     this.expanded = !this.expanded;
   }
 
-  handleRequestAddDelete(event: RequestElementAddDeleteEvent) {
-    this.requestAddDelete.emit(event);
+  handleDataSpecificationAddDelete(event: DataSpecificationElementAddDeleteEvent) {
+    this.dataSpecificationAddDelete.emit(event);
   }
 
   handleDeleteItemEvent(event: DataItemDeleteEvent) {

@@ -20,9 +20,9 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 import { CatalogueItemDomainType } from '@maurodatamapper/mdm-resources';
 import { MockComponent } from 'ng-mocks';
 import {
-  DataElementInRequestComponent,
-  RequestElementAddDeleteEvent,
-} from 'src/app/shared/data-element-in-request/data-element-in-request.component';
+  DataElementInDataSpecificationComponent,
+  DataSpecificationElementAddDeleteEvent,
+} from '../../shared/data-element-in-data-specification/data-element-in-data-specification.component';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
@@ -48,7 +48,7 @@ describe('DataElementRowComponent', () => {
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(DataElementRowComponent, {
-      declarations: [MockComponent(DataElementInRequestComponent)],
+      declarations: [MockComponent(DataElementInDataSpecificationComponent)],
     });
   });
 
@@ -93,8 +93,8 @@ describe('DataElementRowComponent', () => {
       expect(eventSpy).toHaveBeenCalledWith(expected);
     });
 
-    it('should raise a request add or delete event', () => {
-      const event: RequestElementAddDeleteEvent = {
+    it('should raise a data specification add or delete event', () => {
+      const event: DataSpecificationElementAddDeleteEvent = {
         adding: true,
         dataModel: {
           label: 'model',
@@ -103,9 +103,9 @@ describe('DataElementRowComponent', () => {
         dataElement: item,
       };
 
-      const eventSpy = jest.spyOn(harness.component.requestAddDelete, 'emit');
+      const eventSpy = jest.spyOn(harness.component.dataSpecificationAddDelete, 'emit');
 
-      harness.component.handleRequestAddDelete(event);
+      harness.component.handleDataSpecificationAddDelete(event);
       expect(eventSpy).toHaveBeenCalledWith(event);
     });
 

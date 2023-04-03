@@ -24,15 +24,15 @@ import {
   DialogResult,
 } from '../shared/confirmation-dialog/confirmation-dialog.component';
 import {
-  CreateRequestDialogComponent,
-  CreateRequestDialogOptions,
-  CreateRequestDialogResponse,
-} from './create-request-dialog/create-request-dialog.component';
+  CreateDataSpecificationDialogComponent,
+  CreateDataSpecificationDialogOptions,
+  CreateDataSpecificationDialogResponse,
+} from './create-data-specification-dialog/create-data-specification-dialog.component';
 import {
-  EditRequestDialogComponent,
-  EditRequestDialogOptions,
-  EditRequestDialogResponse,
-} from './edit-request-dialog/edit-request-dialog.component';
+  EditDataSpecificationDialogComponent,
+  EditDataSpecificationDialogOptions,
+  EditDataSpecificationDialogResponse,
+} from './edit-data-specification-dialog/edit-data-specification-dialog.component';
 import {
   FeedbackDialogComponent,
   FeedbackDialogResponse,
@@ -43,15 +43,15 @@ import {
   OkCancelDialogResponse,
 } from './ok-cancel-dialog/ok-cancel-dialog.component';
 import {
-  RequestCreatedAction,
-  RequestCreatedData,
-  RequestCreatedDialogComponent,
-} from './request-created-dialog/request-created-dialog.component';
+  DataSpecificationCreatedAction,
+  DataSpecificationCreatedData,
+  DataSpecificationCreatedDialogComponent,
+} from './data-specification-created-dialog/data-specification-created-dialog.component';
 import {
-  RequestUpdatedAction,
-  RequestUpdatedData,
-  RequestUpdatedDialogComponent,
-} from './request-updated-dialog/request-updated-dialog.component';
+  DataSpecificationUpdatedAction,
+  DataSpecificationUpdatedData,
+  DataSpecificationUpdatedDialogComponent,
+} from './data-specification-updated-dialog/data-specification-updated-dialog.component';
 import {
   SuccessDialogComponent,
   SuccessDialogData,
@@ -63,41 +63,41 @@ import {
 export class DialogService {
   constructor(private matDialog: MatDialog) {}
 
-  openCreateRequest(data?: CreateRequestDialogOptions) {
+  openCreateDataSpecification(data?: CreateDataSpecificationDialogOptions) {
     return this.matDialog.open<
-      CreateRequestDialogComponent,
-      CreateRequestDialogOptions,
-      CreateRequestDialogResponse
-    >(CreateRequestDialogComponent, {
+      CreateDataSpecificationDialogComponent,
+      CreateDataSpecificationDialogOptions,
+      CreateDataSpecificationDialogResponse
+    >(CreateDataSpecificationDialogComponent, {
       minWidth: 500,
       data,
     });
   }
 
-  openEditRequest(data: EditRequestDialogOptions) {
+  openEditDataSpecification(data: EditDataSpecificationDialogOptions) {
     return this.matDialog.open<
-      EditRequestDialogComponent,
-      EditRequestDialogOptions,
-      EditRequestDialogResponse
-    >(EditRequestDialogComponent, { minWidth: 500, data });
+      EditDataSpecificationDialogComponent,
+      EditDataSpecificationDialogOptions,
+      EditDataSpecificationDialogResponse
+    >(EditDataSpecificationDialogComponent, { minWidth: 500, data });
   }
 
-  openRequestCreated(data: RequestCreatedData) {
+  openDataSpecificationCreated(data: DataSpecificationCreatedData) {
     return this.matDialog.open<
-      RequestCreatedDialogComponent,
-      RequestCreatedData,
-      RequestCreatedAction
-    >(RequestCreatedDialogComponent, {
+      DataSpecificationCreatedDialogComponent,
+      DataSpecificationCreatedData,
+      DataSpecificationCreatedAction
+    >(DataSpecificationCreatedDialogComponent, {
       data,
     });
   }
 
-  openRequestUpdated(data: RequestUpdatedData) {
+  openDataSpecificationUpdated(data: DataSpecificationUpdatedData) {
     return this.matDialog.open<
-      RequestUpdatedDialogComponent,
-      RequestUpdatedData,
-      RequestUpdatedAction
-    >(RequestUpdatedDialogComponent, {
+      DataSpecificationUpdatedDialogComponent,
+      DataSpecificationUpdatedData,
+      DataSpecificationUpdatedAction
+    >(DataSpecificationUpdatedDialogComponent, {
       data,
     });
   }

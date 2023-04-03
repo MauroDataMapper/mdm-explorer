@@ -32,12 +32,12 @@ import {
   DataElementSearchResult,
 } from 'src/app/data-explorer/data-explorer.types';
 import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
-import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
+import { createDataSpecificationServiceStub } from 'src/app/testing/stubs/data-specifications.stub';
 import { SecurityService } from 'src/app/security/security.service';
 import {
-  DataAccessRequestsSourceTargetIntersections,
-  DataRequestsService,
-} from 'src/app/data-explorer/data-requests.service';
+  DataSpecificationSourceTargetIntersections,
+  DataSpecificationService,
+} from 'src/app/data-explorer/data-specification.service';
 import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 import { createDataExplorerServiceStub } from 'src/app/testing/stubs/data-explorer.stub';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
@@ -57,18 +57,18 @@ describe('MyBookmarkComponent', () => {
     return { ...bm, isSelected: false };
   });
   const rootDataModel = { id: 'ID' } as DataModelDetail;
-  const dar1 = {} as DataModel;
-  const dar2 = {} as DataModel;
+  const dataSpecification1 = {} as DataModel;
+  const dataSpecification2 = {} as DataModel;
   const sti1 = {} as SourceTargetIntersection;
   const sti2 = {} as SourceTargetIntersection;
-  const intersections: DataAccessRequestsSourceTargetIntersections = {
-    dataAccessRequests: [dar1, dar2],
+  const intersections: DataSpecificationSourceTargetIntersections = {
+    dataSpecifications: [dataSpecification1, dataSpecification2],
     sourceTargetIntersections: [sti1, sti2],
   };
 
   const bookmarkStub = createBookmarkServiceStub();
   const securityStub = createSecurityServiceStub();
-  const dataRequestStub = createDataRequestsServiceStub();
+  const dataSpecificationStub = createDataSpecificationServiceStub();
   const toastrStub = createToastrServiceStub();
   const dataExplorerStub = createDataExplorerServiceStub();
 
@@ -85,8 +85,8 @@ describe('MyBookmarkComponent', () => {
           useValue: securityStub,
         },
         {
-          provide: DataRequestsService,
-          useValue: dataRequestStub,
+          provide: DataSpecificationService,
+          useValue: dataSpecificationStub,
         },
         {
           provide: ToastrService,
@@ -111,8 +111,8 @@ describe('MyBookmarkComponent', () => {
       bookmarkStub.index.mockImplementationOnce(() => {
         return of(bookmarks);
       });
-      dataRequestStub.getRequestsIntersections.mockImplementationOnce(() =>
-        of({} as DataAccessRequestsSourceTargetIntersections)
+      dataSpecificationStub.getDataSpecificationIntersections.mockImplementationOnce(() =>
+        of({} as DataSpecificationSourceTargetIntersections)
       );
 
       harness.component.ngOnInit();
@@ -124,23 +124,23 @@ describe('MyBookmarkComponent', () => {
       bookmarkStub.index.mockImplementationOnce(() => {
         return of(bookmarks);
       });
-      dataRequestStub.getRequestsIntersections.mockImplementationOnce(() =>
+      dataSpecificationStub.getDataSpecificationIntersections.mockImplementationOnce(() =>
         of(intersections)
       );
 
       harness.component.ngOnInit();
 
-      expect(harness.component.sourceTargetIntersections.dataAccessRequests.length).toBe(
+      expect(harness.component.sourceTargetIntersections.dataSpecifications.length).toBe(
         2
       );
       expect(
         harness.component.sourceTargetIntersections.sourceTargetIntersections.length
       ).toBe(2);
-      expect(harness.component.sourceTargetIntersections.dataAccessRequests[0]).toBe(
-        dar1
+      expect(harness.component.sourceTargetIntersections.dataSpecifications[0]).toBe(
+        dataSpecification1
       );
-      expect(harness.component.sourceTargetIntersections.dataAccessRequests[1]).toBe(
-        dar2
+      expect(harness.component.sourceTargetIntersections.dataSpecifications[1]).toBe(
+        dataSpecification2
       );
       expect(
         harness.component.sourceTargetIntersections.sourceTargetIntersections[0]

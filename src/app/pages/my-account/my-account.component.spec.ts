@@ -38,8 +38,8 @@ import {
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
 import { MyAccountComponent } from './my-account.component';
-import { createDataRequestsServiceStub } from 'src/app/testing/stubs/data-requests.stub';
-import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { createDataSpecificationServiceStub } from 'src/app/testing/stubs/data-specifications.stub';
+import { DataSpecificationService } from 'src/app/data-explorer/data-specification.service';
 import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
 import { MatDialog } from '@angular/material/dialog';
 import { fakeAsync, tick } from '@angular/core/testing';
@@ -55,7 +55,7 @@ describe('MyAccountComponent', () => {
   const stateRouterStub = createStateRouterStub();
   const toastrStub = createToastrServiceStub();
   const broadcastStub = createBroadcastServiceStub();
-  const dataRequestsStub = createDataRequestsServiceStub();
+  const dataSpecificationStub = createDataSpecificationServiceStub();
   const matDialogStub = createMatDialogStub();
   const folderStub = createFolderServiceStub();
 
@@ -83,8 +83,8 @@ describe('MyAccountComponent', () => {
           useValue: broadcastStub,
         },
         {
-          provide: DataRequestsService,
-          useValue: dataRequestsStub,
+          provide: DataSpecificationService,
+          useValue: dataSpecificationStub,
         },
         {
           provide: MatDialog,
@@ -292,20 +292,24 @@ describe('MyAccountComponent', () => {
         return of(updatedUser);
       });
 
-      dataRequestsStub.getRequestsFolder.mockImplementationOnce(() => {
+      dataSpecificationStub.getDataSpecificationFolder.mockImplementationOnce(() => {
         return of(folder);
       });
 
-      dataRequestsStub.getDataRequestsFolderName.mockImplementationOnce((email) => {
-        expect(email).toBe(updatedUser.emailAddress);
-        return newFolderName;
-      });
+      dataSpecificationStub.getDataSpecificationFolderName.mockImplementationOnce(
+        (email) => {
+          expect(email).toBe(updatedUser.emailAddress);
+          return newFolderName;
+        }
+      );
 
-      dataRequestsStub.updateRequestsFolder.mockImplementationOnce((folderId, email) => {
-        expect(folderId).toBe(folder.id);
-        expect(email).toBe(updatedUser.emailAddress);
-        return of();
-      });
+      dataSpecificationStub.updateDataSpecificationsFolder.mockImplementationOnce(
+        (folderId, email) => {
+          expect(folderId).toBe(folder.id);
+          expect(email).toBe(updatedUser.emailAddress);
+          return of();
+        }
+      );
 
       folderStub.update.mockImplementationOnce((folderId, pl) => {
         expect(folderId).toBe(folder.id);

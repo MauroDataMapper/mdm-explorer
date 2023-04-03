@@ -70,7 +70,7 @@ export class SecurityService {
   ) {}
 
   /**
-   * Log in a user to the Mauro system, and get or create a folder for their requests.
+   * Log in a user to the Mauro system, and get or create a folder for their data specifications.
    *
    * @param credentials The login credentials to use.
    * @returns An observable to return a `UserDetails` object representing the logged in user.
@@ -98,7 +98,7 @@ export class SecurityService {
       concatMap((user: UserDetails) => {
         return this.researchPlugin.userFolder().pipe(
           map((folder: FolderDetail) => {
-            user.requestFolder = folder;
+            user.dataSpecificationFolder = folder;
 
             this.userDetails.set(user);
             return user;

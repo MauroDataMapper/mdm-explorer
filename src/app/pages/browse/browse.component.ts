@@ -30,7 +30,7 @@ import {
   mapSearchParametersToParams,
 } from 'src/app/data-explorer/data-explorer.types';
 import { UserDetails } from 'src/app/security/user-details.service';
-import { DataRequestsService } from 'src/app/data-explorer/data-requests.service';
+import { DataSpecificationService } from 'src/app/data-explorer/data-specification.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import { SecurityService } from 'src/app/security/security.service';
 import { Uuid } from '@maurodatamapper/mdm-resources';
@@ -47,14 +47,14 @@ export class BrowseComponent implements OnInit {
   static readonly ChildDataClassParentClassSelectedLabel: string =
     'Please select a data class &hellip;';
   static readonly ChildDataClassSelectedLabel: string = 'Data classes';
-  readonly suppressViewRequestsDialogButton = false;
+  readonly suppressViewDataSpecificationsDialogButton = false;
   parentDataClasses: DataClass[] = [];
   childDataClasses: DataClass[] = [];
   selected?: DataClass;
   private user: UserDetails | null;
 
   constructor(
-    private dataRequests: DataRequestsService,
+    private dataSpecification: DataSpecificationService,
     private dataExplorer: DataExplorerService,
     private dataModels: DataModelService,
     private toastr: ToastrService,
@@ -90,14 +90,16 @@ export class BrowseComponent implements OnInit {
     this.loadParentDataClasses();
   }
 
-  createRequest() {
+  createDataSpecification() {
     if (!this.user) {
-      this.toastr.error('You must be signed in in order to create data requests.');
+      this.toastr.error('You must be signed in in order to create data specifications.');
       return;
     }
 
     if (!this.selected) {
-      this.toastr.error('You must have selected an element to create a request with.');
+      this.toastr.error(
+        'You must have selected an element to create a data specification with.'
+      );
       return;
     }
 
@@ -116,14 +118,17 @@ export class BrowseComponent implements OnInit {
       );
     };
 
-    this.dataRequests
-      .createWithDialogs(getDataElements, this.suppressViewRequestsDialogButton)
+    this.dataSpecification
+      .createWithDialogs(getDataElements, this.suppressViewDataSpecificationsDialogButton)
       .subscribe((response) => {
         console.log(response);
-        if (response.action === 'view-requests') {
-          this.stateRouter.navigateToKnownPath('/requests');
-        } else if (response.action === 'view-request-detail') {
-          this.stateRouter.navigateTo(['/requests', response.dataRequest.id]);
+        if (response.action === 'view-data-specifications') {
+          this.stateRouter.navigateToKnownPath('/dataSpecifications');
+        } else if (response.action === 'view-data-specification-detail') {
+          this.stateRouter.navigateTo([
+            '/dataSpecifications',
+            response.dataSpecification.id,
+          ]);
         }
       });
   }

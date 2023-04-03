@@ -9,7 +9,7 @@ It is essential to install the [mdm-plugin-explorer](https://github.com/MauroDat
 The [mdm-plugin-explorer](https://github.com/MauroDataMapper-Plugins/mdm-plugin-explorer) will automatically install the following API property keys, which are required for the Mauro Data Explorer to function:
 
 - `explorer.config.root_data_model_path`
-- `explorer.config.root_request_folder`
+- `explorer.config.root_data_specification_folder`
 - `explorer.config.root_template_folder`
 - `explorer.config.profile_namespace`
 - `explorer.config.profile_service_name`

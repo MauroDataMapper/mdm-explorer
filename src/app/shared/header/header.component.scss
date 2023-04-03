@@ -24,7 +24,7 @@ $screen-size-sm: 620px;
 $profile-img-width: 32px;
 $header-background: $color-primary;
 $header-text: $color-primary-contrast;
-$request-count-color: $color-requestCount;
+$data-specification-count-color: $color-dataSpecificationCount;
 $link-color: $header-text;
 
 .mdm-header {
@@ -50,7 +50,7 @@ $link-color: $header-text;
     transform: translate(0, 40%);
   }
 
-  &__overlayRequests {
+  &__overlayDataSpecifications {
     height: 100%;
     position: absolute;
     top: 7px;
@@ -178,10 +178,10 @@ $link-color: $header-text;
       }
     }
 
-    &--request-count {
+    &--data-specification-count {
       padding: 0 4px;
       font-size: 15px;
-      color: $request-count-color;
+      color: $data-specification-count-color;
     }
   }
 

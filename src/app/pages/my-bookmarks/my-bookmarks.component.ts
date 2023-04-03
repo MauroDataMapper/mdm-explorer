@@ -25,16 +25,16 @@ import { BroadcastService } from 'src/app/core/broadcast.service';
 import { BookmarkService } from 'src/app/data-explorer/bookmark.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import {
-  AddToRequestEvent,
+  AddToDataSpecificationEvent,
   BookMarkCheckedEvent as BookmarkCheckedEvent,
-  DataRequest,
+  DataSpecification,
   RemoveBookmarkEvent,
   DataElementSearchResult,
 } from 'src/app/data-explorer/data-explorer.types';
 import {
-  DataAccessRequestsSourceTargetIntersections,
-  DataRequestsService,
-} from 'src/app/data-explorer/data-requests.service';
+  DataSpecificationSourceTargetIntersections,
+  DataSpecificationService,
+} from 'src/app/data-explorer/data-specification.service';
 import { SecurityService } from 'src/app/security/security.service';
 
 @Component({
@@ -45,8 +45,8 @@ import { SecurityService } from 'src/app/security/security.service';
 export class MyBookmarksComponent implements OnInit, OnDestroy {
   userBookmarks: DataElementSearchResult[] = [];
   selectedElements: DataElementSearchResult[] = [];
-  openDataRequests: DataRequest[] = [];
-  sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
+  openDataSpecifications: DataSpecification[] = [];
+  sourceTargetIntersections: DataSpecificationSourceTargetIntersections;
   isReady = false;
 
   /**
@@ -57,13 +57,13 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
   constructor(
     private bookmarks: BookmarkService,
     private security: SecurityService,
-    private dataRequests: DataRequestsService,
+    private dataSpecification: DataSpecificationService,
     private explorer: DataExplorerService,
     private toastr: ToastrService,
     private broadcast: BroadcastService
   ) {
     this.sourceTargetIntersections = {
-      dataAccessRequests: [],
+      dataSpecifications: [],
       sourceTargetIntersections: [],
     };
   }
@@ -71,9 +71,13 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const user = this.security.getSignedInUser();
     if (user) {
-      this.dataRequests.list().subscribe((requests: DataRequest[]) => {
-        this.openDataRequests = [...requests.filter((req) => req.status === 'unsent')];
-      });
+      this.dataSpecification
+        .list()
+        .subscribe((dataSpecifications: DataSpecification[]) => {
+          this.openDataSpecifications = [
+            ...dataSpecifications.filter((dataSpecification) => dataSpecification.status === 'unsent'),
+          ];
+        });
     }
 
     this.loadBookmarks();
@@ -92,8 +96,10 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
     this.updateSelectedElements();
   }
 
-  onAddToRequest(event: AddToRequestEvent) {
-    alert(`Add bookmark: ${event.item} to request with Id: ${event.requestId}`);
+  onAddToDataSpecification(event: AddToDataSpecificationEvent) {
+    alert(
+      `Add bookmark: ${event.item} to data specification with Id: ${event.dataSpecificationId}`
+    );
   }
 
   onRemove(event: RemoveBookmarkEvent): void {
@@ -128,13 +134,13 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * When a data request is added, reload all intersections (which ensures we pick up intersections with the
-   * new data request) and tell all data-element-in-request components about the new intersections.
+   * When a data specification is added, reload all intersections (which ensures we pick up intersections with the
+   * new data specification) and tell all data-element-in-data-specification components about the new intersections.
    */
 
-  private subscribeDataRequestChanges() {
+  private subscribeDataSpecificationChanges() {
     this.broadcast
-      .on('data-request-added')
+      .on('data-specification-added')
       .pipe(
         takeUntil(this.unsubscribe$),
         switchMap(() => this.loadIntersections(this.userBookmarks))
@@ -163,7 +169,7 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
       )
       .subscribe(([intersections, bookmarks]) => {
         this.sourceTargetIntersections = intersections;
-        this.subscribeDataRequestChanges();
+        this.subscribeDataSpecificationChanges();
         this.isReady = true;
         // userBookmarks must be the last property set as this triggers rendering of the
         // bookmarks list.
@@ -186,7 +192,10 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
           return throwError(() => new Error('Root Data Model has no id.'));
         }
 
-        return this.dataRequests.getRequestsIntersections(dataModel.id, dataElementIds);
+        return this.dataSpecification.getDataSpecificationIntersections(
+          dataModel.id,
+          dataElementIds
+        );
       })
     );
   }

@@ -45,8 +45,8 @@ export class ResearchPluginService {
       .pipe(map((response: PluginResearchContactResponse) => response.body));
   }
 
-  submitRequest(id: Uuid): Observable<DataModelDetail> {
-    return this.endpoints.pluginResearch.submitRequest(id).pipe(
+  submitDataSpecification(id: Uuid): Observable<DataModelDetail> {
+    return this.endpoints.pluginResearch.submitDataSpecification(id).pipe(
       switchMap(() => this.endpoints.dataModel.get(id)),
       map((response: DataModelDetailResponse) => response.body)
     );

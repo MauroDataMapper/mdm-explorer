@@ -14,45 +14,45 @@
 # limitations under the License.
 #
 # SPDX-License-Identifier: Apache-2.0
-Feature: Viewing data requests
+Feature: Viewing data specifications
   As an authenticated user
-  I want to view my unsent and submitted data requests and manage them
+  I want to view my unsent and submitted data specifications and manage them
 
   Background:
     Given I am signed in
-    And I go to the requests page
+    And I go to the data specifications page
 
-  Scenario: No requests available
-    Given I have not created any data requests yet
+  Scenario: No data specifications available
+    Given I have not created any data specifications yet
     Then I see an empty page
 
-  Scenario Outline: Filter the requests list
+  Scenario Outline: Filter the data specifications list
     When I click on the checkbox "<status>"
-    Then The request list is filtered to show those matching the status "<status>"
+    Then The data specification list is filtered to show those matching the status "<status>"
 
     Examples:
       | status    |
       | unsent    |
       | submitted |
 
-  Scenario: View data elements in a request
-    When I click on a request from the request list
-    Then The details panel of the request changes the label to match the selected request
+  Scenario: View data elements in a data specification
+    When I click on a data specification from the data specification list
+    Then The details panel of the data specification changes the label to match the selected data specification
     And The list of data elements changes
 
-  Scenario: Remove a single data element from an unsent request
-    Given I have selected an unsent request to view
+  Scenario: Remove a single data element from an unsent data specification
+    Given I have selected an unsent data specification to view
     When I click the "Remove" button from the top data element in the list
-    Then The data element is removed from the request
+    Then The data element is removed from the data specification
 
-  Scenario: Remove multiple data elements from an unsent request
-    Given I have selected an unsent request to view
+  Scenario: Remove multiple data elements from an unsent data specification
+    Given I have selected an unsent data specification to view
     And And I tick one or more checkboxes in the data elements list
     When I click the "Remove selected" button
-    Then The selected data elements are removed from the request
+    Then The selected data elements are removed from the data specification
 
-  Scenario: Remove all data elements from an unsent request
-    Given I have selected an unsent request to view
+  Scenario: Remove all data elements from an unsent data specification
+    Given I have selected an unsent data specification to view
     And And I tick the "Select all" checkbox
     When I click the "Remove selected" button
-    Then The selected data elements are removed from the request
+    Then The selected data elements are removed from the data specification

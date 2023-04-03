@@ -50,22 +50,24 @@ SPDX-License-Identifier: Apache-2.0
         class="mdm-data-element-row__header-button"
         color="primary"
         (click)="removeElement()"
-        matTooltip="Remove from request"
-        matTooltipClass="mdm-request-icon-tooltip"
-        aria-label="Remove from request"
+        matTooltip="Remove from data specification"
+        matTooltipClass="mdm-data-specification-icon-tooltip"
+        aria-label="Remove from data specification"
       >
         <span class="fa-solid fa-trash-can"></span>
       </button>
-      <mdm-data-element-in-request
+      <mdm-data-element-in-data-specification
         class="mdm-data-element-row__header-button"
-        *ngIf="sourceTargetIntersections.dataAccessRequests.length > 0"
+        *ngIf="sourceTargetIntersections.dataSpecifications.length > 0"
         [dataElements]="[item]"
         [sourceTargetIntersections]="sourceTargetIntersections"
-        [caption]="'Add to other requests'"
-        [suppressViewRequestsDialogButton]="suppressViewRequestsDialogButton"
-        (requestAddDelete)="handleRequestAddDelete($event)"
-        (createRequestClicked)="handleCreateRequest($event)"
-      ></mdm-data-element-in-request>
+        [caption]="'Add to other data specifications'"
+        [suppressViewDataSpecificationsDialogButton]="
+          suppressViewDataSpecificationsDialogButton
+        "
+        (dataSpecificationAddDelete)="handleDataSpecificationAddDelete($event)"
+        (createDataSpecificationClicked)="handleCreateDataSpecification($event)"
+      ></mdm-data-element-in-data-specification>
       <button
         mat-button
         class="mdm-data-element-row__header-button-updown hidden"

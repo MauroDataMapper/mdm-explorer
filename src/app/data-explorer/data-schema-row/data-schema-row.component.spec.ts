@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { CatalogueItemDomainType } from '@maurodatamapper/mdm-resources';
-import { RequestElementAddDeleteEvent } from 'src/app/shared/data-element-in-request/data-element-in-request.component';
+import { DataSpecificationElementAddDeleteEvent } from '../../shared/data-element-in-data-specification/data-element-in-data-specification.component';
 import {
   buildDataClass,
   buildDataElement,
@@ -70,10 +70,10 @@ describe('DataSchemaRowComponent', () => {
   it('should create', () => {
     expect(harness.isComponentCreated).toBeTruthy();
     expect(harness.component.dataSchema).toBeUndefined();
-    expect(harness.component.suppressViewRequestsDialogButton).toBe(false);
+    expect(harness.component.suppressViewDataSpecificationsDialogButton).toBe(false);
     expect(harness.component.canDelete).toBe(true);
     expect(harness.component.sourceTargetIntersections).toStrictEqual({
-      dataAccessRequests: [],
+      dataSpecifications: [],
       sourceTargetIntersections: [],
     });
   });
@@ -191,8 +191,8 @@ describe('DataSchemaRowComponent', () => {
       isSelected: false,
     };
 
-    it('should raise a request add or delete event', () => {
-      const event: RequestElementAddDeleteEvent = {
+    it('should raise a data specification add or delete event', () => {
+      const event: DataSpecificationElementAddDeleteEvent = {
         adding: true,
         dataModel: {
           label: 'model',
@@ -201,9 +201,9 @@ describe('DataSchemaRowComponent', () => {
         dataElement,
       };
 
-      const eventSpy = jest.spyOn(harness.component.requestAddDelete, 'emit');
+      const eventSpy = jest.spyOn(harness.component.dataSpecificationAddDelete, 'emit');
 
-      harness.component.handleRequestAddDelete(event);
+      harness.component.handleDataSpecificationAddDelete(event);
       expect(eventSpy).toHaveBeenCalledWith(event);
     });
 

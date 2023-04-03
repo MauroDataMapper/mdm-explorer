@@ -14,76 +14,76 @@
 # limitations under the License.
 #
 # SPDX-License-Identifier: Apache-2.0
-Feature: Add and remove data elements from data requests
+Feature: Add and remove data elements from data specifications
   As an authenticated user
-  I want to add or remove data elements from my data requests through the Mauro Data Explorer
+  I want to add or remove data elements from my data specifications through the Mauro Data Explorer
 
   Background:
     Given I am signed in
-    And I have at least two data requests open
+    And I have at least two data specifications open
 
-  Scenario: Add a single data element to a request from the search listing
+  Scenario: Add a single data element to a data specification from the search listing
     Given I search for the search term "episode"
-    When I click on the "Add to request" button for the top search result
-    And I tick an unchecked box next to a data request in the menu
-    Then I see a confirmation saying the elements was added to the request
+    When I click on the "Add to data specification" button for the top search result
+    And I tick an unchecked box next to a data specification in the menu
+    Then I see a confirmation saying the elements was added to the data specification
 
-  Scenario: Add multiple data elements to a request from the search listing
+  Scenario: Add multiple data elements to a data specification from the search listing
     Given I search for the search term "episode"
     And I tick one or more checkboxes in the search results
     When I click the "With selected..." button
-    And I click on a data request button
-    Then I see a confirmation saying the elements was added to the request
+    And I click on a data specification button
+    Then I see a confirmation saying the elements was added to the data specification
 
-  Scenario: Add all data elements to a request from the search listing
+  Scenario: Add all data elements to a data specification from the search listing
     Given I search for the search term "episode"
     And I tick the "Select all" checkbox
     When I click the "With selected..." button
-    And I click on a data request button
-    Then I see a confirmation saying the elements was added to the request
+    And I click on a data specification button
+    Then I see a confirmation saying the elements was added to the data specification
 
-  Scenario: Remove a single data element from a request from the search listing
+  Scenario: Remove a single data element from a data specification from the search listing
     Given I search for the search term "episode"
-    When I click on the "Add to request" button for the top search result
-    And I untick a checked box next to a data request in the menu
-    Then I see a confirmation saying the elements were removed from the request
+    When I click on the "Add to data specification" button for the top search result
+    And I untick a checked box next to a data specification in the menu
+    Then I see a confirmation saying the elements were removed from the data specification
 
-  Scenario: Add a single data element to a request from its detail page
+  Scenario: Add a single data element to a data specification from its detail page
     Given I browse for the data class "ICU > Admissions"
     And I view the details of the data element "ICU discharge date time"
-    When I click on the "Add to request" button for the top search result
-    And I tick an unchecked box next to a data request in the menu
-    Then I see a confirmation saying the elements was added to the request
+    When I click on the "Add to data specification" button for the top search result
+    And I tick an unchecked box next to a data specification in the menu
+    Then I see a confirmation saying the elements was added to the data specification
 
-  Scenario: Remove a single data element from a request from its detail page
+  Scenario: Remove a single data element from a data specification from its detail page
     Given I browse for the data class "ICU > Admissions"
     And I view the details of the data element "ICU discharge date time"
-    When I click on the "Add to request" button for the top search result
-    And I untick a checked box next to a data request in the menu
-    Then I see a confirmation saying the elements were removed from the request
+    When I click on the "Add to data specification" button for the top search result
+    And I untick a checked box next to a data specification in the menu
+    Then I see a confirmation saying the elements were removed from the data specification
 
-  Scenario: Add a single data element to a request from the bookmarks
+  Scenario: Add a single data element to a data specification from the bookmarks
     Given I go to the bookmarks page
-    When I click on the "Add to request" button for the top bookmark
-    And I tick an unchecked box next to a data request in the menu
-    Then I see a confirmation saying the elements was added to the request
+    When I click on the "Add to data specification" button for the top bookmark
+    And I tick an unchecked box next to a data specification in the menu
+    Then I see a confirmation saying the elements was added to the data specification
 
-  Scenario: Add multiple data elements to a request from the bookmarks
+  Scenario: Add multiple data elements to a data specification from the bookmarks
     Given I go to the bookmarks page
     And I tick one or more checkboxes in the bookmarks
     When I click the "With selected..." button
-    And I click on a data request button
-    Then I see a confirmation saying the elements was added to the request
+    And I click on a data specification button
+    Then I see a confirmation saying the elements was added to the data specification
 
-  Scenario: Add all data elements to a request from the bookmarks
+  Scenario: Add all data elements to a data specification from the bookmarks
     Given I go to the bookmarks page
     And I tick the "Select all" checkbox
     When I click the "With selected..." button
-    And I click on a data request button
-    Then I see a confirmation saying the elements was added to the request
+    And I click on a data specification button
+    Then I see a confirmation saying the elements was added to the data specification
 
-  Scenario: Remove a single data element from a request from the bookmarks
+  Scenario: Remove a single data element from a data specification from the bookmarks
     Given I go to the bookmarks page
-    When I click on the "Add to request" button for the top bookmark
-    And I untick a checked box next to a data request in the menu
-    Then I see a confirmation saying the elements were removed from the request
+    When I click on the "Add to data specification" button for the top bookmark
+    And I untick a checked box next to a data specification in the menu
+    Then I see a confirmation saying the elements were removed from the data specification

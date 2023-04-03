@@ -60,21 +60,21 @@ export class MdmPluginResearchResource extends MdmResource {
   }
 
   /**
-   * `HTTP PUT` - Submit an access request to the data owner for further processing.
+   * `HTTP PUT` - Submit a data specification access request to the data owner for further processing.
    *
-   * @param id The unique identifier of the Data Request (Data Model) to submit.
+   * @param id The unique identifier of the Data Specification (Data Model) to submit.
    * @param options Optional REST handler parameters, if required.
    * @returns The result of the `PUT` request:
    *
    * `200 OK` - will return an empty response. The HTTP status explains that it was successful.
    */
-  submitRequest(id: Uuid, options?: RequestSettings) {
+  submitDataSpecification(id: Uuid, options?: RequestSettings) {
     const url = `${this.apiEndpoint}/researchAccessRequest/${id}`;
     return this.simplePut(url, null, options);
   }
 
   /**
-   * `HTTP POST` - Get, or create if none exists, a folder in which to keep a user's requests
+   * `HTTP POST` - Get, or create if none exists, a folder in which to keep a user's data specifications
    *
    * @param options Optional REST handler parameters, if required.
    * @returns The result of the `POST` request:
@@ -87,7 +87,7 @@ export class MdmPluginResearchResource extends MdmResource {
   }
 
   /**
-   * `HTTP GET` - Get the root folder where template requests are held.
+   * `HTTP GET` - Get the root folder where template data specifications are held.
    *
    * @param options Optional REST handler parameters, if required.
    * @returns The result of the `POST` request:

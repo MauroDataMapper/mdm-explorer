@@ -21,9 +21,9 @@ import { DataModel, DataModelSubsetPayload } from '@maurodatamapper/mdm-resource
 import { EMPTY, filter, finalize, Observable, of, Subject, switchMap } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import {
-  DataAccessRequestsSourceTargetIntersections,
-  DataRequestsService,
-} from 'src/app/data-explorer/data-requests.service';
+  DataSpecificationSourceTargetIntersections,
+  DataSpecificationService,
+} from 'src/app/data-explorer/data-specification.service';
 import { SecurityService } from 'src/app/security/security.service';
 import {
   DataElementInstance,
@@ -37,7 +37,7 @@ import { BroadcastService } from 'src/app/core/broadcast.service';
 import { BookmarkService } from 'src/app/data-explorer/bookmark.service';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 
-export interface CreateRequestEvent {
+export interface CreateDataSpecificationEvent {
   item: DataElementSearchResult;
 }
 
@@ -47,14 +47,15 @@ export interface CreateRequestEvent {
   styleUrls: ['./data-element-multi-select.component.scss'],
 })
 export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
-  @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
+  @Input() sourceTargetIntersections: DataSpecificationSourceTargetIntersections;
 
   @Input() dataElements: DataElementSearchResult[] = [];
 
   @Input() showRemoveFromBookmarks = false;
-  @Input() suppressViewRequestsDialogButton = false;
+  @Input() suppressViewDataSpecificationsDialogButton = false;
 
-  @Output() createRequestClicked = new EventEmitter<CreateRequestEvent>();
+  @Output() createDataSpecificationClicked =
+    new EventEmitter<CreateDataSpecificationEvent>();
 
   @Output() remove = new EventEmitter<RemoveBookmarkEvent>();
 
@@ -70,7 +71,7 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
   constructor(
     security: SecurityService,
     private stateRouter: StateRouterService,
-    private dataRequests: DataRequestsService,
+    private dataSpecification: DataSpecificationService,
     private dataModels: DataModelService,
     private dialogs: DialogService,
     private toastr: ToastrService,
@@ -79,7 +80,7 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
   ) {
     this.user = security.getSignedInUser();
     this.sourceTargetIntersections = {
-      dataAccessRequests: [],
+      dataSpecifications: [],
       sourceTargetIntersections: [],
     };
   }
@@ -98,15 +99,15 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
     this.unsubscribe$.complete();
   }
 
-  onClickCreateRequest() {
+  onClickCreateDataSpecification() {
     if (this.dataElements.length === 0) return;
 
-    this.createRequest(this.dataElements);
+    this.createDataSpecification(this.dataElements);
   }
 
-  createRequest(dataElements: DataElementSearchResult[]) {
+  createDataSpecification(dataElements: DataElementSearchResult[]) {
     if (!this.user) {
-      this.toastr.error('You must be signed-in in order to create data requests.');
+      this.toastr.error('You must be signed-in in order to create data specifications.');
       return;
     }
 
@@ -114,29 +115,32 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
       return of(dataElements);
     };
 
-    this.dataRequests
-      .createWithDialogs(getDataElements, this.suppressViewRequestsDialogButton)
+    this.dataSpecification
+      .createWithDialogs(getDataElements, this.suppressViewDataSpecificationsDialogButton)
       .subscribe((response) => {
-        if (response.action === 'view-requests') {
-          this.stateRouter.navigateToKnownPath('/requests');
-        } else if (response.action === 'view-request-detail') {
-          this.stateRouter.navigateTo(['/requests', response.dataRequest.id]);
+        if (response.action === 'view-data-specifications') {
+          this.stateRouter.navigateToKnownPath('/dataSpecifications');
+        } else if (response.action === 'view-data-specification-detail') {
+          this.stateRouter.navigateTo([
+            '/dataSpecifications',
+            response.dataSpecification.id,
+          ]);
         }
       });
   }
 
   /**
-   * Add a set of selected data elements to a request
+   * Add a set of selected data elements to a data specification
    *
-   * @param item The DataModel representing the request
+   * @param item The DataModel representing the data specification
    */
-  onClickAddSelectedToRequest(item: DataModel) {
+  onClickAddSelectedToDataSpecification(item: DataModel) {
     // If there are any selected data elements then they should all be from the same source data model.
     // So pick the first and use that
     const sourceDataModelId =
       this.dataElements.length > 0 ? this.dataElements[0].model : null;
 
-    // The target data model (aka request)
+    // The target data model (aka data specification)
     const targetDataModelId = item.id;
 
     // A payload for subsetting. We only handle additions here, not deletions.
@@ -150,27 +154,30 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
       targetDataModelId &&
       datamodelSubsetPayload.additions.length > 0
     ) {
-      this.broadcast.loading({ isLoading: true, caption: 'Updating your request...' });
+      this.broadcast.loading({
+        isLoading: true,
+        caption: 'Updating your data specification...',
+      });
 
       this.dataModels
         .copySubset(sourceDataModelId, targetDataModelId, datamodelSubsetPayload)
         .pipe(finalize(() => this.broadcast.loading({ isLoading: false })))
         .subscribe(() => {
-          // Really this is an update rather than add, but broadcasting data-request-added has the effect we want
+          // Really this is an update rather than add, but broadcasting data-specification-added has the effect we want
           // i.e. forcing intersections to be refreshed
-          this.broadcast.dispatch('data-request-added');
+          this.broadcast.dispatch('data-specification-added');
 
           return this.dialogs
-            .openRequestUpdated({
-              request: item,
+            .openDataSpecificationUpdated({
+              dataSpecification: item,
               addedElements: this.dataElements,
             })
             .afterClosed()
             .subscribe((action) => {
-              if (action === 'view-requests') {
-                this.stateRouter.navigateToKnownPath('/requests');
-              } else if (action === 'view-request-detail') {
-                this.stateRouter.navigateTo(['/requests', item.id]);
+              if (action === 'view-data-specifications') {
+                this.stateRouter.navigateToKnownPath('/dataSpecifications');
+              } else if (action === 'view-data-specification-detail') {
+                this.stateRouter.navigateTo(['/dataSpecifications', item.id]);
               }
             });
         }); // eslint-disable-line @typescript-eslint/no-unsafe-argument

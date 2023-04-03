@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, Input } from '@angular/core';
 import { RouterLinkRef } from 'src/app/shared/types/shared.types';
-import { DataRequestQueryType, QueryCondition } from '../data-explorer.types';
+import { DataSpecificationQueryType, QueryCondition } from '../data-explorer.types';
 
 @Component({
   selector: 'mdm-data-query-row',
@@ -26,7 +26,7 @@ import { DataRequestQueryType, QueryCondition } from '../data-explorer.types';
   styleUrls: ['./data-query-row.component.scss'],
 })
 export class DataQueryRowComponent {
-  @Input() queryType?: DataRequestQueryType;
+  @Input() queryType?: DataSpecificationQueryType;
   @Input() condition?: QueryCondition;
   @Input() readOnly = false;
   @Input() createRouterLink?: RouterLinkRef;

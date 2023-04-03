@@ -14,27 +14,27 @@
 # limitations under the License.
 #
 # SPDX-License-Identifier: Apache-2.0
-Feature: Submitting requests
+Feature: Submitting data specifications
   As an authenticated user
-  I want to submit my data access requests to be processed further
+  I want to submit my data specification request to be processed further
 
   Background:
     Given I am signed in
-    And I go to the requests page
-    And I have at least one unsent request
-    And I have at least one submitted request
+    And I go to the data specifications page
+    And I have at least one unsent data specification
+    And I have at least one submitted data specification
 
-  Scenario: Submit a request
-    When I click on an unsent request
-    And I click on the "Submit request" button
-    Then I see a confirmation that the request was submitted
-    And The status of the request changes to "submitted"
-    And The number of requests decreases in the header
+  Scenario: Submit a data specification
+    When I click on an unsent data specification
+    And I click on the "Submit data specification" button
+    Then I see a confirmation that the data specification was submitted
+    And The status of the data specification changes to "submitted"
+    And The number of data specifications decreases in the header
 
-  Scenario: Copy a submitted request
-    When I click on a submitted request
+  Scenario: Copy a submitted data specification
+    When I click on a submitted data specification
     And I click on the "Copy" button
-    And I enter a name for the new request
-    Then I see a confirmation that the new request was created
-    And A new request with the chosen name appears in the request list
-    And The number of requests increases in the header
+    And I enter a name for the new data specification
+    Then I see a confirmation that the new data specification was created
+    And A new data specification with the chosen name appears in the data specification list
+    And The number of data specifications increases in the header

@@ -32,10 +32,10 @@ SPDX-License-Identifier: Apache-2.0
     ></mdm-breadcrumb>
   </div>
   <ng-container header-actions>
-    <mdm-data-element-in-request
+    <mdm-data-element-in-data-specification
       [dataElements]="[item]"
       [sourceTargetIntersections]="sourceTargetIntersections"
-    ></mdm-data-element-in-request>
+    ></mdm-data-element-in-data-specification>
     <mdm-bookmark-toggle
       (toggle)="toggleBookmark($event)"
       [selected]="isBookmarked"

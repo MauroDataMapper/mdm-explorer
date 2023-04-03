@@ -64,20 +64,22 @@ describe('ResearchPluginService', () => {
     expect(actual$).toBeObservable(expected$);
   });
 
-  it('should submit a data request', () => {
+  it('should submit a data specification', () => {
     const id = '123';
     const dataModel: DataModelDetail = {
       id,
-      label: 'test request',
+      label: 'test data specification',
       domainType: CatalogueItemDomainType.DataModel,
       availableActions: ['show'],
       finalised: true,
     };
 
-    endpointsStub.pluginResearch.submitRequest.mockImplementationOnce((ident) => {
-      expect(ident).toBe(id);
-      return cold('--a|', { a: { body: {} } });
-    });
+    endpointsStub.pluginResearch.submitDataSpecification.mockImplementationOnce(
+      (ident) => {
+        expect(ident).toBe(id);
+        return cold('--a|', { a: { body: {} } });
+      }
+    );
 
     endpointsStub.dataModel.get.mockImplementationOnce((ident) => {
       expect(ident).toBe(id);
@@ -85,7 +87,7 @@ describe('ResearchPluginService', () => {
     });
 
     const expected$ = cold('----a|', { a: dataModel });
-    const actual$ = service.submitRequest(id);
+    const actual$ = service.submitDataSpecification(id);
     expect(actual$).toBeObservable(expected$);
   });
 });

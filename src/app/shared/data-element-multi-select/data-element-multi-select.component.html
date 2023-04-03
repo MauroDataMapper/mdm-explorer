@@ -31,14 +31,14 @@ SPDX-License-Identifier: Apache-2.0
     <ng-container *ngIf="ready">
       <section>
         <ul
-          *ngFor="let item of sourceTargetIntersections.dataAccessRequests; let i = index"
+          *ngFor="let item of sourceTargetIntersections.dataSpecifications; let i = index"
         >
           <li>
             <button
               class="w-100"
               mat-stroked-button
               color="primary"
-              (click)="onClickAddSelectedToRequest(item)"
+              (click)="onClickAddSelectedToDataSpecification(item)"
               clickable
             >
               Add to {{ item.label }}
@@ -54,10 +54,10 @@ SPDX-License-Identifier: Apache-2.0
         class="w-100"
         mat-flat-button
         color="primary"
-        (click)="onClickCreateRequest()"
+        (click)="onClickCreateDataSpecification()"
         clickable
       >
-        Create new request
+        Create new data specification
       </button>
     </section>
     <ng-container *ngIf="showRemoveFromBookmarks">

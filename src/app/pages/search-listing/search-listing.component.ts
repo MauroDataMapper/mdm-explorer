@@ -50,9 +50,9 @@ import { DataElementBookmarkEvent } from 'src/app/data-explorer/data-explorer.ty
 import { BookmarkService } from 'src/app/data-explorer/bookmark.service';
 import { SortByOption } from 'src/app/data-explorer/sort-by/sort-by.component';
 import {
-  DataRequestsService,
-  DataAccessRequestsSourceTargetIntersections,
-} from 'src/app/data-explorer/data-requests.service';
+  DataSpecificationService,
+  DataSpecificationSourceTargetIntersections,
+} from 'src/app/data-explorer/data-specification.service';
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import {
@@ -92,7 +92,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
   resultSet?: DataElementSearchResultSet;
   userBookmarks: DataElementSearchResult[] = [];
   sortBy?: SortByOption;
-  sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
+  sourceTargetIntersections: DataSpecificationSourceTargetIntersections;
   pageSize?: number;
   areAllElementsSelected = false;
 
@@ -117,7 +117,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
     private dataElementsSearch: DataElementSearchService,
     private dataModels: DataModelService,
     private explorer: DataExplorerService,
-    private dataRequests: DataRequestsService,
+    private dataSpecification: DataSpecificationService,
     private toastr: ToastrService,
     private stateRouter: StateRouterService,
     private bookmarks: BookmarkService,
@@ -128,7 +128,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
     private paginationConfig?: PaginationConfiguration
   ) {
     this.sourceTargetIntersections = {
-      dataAccessRequests: [],
+      dataSpecifications: [],
       sourceTargetIntersections: [],
     };
   }
@@ -188,7 +188,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
       )
       .subscribe((intersections) => {
         this.sourceTargetIntersections = intersections;
-        this.subscribeDataRequestChanges();
+        this.subscribeDataSpecificationChanges();
         this.status = 'ready';
       });
 
@@ -356,7 +356,10 @@ export class SearchListingComponent implements OnInit, OnDestroy {
           return throwError(() => new Error('Root Data Model has no id.'));
         }
 
-        return this.dataRequests.getRequestsIntersections(dataModel.id, dataElementIds);
+        return this.dataSpecification.getDataSpecificationIntersections(
+          dataModel.id,
+          dataElementIds
+        );
       })
     );
   }
@@ -379,13 +382,13 @@ export class SearchListingComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * When a data request is added, reload all intersections (which ensures we pick up intersections with the
-   * new data request) and tell all data-element-in-request components about the new intersections.
+   * When a data specification is added, reload all intersections (which ensures we pick up intersections with the
+   * new data specification) and tell all data-element-in-data-specification components about the new intersections.
    */
 
-  private subscribeDataRequestChanges() {
+  private subscribeDataSpecificationChanges() {
     this.broadcast
-      .on('data-request-added')
+      .on('data-specification-added')
       .pipe(
         takeUntil(this.unsubscribe$),
         switchMap(() => this.loadIntersections())

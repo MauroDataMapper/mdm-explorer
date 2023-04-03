@@ -41,9 +41,9 @@ Feature: Accessing user content
     When I click on the "Bookmarks" link in the header
     Then I go to the bookmarks page
 
-  Scenario: Viewing the requests page
-    When I click on the "My requests" link in the header
-    Then I go to the requests page
+  Scenario: Viewing the data specifications page
+    When I click on the "My data specifications" link in the header
+    Then I go to the data specifications page
 
   Scenario: Viewing the account page
     When I click on the avatar icon in the header

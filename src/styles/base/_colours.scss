@@ -57,16 +57,20 @@ $color-warn-contrast: var(--theme-color-warn-contrast);
 // Contrasting colours - base colour with matching compliment
 $color-page: var(--theme-color-page);
 $color-page-contrast: var(--theme-color-page-contrast);
-$color-unsentRequest: var(--theme-color-unsentRequest);
-$color-unsentRequest-contrast: var(--theme-color-unsentRequest-contrast);
-$color-submittedRequest: var(--theme-color-submittedRequest);
-$color-submittedRequest-contrast: var(--theme-color-submittedRequest-contrast);
+$color-unsentDataSpecification: var(--theme-color-unsentDataSpecification);
+$color-unsentDataSpecification-contrast: var(
+  --theme-color-unsentDataSpecification-contrast
+);
+$color-submittedDataSpecification: var(--theme-color-submittedDataSpecification);
+$color-submittedDataSpecification-contrast: var(
+  --theme-color-submittedDataSpecification-contrast
+);
 $color-classRow: var(--theme-color-classRow);
 $color-classRow-contrast: var(--theme-color-classRow-contrast);
 
 // Regular colours
 $color-hyperlink: var(--theme-color-hyperlink);
-$color-requestCount: var(--theme-color-requestCount);
+$color-dataSpecificationCount: var(--theme-color-dataSpecificationCount);
 
 /*
 ----------------------------------

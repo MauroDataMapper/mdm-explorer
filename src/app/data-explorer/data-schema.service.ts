@@ -22,7 +22,7 @@ import { forkJoin, map, Observable, switchMap } from 'rxjs';
 import {
   DataClassWithElements,
   DataElementSearchResult,
-  DataRequest,
+  DataSpecification,
   DataSchema,
 } from '../data-explorer/data-explorer.types';
 import { DataModelService } from '../mauro/data-model.service';
@@ -37,8 +37,10 @@ export class DataSchemaService {
    * Gets all data classes (with elements as children) from a list of data schemas as a flat list.
    */
   reduceDataClassesFromSchemas(dataSchemas: DataSchema[]): DataClassWithElements[] {
-    const dataRequestClasses = dataSchemas.map((dataSchema) => dataSchema.dataClasses);
-    return dataRequestClasses.reduce(
+    const dataSpecificationClasses = dataSchemas.map(
+      (dataSchema) => dataSchema.dataClasses
+    );
+    return dataSpecificationClasses.reduce(
       (accumulator, value) => accumulator.concat(value),
       []
     );
@@ -48,10 +50,10 @@ export class DataSchemaService {
    * Gets all data elements from a list of data schemas as a flat list.
    */
   reduceDataElementsFromSchemas(dataSchemas: DataSchema[]): DataElementSearchResult[] {
-    const dataRequestElements = dataSchemas.map((dataSchema) =>
+    const dataSpecificationElements = dataSchemas.map((dataSchema) =>
       this.reduceDataElementsFromSchema(dataSchema)
     );
-    return dataRequestElements.reduce(
+    return dataSpecificationElements.reduce(
       (accumulator, value) => accumulator.concat(value),
       []
     );
@@ -70,8 +72,8 @@ export class DataSchemaService {
     );
   }
 
-  loadDataSchemas(request: DataRequest): Observable<DataSchema[]> {
-    return this.dataModels.getDataClasses(request as DataModel).pipe(
+  loadDataSchemas(dataSpecification: DataSpecification): Observable<DataSchema[]> {
+    return this.dataModels.getDataClasses(dataSpecification as DataModel).pipe(
       switchMap((schemas) => {
         const dataSchema = schemas.map((schema) => {
           return this.loadDataClasses(schema).pipe(

@@ -24,12 +24,14 @@ import { PluginResearchContactPayload } from 'src/app/mauro/plugins/plugin-resea
 export type ResearchPluginContactFn = (
   data: PluginResearchContactPayload
 ) => Observable<PluginResearchContactPayload>;
-export type ResearchPluginSubmitRequestFn = (id: Uuid) => Observable<DataModelDetail>;
+export type ResearchPluginSubmitDataSpecificationFn = (
+  id: Uuid
+) => Observable<DataModelDetail>;
 export type ResearchPluginUserFolderFn = (id: Uuid) => Observable<FolderDetail>;
 
 export interface ResearchPluginServiceStub {
   contact: jest.MockedFunction<ResearchPluginContactFn>;
-  submitRequest: jest.MockedFunction<ResearchPluginSubmitRequestFn>;
+  submitDataSpecification: jest.MockedFunction<ResearchPluginSubmitDataSpecificationFn>;
   userFolder: jest.MockedFunction<ResearchPluginUserFolderFn>;
   templateFolder: jest.MockedFunction<() => Observable<FolderDetail>>;
   rootDataModel: jest.MockedFunction<() => Observable<DataModelDetail>>;
@@ -39,7 +41,8 @@ export interface ResearchPluginServiceStub {
 export const createResearchPluginServiceStub = (): ResearchPluginServiceStub => {
   return {
     contact: jest.fn() as jest.MockedFunction<ResearchPluginContactFn>,
-    submitRequest: jest.fn() as jest.MockedFunction<ResearchPluginSubmitRequestFn>,
+    submitDataSpecification:
+      jest.fn() as jest.MockedFunction<ResearchPluginSubmitDataSpecificationFn>,
     userFolder: jest.fn() as jest.MockedFunction<ResearchPluginUserFolderFn>,
     templateFolder: jest.fn(),
     rootDataModel: jest.fn(),

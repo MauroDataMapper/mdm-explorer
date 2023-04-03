@@ -29,7 +29,7 @@ import {
   SelectableDataElementSearchResultCheckedEvent,
   DataElementSearchResult,
 } from '../data-explorer.types';
-import { DataAccessRequestsSourceTargetIntersections } from '../data-requests.service';
+import { DataSpecificationSourceTargetIntersections } from '../data-specification.service';
 
 @Component({
   selector: 'mdm-data-element-search-result',
@@ -44,7 +44,7 @@ export class DataElementSearchResultComponent {
 
   @Input() isBookmarked = false;
 
-  @Input() sourceTargetIntersections: DataAccessRequestsSourceTargetIntersections;
+  @Input() sourceTargetIntersections: DataSpecificationSourceTargetIntersections;
 
   @Output() checked = new EventEmitter<SelectableDataElementSearchResultCheckedEvent>();
 
@@ -54,7 +54,7 @@ export class DataElementSearchResultComponent {
 
   constructor() {
     this.sourceTargetIntersections = {
-      dataAccessRequests: [],
+      dataSpecifications: [],
       sourceTargetIntersections: [],
     };
   }

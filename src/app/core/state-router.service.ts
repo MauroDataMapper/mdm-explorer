@@ -33,7 +33,7 @@ export type KnownRouterPath =
   | '/search'
   | '/search/listing'
   | '/dashboard'
-  | '/requests'
+  | '/dataSpecifications'
   | '/account';
 
 /**

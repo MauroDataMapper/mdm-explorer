@@ -38,7 +38,7 @@ export interface ThemeMaterialColors {
  */
 export interface ThemeRegularColors {
   hyperlink: string;
-  requestCount: string;
+  dataSpecificationCount: string;
 }
 
 /**
@@ -48,8 +48,8 @@ export interface ThemeRegularColors {
  */
 export interface ThemeContrastColors {
   page: string;
-  unsentRequest: string;
-  submittedRequest: string;
+  unsentDataSpecification: string;
+  submittedDataSpecification: string;
   classRow: string;
 }
 
@@ -151,12 +151,12 @@ export const defaultTheme: Theme = {
   },
   regularColors: {
     hyperlink: '#003752',
-    requestCount: '#ffe603',
+    dataSpecificationCount: '#ffe603',
   },
   contrastColors: {
     page: '#fff',
-    unsentRequest: '#008bce',
-    submittedRequest: '#0e8f77',
+    unsentDataSpecification: '#008bce',
+    submittedDataSpecification: '#0e8f77',
     classRow: '#c4c4c4',
   },
   images: {
@@ -333,23 +333,23 @@ export class ThemeService {
           'regularcolors.hyperlink',
           defaultTheme.regularColors.hyperlink
         ),
-        requestCount: getKviValue(
+        dataSpecificationCount: getKviValue(
           props,
-          'regularcolors.requestcount',
-          defaultTheme.regularColors.requestCount
+          'regularcolors.data-specification-count',
+          defaultTheme.regularColors.dataSpecificationCount
         ),
       },
       contrastColors: {
         page: getKviValue(props, 'contrastcolors.page', defaultTheme.contrastColors.page),
-        unsentRequest: getKviValue(
+        unsentDataSpecification: getKviValue(
           props,
-          'contrastcolors.unsentrequest',
-          defaultTheme.contrastColors.unsentRequest
+          'contrastcolors.unsent-data-specification',
+          defaultTheme.contrastColors.unsentDataSpecification
         ),
-        submittedRequest: getKviValue(
+        submittedDataSpecification: getKviValue(
           props,
-          'contrastcolors.submittedrequest',
-          defaultTheme.contrastColors.submittedRequest
+          'contrastcolors.submitted-data-specification',
+          defaultTheme.contrastColors.submittedDataSpecification
         ),
         classRow: getKviValue(
           props,

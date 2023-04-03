@@ -302,14 +302,14 @@ describe('ThemeService', () => {
 
       expectCssVariable('--theme-color-page', '#ffffff');
       expectCssVariable('--theme-color-page-contrast', 'rgba(black, 0.87)');
-      expectCssVariable('--theme-color-unsentRequest', '#008bce');
-      expectCssVariable('--theme-color-unsentRequest-contrast', 'white');
-      expectCssVariable('--theme-color-submittedRequest', '#0e8f77');
-      expectCssVariable('--theme-color-submittedRequest-contrast', 'white');
+      expectCssVariable('--theme-color-unsentDataSpecification', '#008bce');
+      expectCssVariable('--theme-color-unsentDataSpecification-contrast', 'white');
+      expectCssVariable('--theme-color-submittedDataSpecification', '#0e8f77');
+      expectCssVariable('--theme-color-submittedDataSpecification-contrast', 'white');
       expectCssVariable('--theme-color-classRow', '#c4c4c4');
       expectCssVariable('--theme-color-classRow-contrast', 'rgba(black, 0.87)');
       expectCssVariable('--theme-color-hyperlink', '#003752');
-      expectCssVariable('--theme-color-requestCount', '#ffe603');
+      expectCssVariable('--theme-color-dataSpecificationCount', '#ffe603');
     });
   });
 });

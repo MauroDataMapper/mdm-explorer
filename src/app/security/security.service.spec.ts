@@ -120,7 +120,7 @@ describe('SecurityService', () => {
         password: 'test',
       };
 
-      const expectedRequestFolder: FolderDetail = {
+      const expectedDataSpecificationFolder: FolderDetail = {
         id: '9987',
         label: 'expected[at]email.com',
         domainType: CatalogueItemDomainType.Folder,
@@ -135,7 +135,7 @@ describe('SecurityService', () => {
         needsToResetPassword: false,
         role: '',
         token: undefined,
-        requestFolder: expectedRequestFolder,
+        dataSpecificationFolder: expectedDataSpecificationFolder,
       };
 
       setupLoginMocks(expectedUser);
@@ -272,7 +272,7 @@ describe('SecurityService', () => {
         code: 'code',
       };
 
-      const expectedRequestFolder: FolderDetail = {
+      const expectedDataSpecificationFolder: FolderDetail = {
         id: '9987',
         label: 'expected[at]email.com',
         domainType: CatalogueItemDomainType.Folder,
@@ -287,7 +287,7 @@ describe('SecurityService', () => {
         needsToResetPassword: false,
         role: '',
         token: undefined,
-        requestFolder: expectedRequestFolder,
+        dataSpecificationFolder: expectedDataSpecificationFolder,
       };
 
       setupLoginMocks(expectedUser);

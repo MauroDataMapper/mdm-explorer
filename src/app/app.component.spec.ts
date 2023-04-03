@@ -20,11 +20,11 @@ import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { MockDirective } from 'ng-mocks';
 import { AppComponent } from './app.component';
 import { StateRouterService } from './core/state-router.service';
-import { DataRequestsService } from './data-explorer/data-requests.service';
+import { DataSpecificationService } from './data-explorer/data-specification.service';
 import { MdmEndpointsService } from './mauro/mdm-endpoints.service';
 import { FooterComponent } from './shared/footer/footer.component';
 import { HeaderComponent } from './shared/header/header.component';
-import { createDataRequestsServiceStub } from './testing/stubs/data-requests.stub';
+import { createDataSpecificationServiceStub } from './testing/stubs/data-specifications.stub';
 import {
   createMdmEndpointsStub,
   MdmEndpointsServiceStub,
@@ -38,7 +38,7 @@ import { of } from 'rxjs';
 
 describe('AppComponent', () => {
   let harness: ComponentHarness<AppComponent>;
-  const dataRequestsStub = createDataRequestsServiceStub();
+  const dataSpecificationStub = createDataSpecificationServiceStub();
   const endpointsStub: MdmEndpointsServiceStub = createMdmEndpointsStub();
   const dataElementSearchStub = createDataElementSearchServiceStub();
   const themesStub = createThemeServiceStub();
@@ -54,8 +54,8 @@ describe('AppComponent', () => {
           useValue: {},
         },
         {
-          provide: DataRequestsService,
-          useValue: dataRequestsStub,
+          provide: DataSpecificationService,
+          useValue: dataSpecificationStub,
         },
         {
           provide: MdmEndpointsService,

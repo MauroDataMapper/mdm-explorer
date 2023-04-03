@@ -34,13 +34,13 @@ import { NotImplementedComponent } from './error/not-implemented/not-implemented
 import { NotAuthorizedComponent } from './error/not-authorized/not-authorized.component';
 import { ServerErrorComponent } from './error/server-error/server-error.component';
 import { NotFoundComponent } from './error/not-found/not-found.component';
-import { MyRequestsComponent } from './my-requests/my-requests.component';
+import { MyDataSpecificationsComponent } from './my-data-specifications/my-data-specifications.component';
 import { ChangePasswordComponent } from './change-password/change-password.component';
-import { RequestQueryComponent } from './request-query/request-query.component';
+import { DataSpecificationQueryComponent } from './data-specification-query/data-specification-query.component';
 import { ModelPageDirtyGuard } from '../shared/guards/model-page-dirty.guard';
-import { MyRequestDetailComponent } from './my-request-detail/my-request-detail.component';
-import { TemplateRequestsComponent } from './template-requests/template-requests.component';
-import { TemplateRequestDetailComponent } from './template-request-detail/template-request-detail.component';
+import { MyDataSpecificationDetailComponent } from './my-data-specification-detail/my-data-specification-detail.component';
+import { TemplateDataSpecificationsComponent } from './template-data-specifications/template-data-specifications.component';
+import { TemplateDataSpecificationDetailComponent } from './template-data-specification-detail/template-data-specification-detail.component';
 
 export const buildStaticContentRoute = (path: string, staticAssetPath: string): Route => {
   return {
@@ -157,29 +157,29 @@ export const routes: Route[] = [
     canActivate: [AuthorizedGuard],
   },
   {
-    path: 'requests',
-    component: MyRequestsComponent,
+    path: 'dataSpecifications',
+    component: MyDataSpecificationsComponent,
     canActivate: [AuthorizedGuard],
   },
   {
-    path: 'requests/:requestId/queries/:queryType',
-    component: RequestQueryComponent,
+    path: 'dataSpecifications/:dataSpecificationId/queries/:queryType',
+    component: DataSpecificationQueryComponent,
     canActivate: [AuthorizedGuard],
     canDeactivate: [ModelPageDirtyGuard],
   },
   {
-    path: 'requests/:requestId',
-    component: MyRequestDetailComponent,
+    path: 'dataSpecifications/:dataSpecificationId',
+    component: MyDataSpecificationDetailComponent,
     canActivate: [AuthorizedGuard],
   },
   {
     path: 'templates',
-    component: TemplateRequestsComponent,
+    component: TemplateDataSpecificationsComponent,
     canActivate: [AuthorizedGuard],
   },
   {
-    path: 'templates/:requestId',
-    component: TemplateRequestDetailComponent,
+    path: 'templates/:dataSpecificationId',
+    component: TemplateDataSpecificationDetailComponent,
     canActivate: [AuthorizedGuard],
   },
 ];

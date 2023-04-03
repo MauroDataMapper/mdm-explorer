@@ -229,12 +229,12 @@ export const mapProfileSearchResult = (
   };
 };
 
-export type DataRequestStatus = 'unsent' | 'submitted';
+export type DataSpecificationStatus = 'unsent' | 'submitted';
 
 /* .*
- * Determine the status of a request made by a user for data access.
+ * Determine the status of a data specification made by a user for data access.
  */
-export const getDataRequestStatus = (model: DataModel): DataRequestStatus => {
+export const getDataSpecificationStatus = (model: DataModel): DataSpecificationStatus => {
   if (model.modelVersion) {
     // Model was finalised, so is now locked
     return 'submitted';
@@ -244,19 +244,19 @@ export const getDataRequestStatus = (model: DataModel): DataRequestStatus => {
 };
 
 /**
- * Define a Data Request, which is an extension of a {@link DataModel}.
+ * Define a data specification, which is an extension of a {@link DataModel}.
  */
-export interface DataRequest extends DataModel {
+export interface DataSpecification extends DataModel {
   /**
-   * Get the status of this request, one of {@link DataRequestStatus}.
+   * Get the status of this data specification, one of {@link DataSpecificationStatus}.
    */
-  status: DataRequestStatus;
+  status: DataSpecificationStatus;
 }
 
-export const mapToDataRequest = (dataModel: DataModel): DataRequest => {
+export const mapToDataSpecification = (dataModel: DataModel): DataSpecification => {
   return {
     ...dataModel,
-    status: getDataRequestStatus(dataModel),
+    status: getDataSpecificationStatus(dataModel),
   };
 };
 
@@ -312,9 +312,9 @@ export interface BookMarkCheckedEvent {
   checked: boolean;
 }
 
-export interface AddToRequestEvent {
+export interface AddToDataSpecificationEvent {
   item: DataElementSearchResult;
-  requestId: Uuid;
+  dataSpecificationId: Uuid;
 }
 
 export interface RemoveBookmarkEvent {
@@ -357,18 +357,18 @@ export interface DataItemDeleteEvent {
   confirmationMessage?: string;
 }
 
-export type DataRequestQueryType = 'none' | 'cohort' | 'data';
+export type DataSpecificationQueryType = 'none' | 'cohort' | 'data';
 
-export const dataRequestQueryLanguage = 'json-meql';
+export const dataSpecificationQueryLanguage = 'json-meql';
 
-export interface DataRequestQueryPayload {
+export interface DataSpecificationQueryPayload {
   ruleId?: Uuid;
   representationId?: Uuid;
-  type: DataRequestQueryType;
+  type: DataSpecificationQueryType;
   condition: QueryCondition;
 }
 
-export type DataRequestQuery = Required<DataRequestQueryPayload>;
+export type DataSpecificationQuery = Required<DataSpecificationQueryPayload>;
 
 export type QueryOperator =
   | '='
@@ -407,6 +407,6 @@ export interface DataSchema {
   dataClasses: DataClassWithElements[];
 }
 
-export interface ForkDataRequestOptions {
+export interface ForkDataSpecificationOptions {
   targetFolder?: Folder;
 }

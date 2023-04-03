@@ -31,7 +31,7 @@ import { SummaryMetadataReportComponent } from './summary-metadata/summary-metad
 import { SummaryMetadataChartComponent } from './summary-metadata/summary-metadata-chart/summary-metadata-chart.component';
 import { NgChartsModule } from 'ng2-charts';
 import { CallToActionComponent } from './call-to-action/call-to-action.component';
-import { DataElementInRequestComponent } from './data-element-in-request/data-element-in-request.component';
+import { DataElementInDataSpecificationComponent } from './data-element-in-data-specification/data-element-in-data-specification.component';
 import { DataElementMultiSelectComponent } from './data-element-multi-select/data-element-multi-select.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { AutocompleteSelectComponent } from './autocomplete-select/autocomplete-select.component';
@@ -52,7 +52,7 @@ import { HeaderAndContentBoxComponent } from './header-and-content-box/header-an
     SummaryMetadataReportComponent,
     LoadingSpinnerComponent,
     CallToActionComponent,
-    DataElementInRequestComponent,
+    DataElementInDataSpecificationComponent,
     DataElementMultiSelectComponent,
     ConfirmationDialogComponent,
     AutocompleteSelectComponent,
@@ -72,7 +72,7 @@ import { HeaderAndContentBoxComponent } from './header-and-content-box/header-an
     SummaryMetadataComponent,
     SummaryMetadataReportComponent,
     CallToActionComponent,
-    DataElementInRequestComponent,
+    DataElementInDataSpecificationComponent,
     DataElementMultiSelectComponent,
     AutocompleteSelectComponent,
     BackLinkComponent,
