@@ -448,4 +448,30 @@ export class DataModelService {
       .update(id, data, options)
       .pipe(map((response: DataModelDetailResponse) => response.body));
   }
+
+  /**
+   * Marks a {@link DataModel} to be readable by
+   * any authenticated user.
+   *
+   * @param id The id of the {@link DataModel} to update.
+   * @returns an observable containing the updated {@link DataModelDetail}
+   */
+  updateReadByAuthenticated(id: Uuid): Observable<DataModelDetail> {
+    return this.endpoints.dataModel
+      .updateReadByAuthenticated(id)
+      .pipe(map((response: DataModelDetailResponse) => response.body));
+  }
+
+  /**
+   * Marks a {@link DataModel} to not be readable by
+   * all authenticated users.
+   *
+   * @param id The id of the {@link DataModel} to update.
+   * @returns an observable containing the updated {@link DataModelDetail}
+   */
+  removeReadByAuthenticated(id: Uuid): Observable<DataModelDetail> {
+    return this.endpoints.dataModel
+      .removeReadByAuthenticated(id)
+      .pipe(map((response: DataModelDetailResponse) => response.body));
+  }
 }

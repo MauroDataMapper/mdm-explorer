@@ -66,6 +66,9 @@ import {
 import { DataSchemaService } from '../../data-explorer/data-schema.service';
 import { ResearchPluginService } from '../../mauro/research-plugin.service';
 import { DataSpecificationElementAddDeleteEvent } from '../../shared/data-element-in-data-specification/data-element-in-data-specification.component';
+import { ShareDataSpecificationDialogResponse } from 'src/app/data-explorer/share-data-specification-dialog/share-data-specification-dialog.component';
+import { DataModelService } from 'src/app/mauro/data-model.service';
+
 export interface RemoveSelectedResponse {
   okCancelDialogResponse: Observable<OkCancelDialogResponse>;
   deletedItems: Observable<DataElementMultipleOperationResult>;
@@ -126,7 +129,8 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     private researchPlugin: ResearchPluginService,
     private dialogs: DialogService,
     private broadcastService: BroadcastService,
-    private dataSchemaService: DataSchemaService
+    private dataSchemaService: DataSchemaService,
+    private dataModels: DataModelService
   ) {
     this.sourceTargetIntersections = {
       dataSpecifications: [],
@@ -369,6 +373,44 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
 
         this.dataSpecification.description = response.description;
         this.dataSpecification.label = response.label;
+      });
+  }
+
+  shareDataSpecification() {
+    if (!this.dataSpecification || !this.dataSpecification.id) {
+      return;
+    }
+
+    this.dataSpecificationService
+      .shareWithDialog(this.dataSpecification.readableByAuthenticatedUsers)
+      .subscribe((response: ShareDataSpecificationDialogResponse) => {
+        if (!this.dataSpecification || !this.dataSpecification.id) {
+          return;
+        }
+
+        if (
+          this.dataSpecification.readableByAuthenticatedUsers !=
+          response.sharedWithCommunity
+        ) {
+          // Shared
+          if (response.sharedWithCommunity) {
+            this.dataModels
+              .updateReadByAuthenticated(this.dataSpecification.id)
+              .subscribe((response) => {
+                this.dataSpecification!.readableByAuthenticatedUsers =
+                  response.readableByAuthenticatedUsers;
+                this.toastr.success('Data specification shared with the community');
+              });
+          } else {
+            this.dataModels
+              .removeReadByAuthenticated(this.dataSpecification.id)
+              .subscribe((response) => {
+                this.dataSpecification!.readableByAuthenticatedUsers =
+                  response.readableByAuthenticatedUsers;
+                this.toastr.success('Data specification not shared anymore');
+              });
+          }
+        }
       });
   }
 
