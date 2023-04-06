@@ -75,6 +75,10 @@ import { DialogService } from './dialog.service';
 import { RulesService } from '../mauro/rules.service';
 import { ResearchPluginService } from '../mauro/research-plugin.service';
 import { EditDataSpecificationDialogOptions as EditDataSpecificationDialogOptions } from './edit-data-specification-dialog/edit-data-specification-dialog.component';
+import {
+  ShareDataSpecificationDialogOptions,
+  ShareDataSpecificationDialogResponse,
+} from './share-data-specification-dialog/share-data-specification-dialog.component';
 
 /**
  * A collection of data specifications and their intersections with target models.
@@ -181,6 +185,40 @@ export class DataSpecificationService {
         }),
         finalize(() => {
           this.broadcast.loading({ isLoading: false });
+        })
+      );
+  }
+
+  /**
+   * Opens a dialog for the user to set the specification
+   * as readable by any authenticated users or not.
+   *
+   * @param shared whether the {@link DataSpecification} is
+   * currently readable by any authenticated users or not.
+   * @returns an observable containing a {@link ShareDataSpecificationDialogResponse}
+   */
+  shareWithDialog(shared: boolean): Observable<ShareDataSpecificationDialogResponse> {
+    const user = this.security.getSignedInUser();
+    if (!user) return EMPTY;
+
+    const dialogData: ShareDataSpecificationDialogOptions = {
+      sharedWithCommunity: shared,
+    };
+
+    return this.dialogs
+      .shareWithCommunity(dialogData)
+      .afterClosed()
+      .pipe(
+        filter((response: any) => !!response),
+        map((response: ShareDataSpecificationDialogResponse) => {
+          return response;
+        }),
+        catchError((error) => {
+          this.toastr.error(
+            `There was a problem sharing the specification. ${error}`,
+            'Data specification edition error'
+          );
+          return EMPTY;
         })
       );
   }
