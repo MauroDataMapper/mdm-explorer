@@ -1,0 +1,97 @@
+<!--
+Copyright 2022-2023 University of Oxford
+and Health and Social Care Information Centre, also known as NHS Digital
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+SPDX-License-Identifier: Apache-2.0
+-->
+<div class="container">
+  <div *ngIf="user" class="mdm-my-account">
+    <div class="heading-with-actions main-row hero">
+      <h1>My Account</h1>
+      <button mat-flat-button color="primary" (click)="signOut()">Sign out</button>
+    </div>
+    <section class="form-section">
+      <div class="sub-heading-with-actions">
+        <h2>Security</h2>
+        <a mat-stroked-button color="primary" routerLink="/change-password"
+          >Change password</a
+        >
+      </div>
+    </section>
+    <section class="form-section">
+      <div class="sub-heading-with-actions">
+        <h2>Basic Information</h2>
+        <button
+          *ngIf="basicInfoMode === 'view'"
+          mat-flat-button
+          color="primary"
+          (click)="editBasicInfo()"
+        >
+          Edit
+        </button>
+      </div>
+      <dl *ngIf="basicInfoMode === 'view'">
+        <div class="mdm-my-account__desc-info">
+          <dt>Name</dt>
+          <dd>{{ user.firstName }} {{ user.lastName }}</dd>
+        </div>
+        <div class="mdm-my-account__desc-info">
+          <dt>Organisation</dt>
+          <dd>{{ user.organisation }}</dd>
+        </div>
+        <div class="mdm-my-account__desc-info">
+          <dt>Role</dt>
+          <dd>{{ user.jobTitle }}</dd>
+        </div>
+      </dl>
+      <mdm-catalogue-user-basic-form
+        *ngIf="basicInfoMode === 'edit' || basicInfoMode === 'updating'"
+        [user]="user"
+        [isBusy]="basicInfoMode === 'updating'"
+        (cancelClicked)="cancelEditBasicInfo()"
+        (updateClicked)="updateBasicInfo($event)"
+      ></mdm-catalogue-user-basic-form>
+    </section>
+
+    <section>
+      <div class="sub-heading-with-actions">
+        <h2>Contact Information</h2>
+        <button
+          *ngIf="contactInfoMode === 'view'"
+          mat-flat-button
+          color="primary"
+          (click)="editContactInfo()"
+        >
+          Edit
+        </button>
+      </div>
+      <dl *ngIf="contactInfoMode === 'view'">
+        <div class="mdm-my-account__desc-info">
+          <dt>Email</dt>
+          <dd>
+            <a href="mailto: {{ user.emailAddress }}">{{ user.emailAddress }}</a>
+          </dd>
+        </div>
+      </dl>
+      <mdm-catalogue-user-contact-form
+        *ngIf="contactInfoMode === 'edit' || contactInfoMode === 'updating'"
+        [user]="user"
+        [isBusy]="contactInfoMode === 'updating'"
+        (cancelClicked)="cancelEditContactInfo()"
+        (updateClicked)="updateContactInfo($event)"
+      ></mdm-catalogue-user-contact-form>
+    </section>
+  </div>
+</div>

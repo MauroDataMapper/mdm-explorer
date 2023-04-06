@@ -1,0 +1,51 @@
+{
+  "ignore": [
+    ".angular",
+    ".git",
+    ".github",
+    "coverage",
+    "releases",
+    ".idea",
+    "test-report.*",
+    "test-report/**/*.*",
+    ".browserslistrc",
+    ".prettierignore",
+    ".scannerwork",
+    ".DS_Store",
+    ".editorconfig",
+    ".gitattributes",
+    ".gitignore",
+    ".nvmrc",
+    ".npmrc",
+    ".eslintignore",
+    ".prettierrc",
+    "NOTICE",
+    "Jenkinsfile",
+    "**/*.xml",
+    "**/*.csv",
+    "**/*.yml",
+    "**/*.md",
+    "**/*.eot",
+    "**/*.svg",
+    "**/*.ttf",
+    "**/*.woff",
+    "**/*.woff2",
+    "sonar-project.properties",
+    "src/app/external/**/*.*"
+  ],
+  "license": "NOTICE",
+  "licenseFormats": {
+    "sass": {
+      "prepend": "//",
+      "eachLine": {
+        "prepend": "  "
+      }
+    },
+    "feature": {
+      "eachLine": {
+        "prepend": "# "
+      }
+    }
+  },
+  "trailingWhitespace": "TRIM"
+}

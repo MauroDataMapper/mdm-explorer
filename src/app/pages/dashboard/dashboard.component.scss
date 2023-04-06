@@ -1,0 +1,61 @@
+/*
+Copyright 2022-2023 University of Oxford
+and Health and Social Care Information Centre, also known as NHS Digital
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+SPDX-License-Identifier: Apache-2.0
+*/
+@import "../../../styles/base/colours";
+
+.mdm-dashboard {
+  &__search-form {
+    padding: 0 5em 0 5em;
+  }
+  &__search-input {
+    margin-top: 1.5em;
+  }
+  &__search-advanced {
+    float: right;
+  }
+  &__search-browse {
+    clear: both;
+    margin-top: 2em;
+  }
+
+  &__request-card {
+    background-color: $color-white;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    margin-left: 1em;
+    margin-right: 1em;
+    padding: 1em;
+    cursor: pointer;
+    max-height: 16rem;
+
+    h3 {
+      font-weight: 500;
+    }
+
+    p {
+      display: -webkit-box;
+      -webkit-line-clamp: 6;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  }
+
+  div.p-carousel-header {
+    margin-top: -5em;
+  }
+}

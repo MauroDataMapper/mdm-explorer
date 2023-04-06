@@ -1,0 +1,221 @@
+/*
+Copyright 2022-2023 University of Oxford
+and Health and Social Care Information Centre, also known as NHS Digital
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+SPDX-License-Identifier: Apache-2.0
+*/
+@import "./base/all";
+
+.page-title {
+  text-align: center;
+}
+
+$hero-padding-gap: 5em;
+$section-header-padding-gap: 2em;
+$content-margin-gap: 3em;
+
+/*
+.hero
+
+Represents a heading that spans across the width of a container.
+*/
+.hero {
+  padding: $hero-padding-gap 0;
+
+  h1 {
+    margin: 0 0 1em;
+  }
+
+  p.hero-subtitle {
+    width: 50%;
+    margin: 0 auto;
+
+    @include respond-to-mobile {
+      width: 75%;
+    }
+  }
+}
+
+.hero-top-spacer {
+  padding-top: $hero-padding-gap;
+}
+
+/*
+.hero-solid
+
+Variation on .hero to include a coloured background.
+*/
+.hero-solid {
+  @extend .hero;
+
+  background-color: $color-hero;
+}
+
+@mixin heading-with-actions($level: h1, $text-align: center) {
+  text-align: $text-align;
+
+  @include respond-to-mobile-xs {
+    margin-bottom: 2em;
+  }
+
+  #{$level} {
+    display: inline-block;
+
+    @include respond-to-mobile-xs {
+      display: block;
+    }
+  }
+
+  a,
+  button {
+    float: right;
+    margin-left: 1em;
+    margin-right: 0;
+
+    @include respond-to-mobile-xs {
+      float: none;
+
+      @if $text-align == center {
+        margin-right: 1em;
+        margin-left: 1em;
+      }
+
+      @if $text-align == left {
+        margin-right: 1em;
+        margin-left: 0;
+      }
+    }
+  }
+}
+
+.heading-with-actions {
+  @include heading-with-actions(h1, center);
+}
+
+.sub-heading-with-actions {
+  @include heading-with-actions(h2, left);
+}
+
+/*
+.section-header
+
+Represents a sub-heading (h2), so slightly smaller than a .hero but still spans the width of a page.
+Padding matches half the defult BS5 Gutter value (1.5em)
+*/
+.section-header {
+  padding: $section-header-padding-gap 0 $section-header-padding-gap 1.75em;
+  background-color: $color-section-header;
+  h2 {
+    margin: 0 0 0.375em;
+  }
+}
+
+.content {
+  margin: $content-margin-gap 0;
+}
+
+/*
+highlight-box
+
+Highlights a box area behind other page components, e.g. a form
+*/
+.highlight-box {
+  border-radius: $border-radius;
+  background-color: $color-highlight-box;
+  margin-bottom: 2em;
+
+  &__header,
+  &__actions {
+    padding: 1.5em;
+    text-align: right;
+  }
+
+  &__content {
+    padding: 2em 5%;
+
+    &--slim {
+      padding: 2em 10%;
+    }
+
+    &--narrow {
+      padding: 3em 25%;
+    }
+  }
+
+  @include respond-to-mobile {
+    padding: 3em 10%;
+  }
+
+  button.mat-stroked-button {
+    background-color: $color-white;
+  }
+
+  // Force Angular form fields (outline) to have a background color to offset on
+  // highlight box background
+  .mat-form-field-appearance-outline .mat-form-field-outline {
+    background-color: $color-white;
+    border-radius: 5px;
+  }
+
+  // Force other Angular Material components to have a background color to offset on highlight box
+  // background
+  .mat-selection-list,
+  .mat-checkbox-inner-container {
+    background-color: $color-white;
+  }
+}
+
+.float-right {
+  float: right;
+}
+
+.float-left {
+  float: left;
+}
+
+.flex-container {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+
+  &__card {
+    background-color: $color-highlight-box;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    padding: 4em 5%;
+    margin-bottom: 1em;
+
+    h3 {
+      font-weight: 500;
+    }
+  }
+}
+
+.toast-top-right-custom {
+  top: 8em;
+  right: 3em;
+}
+
+.column {
+  text-align: center;
+  img {
+    width: 75%;
+    margin: 1em;
+  }
+}
+
+.full-width {
+  width: 100%;
+}

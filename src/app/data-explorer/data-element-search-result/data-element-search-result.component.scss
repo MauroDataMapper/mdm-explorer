@@ -1,0 +1,77 @@
+/*
+Copyright 2022-2023 University of Oxford
+and Health and Social Care Information Centre, also known as NHS Digital
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+SPDX-License-Identifier: Apache-2.0
+*/
+@import "../../../styles/base/all";
+
+$search-result-heading-background-color: $color-primary;
+$search-result-heading-color: $color-primary-contrast;
+$search-result-header-padding: 0.2em 1.2em;
+
+$search-result-content-color: $color-accent-light;
+$search-result-content-padding: 0.2em 0;
+
+$search-result-border-radius: 4px;
+
+.mdm-data-element-search-result {
+  @include respond-to-mobile {
+    padding: 0;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: $search-result-heading-background-color;
+    color: $search-result-heading-color;
+    border-radius: $search-result-border-radius;
+
+    h3 {
+      display: inline-block;
+      font-weight: 500;
+      margin: 0 1em;
+      vertical-align: middle;
+
+      a {
+        color: $search-result-heading-color;
+      }
+    }
+
+    &__breadcrumb {
+      vertical-align: middle;
+      font-size: 13px;
+    }
+  }
+
+  &__content {
+    display: block;
+    width: 100%;
+  }
+
+  &__description,
+  &__footer {
+    padding: $search-result-content-padding;
+    background-color: $search-result-content-color;
+    display: flex;
+    justify-content: space-between;
+    border-radius: $search-result-border-radius;
+  }
+
+  &__no-description {
+    font-style: italic;
+  }
+}

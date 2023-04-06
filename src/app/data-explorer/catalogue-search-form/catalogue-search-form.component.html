@@ -1,0 +1,73 @@
+<!--
+Copyright 2022-2023 University of Oxford
+and Health and Social Care Information Centre, also known as NHS Digital
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+SPDX-License-Identifier: Apache-2.0
+-->
+<form
+  [formGroup]="formGroup"
+  role="form"
+  autocomplete="on"
+  name="catalogueSearchForm"
+  (submit)="search()"
+>
+  <div class="container-fluid">
+    <div class="form-input row">
+      <mat-form-field appearance="outline">
+        <mat-label>Find articles with these terms</mat-label>
+        <input
+          matInput
+          type="text"
+          name="searchTerms"
+          formControlName="searchTerms"
+          autocomplete="on"
+          placeholder=""
+        />
+        <mat-hint>e.g. "code", "patient name", "last updated", etc.</mat-hint>
+      </mat-form-field>
+    </div>
+    <div class="form-input row">
+      <div *ngFor="let field of profileFields" class="col-md-6">
+        <mat-form-field [appearance]="appearance">
+          <mat-label>{{ field.fieldName }}</mat-label>
+          <!-- Enumeration -->
+          <mat-select
+            *ngIf="field.dataType === 'enumeration'"
+            [formControlName]="field.metadataPropertyName"
+          >
+            <mat-option *ngFor="let value of field.allowedValues" [value]="value">{{
+              value
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="form-actions row">
+      <div class="search-button">
+        <button type="button" mat-stroked-button color="primary" (click)="clear()">
+          Clear
+        </button>
+        <button
+          type="submit"
+          mat-flat-button
+          color="primary"
+          [disabled]="formGroup.invalid"
+        >
+          Search
+        </button>
+      </div>
+    </div>
+  </div>
+</form>

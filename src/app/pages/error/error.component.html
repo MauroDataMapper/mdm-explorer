@@ -1,0 +1,58 @@
+<!--
+Copyright 2022-2023 University of Oxford
+and Health and Social Care Information Centre, also known as NHS Digital
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+SPDX-License-Identifier: Apache-2.0
+-->
+<div class="container hero-top-spacer">
+  <div class="jumbotron mdm-error__message">
+    <h2><span class="fas fa-bug"></span>{{ heading }}</h2>
+    <p>{{ message }}</p>
+  </div>
+  <div>
+    <p>{{ resolution }}</p>
+  </div>
+  <div *ngIf="lastHttpError">
+    <div class="mdm-error__details__controls">
+      <button
+        mat-stroked-button
+        color="primary"
+        type="button"
+        (click)="copyToClipboard()"
+      >
+        <span class="fas fa-clipboard"></span>
+        Copy details
+      </button>
+    </div>
+    <mat-slide-toggle (change)="toggleShowDetails()">Show details</mat-slide-toggle>
+    <div class="mdm-error__details" [hidden]="!showDetails">
+      <table class="table mdm--table-fixed" aria-label="Details">
+        <tbody>
+          <tr *ngFor="let item of data">
+            <th scope="row">{{ item.name }}</th>
+            <td>
+              <span *ngIf="!item.code">{{ item.value }}</span>
+              <ngx-json-viewer
+                *ngIf="item.code"
+                [json]="item.value"
+                [expanded]="true"
+              ></ngx-json-viewer>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
