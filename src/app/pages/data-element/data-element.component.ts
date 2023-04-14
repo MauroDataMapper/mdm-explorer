@@ -107,6 +107,7 @@ export class DataElementComponent implements OnInit {
           this.dataElement = dataElementDetail;
           this.dataElementDataTypeCasted = this.dataElement?.dataType as DataType;
           this.isBookmarked = isBookmarked;
+          this.dataElementDataTypeCasted = this.dataElement?.dataType as DataType;
           this.dataElementSearchResult = [
             {
               id: dataElementDetail.id ?? '',

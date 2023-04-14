@@ -23,6 +23,7 @@ import { DataSpecification } from '../../data-explorer/data-explorer.types';
 import { DataSpecificationService } from '../../data-explorer/data-specification.service';
 import { SortByOption } from '../../data-explorer/sort-by/sort-by.component';
 import { Sort } from '../../mauro/sort.type';
+import { ResearchPluginService } from '../../mauro/research-plugin.service';
 
 /**
  * These options must be of the form '{propertyToSortBy}-{order}' where propertyToSortBy
@@ -39,6 +40,9 @@ export type TemplateDataSpecificationSortByOption = 'label-asc' | 'label-desc';
 export class TemplateDataSpecificationsComponent implements OnInit {
   templateDataSpecifications: DataSpecification[] = [];
   filteredDataSpecifications: DataSpecification[] = [];
+  sharedDataSpecifications: DataSpecification[] = [];
+  communityDataSpecifications: DataSpecification[] = [];
+
   state: 'idle' | 'loading' = 'idle';
 
   sortByOptions: SortByOption[] = [
@@ -48,13 +52,25 @@ export class TemplateDataSpecificationsComponent implements OnInit {
   sortByDefaultOption: SortByOption = this.sortByOptions[0];
   sortBy?: SortByOption;
 
+  contentToDisplayOptions: SortByOption[] = [
+    { value: 'Templates', displayName: 'Templates' },
+    { value: 'Community', displayName: 'Community' },
+  ];
+  contentToDisplayDefaultOption = this.contentToDisplayOptions[0];
+  contentToDisplay: SortByOption = this.contentToDisplayDefaultOption;
+
   constructor(
     private dataSpecification: DataSpecificationService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private researchPlugin: ResearchPluginService
   ) {}
 
   ngOnInit(): void {
     this.state = 'loading';
+
+    this.researchPlugin.listSharedDataSpecifications().subscribe((response) => {
+      this.sharedDataSpecifications = response;
+    });
 
     this.dataSpecification
       .listTemplates()
@@ -86,6 +102,10 @@ export class TemplateDataSpecificationsComponent implements OnInit {
         )
       )
       .subscribe();
+  }
+
+  selectContentToDisplay(value: SortByOption) {
+    this.contentToDisplay = value;
   }
 
   private filterAndSortDataSpecifications(sortBy?: SortByOption) {
