@@ -69,9 +69,9 @@ SPDX-License-Identifier: Apache-2.0
       <mat-card class="mdm-data-element-card">
         <h2>Data Type</h2>
         <p>
-          {{ dataElement.dataType?.label }}
+          {{ dataElementDataTypeCasted?.label }}
         </p>
-        <div *ngIf="dataElement.dataType?.domainType == 'EnumerationType'">
+        <div *ngIf="dataElementDataTypeCasted?.domainType == 'EnumerationType'">
           <table class="table table-striped" aria-label="Enumeration values">
             <thead>
               <tr>
@@ -81,7 +81,9 @@ SPDX-License-Identifier: Apache-2.0
             </thead>
             <tbody>
               <tr
-                *ngFor="let enumerationValue of dataElement.dataType?.enumerationValues"
+                *ngFor="
+                  let enumerationValue of dataElementDataTypeCasted?.enumerationValues
+                "
               >
                 <td>{{ enumerationValue.key }}</td>
                 <td>{{ enumerationValue.value }}</td>
@@ -90,7 +92,9 @@ SPDX-License-Identifier: Apache-2.0
           </table>
         </div>
         <div
-          *ngIf="dataElement.dataType?.domainType === 'ModelDataType' && dataTypeModel"
+          *ngIf="
+            dataElementDataTypeCasted?.domainType === 'ModelDataType' && dataTypeModel
+          "
         >
           <p>
             <span class="mdm-data-element-property-name">Model: </span

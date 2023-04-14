@@ -137,7 +137,7 @@ abstract class testHelper {
           ],
         },
       ],
-      id: dataType.Id ?? '',
+      id: dataType.id ?? '',
       label: dataType.label,
       domainType,
     };

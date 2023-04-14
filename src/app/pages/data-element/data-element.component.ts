@@ -53,6 +53,7 @@ export class DataElementComponent implements OnInit {
   dataClassId: Uuid = '';
   dataElementId: Uuid = '';
   dataElement?: DataElementDetail;
+  dataElementDataTypeCasted?: DataType;
 
   // A workaround
   dataElementSearchResult: DataElementSearchResult[] = [];
@@ -104,6 +105,7 @@ export class DataElementComponent implements OnInit {
       .subscribe(
         ([dataElementDetail, isBookmarked, profile, sourceTargetIntersections]) => {
           this.dataElement = dataElementDetail;
+          this.dataElementDataTypeCasted = this.dataElement?.dataType as DataType;
           this.isBookmarked = isBookmarked;
           this.dataElementSearchResult = [
             {
@@ -212,8 +214,9 @@ export class DataElementComponent implements OnInit {
       return;
     }
 
-    const id: Uuid = dataType.modelResourceId;
-    const domainType: CatalogueItemDomainType = dataType.modelResourceDomainType;
+    const id: Uuid = dataType.modelResourceId as Uuid;
+    const domainType: CatalogueItemDomainType =
+      dataType.modelResourceDomainType as CatalogueItemDomainType;
 
     if (
       !(
