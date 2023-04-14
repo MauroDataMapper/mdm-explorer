@@ -18,8 +18,10 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
 import {
+  DataModel,
   DataModelDetail,
   DataModelDetailResponse,
+  DataModelIndexResponse,
   FolderDetail,
   FolderDetailResponse,
   MdmIndexResponse,
@@ -32,6 +34,10 @@ import {
   PluginResearchContactPayload,
   PluginResearchContactResponse,
 } from './plugins/plugin-research.resource';
+import {
+  DataSpecification,
+  mapToDataSpecification,
+} from '../data-explorer/data-explorer.types';
 
 @Injectable({
   providedIn: 'root',
@@ -74,5 +80,14 @@ export class ResearchPluginService {
     return this.endpoints.pluginResearch
       .theme()
       .pipe(map((response: MdmIndexResponse<KeyValueIdentifier>) => response.body.items));
+  }
+
+  listSharedDataSpecifications(): Observable<DataSpecification[]> {
+    return this.endpoints.pluginResearch.listSharedDataSpecifications().pipe(
+      switchMap((response: DataModelIndexResponse): any => {
+        return response.body; // eslint-disable-line @typescript-eslint/no-non-null-assertion
+      }),
+      map((dataModels: DataModel[]) => dataModels.map(mapToDataSpecification))
+    );
   }
 }

@@ -37,7 +37,25 @@ SPDX-License-Identifier: Apache-2.0
       [options]="sortByOptions"
       (valueChange)="selectSortBy($event)"
     ></mdm-sort-by>
+    <mdm-sort-by
+      [value]="contentToDisplay"
+      [options]="contentToDisplayOptions"
+      (valueChange)="selectContentToDisplay($event)"
+    ></mdm-sort-by>
   </div>
+  <hr />
+  <div *ngFor="let dataSpecification of sharedDataSpecifications">
+    <div class="col">
+      <mdm-data-specification-row
+        [dataSpecification]="dataSpecification"
+        [showStatus]="false"
+        [detailsRouterLink]="['/dataSpecification', dataSpecification.id]"
+        [showCopyButton]="true"
+        (copyClick)="copy(dataSpecification)"
+      ></mdm-data-specification-row>
+    </div>
+  </div>
+  <hr />
   <div *ngIf="state === 'loading'" class="mdm-template-data-specifications__progress">
     <mat-progress-bar color="primary" mode="indeterminate"></mat-progress-bar>
   </div>

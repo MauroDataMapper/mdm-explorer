@@ -126,4 +126,19 @@ export class MdmPluginResearchResource extends MdmResource {
     const url = `${this.apiEndpoint}/explorer/theme`;
     return this.simpleGet(url, query, options);
   }
+
+  /**
+   * `HTTP GET` - Gets the list of all shared data specifications
+   * excepts those of the current user.
+   *
+   * @param query Optional query parameters, if required.
+   * @param options Optional REST handler parameters, if required.
+   * @returns The result of the `GET` request:
+   *
+   * `200 OK` - will return a list of {@link DataModel}.
+   */
+  listSharedDataSpecifications(query?: QueryParameters, options?: RequestSettings) {
+    const url = `${this.apiEndpoint}/explorer/sharedDataSpecifications`;
+    return this.simpleGet(url, query, options);
+  }
 }
