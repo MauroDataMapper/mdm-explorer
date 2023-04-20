@@ -19,10 +19,6 @@ SPDX-License-Identifier: Apache-2.0
 
 import { Component, Inject, OnInit, Optional } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { ToastrService } from 'ngx-toastr';
-import { MatCheckboxChange } from '@angular/material/checkbox';
-import { DataModelService } from 'src/app/mauro/data-model.service';
-import { Uuid } from '@maurodatamapper/mdm-resources';
 
 export interface ShareDataSpecificationDialogOptions {
   sharedWithCommunity: boolean;

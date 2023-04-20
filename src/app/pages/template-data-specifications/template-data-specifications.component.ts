@@ -18,10 +18,11 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, finalize, switchMap } from 'rxjs';
+import { catchError, EMPTY, finalize, map, switchMap } from 'rxjs';
 import { DataSpecification } from '../../data-explorer/data-explorer.types';
 import { DataSpecificationService } from '../../data-explorer/data-specification.service';
 import { SortByOption } from '../../data-explorer/sort-by/sort-by.component';
+import { FilterByOption } from '../../data-explorer/filter-by/filter-by.component';
 import { Sort } from '../../mauro/sort.type';
 import { ResearchPluginService } from '../../mauro/research-plugin.service';
 
@@ -52,12 +53,12 @@ export class TemplateDataSpecificationsComponent implements OnInit {
   sortByDefaultOption: SortByOption = this.sortByOptions[0];
   sortBy?: SortByOption;
 
-  contentToDisplayOptions: SortByOption[] = [
+  contentToDisplayOptions: FilterByOption[] = [
     { value: 'Templates', displayName: 'Templates' },
     { value: 'Community', displayName: 'Community' },
   ];
   contentToDisplayDefaultOption = this.contentToDisplayOptions[0];
-  contentToDisplay: SortByOption = this.contentToDisplayDefaultOption;
+  contentToDisplay: FilterByOption = this.contentToDisplayDefaultOption;
 
   constructor(
     private dataSpecification: DataSpecificationService,
@@ -68,22 +69,22 @@ export class TemplateDataSpecificationsComponent implements OnInit {
   ngOnInit(): void {
     this.state = 'loading';
 
-    this.researchPlugin.listSharedDataSpecifications().subscribe((response) => {
-      this.sharedDataSpecifications = response;
-    });
-
     this.dataSpecification
       .listTemplates()
       .pipe(
+        switchMap((templates) => {
+          this.templateDataSpecifications = templates;
+          this.filterAndSortDataSpecifications();
+          return this.researchPlugin.listSharedDataSpecifications();
+        }),
         catchError(() => {
           this.toastr.error('There was a problem finding the templates.');
           return EMPTY;
         }),
         finalize(() => (this.state = 'idle'))
       )
-      .subscribe((templateDataSpecifications) => {
-        this.templateDataSpecifications = templateDataSpecifications;
-        this.filterAndSortDataSpecifications();
+      .subscribe((sharedDataSpecs) => {
+        this.sharedDataSpecifications = sharedDataSpecs;
       });
   }
 
@@ -104,17 +105,24 @@ export class TemplateDataSpecificationsComponent implements OnInit {
       .subscribe();
   }
 
-  selectContentToDisplay(value: SortByOption) {
+  selectContentToDisplay(value: FilterByOption) {
     this.contentToDisplay = value;
   }
 
-  private filterAndSortDataSpecifications(sortBy?: SortByOption) {
-    const filtered = this.templateDataSpecifications;
+  private filterAndSortDataSpecifications(sortBy?: FilterByOption) {
+    const filteredTemplates = this.templateDataSpecifications;
+    const filteredSharedDataSpecs = this.sharedDataSpecifications;
 
     this.sortBy = sortBy ?? this.sortByDefaultOption;
     const [property, order] = Sort.defineSortParams(this.sortBy.value);
-    const sorted = filtered.sort((a, b) => Sort.compareByString(a, b, property, order));
+    const sortedTemplates = filteredTemplates.sort((a, b) =>
+      Sort.compareByString(a, b, property, order)
+    );
+    const sortedSharedDataspecs = filteredSharedDataSpecs.sort((a, b) =>
+      Sort.compareByString(a, b, property, order)
+    );
 
-    this.filteredDataSpecifications = sorted;
+    this.filteredDataSpecifications = sortedTemplates;
+    this.sharedDataSpecifications = sortedSharedDataspecs;
   }
 }

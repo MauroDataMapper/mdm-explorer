@@ -49,6 +49,7 @@ import { EditDataSpecificationDialogComponent } from './edit-data-specification-
 import { SelectionExpandedDialogComponent } from './selection-expanded-dialog/selection-expanded-dialog.component';
 import { SelectionCompactComponent } from './selection-compact/selection-compact.component';
 import { ShareDataSpecificationDialogComponent } from './share-data-specification-dialog/share-data-specification-dialog.component';
+import { FilterByComponent } from './filter-by/filter-by.component';
 
 @NgModule({
   declarations: [
@@ -80,6 +81,7 @@ import { ShareDataSpecificationDialogComponent } from './share-data-specificatio
     SelectionExpandedDialogComponent,
     SelectionCompactComponent,
     ShareDataSpecificationDialogComponent,
+    FilterByComponent,
   ],
   imports: [CoreModule, SharedModule, QueryBuilderModule],
   exports: [
@@ -102,6 +104,7 @@ import { ShareDataSpecificationDialogComponent } from './share-data-specificatio
     DataQueryRowComponent,
     NumberFormatDirective,
     SelectionCompactComponent,
+    FilterByComponent,
   ],
   providers: [
     {
