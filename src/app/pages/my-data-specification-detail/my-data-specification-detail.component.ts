@@ -68,6 +68,7 @@ import { ResearchPluginService } from '../../mauro/research-plugin.service';
 import { DataSpecificationElementAddDeleteEvent } from '../../shared/data-element-in-data-specification/data-element-in-data-specification.component';
 import { ShareDataSpecificationDialogResponse } from 'src/app/data-explorer/share-data-specification-dialog/share-data-specification-dialog.component';
 import { DataModelService } from 'src/app/mauro/data-model.service';
+import { SecurityService } from '../../security/security.service';
 
 export interface RemoveSelectedResponse {
   okCancelDialogResponse: Observable<OkCancelDialogResponse>;
@@ -122,6 +123,11 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
    */
   private unsubscribe$ = new Subject<void>();
 
+  // Whether the creator of the data spec
+  // is the current user or not.
+  // A user that is not the owner cannot edit
+  currentUserOwnsDataSpec = false;
+
   constructor(
     private route: ActivatedRoute,
     private dataSpecificationService: DataSpecificationService,
@@ -130,7 +136,8 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     private dialogs: DialogService,
     private broadcastService: BroadcastService,
     private dataSchemaService: DataSchemaService,
-    private dataModels: DataModelService
+    private dataModels: DataModelService,
+    private securityService: SecurityService
   ) {
     this.sourceTargetIntersections = {
       dataSpecifications: [],
@@ -528,6 +535,21 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
       return;
     }
     this.state = 'loading';
+
+    const currentUser = this.securityService.getSignedInUser();
+
+    if (!currentUser) {
+      return;
+    }
+
+    const currentUserFullName = currentUser.firstName + ' ' + currentUser.lastName;
+
+    // For some reason, the whitespace in the
+    // author property is not the same as here in code
+    // so we have to remove the spaces and then compare
+    this.currentUserOwnsDataSpec =
+      this.dataSpecification.author.replace('\\s', '') ===
+      currentUserFullName.replace('\\s', '');
 
     this.dataSchemaService
       .loadDataSchemas(this.dataSpecification)
