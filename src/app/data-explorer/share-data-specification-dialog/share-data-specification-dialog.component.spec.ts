@@ -16,25 +16,35 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ShareDataSpecificationDialogComponent } from './share-data-specification-dialog.component';
+import {
+  ComponentHarness,
+  setupTestModuleForComponent,
+} from 'src/app/testing/testing.helpers';
+import { createMatDialogRefStub } from 'src/app/testing/stubs/mat-dialog.stub';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 describe('ShareDataSpecificationDialogComponent', () => {
-  let component: ShareDataSpecificationDialogComponent;
-  let fixture: ComponentFixture<ShareDataSpecificationDialogComponent>;
+  let harness: ComponentHarness<ShareDataSpecificationDialogComponent>;
+  const dialogRefStub = createMatDialogRefStub();
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ShareDataSpecificationDialogComponent],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(ShareDataSpecificationDialogComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    harness = await setupTestModuleForComponent(ShareDataSpecificationDialogComponent, {
+      providers: [
+        {
+          provide: MatDialogRef,
+          useValue: dialogRefStub,
+        },
+        {
+          provide: MAT_DIALOG_DATA,
+          useValue: [],
+        },
+      ],
+    });
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(harness.isComponentCreated).toBeTruthy();
   });
 });
