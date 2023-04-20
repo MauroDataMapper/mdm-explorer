@@ -36,7 +36,7 @@ export interface ShareDataSpecificationDialogResponse {
 export class ShareDataSpecificationDialogComponent implements OnInit {
   initialSharedValue: boolean;
   dialogCheckboxValue: boolean;
-  checkBoxDisabled: boolean = false;
+  checkBoxDisabled = false;
 
   constructor(
     public dialogRef: MatDialogRef<

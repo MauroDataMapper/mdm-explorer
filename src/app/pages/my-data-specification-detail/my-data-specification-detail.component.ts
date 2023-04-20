@@ -118,15 +118,15 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
   // remove selected button is disabled.
   anyElementSelected = false;
 
-  /**
-   * Signal to attach to subscriptions to trigger when they should be unsubscribed.
-   */
-  private unsubscribe$ = new Subject<void>();
-
   // Whether the creator of the data spec
   // is the current user or not.
   // A user that is not the owner cannot edit
   currentUserOwnsDataSpec = false;
+
+  /**
+   * Signal to attach to subscriptions to trigger when they should be unsubscribed.
+   */
+  private unsubscribe$ = new Subject<void>();
 
   constructor(
     private route: ActivatedRoute,
@@ -389,31 +389,37 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     }
 
     this.dataSpecificationService
-      .shareWithDialog(this.dataSpecification.readableByAuthenticatedUsers)
+      .shareWithDialog(this.dataSpecification.readableByAuthenticatedUsers as boolean)
       .subscribe((response: ShareDataSpecificationDialogResponse) => {
         if (!this.dataSpecification || !this.dataSpecification.id) {
           return;
         }
 
         if (
-          this.dataSpecification.readableByAuthenticatedUsers !=
+          this.dataSpecification.readableByAuthenticatedUsers !==
           response.sharedWithCommunity
         ) {
           // Shared
           if (response.sharedWithCommunity) {
             this.dataModels
               .updateReadByAuthenticated(this.dataSpecification.id)
-              .subscribe((response) => {
-                this.dataSpecification!.readableByAuthenticatedUsers =
-                  response.readableByAuthenticatedUsers;
+              .subscribe((updatedDataSpec) => {
+                if (!this.dataSpecification) {
+                  return;
+                }
+                this.dataSpecification.readableByAuthenticatedUsers =
+                  updatedDataSpec.readableByAuthenticatedUsers;
                 this.toastr.success('Data specification shared with the community');
               });
           } else {
             this.dataModels
               .removeReadByAuthenticated(this.dataSpecification.id)
-              .subscribe((response) => {
-                this.dataSpecification!.readableByAuthenticatedUsers =
-                  response.readableByAuthenticatedUsers;
+              .subscribe((updatedDataSpec) => {
+                if (!this.dataSpecification) {
+                  return;
+                }
+                this.dataSpecification.readableByAuthenticatedUsers =
+                  updatedDataSpec.readableByAuthenticatedUsers;
                 this.toastr.success('Data specification not shared anymore');
               });
           }
