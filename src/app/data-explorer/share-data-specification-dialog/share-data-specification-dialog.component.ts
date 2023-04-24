@@ -20,11 +20,7 @@ SPDX-License-Identifier: Apache-2.0
 import { Component, Inject, OnInit, Optional } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
-export interface ShareDataSpecificationDialogOptions {
-  sharedWithCommunity: boolean;
-}
-
-export interface ShareDataSpecificationDialogResponse {
+export interface ShareDataSpecificationDialogInputOutput {
   sharedWithCommunity: boolean;
 }
 
@@ -41,11 +37,11 @@ export class ShareDataSpecificationDialogComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<
       ShareDataSpecificationDialogComponent,
-      ShareDataSpecificationDialogResponse
+      ShareDataSpecificationDialogInputOutput
     >,
     @Inject(MAT_DIALOG_DATA)
     @Optional()
-    private data: ShareDataSpecificationDialogOptions
+    private data: ShareDataSpecificationDialogInputOutput
   ) {
     this.initialSharedValue = this.data.sharedWithCommunity;
     this.dialogCheckboxValue = this.data.sharedWithCommunity;

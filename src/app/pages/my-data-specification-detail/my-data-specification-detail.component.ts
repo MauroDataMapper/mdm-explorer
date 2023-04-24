@@ -66,7 +66,7 @@ import {
 import { DataSchemaService } from '../../data-explorer/data-schema.service';
 import { ResearchPluginService } from '../../mauro/research-plugin.service';
 import { DataSpecificationElementAddDeleteEvent } from '../../shared/data-element-in-data-specification/data-element-in-data-specification.component';
-import { ShareDataSpecificationDialogResponse } from 'src/app/data-explorer/share-data-specification-dialog/share-data-specification-dialog.component';
+import { ShareDataSpecificationDialogInputOutput } from 'src/app/data-explorer/share-data-specification-dialog/share-data-specification-dialog.component';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { SecurityService } from '../../security/security.service';
 
@@ -390,7 +390,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
 
     this.dataSpecificationService
       .shareWithDialog(this.dataSpecification.readableByAuthenticatedUsers as boolean)
-      .subscribe((response: ShareDataSpecificationDialogResponse) => {
+      .subscribe((response: ShareDataSpecificationDialogInputOutput) => {
         if (!this.dataSpecification || !this.dataSpecification.id) {
           return;
         }
