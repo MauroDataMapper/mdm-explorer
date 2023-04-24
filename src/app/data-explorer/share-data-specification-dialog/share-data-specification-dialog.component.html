@@ -29,5 +29,12 @@ SPDX-License-Identifier: Apache-2.0
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-stroked-button color="primary" (click)="close()">Close</button>
-  <button mat-flat-button color="primary" (click)="update()">Share</button>
+  <button
+    mat-flat-button
+    color="primary"
+    (click)="update()"
+    [disabled]="initialSharedValue === dialogCheckboxValue"
+  >
+    Share
+  </button>
 </mat-dialog-actions>

@@ -58,8 +58,7 @@ import {
 } from './success-dialog/success-dialog.component';
 import {
   ShareDataSpecificationDialogComponent,
-  ShareDataSpecificationDialogOptions,
-  ShareDataSpecificationDialogResponse,
+  ShareDataSpecificationDialogInputOutput,
 } from './share-data-specification-dialog/share-data-specification-dialog.component';
 
 @Injectable({
@@ -144,11 +143,11 @@ export class DialogService {
     );
   }
 
-  shareWithCommunity(data: ShareDataSpecificationDialogOptions) {
+  shareWithCommunity(data: ShareDataSpecificationDialogInputOutput) {
     return this.matDialog.open<
       ShareDataSpecificationDialogComponent,
-      ShareDataSpecificationDialogOptions,
-      ShareDataSpecificationDialogResponse
+      ShareDataSpecificationDialogInputOutput,
+      ShareDataSpecificationDialogInputOutput
     >(ShareDataSpecificationDialogComponent, { minWidth: 500, data });
   }
 }
