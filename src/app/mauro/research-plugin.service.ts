@@ -18,7 +18,6 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
 import {
-  DataModel,
   DataModelDetail,
   DataModelDetailResponse,
   DataModelIndexResponse,
@@ -27,7 +26,7 @@ import {
   MdmIndexResponse,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
-import { map, Observable, of, switchMap } from 'rxjs';
+import { map, Observable, switchMap } from 'rxjs';
 import { KeyValueIdentifier } from './mauro.types';
 import { MdmEndpointsService } from './mdm-endpoints.service';
 import {
@@ -83,11 +82,12 @@ export class ResearchPluginService {
   }
 
   listSharedDataSpecifications(): Observable<DataSpecification[]> {
-    return this.endpoints.pluginResearch.listSharedDataSpecifications().pipe(
-      switchMap((response: DataModelIndexResponse): Observable<DataModel[]> => {
-        return of(response.body.items); // eslint-disable-line @typescript-eslint/no-non-null-assertion
-      }),
-      map((dataModels: DataModel[]) => dataModels.map(mapToDataSpecification))
-    );
+    return this.endpoints.pluginResearch
+      .listSharedDataSpecifications()
+      .pipe(
+        map((response: DataModelIndexResponse) =>
+          response.body.items.map(mapToDataSpecification)
+        )
+      );
   }
 }

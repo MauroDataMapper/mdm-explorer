@@ -387,42 +387,41 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     if (!this.dataSpecification || !this.dataSpecification.id) {
       return;
     }
+    const id: string = this.dataSpecification.id;
 
     this.dataSpecificationService
       .shareWithDialog(this.dataSpecification.readableByAuthenticatedUsers as boolean)
-      .subscribe((response: ShareDataSpecificationDialogInputOutput) => {
-        if (!this.dataSpecification || !this.dataSpecification.id) {
+      .pipe(
+        filter(
+          (dialogResponse) =>
+            dialogResponse &&
+            this.dataSpecification?.readableByAuthenticatedUsers !==
+              dialogResponse.sharedWithCommunity
+        ),
+        switchMap(
+          (
+            response: ShareDataSpecificationDialogInputOutput
+          ): Observable<DataModelDetail> => {
+            if (response.sharedWithCommunity) {
+              return this.dataModels.updateReadByAuthenticated(id);
+            } else {
+              return this.dataModels.removeReadByAuthenticated(id);
+            }
+          }
+        )
+      )
+      .subscribe((updatedDataSpec) => {
+        if (!updatedDataSpec || !this.dataSpecification || !this.dataSpecification.id) {
           return;
         }
 
-        if (
-          this.dataSpecification.readableByAuthenticatedUsers !==
-          response.sharedWithCommunity
-        ) {
-          // Shared
-          if (response.sharedWithCommunity) {
-            this.dataModels
-              .updateReadByAuthenticated(this.dataSpecification.id)
-              .subscribe((updatedDataSpec) => {
-                if (!this.dataSpecification) {
-                  return;
-                }
-                this.dataSpecification.readableByAuthenticatedUsers =
-                  updatedDataSpec.readableByAuthenticatedUsers;
-                this.toastr.success('Data specification shared with the community');
-              });
-          } else {
-            this.dataModels
-              .removeReadByAuthenticated(this.dataSpecification.id)
-              .subscribe((updatedDataSpec) => {
-                if (!this.dataSpecification) {
-                  return;
-                }
-                this.dataSpecification.readableByAuthenticatedUsers =
-                  updatedDataSpec.readableByAuthenticatedUsers;
-                this.toastr.success('Data specification not shared anymore');
-              });
-          }
+        this.dataSpecification.readableByAuthenticatedUsers =
+          updatedDataSpec.readableByAuthenticatedUsers;
+
+        if (updatedDataSpec.readableByAuthenticatedUsers) {
+          this.toastr.success('Data specification shared with the community');
+        } else {
+          this.toastr.success('Data specification not shared anymore');
         }
       });
   }

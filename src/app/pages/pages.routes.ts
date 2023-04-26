@@ -178,6 +178,11 @@ export const routes: Route[] = [
     canActivate: [AuthorizedGuard],
   },
   {
+    path: 'templates/:templateType',
+    component: TemplateDataSpecificationsComponent,
+    canActivate: [AuthorizedGuard],
+  },
+  {
     path: 'templates/:dataSpecificationId',
     component: TemplateDataSpecificationDetailComponent,
     canActivate: [AuthorizedGuard],
