@@ -96,7 +96,6 @@ export class MyDataSpecificationsComponent implements OnInit {
     if (!user) {
       return throwError(() => new Error('Cannot find user'));
     }
-    console.log(user.dataSpecificationFolder);
     return this.dataSpecification.list().pipe(
       catchError(() => {
         this.toastr.error('There was a problem finding your data specifications.');

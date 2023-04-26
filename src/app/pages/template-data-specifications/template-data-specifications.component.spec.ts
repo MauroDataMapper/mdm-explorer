@@ -35,6 +35,7 @@ import {
 import { TemplateDataSpecificationsComponent } from './template-data-specifications.component';
 import { SecurityService } from 'src/app/security/security.service';
 import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
+import { ActivatedRoute } from '@angular/router';
 
 describe('TemplateDataSpecificationsComponent', () => {
   let harness: ComponentHarness<TemplateDataSpecificationsComponent>;
@@ -43,6 +44,12 @@ describe('TemplateDataSpecificationsComponent', () => {
   const toastrStub = createToastrServiceStub();
   const securityStub = createSecurityServiceStub();
   const mdmResourcesConfiguration = new MdmResourcesConfiguration();
+
+  const activatedRoute: ActivatedRoute = {
+    params: of({
+      templateType: '',
+    }),
+  } as unknown as ActivatedRoute;
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(TemplateDataSpecificationsComponent, {
@@ -62,6 +69,10 @@ describe('TemplateDataSpecificationsComponent', () => {
         {
           provide: MdmResourcesConfiguration,
           useValue: mdmResourcesConfiguration,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: activatedRoute,
         },
       ],
     });

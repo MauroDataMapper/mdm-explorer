@@ -28,7 +28,10 @@ SPDX-License-Identifier: Apache-2.0
       ></mdm-back-link>
     </div>
     <div *ngIf="!currentUserOwnsDataSpec">
-      <mdm-back-link routerLink="/templates" label="Back to Templates"></mdm-back-link>
+      <mdm-back-link
+        routerLink="/templates/community"
+        label="Back to Templates"
+      ></mdm-back-link>
     </div>
     <div *ngIf="state === 'loading'" class="mdm-my-data-specification__progress">
       <mat-progress-bar color="primary" mode="indeterminate"></mat-progress-bar>
@@ -45,7 +48,9 @@ SPDX-License-Identifier: Apache-2.0
         [showEditButton]="
           dataSpecification.status === 'unsent' && currentUserOwnsDataSpec
         "
-        [showShareButton]="currentUserOwnsDataSpec"
+        [showShareButton]="
+          currentUserOwnsDataSpec && dataSpecification.status === 'submitted'
+        "
         (submitClick)="submitDataSpecification()"
         (copyClick)="copyDataSpecification()"
         (editClick)="editDataSpecification()"

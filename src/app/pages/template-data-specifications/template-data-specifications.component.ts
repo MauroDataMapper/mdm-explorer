@@ -25,6 +25,7 @@ import { SortByOption } from '../../data-explorer/sort-by/sort-by.component';
 import { FilterByOption } from '../../data-explorer/filter-by/filter-by.component';
 import { Sort } from '../../mauro/sort.type';
 import { ResearchPluginService } from '../../mauro/research-plugin.service';
+import { ActivatedRoute } from '@angular/router';
 
 /**
  * These options must be of the form '{propertyToSortBy}-{order}' where propertyToSortBy
@@ -63,18 +64,24 @@ export class TemplateDataSpecificationsComponent implements OnInit {
   constructor(
     private dataSpecification: DataSpecificationService,
     private toastr: ToastrService,
-    private researchPlugin: ResearchPluginService
+    private researchPlugin: ResearchPluginService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
     this.state = 'loading';
 
-    this.dataSpecification
-      .listTemplates()
+    this.route.params
       .pipe(
+        switchMap((params) => {
+          if (params.templateType === 'community') {
+            this.contentToDisplay = this.contentToDisplayOptions[1];
+          }
+
+          return this.dataSpecification.listTemplates();
+        }),
         switchMap((templates) => {
           this.templateDataSpecifications = templates;
-          this.filterAndSortDataSpecifications();
           return this.researchPlugin.listSharedDataSpecifications();
         }),
         catchError(() => {
@@ -85,6 +92,8 @@ export class TemplateDataSpecificationsComponent implements OnInit {
       )
       .subscribe((sharedDataSpecs) => {
         this.sharedDataSpecifications = sharedDataSpecs;
+        this.filterAndSortDataSpecifications();
+        this.state = 'idle';
       });
   }
 
