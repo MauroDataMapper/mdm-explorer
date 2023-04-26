@@ -29,7 +29,8 @@ SPDX-License-Identifier: Apache-2.0
     </div>
     <div *ngIf="!currentUserOwnsDataSpec">
       <mdm-back-link
-        routerLink="/templates/community"
+        routerLink="/templates"
+        [queryParams]="{ templateType: 'community' }"
         label="Back to Templates"
       ></mdm-back-link>
     </div>
@@ -106,7 +107,10 @@ SPDX-License-Identifier: Apache-2.0
 
     <div
       class="mdm-my-data-specification__specification-elements"
-      *ngIf="sourceTargetIntersections.dataSpecifications.length > 0"
+      *ngIf="
+        sourceTargetIntersections.dataSpecifications.length > 0 ||
+        !currentUserOwnsDataSpec
+      "
     >
       <mdm-data-schema-row
         *ngFor="let dataSchema of dataSchemas"

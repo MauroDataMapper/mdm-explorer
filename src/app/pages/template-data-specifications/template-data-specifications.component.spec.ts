@@ -46,9 +46,7 @@ describe('TemplateDataSpecificationsComponent', () => {
   const mdmResourcesConfiguration = new MdmResourcesConfiguration();
 
   const activatedRoute: ActivatedRoute = {
-    params: of({
-      templateType: '',
-    }),
+    queryParams: of({}),
   } as unknown as ActivatedRoute;
 
   beforeEach(async () => {

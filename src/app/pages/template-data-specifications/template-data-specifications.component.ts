@@ -71,7 +71,7 @@ export class TemplateDataSpecificationsComponent implements OnInit {
   ngOnInit(): void {
     this.state = 'loading';
 
-    this.route.params
+    this.route.queryParams
       .pipe(
         switchMap((params) => {
           if (params.templateType === 'community') {
