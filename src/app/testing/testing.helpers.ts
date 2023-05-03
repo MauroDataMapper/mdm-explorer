@@ -79,6 +79,7 @@ export const setupTestModuleForService = <T>(
   TestBed.configureTestingModule({
     imports: [TestingModule, ...(configuration?.imports ?? [])],
     providers: configuration?.providers ?? [],
+    teardown: { destroyAfterEach: false },
   });
   return TestBed.inject(service);
 };

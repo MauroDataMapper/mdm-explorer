@@ -23,6 +23,7 @@ SPDX-License-Identifier: Apache-2.0
 export const environment = {
   production: false,
   apiEndpoint: 'http://localhost:8080/api',
+  sdeApiEndpoint: 'to be defined',
   checkSessionExpiryTimeout: 300000,
   features: {
     useOpenIdConnect: true,
