@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 export const environment = {
   production: true,
-  apiEndpoint: $ENV.apiEndpoint ?? 'api',
+  mauroCoreEndpoint: $ENV.mauroCoreEndpoint ?? 'api',
   checkSessionExpiryTimeout: 300000,
   features: {
     useOpenIdConnect: true,

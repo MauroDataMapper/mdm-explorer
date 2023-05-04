@@ -47,6 +47,6 @@ describe('EnvironmentService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
-    expect(service.apiEndpoint).toBe($ENV.apiEndpoint);
+    expect(service.mauroCoreEndpoint).toBe($ENV.mauroCoreEndpoint);
   });
 });

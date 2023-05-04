@@ -36,8 +36,6 @@ export class FakeSdeRestHandler implements ISdeRestHandler {
       return of(this.getOrganisationList());
     } else if (url.startsWith(SdeApiEndPoints.OrganisationGet)) {
       return of(this.getOrganisation(url));
-    } else if (url.startsWith(SdeApiEndPoints.OrganisationMemberGet)) {
-      return of(this.getOrganisationMember(url));
     } else if (url.startsWith(SdeApiEndPoints.OrganisationMemberList)) {
       return of(this.getOrganisationMemberList(url));
     } else if (url.startsWith(SdeApiEndPoints.AdminUserGet)) {

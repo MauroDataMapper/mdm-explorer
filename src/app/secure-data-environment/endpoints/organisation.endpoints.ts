@@ -35,12 +35,6 @@ export class OrganisationEndpoints {
     );
   }
 
-  getOrganisationMember(organisationMemberId: Uuid): Observable<OrganisationMember[]> {
-    return this.sdeRestHandler.get<OrganisationMember>(
-      `${SdeApiEndPoints.OrganisationMemberGet}${organisationMemberId}`
-    );
-  }
-
   listOrganisationMembers(organisationId: Uuid): Observable<OrganisationMember[]> {
     return this.sdeRestHandler.get<OrganisationMember[]>(
       `${SdeApiEndPoints.OrganisationMemberList}${organisationId}`

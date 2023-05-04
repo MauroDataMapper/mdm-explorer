@@ -51,18 +51,6 @@ describe('OrganisationEndPoints', () => {
     expect(actualOrganisation).toBeObservable(expected);
   });
 
-  it('should get an organisation member', () => {
-    const expectedOrganisationMember = fakeResources.organisationMembers[0];
-
-    const actualOrganisationMember =
-      sdeEndpointsService.organisation.getOrganisationMember(
-        fakeResources.organisationMembers[0].id
-      );
-
-    const expected = cold('(a|)', { a: expectedOrganisationMember });
-    expect(actualOrganisationMember).toBeObservable(expected);
-  });
-
   it('should list organisationMembers', () => {
     const expectedOrganisationMembers = fakeResources.organisationMembers.filter(
       (organisationMember) =>

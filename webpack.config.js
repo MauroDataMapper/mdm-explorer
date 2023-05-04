@@ -43,7 +43,7 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({
       $ENV: {
-        apiEndpoint: JSON.stringify(process.env["MDM_EXPLORER_API_ENDPOINT"]),
+        mauroCoreEndpoint: JSON.stringify(process.env["MDM_EXPLORER_API_ENDPOINT"]),
       },
     }),
   ],

@@ -125,7 +125,7 @@ export const DATE_FORMATS: MatDateFormats = {
     CoreModule,
     SharedModule,
     MauroModule.forRoot({
-      apiEndpoint: environment.apiEndpoint,
+      apiEndpoint: environment.mauroCoreEndpoint,
       defaultHttpRequestOptions: {
         withCredentials: true,
       },
