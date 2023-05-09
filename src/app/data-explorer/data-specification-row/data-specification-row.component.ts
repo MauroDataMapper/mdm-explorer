@@ -19,6 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterLinkRef } from '../../shared/types/shared.types';
 import { DataSpecification } from '../data-explorer.types';
+import { VersionOption } from '../version-selector/version-selector.component';
 
 @Component({
   selector: 'mdm-data-specification-row',
@@ -33,10 +34,14 @@ export class DataSpecificationRowComponent {
   @Input() showSubmitButton = false;
   @Input() showCopyButton = false;
   @Input() showEditButton = false;
+  @Input() showVersionOnly = false;
+  @Input() showNewVersionButton = false;
 
   @Output() submitClick = new EventEmitter<void>();
   @Output() copyClick = new EventEmitter<void>();
   @Output() editClick = new EventEmitter<void>();
+  @Output() newVersionClick = new EventEmitter<void>();
+  @Output() ViewDifferentVersionClick = new EventEmitter<string>();
 
   onSubmitClick() {
     this.submitClick.emit();
@@ -48,5 +53,13 @@ export class DataSpecificationRowComponent {
 
   onEditClick() {
     this.editClick.emit();
+  }
+
+  onNewVersionClick() {
+    this.newVersionClick.emit();
+  }
+
+  onViewDifferentVersionClick(selected: VersionOption) {
+    this.ViewDifferentVersionClick.emit(selected.id);
   }
 }

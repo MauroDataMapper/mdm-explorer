@@ -23,6 +23,7 @@ import {
   CatalogueItemDomainType,
   DataClass,
   DataModelDetail,
+  SimpleModelVersionTree,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
@@ -66,6 +67,8 @@ import {
 import { DataSchemaService } from '../../data-explorer/data-schema.service';
 import { ResearchPluginService } from '../../mauro/research-plugin.service';
 import { DataSpecificationElementAddDeleteEvent } from '../../shared/data-element-in-data-specification/data-element-in-data-specification.component';
+import { DataModelService } from 'src/app/mauro/data-model.service';
+import { StateRouterService } from 'src/app/core/state-router.service';
 export interface RemoveSelectedResponse {
   okCancelDialogResponse: Observable<OkCancelDialogResponse>;
   deletedItems: Observable<DataElementMultipleOperationResult>;
@@ -114,19 +117,24 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
   // remove selected button is disabled.
   anyElementSelected = false;
 
+  version = '';
+
   /**
    * Signal to attach to subscriptions to trigger when they should be unsubscribed.
    */
   private unsubscribe$ = new Subject<void>();
+  newVersionButtonDisabled?: boolean;
 
   constructor(
     private route: ActivatedRoute,
+    private stateRouter: StateRouterService,
     private dataSpecificationService: DataSpecificationService,
     private toastr: ToastrService,
     private researchPlugin: ResearchPluginService,
     private dialogs: DialogService,
     private broadcastService: BroadcastService,
-    private dataSchemaService: DataSchemaService
+    private dataSchemaService: DataSchemaService,
+    private dataModels: DataModelService
   ) {
     this.sourceTargetIntersections = {
       dataSpecifications: [],
@@ -482,10 +490,11 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
    */
   private setDataSpecification(dataSpecification?: DataSpecification) {
     this.dataSpecification = dataSpecification;
-    if (!this.dataSpecification) {
+    if (!this.dataSpecification || !this.dataSpecification.id) {
       return;
     }
     this.state = 'loading';
+    const dataSpecId: string = dataSpecification?.id as string;
 
     this.dataSchemaService
       .loadDataSchemas(this.dataSpecification)
@@ -495,19 +504,30 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
           return forkJoin([
             of(dataSchemas ?? []),
             this.loadIntersections(dataSchemas ?? []),
-          ]) as Observable<[DataSchema[], DataSpecificationSourceTargetIntersections]>;
+            this.dataModels.simpleModelVersionTree(dataSpecId, false),
+          ]) as Observable<
+            [
+              DataSchema[],
+              DataSpecificationSourceTargetIntersections,
+              SimpleModelVersionTree[]
+            ]
+          >;
         }),
         catchError(() => {
           return this.loadError();
         }),
         finalize(() => (this.state = 'idle'))
       )
-      .subscribe(([dataSchemas, intersections]) => {
+      .subscribe(([dataSchemas, intersections, versionTree]) => {
         this.dataSchemas = dataSchemas;
         this.isEmpty =
           this.dataSchemaService.reduceDataElementsFromSchemas(this.dataSchemas)
             .length === 0;
         this.sourceTargetIntersections = intersections;
+
+        // A newer version already exists
+        this.newVersionButtonDisabled =
+          versionTree.findIndex((node) => node.branch === 'main') >= 0;
       });
   }
 
@@ -918,5 +938,34 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
       cohortQuery: this.removeDataElementFromQuery(labels, this.cohortQueryType),
       result: of(result),
     });
+  }
+
+  /** Handling of versions */
+  handleViewDifferentVersion(dataSpecId: string) {
+    this.stateRouter.navigateTo(['/dataSpecifications', dataSpecId]);
+  }
+
+  handleNewVersionClick() {
+    this.okCancel(
+      'Create New Version',
+      'Do you want to create a new version of this data Specification? You will be redirected to the new version details page'
+    )
+      .afterClosed()
+      .pipe(
+        switchMap(
+          (
+            okCancelDialogResponse?: OkCancelDialogResponse
+          ): Observable<DataModelDetail> => {
+            if (!okCancelDialogResponse || !this.dataSpecification) {
+              return EMPTY;
+            }
+
+            return this.dataModels.createNextVersion(this.dataSpecification);
+          }
+        )
+      )
+      .subscribe((newVersion?) => {
+        this.stateRouter.navigateTo(['/dataSpecifications', newVersion.id]);
+      });
   }
 }

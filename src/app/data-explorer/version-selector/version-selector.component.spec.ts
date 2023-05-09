@@ -16,24 +16,25 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-@use "@angular/material" as mat;
-@import "ngx-toastr/toastr.css";
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-// Include the common styles for Angular Material. Only required to include this once!
-@include mat.core();
+import { VersionSelectorComponent } from './version-selector.component';
 
-/*
-Themes
-Import more theme SASS files here to make them available to the app
-*/
-@import "styles/themes/active";
+describe('VersionSelectorComponent', () => {
+  let component: VersionSelectorComponent;
+  let fixture: ComponentFixture<VersionSelectorComponent>;
 
-@import "styles/base/all";
-@import "styles/resets";
-@import "styles/app";
-@import "styles/layout";
-@import "styles/icons";
-@import "styles/forms";
-@import "styles/home";
-@import "styles/querybuilder";
-@import "styles/versioncontrol";
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [VersionSelectorComponent],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(VersionSelectorComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

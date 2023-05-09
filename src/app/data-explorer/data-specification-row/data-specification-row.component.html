@@ -23,6 +23,12 @@ SPDX-License-Identifier: Apache-2.0
     </a>
   </h3>
   <ng-container header-actions>
+    <mdm-version-selector
+      *ngIf="dataSpecification.id"
+      [modelId]="dataSpecification.id"
+      (valueChange)="onViewDifferentVersionClick($event)"
+      [showVersionOnly]="showVersionOnly"
+    ></mdm-version-selector>
     <button
       *ngIf="showSubmitButton"
       mat-raised-button
@@ -49,6 +55,15 @@ SPDX-License-Identifier: Apache-2.0
     >
       <span class="fa-solid fa-pen-to-square"></span>
       Edit
+    </button>
+    <button
+      *ngIf="showNewVersionButton"
+      mat-raised-button
+      color="primary"
+      (click)="onNewVersionClick()"
+    >
+      <span class="fa-solid fa-code-branch"></span>
+      New Version
     </button>
   </ng-container>
   <ng-container>

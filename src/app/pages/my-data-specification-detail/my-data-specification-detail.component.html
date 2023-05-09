@@ -36,9 +36,12 @@ SPDX-License-Identifier: Apache-2.0
         [showSubmitButton]="dataSpecification.status === 'unsent'"
         [showCopyButton]="dataSpecification.status === 'submitted'"
         [showEditButton]="dataSpecification.status === 'unsent'"
+        [showNewVersionButton]="dataSpecification.status === 'submitted'"
         (submitClick)="submitDataSpecification()"
         (copyClick)="copyDataSpecification()"
         (editClick)="editDataSpecification()"
+        (ViewDifferentVersionClick)="handleViewDifferentVersion($event)"
+        (newVersionClick)="handleNewVersionClick()"
       ></mdm-data-specification-row>
     </div>
 

@@ -19,6 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 import { HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
+  BasicModelVersionTreeResponse,
   CatalogueItemSearchResponse,
   CatalogueItemSearchResult,
   DataClass,
@@ -44,6 +45,7 @@ import {
   ModelUpdatePayload,
   RequestSettings,
   SearchQueryParameters,
+  SimpleModelVersionTree,
   SourceTargetIntersection,
   SourceTargetIntersectionPayload,
   SourceTargetIntersectionResponse,
@@ -368,7 +370,7 @@ export class DataModelService {
     }
 
     return this.endpoints.dataModel
-      .newBranchModelVersion(model.id, {})
+      .newBranchModelVersion(model.id, { asynchronous: false })
       .pipe(map((response: DataModelDetailResponse) => response.body));
   }
 
@@ -447,5 +449,16 @@ export class DataModelService {
     return this.endpoints.dataModel
       .update(id, data, options)
       .pipe(map((response: DataModelDetailResponse) => response.body));
+  }
+
+  simpleModelVersionTree(
+    dataModelId: Uuid,
+    branchesOnlyParameter: boolean = false
+  ): Observable<SimpleModelVersionTree[]> {
+    return this.endpoints.dataModel
+      .simpleModelVersionTree(dataModelId, {
+        branchesOnly: branchesOnlyParameter,
+      })
+      .pipe(map((response: BasicModelVersionTreeResponse) => response.body));
   }
 }
