@@ -16,8 +16,18 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-interface EnvironmentVariables {
-  mauroCoreEndpoint: string;
+import { Uuid } from '@maurodatamapper/mdm-resources';
+
+interface User {
+  id: Uuid;
+  createdAt: Date;
+  email: string;
+  mauroCoreUser: string;
+  isDeleted: boolean;
+  oidcIssuingAuthority: string;
+  oidcSubject: string;
 }
 
-declare let $ENV: EnvironmentVariables;
+export type AdminUser = User;
+
+export type ResearchUser = User;

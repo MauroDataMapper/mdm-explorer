@@ -258,7 +258,7 @@ export class ThemeService {
 
   private getImageUrl(value: string): string | undefined {
     return value && isUuid(value)
-      ? `${environment.apiEndpoint}/themeImageFiles/${value}`
+      ? `${environment.mauroCoreEndpoint}/themeImageFiles/${value}`
       : undefined;
   }
 

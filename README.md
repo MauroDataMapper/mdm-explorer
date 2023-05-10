@@ -164,7 +164,7 @@ Set the api root in the enviroment
 create a distribution with the custom api set 
 `npm run dist`
 
-OPTIONAL - you can check `root/dist/yourSnapshotName/main.*` and note apiEndpoint to see if it took
+OPTIONAL - you can check `root/dist/yourSnapshotName/main.*` and note mauroCoreEndpoint to see if it took
 
 deploy your distribution to a httpserver
 install the httpserver `npm install --global http-server`

@@ -288,11 +288,11 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private setupSignedInUser(user?: UserDetails | null) {
     this.signedInUserProfileImageSrc = user
-      ? `${environment.apiEndpoint}/catalogueUsers/${user.id}/image`
+      ? `${environment.mauroCoreEndpoint}/catalogueUsers/${user.id}/image`
       : undefined;
     this.signedInUser = user;
     this.signedInUserProfileImageSrc = user
-      ? `${environment.apiEndpoint}/catalogueUsers/${user.id}/image`
+      ? `${environment.mauroCoreEndpoint}/catalogueUsers/${user.id}/image`
       : undefined;
   }
 

@@ -24,5 +24,5 @@ import { environment } from 'src/environments/environment.prod';
   providedIn: 'root',
 })
 export class EnvironmentService {
-  readonly apiEndpoint?: string = environment?.apiEndpoint;
+  readonly mauroCoreEndpoint?: string = environment?.mauroCoreEndpoint;
 }

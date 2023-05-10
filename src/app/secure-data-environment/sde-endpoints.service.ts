@@ -16,8 +16,21 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-interface EnvironmentVariables {
-  mauroCoreEndpoint: string;
-}
+import { Injectable } from '@angular/core';
+import { FakeSdeRestHandler } from './fake/fake-sde-rest-handler';
+import { OrganisationEndpoints } from './endpoints/organisation.endpoints';
+import { SdeRestHandler } from './sde-rest-handler';
+import { UserEndpoints } from './endpoints/user.endpoints';
 
-declare let $ENV: EnvironmentVariables;
+@Injectable({
+  providedIn: 'root',
+})
+export class SdeEndpointsService {
+  organisation = new OrganisationEndpoints(this.fakeSdeRestHandler);
+  user = new UserEndpoints(this.fakeSdeRestHandler);
+
+  constructor(
+    private sdeRestHandler: SdeRestHandler,
+    private fakeSdeRestHandler: FakeSdeRestHandler
+  ) {}
+}

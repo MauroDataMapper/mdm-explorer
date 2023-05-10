@@ -16,8 +16,6 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-interface EnvironmentVariables {
-  mauroCoreEndpoint: string;
+export interface ISdeRestHandler {
+  get<T>(url: string): any; // eslint-disable-line @typescript-eslint/no-unused-vars
 }
-
-declare let $ENV: EnvironmentVariables;

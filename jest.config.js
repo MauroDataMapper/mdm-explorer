@@ -35,7 +35,7 @@ module.exports = {
       stringifyContentPathRegex: "\\.html",
     },
     $ENV: {
-      apiEndpoint: "test-endpoint",
+      mauroCoreEndpoint: "test-endpoint",
     },
   },
   moduleNameMapper: {

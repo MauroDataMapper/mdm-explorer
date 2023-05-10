@@ -16,8 +16,11 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-interface EnvironmentVariables {
-  mauroCoreEndpoint: string;
+export enum SdeApiEndPoints {
+  OrganisationList = '/organisation/list',
+  OrganisationGet = '/organisation/get?',
+  OrganisationMemberGet = '/organisation_member/get?',
+  OrganisationMemberList = '/organisation_member/list?',
+  AdminUserGet = '/user/admin/get?',
+  ResearchUserGet = '/user/research/get?',
 }
-
-declare let $ENV: EnvironmentVariables;

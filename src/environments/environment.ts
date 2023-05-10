@@ -22,7 +22,8 @@ SPDX-License-Identifier: Apache-2.0
 
 export const environment = {
   production: false,
-  apiEndpoint: 'http://localhost:8080/api',
+  mauroCoreEndpoint: 'http://localhost:8080/api',
+  mauroSdeEndpoint: 'to be defined',
   checkSessionExpiryTimeout: 300000,
   features: {
     useOpenIdConnect: true,
