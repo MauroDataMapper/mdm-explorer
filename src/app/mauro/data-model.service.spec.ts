@@ -660,7 +660,7 @@ describe('DataModelService', () => {
       endpointsStub.dataModel.newBranchModelVersion.mockImplementationOnce(
         (id, payload) => {
           expect(id).toBe(currentModel.id);
-          expect(payload).toStrictEqual({});
+          expect(payload).toStrictEqual({ asynchronous: false });
           return cold('--a|', {
             a: {
               body: nextModel,

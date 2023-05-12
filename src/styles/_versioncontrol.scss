@@ -17,6 +17,14 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 .version_control {
+  display: inline-block;
+  margin-right: 10px;
+  width: 130px;
+
+  .mat-form-field {
+    width: 100%;
+  }
+
   .select-label {
     color: var(--theme-color-primary-contrast) !important;
   }

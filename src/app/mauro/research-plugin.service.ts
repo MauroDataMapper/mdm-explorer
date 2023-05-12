@@ -18,20 +18,26 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
 import {
+  DataModel,
   DataModelDetail,
   DataModelDetailResponse,
+  DataModelIndexResponse,
   FolderDetail,
   FolderDetailResponse,
   MdmIndexResponse,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
-import { map, Observable, switchMap } from 'rxjs';
+import { map, Observable, of, switchMap } from 'rxjs';
 import { KeyValueIdentifier } from './mauro.types';
 import { MdmEndpointsService } from './mdm-endpoints.service';
 import {
   PluginResearchContactPayload,
   PluginResearchContactResponse,
 } from './plugins/plugin-research.resource';
+import {
+  DataSpecification,
+  mapToDataSpecification,
+} from '../data-explorer/data-explorer.types';
 
 @Injectable({
   providedIn: 'root',
@@ -74,5 +80,14 @@ export class ResearchPluginService {
     return this.endpoints.pluginResearch
       .theme()
       .pipe(map((response: MdmIndexResponse<KeyValueIdentifier>) => response.body.items));
+  }
+
+  getLatestModelDataSpecifications(): Observable<DataSpecification[]> {
+    return this.endpoints.pluginResearch.getLatestModelDataSpecifications().pipe(
+      switchMap((response: DataModelIndexResponse): Observable<DataModel[]> => {
+        return of(response.body.items); // eslint-disable-line @typescript-eslint/no-non-null-assertion
+      }),
+      map((dataModels: DataModel[]) => dataModels.map(mapToDataSpecification))
+    );
   }
 }

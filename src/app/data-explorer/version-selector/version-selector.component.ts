@@ -36,20 +36,13 @@ export interface VersionOption {
 export class VersionSelectorComponent implements OnInit, OnChanges {
   @Input()
   modelId!: string;
-  @Input() showVersionOnly: boolean = false;
+  @Input() showVersionOnly = false;
   @Output() valueChange = new EventEmitter<VersionOption>();
 
   constructor(private dataModels: DataModelService, private router: Router) {}
 
-  modelTree: SimpleModelVersionTree[] = [];
-
   ngOnInit(): void {
-    this.dataModels
-      .simpleModelVersionTree(this.modelId, false)
-      .subscribe((versionTree) => {
-        this.lastCheckedModelId = this.modelId;
-        this.handleVersionTree(versionTree);
-      });
+    this.setDropdownOptions();
   }
 
   /**
@@ -65,12 +58,7 @@ export class VersionSelectorComponent implements OnInit, OnChanges {
    */
   ngOnChanges() {
     if (this.modelId !== this.lastCheckedModelId) {
-      this.dataModels
-        .simpleModelVersionTree(this.modelId, false)
-        .subscribe((versionTree) => {
-          this.lastCheckedModelId = this.modelId;
-          this.handleVersionTree(versionTree);
-        });
+      this.setDropdownOptions();
     }
   }
 
@@ -81,7 +69,16 @@ export class VersionSelectorComponent implements OnInit, OnChanges {
   currentVersion?: VersionOption;
   versionOptions: VersionOption[] = [];
 
-  private lastCheckedModelId: string = '';
+  private lastCheckedModelId = '';
+
+  private setDropdownOptions() {
+    this.dataModels
+      .simpleModelVersionTree(this.modelId, false)
+      .subscribe((versionTree) => {
+        this.lastCheckedModelId = this.modelId;
+        this.handleVersionTree(versionTree);
+      });
+  }
 
   private handleVersionTree(versionTree: SimpleModelVersionTree[]) {
     if (!this.modelId) {
@@ -91,8 +88,10 @@ export class VersionSelectorComponent implements OnInit, OnChanges {
       this.currentVersion = { id: this.modelId, displayName: '1.0.0' };
     }
 
+    this.versionOptions = [];
+
     versionTree.forEach((versionNode) => {
-      let option: VersionOption = {
+      const option: VersionOption = {
         id: versionNode.id,
         displayName:
           versionNode.branch === 'main'
@@ -112,9 +111,9 @@ export class VersionSelectorComponent implements OnInit, OnChanges {
     let displayName = name.replace('main', '');
 
     // Increase version
-    let parts = displayName.trim().split('.');
+    const parts = displayName.trim().split('.');
 
-    let majorVersion = parts[0].substring(2);
+    const majorVersion = parts[0].substring(2);
     let nextMajorVersion: number = +majorVersion;
     nextMajorVersion++;
 

@@ -111,13 +111,13 @@ describe('MyDataSpecificationsComponent', () => {
 
   describe('initialisation', () => {
     beforeEach(() => {
-      dataSpecificationStub.list.mockClear();
+      researchPluginStub.getLatestModelDataSpecifications.mockClear();
       toastrStub.error.mockClear();
     });
 
     it('should do nothing if there is no user', () => {
       harness.component.ngOnInit();
-      expect(dataSpecificationStub.list).not.toHaveBeenCalled();
+      expect(researchPluginStub.getLatestModelDataSpecifications).not.toHaveBeenCalled();
     });
   });
 
@@ -139,7 +139,7 @@ describe('MyDataSpecificationsComponent', () => {
 
     mockSignedInUser();
 
-    dataSpecificationStub.list.mockImplementationOnce(() => {
+    researchPluginStub.getLatestModelDataSpecifications.mockImplementationOnce(() => {
       expect(harness.component.state).toBe('loading');
       return of(dataSpecifications);
     });
@@ -156,7 +156,7 @@ describe('MyDataSpecificationsComponent', () => {
   it('should display an error if failed to get data specifications', () => {
     mockSignedInUser();
 
-    dataSpecificationStub.list.mockImplementationOnce(() =>
+    researchPluginStub.getLatestModelDataSpecifications.mockImplementationOnce(() =>
       throwError(() => new Error())
     );
 
@@ -171,7 +171,7 @@ describe('MyDataSpecificationsComponent', () => {
   it('should handle having no data specifications available', () => {
     mockSignedInUser();
 
-    dataSpecificationStub.list.mockImplementationOnce(() => {
+    researchPluginStub.getLatestModelDataSpecifications.mockImplementationOnce(() => {
       expect(harness.component.state).toBe('loading');
       return of([]);
     });
