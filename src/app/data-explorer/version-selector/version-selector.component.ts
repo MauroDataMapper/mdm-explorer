@@ -19,7 +19,6 @@ SPDX-License-Identifier: Apache-2.0
 
 import { Component, OnInit, Input, EventEmitter, Output, OnChanges } from '@angular/core';
 import { MatSelectChange } from '@angular/material/select';
-import { Router } from '@angular/router';
 import { SimpleModelVersionTree } from '@maurodatamapper/mdm-resources';
 import { DataModelService } from 'src/app/mauro/data-model.service';
 
@@ -39,7 +38,11 @@ export class VersionSelectorComponent implements OnInit, OnChanges {
   @Input() showVersionOnly = false;
   @Output() valueChange = new EventEmitter<VersionOption>();
 
-  constructor(private dataModels: DataModelService, private router: Router) {}
+  currentVersion?: VersionOption;
+  versionOptions: VersionOption[] = [];
+  private lastCheckedModelId = '';
+
+  constructor(private dataModels: DataModelService) {}
 
   ngOnInit(): void {
     this.setDropdownOptions();
@@ -66,11 +69,6 @@ export class VersionSelectorComponent implements OnInit, OnChanges {
     this.valueChange.emit(change.value as VersionOption);
   }
 
-  currentVersion?: VersionOption;
-  versionOptions: VersionOption[] = [];
-
-  private lastCheckedModelId = '';
-
   private setDropdownOptions() {
     this.dataModels
       .simpleModelVersionTree(this.modelId, false)
@@ -84,8 +82,11 @@ export class VersionSelectorComponent implements OnInit, OnChanges {
     if (!this.modelId) {
       return;
     }
+
     if (!versionTree || versionTree.length < 1) {
-      this.currentVersion = { id: this.modelId, displayName: '1.0.0' };
+      this.currentVersion = { id: this.modelId, displayName: 'V1.0.0' };
+      this.versionOptions.push(this.currentVersion);
+      return;
     }
 
     this.versionOptions = [];

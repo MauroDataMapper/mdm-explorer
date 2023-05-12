@@ -122,8 +122,8 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
   /**
    * Signal to attach to subscriptions to trigger when they should be unsubscribed.
    */
-  private unsubscribe$ = new Subject<void>();
   newVersionButtonDisabled?: boolean;
+  private unsubscribe$ = new Subject<void>();
 
   constructor(
     private route: ActivatedRoute,
@@ -390,6 +390,35 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
   updateAllOrSomeChildrenSelectedHandler() {
     this.updateAllElementsSelected();
     this.updateAnyElementsSelected();
+  }
+
+  /** Handling of versions */
+  handleViewDifferentVersion(dataSpecId: string) {
+    this.stateRouter.navigateTo(['/dataSpecifications', dataSpecId]);
+  }
+
+  handleNewVersionClick() {
+    this.okCancel(
+      'Create New Version',
+      'Do you want to create a new version of this data Specification? You will be redirected to the new version details page'
+    )
+      .afterClosed()
+      .pipe(
+        switchMap(
+          (
+            okCancelDialogResponse?: OkCancelDialogResponse
+          ): Observable<DataModelDetail> => {
+            if (!okCancelDialogResponse || !this.dataSpecification) {
+              return EMPTY;
+            }
+
+            return this.dataModels.createNextVersion(this.dataSpecification);
+          }
+        )
+      )
+      .subscribe((newVersion?) => {
+        this.stateRouter.navigateTo(['/dataSpecifications', newVersion.id]);
+      });
   }
 
   // Can mark all the children (schema, dataClass and dataElements)
@@ -938,34 +967,5 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
       cohortQuery: this.removeDataElementFromQuery(labels, this.cohortQueryType),
       result: of(result),
     });
-  }
-
-  /** Handling of versions */
-  handleViewDifferentVersion(dataSpecId: string) {
-    this.stateRouter.navigateTo(['/dataSpecifications', dataSpecId]);
-  }
-
-  handleNewVersionClick() {
-    this.okCancel(
-      'Create New Version',
-      'Do you want to create a new version of this data Specification? You will be redirected to the new version details page'
-    )
-      .afterClosed()
-      .pipe(
-        switchMap(
-          (
-            okCancelDialogResponse?: OkCancelDialogResponse
-          ): Observable<DataModelDetail> => {
-            if (!okCancelDialogResponse || !this.dataSpecification) {
-              return EMPTY;
-            }
-
-            return this.dataModels.createNextVersion(this.dataSpecification);
-          }
-        )
-      )
-      .subscribe((newVersion?) => {
-        this.stateRouter.navigateTo(['/dataSpecifications', newVersion.id]);
-      });
   }
 }

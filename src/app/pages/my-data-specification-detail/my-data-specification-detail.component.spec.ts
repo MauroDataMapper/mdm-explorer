@@ -24,6 +24,7 @@ import {
   DataModelDetail,
   Rule,
   RuleRepresentation,
+  SimpleModelVersionTree,
 } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { of, throwError } from 'rxjs';
@@ -140,6 +141,17 @@ describe('MyDataSpecificationsComponent', () => {
   const mockSignedInUser = () => {
     securityStub.getSignedInUser.mockReturnValueOnce(user);
   };
+
+  dataModelsStub.simpleModelVersionTree.mockImplementation((id) => {
+    const simpleModelTree: SimpleModelVersionTree = {
+      branch: 'main',
+      displayName: 'main',
+      documentationVersion: '1.0.0',
+      id,
+      modelVersion: '1.0.0',
+    };
+    return of([simpleModelTree]);
+  });
 
   describe('initialisation', () => {
     beforeEach(() => {
