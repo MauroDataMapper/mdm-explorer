@@ -22,7 +22,10 @@ import { catchError, EMPTY, finalize, switchMap } from 'rxjs';
 import { DataSpecification } from '../../data-explorer/data-explorer.types';
 import { DataSpecificationService } from '../../data-explorer/data-specification.service';
 import { SortByOption } from '../../data-explorer/sort-by/sort-by.component';
+import { FilterByOption } from '../../data-explorer/filter-by/filter-by.component';
 import { Sort } from '../../mauro/sort.type';
+import { ResearchPluginService } from '../../mauro/research-plugin.service';
+import { ActivatedRoute } from '@angular/router';
 
 /**
  * These options must be of the form '{propertyToSortBy}-{order}' where propertyToSortBy
@@ -39,6 +42,9 @@ export type TemplateDataSpecificationSortByOption = 'label-asc' | 'label-desc';
 export class TemplateDataSpecificationsComponent implements OnInit {
   templateDataSpecifications: DataSpecification[] = [];
   filteredDataSpecifications: DataSpecification[] = [];
+  sharedDataSpecifications: DataSpecification[] = [];
+  communityDataSpecifications: DataSpecification[] = [];
+
   state: 'idle' | 'loading' = 'idle';
 
   sortByOptions: SortByOption[] = [
@@ -48,26 +54,46 @@ export class TemplateDataSpecificationsComponent implements OnInit {
   sortByDefaultOption: SortByOption = this.sortByOptions[0];
   sortBy?: SortByOption;
 
+  contentToDisplayOptions: FilterByOption[] = [
+    { value: 'Templates', displayName: 'Templates' },
+    { value: 'Community', displayName: 'Community' },
+  ];
+  contentToDisplayDefaultOption = this.contentToDisplayOptions[0];
+  contentToDisplay: FilterByOption = this.contentToDisplayDefaultOption;
+
   constructor(
     private dataSpecification: DataSpecificationService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private researchPlugin: ResearchPluginService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
     this.state = 'loading';
 
-    this.dataSpecification
-      .listTemplates()
+    this.route.queryParams
       .pipe(
+        switchMap((params) => {
+          if (params.templateType === 'community') {
+            this.contentToDisplay = this.contentToDisplayOptions[1];
+          }
+
+          return this.dataSpecification.listTemplates();
+        }),
+        switchMap((templates) => {
+          this.templateDataSpecifications = templates;
+          return this.researchPlugin.listSharedDataSpecifications();
+        }),
         catchError(() => {
           this.toastr.error('There was a problem finding the templates.');
           return EMPTY;
         }),
         finalize(() => (this.state = 'idle'))
       )
-      .subscribe((templateDataSpecifications) => {
-        this.templateDataSpecifications = templateDataSpecifications;
+      .subscribe((sharedDataSpecs) => {
+        this.sharedDataSpecifications = sharedDataSpecs;
         this.filterAndSortDataSpecifications();
+        this.state = 'idle';
       });
   }
 
@@ -88,13 +114,24 @@ export class TemplateDataSpecificationsComponent implements OnInit {
       .subscribe();
   }
 
-  private filterAndSortDataSpecifications(sortBy?: SortByOption) {
-    const filtered = this.templateDataSpecifications;
+  selectContentToDisplay(value: FilterByOption) {
+    this.contentToDisplay = value;
+  }
+
+  private filterAndSortDataSpecifications(sortBy?: FilterByOption) {
+    const filteredTemplates = this.templateDataSpecifications;
+    const filteredSharedDataSpecs = this.sharedDataSpecifications;
 
     this.sortBy = sortBy ?? this.sortByDefaultOption;
     const [property, order] = Sort.defineSortParams(this.sortBy.value);
-    const sorted = filtered.sort((a, b) => Sort.compareByString(a, b, property, order));
+    const sortedTemplates = filteredTemplates.sort((a, b) =>
+      Sort.compareByString(a, b, property, order)
+    );
+    const sortedSharedDataspecs = filteredSharedDataSpecs.sort((a, b) =>
+      Sort.compareByString(a, b, property, order)
+    );
 
-    this.filteredDataSpecifications = sorted;
+    this.filteredDataSpecifications = sortedTemplates;
+    this.sharedDataSpecifications = sortedSharedDataspecs;
   }
 }

@@ -16,7 +16,11 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { CatalogueItemDomainType, FolderDetail } from '@maurodatamapper/mdm-resources';
+import {
+  CatalogueItemDomainType,
+  FolderDetail,
+  MdmResourcesConfiguration,
+} from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { of, throwError } from 'rxjs';
 import { DataSpecification } from '../../data-explorer/data-explorer.types';
@@ -29,12 +33,21 @@ import {
 } from '../../testing/testing.helpers';
 
 import { TemplateDataSpecificationsComponent } from './template-data-specifications.component';
+import { SecurityService } from 'src/app/security/security.service';
+import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
+import { ActivatedRoute } from '@angular/router';
 
 describe('TemplateDataSpecificationsComponent', () => {
   let harness: ComponentHarness<TemplateDataSpecificationsComponent>;
 
   const dataSpecificationStub = createDataSpecificationServiceStub();
   const toastrStub = createToastrServiceStub();
+  const securityStub = createSecurityServiceStub();
+  const mdmResourcesConfiguration = new MdmResourcesConfiguration();
+
+  const activatedRoute: ActivatedRoute = {
+    queryParams: of({}),
+  } as unknown as ActivatedRoute;
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(TemplateDataSpecificationsComponent, {
@@ -46,6 +59,18 @@ describe('TemplateDataSpecificationsComponent', () => {
         {
           provide: ToastrService,
           useValue: toastrStub,
+        },
+        {
+          provide: SecurityService,
+          useValue: securityStub,
+        },
+        {
+          provide: MdmResourcesConfiguration,
+          useValue: mdmResourcesConfiguration,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: activatedRoute,
         },
       ],
     });

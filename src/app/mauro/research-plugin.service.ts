@@ -20,6 +20,7 @@ import { Injectable } from '@angular/core';
 import {
   DataModelDetail,
   DataModelDetailResponse,
+  DataModelIndexResponse,
   FolderDetail,
   FolderDetailResponse,
   MdmIndexResponse,
@@ -32,6 +33,10 @@ import {
   PluginResearchContactPayload,
   PluginResearchContactResponse,
 } from './plugins/plugin-research.resource';
+import {
+  DataSpecification,
+  mapToDataSpecification,
+} from '../data-explorer/data-explorer.types';
 
 @Injectable({
   providedIn: 'root',
@@ -74,5 +79,15 @@ export class ResearchPluginService {
     return this.endpoints.pluginResearch
       .theme()
       .pipe(map((response: MdmIndexResponse<KeyValueIdentifier>) => response.body.items));
+  }
+
+  listSharedDataSpecifications(): Observable<DataSpecification[]> {
+    return this.endpoints.pluginResearch
+      .listSharedDataSpecifications()
+      .pipe(
+        map((response: DataModelIndexResponse) =>
+          response.body.items.map(mapToDataSpecification)
+        )
+      );
   }
 }

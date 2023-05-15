@@ -33,10 +33,12 @@ export class DataSpecificationRowComponent {
   @Input() showSubmitButton = false;
   @Input() showCopyButton = false;
   @Input() showEditButton = false;
+  @Input() showShareButton = false;
 
   @Output() submitClick = new EventEmitter<void>();
   @Output() copyClick = new EventEmitter<void>();
   @Output() editClick = new EventEmitter<void>();
+  @Output() shareClick = new EventEmitter<void>();
 
   onSubmitClick() {
     this.submitClick.emit();
@@ -48,5 +50,9 @@ export class DataSpecificationRowComponent {
 
   onEditClick() {
     this.editClick.emit();
+  }
+
+  onShareClick() {
+    this.shareClick.emit();
   }
 }

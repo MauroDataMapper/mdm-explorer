@@ -1,4 +1,4 @@
-/*
+<!--
 Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -15,20 +15,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
-*/
-.mdm-template-data-specifications {
-  &__sort-row {
-    display: flex;
-    justify-content: space-between;
-    margin: 1em 0;
-
-    .vertically-aligned {
-      display: flex;
-      align-items: center;
-
-      > * {
-        margin-left: 1em;
-      }
-    }
-  }
-}
+-->
+<mat-form-field appearance="outline">
+  <mat-label>Filter By</mat-label>
+  <mat-select
+    [value]="value"
+    [disableOptionCentering]="true"
+    (selectionChange)="select($event)"
+  >
+    <mat-option *ngFor="let option of options" [value]="option">
+      {{ option.displayName }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>

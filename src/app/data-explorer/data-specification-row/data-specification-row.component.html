@@ -50,6 +50,15 @@ SPDX-License-Identifier: Apache-2.0
       <span class="fa-solid fa-pen-to-square"></span>
       Edit
     </button>
+    <button
+      *ngIf="showShareButton"
+      mat-raised-button
+      color="primary"
+      (click)="onShareClick()"
+    >
+      <span class="fa-solid fa-share-nodes"></span>
+      Share
+    </button>
   </ng-container>
   <ng-container>
     <div *ngIf="dataSpecification.description">

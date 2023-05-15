@@ -31,40 +31,84 @@ SPDX-License-Identifier: Apache-2.0
     </div>
   </div>
   <div class="mdm-template-data-specifications__sort-row">
-    <span class="spacer"></span>
-    <mdm-sort-by
-      [value]="sortBy"
-      [options]="sortByOptions"
-      (valueChange)="selectSortBy($event)"
-    ></mdm-sort-by>
+    <div class="col-md-8">
+      <!-- EMTPY SPACE -->
+    </div>
+    <div class="vertically-aligned col-md-4">
+      <mdm-sort-by
+        [value]="sortBy"
+        [options]="sortByOptions"
+        (valueChange)="selectSortBy($event)"
+      ></mdm-sort-by>
+      <mdm-filter-by
+        [value]="contentToDisplay"
+        [options]="contentToDisplayOptions"
+        (valueChange)="selectContentToDisplay($event)"
+      ></mdm-filter-by>
+    </div>
   </div>
+
   <div *ngIf="state === 'loading'" class="mdm-template-data-specifications__progress">
     <mat-progress-bar color="primary" mode="indeterminate"></mat-progress-bar>
   </div>
-  <div
-    *ngIf="!templateDataSpecifications || templateDataSpecifications.length === 0"
-    class="row"
-  >
-    <p class="text-center">
-      We currently have no data specification templates but are working on adding some
-      soon. In the meantime, you are able to
-      <a routerLink="/search">search</a> or <a routerLink="/browse">browse</a> our
-      catalogue and start creating your own research data specifications from scratch.
-    </p>
+
+  <div *ngIf="contentToDisplay.value === 'Templates'">
+    <div
+      *ngIf="!templateDataSpecifications || templateDataSpecifications.length === 0"
+      class="row"
+    >
+      <p class="text-center">
+        We currently have no data specification templates but are working on adding some
+        soon. In the meantime, you are able to
+        <a routerLink="/search">search</a> or <a routerLink="/browse">browse</a> our
+        catalogue and start creating your own research data specifications from scratch.
+      </p>
+    </div>
+    <div
+      *ngIf="templateDataSpecifications && templateDataSpecifications.length > 0"
+      class="row"
+    >
+      <div *ngFor="let dataSpecification of templateDataSpecifications">
+        <div class="col">
+          <mdm-data-specification-row
+            [dataSpecification]="dataSpecification"
+            [showStatus]="false"
+            [detailsRouterLink]="['/templates', dataSpecification.id]"
+            [showCopyButton]="true"
+            (copyClick)="copy(dataSpecification)"
+          ></mdm-data-specification-row>
+        </div>
+      </div>
+    </div>
   </div>
-  <div
-    *ngIf="templateDataSpecifications && templateDataSpecifications.length > 0"
-    class="row"
-  >
-    <div *ngFor="let dataSpecification of templateDataSpecifications">
-      <div class="col">
-        <mdm-data-specification-row
-          [dataSpecification]="dataSpecification"
-          [showStatus]="false"
-          [detailsRouterLink]="['/templates', dataSpecification.id]"
-          [showCopyButton]="true"
-          (copyClick)="copy(dataSpecification)"
-        ></mdm-data-specification-row>
+
+  <div *ngIf="contentToDisplay.value === 'Community'">
+    <div
+      *ngIf="!sharedDataSpecifications || sharedDataSpecifications.length === 0"
+      class="row"
+    >
+      <p class="text-center">
+        Currently there are no shared specifications. You are able to
+        <a routerLink="/search">search</a> or <a routerLink="/browse">browse</a> our
+        catalogue and start creating your own research data specifications from scratch.
+        Then, you can share them with the community.
+      </p>
+    </div>
+
+    <div
+      *ngIf="sharedDataSpecifications && sharedDataSpecifications.length > 0"
+      class="row"
+    >
+      <div *ngFor="let dataSpecification of sharedDataSpecifications">
+        <div class="col">
+          <mdm-data-specification-row
+            [dataSpecification]="dataSpecification"
+            [showStatus]="false"
+            [detailsRouterLink]="['/dataSpecifications', dataSpecification.id]"
+            [showCopyButton]="true"
+            (copyClick)="copy(dataSpecification)"
+          ></mdm-data-specification-row>
+        </div>
       </div>
     </div>
   </div>

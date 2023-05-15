@@ -56,6 +56,10 @@ import {
   SuccessDialogComponent,
   SuccessDialogData,
 } from './success-dialog/success-dialog.component';
+import {
+  ShareDataSpecificationDialogComponent,
+  ShareDataSpecificationDialogInputOutput,
+} from './share-data-specification-dialog/share-data-specification-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -137,5 +141,13 @@ export class DialogService {
         data,
       }
     );
+  }
+
+  shareWithCommunity(data: ShareDataSpecificationDialogInputOutput) {
+    return this.matDialog.open<
+      ShareDataSpecificationDialogComponent,
+      ShareDataSpecificationDialogInputOutput,
+      ShareDataSpecificationDialogInputOutput
+    >(ShareDataSpecificationDialogComponent, { minWidth: 500, data });
   }
 }

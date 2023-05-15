@@ -21,10 +21,19 @@ SPDX-License-Identifier: Apache-2.0
     <div class="main-row hero">
       <h1>{{ dataSpecification.label }}</h1>
     </div>
-    <mdm-back-link
-      routerLink="/dataSpecifications"
-      label="Back to My Data Specifications"
-    ></mdm-back-link>
+    <div *ngIf="currentUserOwnsDataSpec">
+      <mdm-back-link
+        routerLink="/dataSpecifications"
+        label="Back to My Data Specifications"
+      ></mdm-back-link>
+    </div>
+    <div *ngIf="!currentUserOwnsDataSpec">
+      <mdm-back-link
+        routerLink="/templates"
+        [queryParams]="{ templateType: 'community' }"
+        label="Back to Templates"
+      ></mdm-back-link>
+    </div>
     <div *ngIf="state === 'loading'" class="mdm-my-data-specification__progress">
       <mat-progress-bar color="primary" mode="indeterminate"></mat-progress-bar>
     </div>
@@ -33,12 +42,20 @@ SPDX-License-Identifier: Apache-2.0
         [dataSpecification]="dataSpecification"
         [showLabel]="false"
         [showStatus]="true"
-        [showSubmitButton]="dataSpecification.status === 'unsent'"
+        [showSubmitButton]="
+          dataSpecification.status === 'unsent' && currentUserOwnsDataSpec
+        "
         [showCopyButton]="dataSpecification.status === 'submitted'"
-        [showEditButton]="dataSpecification.status === 'unsent'"
+        [showEditButton]="
+          dataSpecification.status === 'unsent' && currentUserOwnsDataSpec
+        "
+        [showShareButton]="
+          currentUserOwnsDataSpec && dataSpecification.status === 'submitted'
+        "
         (submitClick)="submitDataSpecification()"
         (copyClick)="copyDataSpecification()"
         (editClick)="editDataSpecification()"
+        (shareClick)="shareDataSpecification()"
       ></mdm-data-specification-row>
     </div>
 
@@ -47,14 +64,18 @@ SPDX-License-Identifier: Apache-2.0
     <mdm-data-query-row
       queryType="cohort"
       [condition]="cohortQuery"
-      [readOnly]="dataSpecification.status === 'submitted' || isEmpty"
+      [readOnly]="
+        dataSpecification.status === 'submitted' || isEmpty || !currentUserOwnsDataSpec
+      "
       createRouterLink="queries/cohort"
       editRouterLink="queries/cohort"
     ></mdm-data-query-row>
     <mdm-data-query-row
       queryType="data"
       [condition]="dataQuery"
-      [readOnly]="dataSpecification.status === 'submitted' || isEmpty"
+      [readOnly]="
+        dataSpecification.status === 'submitted' || isEmpty || !currentUserOwnsDataSpec
+      "
       createRouterLink="queries/data"
       editRouterLink="queries/data"
     ></mdm-data-query-row>
@@ -67,7 +88,7 @@ SPDX-License-Identifier: Apache-2.0
     </p>
 
     <div
-      *ngIf="dataSpecification.status === 'unsent'"
+      *ngIf="dataSpecification.status === 'unsent' && currentUserOwnsDataSpec"
       class="mdm-my-data-specification__specification-elements-selectall"
     >
       <mat-checkbox (change)="onSelectAll()" [checked]="allElementsSelected"
@@ -86,12 +107,15 @@ SPDX-License-Identifier: Apache-2.0
 
     <div
       class="mdm-my-data-specification__specification-elements"
-      *ngIf="sourceTargetIntersections.dataSpecifications.length > 0"
+      *ngIf="
+        sourceTargetIntersections.dataSpecifications.length > 0 ||
+        !currentUserOwnsDataSpec
+      "
     >
       <mdm-data-schema-row
         *ngFor="let dataSchema of dataSchemas"
         [dataSchema]="dataSchema"
-        [canDelete]="dataSpecification.status === 'unsent'"
+        [canDelete]="dataSpecification.status === 'unsent' && currentUserOwnsDataSpec"
         (deleteItemEvent)="removeItem($event)"
         [suppressViewDataSpecificationsDialogButton]="true"
         (dataSpecificationAddDelete)="handleDataSpecificationElementsChange($event)"

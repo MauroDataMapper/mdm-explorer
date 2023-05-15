@@ -66,6 +66,10 @@ import {
 import { DataSchemaService } from '../../data-explorer/data-schema.service';
 import { ResearchPluginService } from '../../mauro/research-plugin.service';
 import { DataSpecificationElementAddDeleteEvent } from '../../shared/data-element-in-data-specification/data-element-in-data-specification.component';
+import { ShareDataSpecificationDialogInputOutput } from 'src/app/data-explorer/share-data-specification-dialog/share-data-specification-dialog.component';
+import { DataModelService } from 'src/app/mauro/data-model.service';
+import { SecurityService } from '../../security/security.service';
+
 export interface RemoveSelectedResponse {
   okCancelDialogResponse: Observable<OkCancelDialogResponse>;
   deletedItems: Observable<DataElementMultipleOperationResult>;
@@ -114,6 +118,11 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
   // remove selected button is disabled.
   anyElementSelected = false;
 
+  // Whether the creator of the data spec
+  // is the current user or not.
+  // A user that is not the owner cannot edit
+  currentUserOwnsDataSpec = false;
+
   /**
    * Signal to attach to subscriptions to trigger when they should be unsubscribed.
    */
@@ -126,7 +135,9 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     private researchPlugin: ResearchPluginService,
     private dialogs: DialogService,
     private broadcastService: BroadcastService,
-    private dataSchemaService: DataSchemaService
+    private dataSchemaService: DataSchemaService,
+    private dataModels: DataModelService,
+    private securityService: SecurityService
   ) {
     this.sourceTargetIntersections = {
       dataSpecifications: [],
@@ -342,7 +353,20 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.dataSpecificationService.forkWithDialogs(this.dataSpecification).subscribe();
+    this.dataSpecificationService
+      .getDataSpecificationFolder()
+      .pipe(
+        switchMap((dataSpecificationFolder) => {
+          if (!this.dataSpecification) {
+            return EMPTY;
+          }
+
+          return this.dataSpecificationService.forkWithDialogs(this.dataSpecification, {
+            targetFolder: dataSpecificationFolder,
+          });
+        })
+      )
+      .subscribe();
   }
 
   /**
@@ -369,6 +393,49 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
 
         this.dataSpecification.description = response.description;
         this.dataSpecification.label = response.label;
+      });
+  }
+
+  shareDataSpecification() {
+    if (!this.dataSpecification || !this.dataSpecification.id) {
+      return;
+    }
+    const id: string = this.dataSpecification.id;
+
+    this.dataSpecificationService
+      .shareWithDialog(this.dataSpecification.readableByAuthenticatedUsers as boolean)
+      .pipe(
+        filter(
+          (dialogResponse) =>
+            dialogResponse &&
+            this.dataSpecification?.readableByAuthenticatedUsers !==
+              dialogResponse.sharedWithCommunity
+        ),
+        switchMap(
+          (
+            response: ShareDataSpecificationDialogInputOutput
+          ): Observable<DataModelDetail> => {
+            if (response.sharedWithCommunity) {
+              return this.dataModels.updateReadByAuthenticated(id);
+            } else {
+              return this.dataModels.removeReadByAuthenticated(id);
+            }
+          }
+        )
+      )
+      .subscribe((updatedDataSpec) => {
+        if (!updatedDataSpec || !this.dataSpecification || !this.dataSpecification.id) {
+          return;
+        }
+
+        this.dataSpecification.readableByAuthenticatedUsers =
+          updatedDataSpec.readableByAuthenticatedUsers;
+
+        if (updatedDataSpec.readableByAuthenticatedUsers) {
+          this.toastr.success('Data specification shared with the community');
+        } else {
+          this.toastr.success('Data specification not shared anymore');
+        }
       });
   }
 
@@ -486,6 +553,21 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
       return;
     }
     this.state = 'loading';
+
+    const currentUser = this.securityService.getSignedInUser();
+
+    if (!currentUser) {
+      return;
+    }
+
+    const currentUserFullName = currentUser.firstName + ' ' + currentUser.lastName;
+
+    // For some reason, the whitespace in the
+    // author property is not the same as here in code
+    // so we have to remove the spaces and then compare
+    this.currentUserOwnsDataSpec =
+      this.dataSpecification.author.replace('\\s', '') ===
+      currentUserFullName.replace('\\s', '');
 
     this.dataSchemaService
       .loadDataSchemas(this.dataSpecification)
