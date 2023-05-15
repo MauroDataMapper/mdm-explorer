@@ -353,7 +353,20 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.dataSpecificationService.forkWithDialogs(this.dataSpecification).subscribe();
+    this.dataSpecificationService
+      .getDataSpecificationFolder()
+      .pipe(
+        switchMap((dataSpecificationFolder) => {
+          if (!this.dataSpecification) {
+            return EMPTY;
+          }
+
+          return this.dataSpecificationService.forkWithDialogs(this.dataSpecification, {
+            targetFolder: dataSpecificationFolder,
+          });
+        })
+      )
+      .subscribe();
   }
 
   /**
