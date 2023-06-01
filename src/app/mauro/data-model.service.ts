@@ -370,7 +370,7 @@ export class DataModelService {
     }
 
     return this.endpoints.dataModel
-      .newBranchModelVersion(model.id, { asynchronous: false })
+      .newBranchModelVersion(model.id, {})
       .pipe(map((response: DataModelDetailResponse) => response.body));
   }
 

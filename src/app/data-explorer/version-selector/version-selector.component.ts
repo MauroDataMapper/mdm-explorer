@@ -83,7 +83,7 @@ export class VersionSelectorComponent implements OnInit, OnChanges {
       return;
     }
 
-    if (!versionTree || versionTree.length < 1) {
+    if (!versionTree || versionTree.length < 2) {
       this.currentVersion = { id: this.modelId, displayName: 'V1.0.0' };
       this.versionOptions.push(this.currentVersion);
       return;

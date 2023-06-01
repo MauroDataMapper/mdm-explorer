@@ -37,6 +37,7 @@ SPDX-License-Identifier: Apache-2.0
         [showCopyButton]="dataSpecification.status === 'submitted'"
         [showEditButton]="dataSpecification.status === 'unsent'"
         [showNewVersionButton]="dataSpecification.status === 'submitted'"
+        [disableNewVersionButton]="newVersionButtonDisabled"
         (submitClick)="submitDataSpecification()"
         (copyClick)="copyDataSpecification()"
         (editClick)="editDataSpecification()"

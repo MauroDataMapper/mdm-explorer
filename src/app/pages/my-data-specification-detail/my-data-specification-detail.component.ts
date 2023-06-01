@@ -119,10 +119,10 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
 
   version = '';
 
+  newVersionButtonDisabled = false;
   /**
    * Signal to attach to subscriptions to trigger when they should be unsubscribed.
    */
-  newVersionButtonDisabled?: boolean;
   private unsubscribe$ = new Subject<void>();
 
   constructor(

@@ -58,6 +58,7 @@ SPDX-License-Identifier: Apache-2.0
     </button>
     <button
       *ngIf="showNewVersionButton"
+      [disabled]="disableNewVersionButton"
       mat-raised-button
       color="primary"
       (click)="onNewVersionClick()"
