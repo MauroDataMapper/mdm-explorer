@@ -94,16 +94,14 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
   dataSpecification?: DataSpecification;
   state: 'idle' | 'loading' = 'idle';
   sourceTargetIntersections: DataSpecificationSourceTargetIntersections;
+  emptyQueryCondition: QueryCondition = {
+    condition: 'and',
+    rules: [],
+  };
   cohortQueryType: DataSpecificationQueryType = 'cohort';
-  cohortQuery: QueryCondition = {
-    condition: 'and',
-    rules: [],
-  };
+  cohortQuery = this.emptyQueryCondition;
   dataQueryType: DataSpecificationQueryType = 'data';
-  dataQuery: QueryCondition = {
-    condition: 'and',
-    rules: [],
-  };
+  dataQuery = this.emptyQueryCondition;
   dataSchemas: DataSchema[] = [];
   isEmpty = false;
 
@@ -465,6 +463,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
       .getQuery(this.dataSpecification.id, this.cohortQueryType)
       .subscribe((query) => {
         if (!query) {
+          this.cohortQuery = this.emptyQueryCondition;
           return;
         }
 
@@ -475,6 +474,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
       .getQuery(this.dataSpecification.id, this.dataQueryType)
       .subscribe((query) => {
         if (!query) {
+          this.dataQuery = this.emptyQueryCondition;
           return;
         }
 

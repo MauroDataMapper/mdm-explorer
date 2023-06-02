@@ -26,15 +26,15 @@ SPDX-License-Identifier: Apache-2.0
   }
 
   .select-label {
-    color: var(--theme-color-primary-contrast) !important;
+    color: $color-primary-contrast !important;
   }
   .mat-form-field-outline {
-    color: var(--theme-color-primary-contrast) !important;
+    color: $color-primary-contrast !important;
   }
   .mat-select-value {
-    color: var(--theme-color-primary-contrast) !important;
+    color: $color-primary-contrast !important;
   }
   .mat-select-arrow {
-    color: var(--theme-color-primary-contrast) !important;
+    color: $color-primary-contrast !important;
   }
 }
