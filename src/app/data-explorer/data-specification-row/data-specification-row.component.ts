@@ -37,10 +37,12 @@ export class DataSpecificationRowComponent {
   @Input() showVersionOnly = false;
   @Input() showNewVersionButton = false;
   @Input() disableNewVersionButton = false;
+  @Input() showShareButton = false;
 
   @Output() submitClick = new EventEmitter<void>();
   @Output() copyClick = new EventEmitter<void>();
   @Output() editClick = new EventEmitter<void>();
+  @Output() shareClick = new EventEmitter<void>();
   @Output() newVersionClick = new EventEmitter<void>();
   @Output() ViewDifferentVersionClick = new EventEmitter<string>();
 
@@ -62,5 +64,9 @@ export class DataSpecificationRowComponent {
 
   onViewDifferentVersionClick(selected: VersionOption) {
     this.ViewDifferentVersionClick.emit(selected.id);
+  }
+  
+    onShareClick() {
+    this.shareClick.emit();
   }
 }

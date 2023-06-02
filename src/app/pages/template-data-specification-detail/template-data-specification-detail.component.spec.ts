@@ -40,6 +40,8 @@ import {
 } from '../../testing/testing.helpers';
 
 import { TemplateDataSpecificationDetailComponent } from './template-data-specification-detail.component';
+import { SecurityService } from 'src/app/security/security.service';
+import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 
 describe('TemplateDataSpecificationDetailComponent', () => {
   let harness: ComponentHarness<TemplateDataSpecificationDetailComponent>;
@@ -48,6 +50,7 @@ describe('TemplateDataSpecificationDetailComponent', () => {
   const dataSchemaStub = createDataSchemaServiceStub();
   const toastrStub = createToastrServiceStub();
   const mdmResourcesConfiguration = new MdmResourcesConfiguration();
+  const securityStub = createSecurityServiceStub();
 
   const templateId = '123';
   const activatedRoute: ActivatedRoute = {
@@ -80,6 +83,10 @@ describe('TemplateDataSpecificationDetailComponent', () => {
           {
             provide: MdmResourcesConfiguration,
             useValue: mdmResourcesConfiguration,
+          },
+          {
+            provide: SecurityService,
+            useValue: securityStub,
           },
         ],
       }

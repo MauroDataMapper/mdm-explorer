@@ -57,6 +57,15 @@ SPDX-License-Identifier: Apache-2.0
       Edit
     </button>
     <button
+      *ngIf="showShareButton"
+      mat-raised-button
+      color="primary"
+      (click)="onShareClick()"
+    >
+      <span class="fa-solid fa-share-nodes"></span>
+      Share
+    </button>
+    <button
       *ngIf="showNewVersionButton"
       [disabled]="disableNewVersionButton"
       mat-raised-button

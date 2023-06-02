@@ -67,6 +67,7 @@ import {
   setupTestModuleForComponent,
 } from '../../testing/testing.helpers';
 import { MyDataSpecificationDetailComponent } from './my-data-specification-detail.component';
+import { SecurityService } from 'src/app/security/security.service';
 
 describe('MyDataSpecificationsComponent', () => {
   let harness: ComponentHarness<MyDataSpecificationDetailComponent>;
@@ -125,6 +126,10 @@ describe('MyDataSpecificationsComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
+        {
+          provide: SecurityService,
+          useValue: securityStub,
+        },
       ],
     });
   });
@@ -134,9 +139,14 @@ describe('MyDataSpecificationsComponent', () => {
     label: 'data specification 1',
     domainType: CatalogueItemDomainType.DataModel,
     status: 'unsent',
+    author: 'Test User',
   };
 
-  const user = { email: 'test@test.com' } as UserDetails;
+  const user = {
+    email: 'test@test.com',
+    firstName: 'Test',
+    lastName: 'User',
+  } as UserDetails;
 
   const mockSignedInUser = () => {
     securityStub.getSignedInUser.mockReturnValueOnce(user);

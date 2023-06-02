@@ -48,6 +48,8 @@ import { NumberFormatDirective } from './querybuilder/directives/number-format.d
 import { EditDataSpecificationDialogComponent } from './edit-data-specification-dialog/edit-data-specification-dialog.component';
 import { SelectionExpandedDialogComponent } from './selection-expanded-dialog/selection-expanded-dialog.component';
 import { SelectionCompactComponent } from './selection-compact/selection-compact.component';
+import { ShareDataSpecificationDialogComponent } from './share-data-specification-dialog/share-data-specification-dialog.component';
+import { FilterByComponent } from './filter-by/filter-by.component';
 import { VersionSelectorComponent } from './version-selector/version-selector.component';
 
 @NgModule({
@@ -79,6 +81,8 @@ import { VersionSelectorComponent } from './version-selector/version-selector.co
     EditDataSpecificationDialogComponent,
     SelectionExpandedDialogComponent,
     SelectionCompactComponent,
+    ShareDataSpecificationDialogComponent,
+    FilterByComponent,
     VersionSelectorComponent,
   ],
   imports: [CoreModule, SharedModule, QueryBuilderModule],
@@ -102,6 +106,7 @@ import { VersionSelectorComponent } from './version-selector/version-selector.co
     DataQueryRowComponent,
     NumberFormatDirective,
     SelectionCompactComponent,
+    FilterByComponent,
   ],
   providers: [
     {

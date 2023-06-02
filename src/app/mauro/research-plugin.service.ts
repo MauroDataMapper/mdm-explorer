@@ -82,6 +82,16 @@ export class ResearchPluginService {
       .pipe(map((response: MdmIndexResponse<KeyValueIdentifier>) => response.body.items));
   }
 
+  listSharedDataSpecifications(): Observable<DataSpecification[]> {
+    return this.endpoints.pluginResearch
+      .listSharedDataSpecifications()
+      .pipe(
+        map((response: DataModelIndexResponse) =>
+          response.body.items.map(mapToDataSpecification)
+        )
+      );
+  }
+  
   getLatestModelDataSpecifications(): Observable<DataSpecification[]> {
     return this.endpoints.pluginResearch.getLatestModelDataSpecifications().pipe(
       switchMap((response: DataModelIndexResponse): Observable<DataModel[]> => {

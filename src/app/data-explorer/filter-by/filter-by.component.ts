@@ -16,19 +16,25 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-.mdm-template-data-specifications {
-  &__sort-row {
-    display: flex;
-    justify-content: space-between;
-    margin: 1em 0;
+import { Component, Input, EventEmitter, Output } from '@angular/core';
+import { MatSelectChange } from '@angular/material/select';
 
-    .vertically-aligned {
-      display: flex;
-      align-items: center;
+export interface FilterByOption {
+  value: string;
+  displayName: string;
+}
 
-      > * {
-        margin-left: 1em;
-      }
-    }
+@Component({
+  selector: 'mdm-filter-by',
+  templateUrl: './filter-by.component.html',
+  styleUrls: ['./filter-by.component.scss'],
+})
+export class FilterByComponent {
+  @Input() value?: FilterByOption;
+  @Input() options?: FilterByOption[];
+  @Output() valueChange = new EventEmitter<FilterByOption>();
+
+  select(change: MatSelectChange) {
+    this.valueChange.emit(change.value as FilterByOption);
   }
 }
