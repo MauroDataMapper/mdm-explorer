@@ -91,7 +91,7 @@ export class ResearchPluginService {
         )
       );
   }
-  
+
   getLatestModelDataSpecifications(): Observable<DataSpecification[]> {
     return this.endpoints.pluginResearch.getLatestModelDataSpecifications().pipe(
       switchMap((response: DataModelIndexResponse): Observable<DataModel[]> => {

@@ -476,7 +476,7 @@ export class DataModelService {
       .removeReadByAuthenticated(id)
       .pipe(map((response: DataModelDetailResponse) => response.body));
   }
-  
+
   simpleModelVersionTree(
     dataModelId: Uuid,
     branchesOnlyParameter: boolean = false

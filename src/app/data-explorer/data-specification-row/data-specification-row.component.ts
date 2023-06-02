@@ -65,8 +65,8 @@ export class DataSpecificationRowComponent {
   onViewDifferentVersionClick(selected: VersionOption) {
     this.ViewDifferentVersionClick.emit(selected.id);
   }
-  
-    onShareClick() {
+
+  onShareClick() {
     this.shareClick.emit();
   }
 }

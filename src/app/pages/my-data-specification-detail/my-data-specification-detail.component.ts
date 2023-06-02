@@ -121,7 +121,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
   // is the current user or not.
   // A user that is not the owner cannot edit
   currentUserOwnsDataSpec = false;
-  
+
   version = '';
   newVersionButtonDisabled = false;
 
