@@ -45,4 +45,12 @@ $content-background-color: $color-accent-light;
     display: flex;
     justify-content: space-between;
   }
+
+  &__header-actions {
+    .mat-button-disabled {
+      span {
+        color: rgba(240, 240, 240, 0.6);
+      }
+    }
+  }
 }

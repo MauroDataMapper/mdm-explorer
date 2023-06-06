@@ -79,6 +79,7 @@ export class VersionSelectorComponent implements OnInit, OnChanges {
   }
 
   private handleVersionTree(versionTree: SimpleModelVersionTree[]) {
+    this.versionOptions = [];
     if (!this.modelId) {
       return;
     }
@@ -88,8 +89,6 @@ export class VersionSelectorComponent implements OnInit, OnChanges {
       this.versionOptions.push(this.currentVersion);
       return;
     }
-
-    this.versionOptions = [];
 
     versionTree.forEach((versionNode) => {
       const option: VersionOption = {

@@ -203,12 +203,13 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
       )
       .subscribe((dataModel) => {
         // Refresh the current state of the data specification in view
-        this.dataSpecification = mapToDataSpecification(dataModel);
+        this.setDataSpecification(mapToDataSpecification(dataModel));
+        // this.dataSpecification = mapToDataSpecification(dataModel);
         this.broadcastService.dispatch('data-specification-submitted');
 
         this.dialogs.openSuccess({
           heading: 'Data specification submitted',
-          message: `Your data specification "${this.dataSpecification.label}" has been successfully submitted. It will now be reviewed and you will be contacted shortly to discuss further steps.`,
+          message: `Your data specification "${this.dataSpecification?.label}" has been successfully submitted. It will now be reviewed and you will be contacted shortly to discuss further steps.`,
         });
       });
   }
