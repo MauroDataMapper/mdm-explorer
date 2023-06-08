@@ -16,12 +16,12 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+
 .mdm-header-and-content-box__header-actions {
   button:disabled,
   button[disabled] {
     span {
       color: $color-primary-contrast;
-      opacity: 0.2;
     }
   }
 }

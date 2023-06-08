@@ -21,6 +21,7 @@ import { Component, OnInit, Input, EventEmitter, Output, OnChanges } from '@angu
 import { MatSelectChange } from '@angular/material/select';
 import { SimpleModelVersionTree } from '@maurodatamapper/mdm-resources';
 import { DataModelService } from 'src/app/mauro/data-model.service';
+import { VersionTreeSortingService } from '../version-tree-sorting.service';
 
 export interface VersionOption {
   id: string;
@@ -42,7 +43,10 @@ export class VersionSelectorComponent implements OnInit, OnChanges {
   versionOptions: VersionOption[] = [];
   private lastCheckedModelId = '';
 
-  constructor(private dataModels: DataModelService) {}
+  constructor(
+    private dataModels: DataModelService,
+    private versionSorter: VersionTreeSortingService
+  ) {}
 
   ngOnInit(): void {
     this.setDropdownOptions();
@@ -90,7 +94,8 @@ export class VersionSelectorComponent implements OnInit, OnChanges {
       return;
     }
 
-    versionTree.forEach((versionNode) => {
+    const orderedTree = versionTree.sort(this.versionSorter.compareModelVersion());
+    orderedTree.forEach((versionNode) => {
       const option: VersionOption = {
         id: versionNode.id,
         displayName:

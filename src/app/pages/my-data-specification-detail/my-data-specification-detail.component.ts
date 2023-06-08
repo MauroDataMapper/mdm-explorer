@@ -71,6 +71,8 @@ import { ShareDataSpecificationDialogInputOutput } from 'src/app/data-explorer/s
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { SecurityService } from '../../security/security.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
+import { FolderService } from 'src/app/mauro/folder.service';
+import { VersionTreeSortingService } from 'src/app/data-explorer/version-tree-sorting.service';
 export interface RemoveSelectedResponse {
   okCancelDialogResponse: Observable<OkCancelDialogResponse>;
   deletedItems: Observable<DataElementMultipleOperationResult>;
@@ -140,7 +142,9 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     private broadcastService: BroadcastService,
     private dataSchemaService: DataSchemaService,
     private dataModels: DataModelService,
-    private securityService: SecurityService
+    private securityService: SecurityService,
+    private folderService: FolderService,
+    private versionSorter: VersionTreeSortingService
   ) {
     this.sourceTargetIntersections = {
       dataSpecifications: [],
@@ -192,6 +196,23 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
           });
           return this.researchPlugin.submitDataSpecification(this.dataSpecification.id);
         }),
+        switchMap((dataModel) => {
+          // Refresh the current state of the data specification in view
+          return this.setDataSpecification(mapToDataSpecification(dataModel));
+        }),
+        switchMap(([dataSchemas, intersections, versionTree]) => {
+          if (dataSchemas && intersections && versionTree) {
+            this.setDataSchemasIntersectionsAndVersionTree(
+              dataSchemas,
+              intersections,
+              versionTree
+            );
+          }
+
+          // Refresh finalised state in the backend (equivalent to click the refresh)
+          // button in mdm-ui
+          return this.folderService.treeList();
+        }),
         catchError(() => {
           this.toastr.error(
             'There was a problem submitting your data specification. Please try again or contact us for support.',
@@ -201,10 +222,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
         }),
         finalize(() => this.broadcastService.loading({ isLoading: false }))
       )
-      .subscribe((dataModel) => {
-        // Refresh the current state of the data specification in view
-        this.setDataSpecification(mapToDataSpecification(dataModel));
-        // this.dataSpecification = mapToDataSpecification(dataModel);
+      .subscribe(() => {
         this.broadcastService.dispatch('data-specification-submitted');
 
         this.dialogs.openSuccess({
@@ -301,50 +319,67 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
             dataQuery: this.removeDataElementFromQuery(labels, this.dataQueryType),
             cohortQuery: this.removeDataElementFromQuery(labels, this.cohortQueryType),
           });
-        })
+        }),
+        switchMap(
+          ({
+            deletedElements,
+            deletedClasses,
+            deletedSchemas,
+            dataQuery,
+            cohortQuery,
+          }) => {
+            this.refreshQueries(dataQuery, cohortQuery);
+
+            const success = deletedElements.failures.length === 0;
+            let message = `${deletedElements.successes.length} Data element${
+              deletedElements.successes.length === 1 ? '' : 's'
+            } removed from data specification "${this.dataSpecification?.label}".`;
+            if (!success) {
+              message += `\r\n${deletedElements.failures.length} Data element${
+                deletedElements.failures.length === 1 ? '' : 's'
+              } caused an error.`;
+              deletedElements.failures.forEach((item: DataElementOperationResult) =>
+                console.log(item.message)
+              );
+            }
+
+            const classSuccess = deletedClasses.failures.length === 0;
+            if (!classSuccess) {
+              message += `\r\n${deletedClasses.failures.length} Data class${
+                deletedClasses.failures.length === 1 ? '' : 'es'
+              } caused an error.`;
+              deletedClasses.failures.forEach((item: DataElementOperationResult) =>
+                console.log(item.message)
+              );
+            }
+
+            const schemaSuccess = deletedSchemas.failures.length === 0;
+            if (!schemaSuccess) {
+              message += `\r\n${deletedSchemas.failures.length} Data schema${
+                deletedSchemas.failures.length === 1 ? '' : 's'
+              } caused an error.`;
+              deletedSchemas.failures.forEach((item: DataElementOperationResult) =>
+                console.log(item.message)
+              );
+            }
+
+            this.processRemoveDataElementResponse(success, message);
+
+            return this.setDataSpecification(this.dataSpecification);
+          }
+        )
       )
-      .subscribe(
-        ({ deletedElements, deletedClasses, deletedSchemas, dataQuery, cohortQuery }) => {
-          this.refreshQueries(dataQuery, cohortQuery);
-
-          const success = deletedElements.failures.length === 0;
-          let message = `${deletedElements.successes.length} Data element${
-            deletedElements.successes.length === 1 ? '' : 's'
-          } removed from data specification "${this.dataSpecification?.label}".`;
-          if (!success) {
-            message += `\r\n${deletedElements.failures.length} Data element${
-              deletedElements.failures.length === 1 ? '' : 's'
-            } caused an error.`;
-            deletedElements.failures.forEach((item: DataElementOperationResult) =>
-              console.log(item.message)
-            );
-          }
-
-          const classSuccess = deletedClasses.failures.length === 0;
-          if (!classSuccess) {
-            message += `\r\n${deletedClasses.failures.length} Data class${
-              deletedClasses.failures.length === 1 ? '' : 'es'
-            } caused an error.`;
-            deletedClasses.failures.forEach((item: DataElementOperationResult) =>
-              console.log(item.message)
-            );
-          }
-
-          const schemaSuccess = deletedSchemas.failures.length === 0;
-          if (!schemaSuccess) {
-            message += `\r\n${deletedSchemas.failures.length} Data schema${
-              deletedSchemas.failures.length === 1 ? '' : 's'
-            } caused an error.`;
-            deletedSchemas.failures.forEach((item: DataElementOperationResult) =>
-              console.log(item.message)
-            );
-          }
-
-          this.processRemoveDataElementResponse(success, message);
-          this.broadcastService.loading({ isLoading: false });
-          this.setDataSpecification(this.dataSpecification);
+      .subscribe(([dataSchemas, intersections, versionTree]) => {
+        if (dataSchemas && intersections && versionTree) {
+          this.setDataSchemasIntersectionsAndVersionTree(
+            dataSchemas,
+            intersections,
+            versionTree
+          );
         }
-      );
+
+        this.broadcastService.loading({ isLoading: false });
+      });
   }
 
   copyDataSpecification() {
@@ -475,9 +510,23 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
               return EMPTY;
             }
 
+            this.broadcastService.loading({
+              isLoading: true,
+              caption: 'Creating new version...',
+            });
+
             return this.dataModels.createNextVersion(this.dataSpecification);
           }
-        )
+        ),
+        catchError(() => {
+          this.toastr.error(
+            'There was a problem creating a new version of your data specification.' +
+              ' Please try again or contact us for support.',
+            'New version error'
+          );
+          return EMPTY;
+        }),
+        finalize(() => this.broadcastService.loading({ isLoading: false }))
       )
       .subscribe((newVersion?) => {
         this.stateRouter.navigateTo(['/dataSpecifications', newVersion.id]);
@@ -506,6 +555,9 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
           this.state = 'loading';
           return this.dataSpecificationService.get(dataSpecificationId);
         }),
+        switchMap((dataSpecification) => {
+          return this.setDataSpecification(dataSpecification);
+        }),
         catchError((error) => {
           this.toastr.error(`Invalid Data Specification Id. ${error}`);
           this.state = 'idle';
@@ -513,37 +565,14 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
         }),
         finalize(() => (this.state = 'idle'))
       )
-      .subscribe((dataSpecification) => {
-        this.setDataSpecification(dataSpecification);
-        this.initialiseDataSpecificationQueries();
-      });
-  }
-
-  private initialiseDataSpecificationQueries() {
-    if (!this.dataSpecification?.id) {
-      return;
-    }
-
-    this.dataSpecificationService
-      .getQuery(this.dataSpecification.id, this.cohortQueryType)
-      .subscribe((query) => {
-        if (!query) {
-          this.cohortQuery = this.emptyQueryCondition;
-          return;
+      .subscribe(([dataSchemas, intersections, versionTree]) => {
+        if (dataSchemas && intersections && versionTree) {
+          this.setDataSchemasIntersectionsAndVersionTree(
+            dataSchemas,
+            intersections,
+            versionTree
+          );
         }
-
-        this.cohortQuery = query.condition;
-      });
-
-    this.dataSpecificationService
-      .getQuery(this.dataSpecification.id, this.dataQueryType)
-      .subscribe((query) => {
-        if (!query) {
-          this.dataQuery = this.emptyQueryCondition;
-          return;
-        }
-
-        this.dataQuery = query.condition;
       });
   }
 
@@ -582,10 +611,18 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
   /**
    * Methods for loading/reloading data specification data.
    */
-  private setDataSpecification(dataSpecification?: DataSpecification) {
+  private setDataSpecification(
+    dataSpecification?: DataSpecification
+  ): Observable<
+    [
+      DataSchema[]?,
+      DataSpecificationSourceTargetIntersections?,
+      SimpleModelVersionTree[]?
+    ]
+  > {
     this.dataSpecification = dataSpecification;
     if (!this.dataSpecification || !this.dataSpecification.id) {
-      return;
+      return of([]);
     }
     this.state = 'loading';
     const dataSpecId: string = dataSpecification?.id as string;
@@ -593,7 +630,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     const currentUser = this.securityService.getSignedInUser();
 
     if (!currentUser) {
-      return;
+      return of([]);
     }
 
     const currentUserFullName = currentUser.firstName + ' ' + currentUser.lastName;
@@ -605,39 +642,76 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
       this.dataSpecification.author.replace('\\s', '') ===
       currentUserFullName.replace('\\s', '');
 
-    this.dataSchemaService
-      .loadDataSchemas(this.dataSpecification)
-      .pipe(
-        defaultIfEmpty(undefined),
-        switchMap((dataSchemas: DataSchema[] | undefined) => {
-          return forkJoin([
-            of(dataSchemas ?? []),
-            this.loadIntersections(dataSchemas ?? []),
-            this.dataModels.simpleModelVersionTree(dataSpecId, false),
-          ]) as Observable<
-            [
-              DataSchema[],
-              DataSpecificationSourceTargetIntersections,
-              SimpleModelVersionTree[]
-            ]
-          >;
-        }),
-        catchError(() => {
-          return this.loadError();
-        }),
-        finalize(() => (this.state = 'idle'))
-      )
-      .subscribe(([dataSchemas, intersections, versionTree]) => {
-        this.dataSchemas = dataSchemas;
-        this.isEmpty =
-          this.dataSchemaService.reduceDataElementsFromSchemas(this.dataSchemas)
-            .length === 0;
-        this.sourceTargetIntersections = intersections;
+    // Set queries
+    if (!this.dataSpecification?.id) {
+      return of([]);
+    }
 
-        // A newer version already exists
-        this.newVersionButtonDisabled =
-          versionTree.findIndex((node) => node.branch === 'main') >= 0;
+    this.dataSpecificationService
+      .getQuery(this.dataSpecification.id, this.cohortQueryType)
+      .subscribe((query) => {
+        if (!query) {
+          this.cohortQuery = this.emptyQueryCondition;
+        } else {
+          this.cohortQuery = query.condition;
+        }
       });
+
+    this.dataSpecificationService
+      .getQuery(this.dataSpecification.id, this.dataQueryType)
+      .subscribe((query) => {
+        if (!query) {
+          this.dataQuery = this.emptyQueryCondition;
+        } else {
+          this.dataQuery = query.condition;
+        }
+      });
+
+    return this.dataSchemaService.loadDataSchemas(this.dataSpecification).pipe(
+      defaultIfEmpty(undefined),
+      switchMap((dataSchemas: DataSchema[] | undefined) => {
+        return forkJoin([
+          of(dataSchemas ?? []),
+          this.loadIntersections(dataSchemas ?? []),
+          this.dataModels.simpleModelVersionTree(dataSpecId, false),
+        ]) as Observable<
+          [
+            DataSchema[],
+            DataSpecificationSourceTargetIntersections,
+            SimpleModelVersionTree[]
+          ]
+        >;
+      }),
+      catchError(() => {
+        return this.loadError();
+      }),
+      finalize(() => (this.state = 'idle'))
+    );
+    //
+  }
+
+  private setDataSchemasIntersectionsAndVersionTree(
+    dataSchemas: DataSchema[],
+    intersections: DataSpecificationSourceTargetIntersections,
+    versionTree: SimpleModelVersionTree[]
+  ) {
+    this.dataSchemas = dataSchemas;
+    this.isEmpty =
+      this.dataSchemaService.reduceDataElementsFromSchemas(this.dataSchemas).length === 0;
+    this.sourceTargetIntersections = intersections;
+
+    // A newer draft version already exists
+    const newVersionExists = versionTree.findIndex((node) => node.branch === 'main') >= 0;
+
+    // When all versions are submitted, there will be no main version, in that case
+    // If the current version is not the latest version, disable the new version button.
+
+    // Sort order versions, but those are strings of dot separate numbers, so we need sorting function
+    const orderedTree = versionTree.sort(this.versionSorter.compareModelVersion());
+    const currentVersionNotLatest =
+      orderedTree.slice(-1)[0]?.id !== this.dataSpecification?.id;
+
+    this.newVersionButtonDisabled = newVersionExists || currentVersionNotLatest;
   }
 
   // intersections are data elements that are part of the data specification
@@ -669,7 +743,17 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
       this.toastr.success(message, 'Data element removal');
     }
     // Refresh the data specification.
-    this.setDataSpecification(this.dataSpecification);
+    this.setDataSpecification(this.dataSpecification).subscribe(
+      ([dataSchemas, intersections, versionTree]) => {
+        if (dataSchemas && intersections && versionTree) {
+          this.setDataSchemasIntersectionsAndVersionTree(
+            dataSchemas,
+            intersections,
+            versionTree
+          );
+        }
+      }
+    );
   }
 
   private subscribeDataSpecificationChanges() {
