@@ -68,8 +68,10 @@ import {
 } from '../../testing/testing.helpers';
 import { MyDataSpecificationDetailComponent } from './my-data-specification-detail.component';
 import { SecurityService } from 'src/app/security/security.service';
+import { createFolderServiceStub } from 'src/app/testing/stubs/folder.stub';
+import { FolderService } from 'src/app/mauro/folder.service';
 
-describe('MyDataSpecificationsComponent', () => {
+describe('MyDataSpecificationDetailComponent', () => {
   let harness: ComponentHarness<MyDataSpecificationDetailComponent>;
   const dataSpecificationStub = createDataSpecificationServiceStub();
   const dataSchemaStub = createDataSchemaServiceStub();
@@ -80,6 +82,7 @@ describe('MyDataSpecificationsComponent', () => {
   const broadcastStub = createBroadcastServiceStub();
   const explorerStub = createDataExplorerServiceStub();
   const securityStub = createSecurityServiceStub();
+  const folderServiceStub = createFolderServiceStub();
   const dataSpecificationId = '1';
   const activatedRoute: ActivatedRoute = {
     params: of({
@@ -130,6 +133,10 @@ describe('MyDataSpecificationsComponent', () => {
           provide: SecurityService,
           useValue: securityStub,
         },
+        {
+          provide: FolderService,
+          useValue: folderServiceStub,
+        },
       ],
     });
   });
@@ -161,6 +168,10 @@ describe('MyDataSpecificationsComponent', () => {
       modelVersion: '1.0.0',
     };
     return of([simpleModelTree]);
+  });
+
+  folderServiceStub.treeList.mockImplementation(() => {
+    return of([]);
   });
 
   describe('initialisation', () => {
@@ -770,6 +781,9 @@ describe('MyDataSpecificationsComponent', () => {
         ],
       };
 
+      dataSpecificationStub.getQuery
+        .mockReturnValueOnce(of(undefined))
+        .mockReturnValueOnce(of(undefined));
       dataSchemaStub.loadDataSchemas.mockReturnValueOnce(of([dataSchema]));
       dataSchemaStub.reduceDataElementsFromSchemas.mockReturnValueOnce(dataElements);
       dataSpecificationStub.getDataSpecificationIntersections.mockReturnValueOnce(
@@ -826,7 +840,7 @@ describe('MyDataSpecificationsComponent', () => {
 
       // Assert
       expect(harness.component.state).toBe('idle');
-      expect(harness.component.sourceTargetIntersections).toBe(intersections);
+      expect(harness.component.sourceTargetIntersections).toStrictEqual(intersections);
       expect(dataSchemaLoadSchemasSpy).toHaveBeenCalledTimes(0);
       expect(broadcastDispatchSpy).toHaveBeenCalledWith(
         'data-intersections-refreshed',
@@ -857,6 +871,7 @@ describe('MyDataSpecificationsComponent', () => {
       dataSchemaStub.reduceDataElementsFromSchemas.mockReset();
       dataSchemaStub.loadDataSchemas.mockReset();
       dataSpecificationStub.get.mockReset();
+      mockSignedInUser();
 
       // The test below change values from this elements, so we need
       // to reset them before each test to ensure clean state.
@@ -932,6 +947,9 @@ describe('MyDataSpecificationsComponent', () => {
       dataSpecificationStub.getDataSpecificationIntersections.mockReturnValueOnce(
         of(intersections)
       );
+      dataSpecificationStub.getQuery
+        .mockReturnValueOnce(of(undefined))
+        .mockReturnValueOnce(of(undefined));
 
       // Act
       harness.component.ngOnInit();

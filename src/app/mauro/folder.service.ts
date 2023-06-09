@@ -26,6 +26,7 @@ import {
   FolderDetailResponse,
   MdmTreeItemListResponse,
   Securable,
+  TreeItemListQueryParameters,
   Uuid,
   Version,
 } from '@maurodatamapper/mdm-resources';
@@ -50,17 +51,15 @@ export class FolderService {
   }
 
   treeList(): Observable<MdmTreeItem[]> {
-    const options: any = {
-      queryStringParams: {
-        includeDocumentSuperseded: false,
-        includeModelSuperseded: true,
-        includeDeleted: false,
-        noCache: true,
-      },
+    const queryStringParams: TreeItemListQueryParameters = {
+      includeDocumentSuperseded: false,
+      includeModelSuperseded: true,
+      includeDeleted: false,
+      noCache: true,
     };
 
     return this.endpoints.tree
-      .list(ContainerDomainType.Folders, options.queryStringParams)
+      .list(ContainerDomainType.Folders, queryStringParams)
       .pipe(map((response: MdmTreeItemListResponse) => response.body));
   }
 }

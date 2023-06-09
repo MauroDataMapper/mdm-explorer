@@ -275,7 +275,17 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
   // Listens for external update to the data specification and refreshes if so.
   handleDataSpecificationElementsChange(event: DataSpecificationElementAddDeleteEvent) {
     if (event.dataModel?.id === this.dataSpecification?.id) {
-      this.setDataSpecification(this.dataSpecification);
+      this.setDataSpecification(this.dataSpecification).subscribe(
+        ([dataSchemas, intersections, versionTree]) => {
+          if (dataSchemas && intersections && versionTree) {
+            this.setDataSchemasIntersectionsAndVersionTree(
+              dataSchemas,
+              intersections,
+              versionTree
+            );
+          }
+        }
+      );
     } else {
       this.loadIntersections(this.dataSchemas).subscribe((intersections) => {
         this.sourceTargetIntersections = intersections;
@@ -707,6 +717,8 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     // If the current version is not the latest version, disable the new version button.
 
     // Sort order versions, but those are strings of dot separate numbers, so we need sorting function
+    // When a data specification is not submitted the model version is undefined and the sorting
+    // will ignore it. That is ok, since when data spec is not submitted the button will be hidden
     const orderedTree = versionTree.sort(this.versionSorter.compareModelVersion());
     const currentVersionNotLatest =
       orderedTree.slice(-1)[0]?.id !== this.dataSpecification?.id;

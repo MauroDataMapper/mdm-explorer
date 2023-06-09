@@ -94,8 +94,7 @@ export class VersionSelectorComponent implements OnInit, OnChanges {
       return;
     }
 
-    const orderedTree = versionTree.sort(this.versionSorter.compareModelVersion());
-    orderedTree.forEach((versionNode) => {
+    versionTree.forEach((versionNode) => {
       const option: VersionOption = {
         id: versionNode.id,
         displayName:
@@ -109,6 +108,10 @@ export class VersionSelectorComponent implements OnInit, OnChanges {
         this.currentVersion = option;
       }
     });
+
+    this.versionOptions = this.versionOptions.sort(
+      this.versionSorter.compareVersionOptions()
+    );
   }
 
   private getExplorerCustomDisplayName(name: string): string {

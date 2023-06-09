@@ -19,6 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 import {
   ContainerUpdatePayload,
   FolderDetail,
+  MdmTreeItem,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
@@ -28,12 +29,16 @@ export type FolderUpdateFn = (
   payload: ContainerUpdatePayload
 ) => Observable<FolderDetail>;
 
+export type FolderTreeListFn = () => Observable<MdmTreeItem[]>;
+
 export interface FolderServiceStub {
   update: jest.MockedFunction<FolderUpdateFn>;
+  treeList: jest.MockedFunction<FolderTreeListFn>;
 }
 
 export const createFolderServiceStub = (): FolderServiceStub => {
   return {
     update: jest.fn() as jest.MockedFunction<FolderUpdateFn>,
+    treeList: jest.fn() as jest.MockedFunction<FolderTreeListFn>,
   };
 };
