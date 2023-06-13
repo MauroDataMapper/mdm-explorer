@@ -52,10 +52,18 @@ SPDX-License-Identifier: Apache-2.0
         [showShareButton]="
           currentUserOwnsDataSpec && dataSpecification.status === 'submitted'
         "
+        [showNewVersionButton]="
+          currentUserOwnsDataSpec &&
+          dataSpecification.status === 'submitted' &&
+          !newerVersionExists &&
+          currentVersionIsLatest
+        "
         (submitClick)="submitDataSpecification()"
         (copyClick)="copyDataSpecification()"
         (editClick)="editDataSpecification()"
         (shareClick)="shareDataSpecification()"
+        (ViewDifferentVersionClick)="handleViewDifferentVersion($event)"
+        (newVersionClick)="handleNewVersionClick()"
       ></mdm-data-specification-row>
     </div>
 

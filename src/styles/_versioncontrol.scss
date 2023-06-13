@@ -16,24 +16,25 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-@use "@angular/material" as mat;
-@import "ngx-toastr/toastr.css";
+.version_control {
+  display: inline-block;
+  margin-right: 10px;
+  width: 130px;
 
-// Include the common styles for Angular Material. Only required to include this once!
-@include mat.core();
+  .mat-form-field {
+    width: 100%;
+  }
 
-/*
-Themes
-Import more theme SASS files here to make them available to the app
-*/
-@import "styles/themes/active";
-
-@import "styles/base/all";
-@import "styles/resets";
-@import "styles/app";
-@import "styles/layout";
-@import "styles/icons";
-@import "styles/forms";
-@import "styles/home";
-@import "styles/querybuilder";
-@import "styles/versioncontrol";
+  .select-label {
+    color: $color-primary-contrast !important;
+  }
+  .mat-form-field-outline {
+    color: $color-primary-contrast !important;
+  }
+  .mat-select-value {
+    color: $color-primary-contrast !important;
+  }
+  .mat-select-arrow {
+    color: $color-primary-contrast !important;
+  }
+}

@@ -22,11 +22,18 @@ SPDX-License-Identifier: Apache-2.0
       {{ dataSpecification.label }}
     </a>
   </h3>
-  <ng-container header-actions>
+  <ng-container header-actions class="data-specification-row-actions">
+    <mdm-version-selector
+      *ngIf="dataSpecification.id"
+      [modelId]="dataSpecification.id"
+      (valueChange)="onViewDifferentVersionClick($event)"
+      [showVersionOnly]="showVersionOnly"
+    ></mdm-version-selector>
     <button
       *ngIf="showSubmitButton"
       mat-raised-button
       color="primary"
+      aria-label="Submit data specification"
       (click)="onSubmitClick()"
     >
       <span class="fa-solid fa-paper-plane"></span>
@@ -36,6 +43,7 @@ SPDX-License-Identifier: Apache-2.0
       *ngIf="showCopyButton"
       mat-raised-button
       color="primary"
+      aria-label="Copy data specification"
       (click)="onCopyClick()"
     >
       <span class="fa-solid fa-copy"></span>
@@ -45,6 +53,7 @@ SPDX-License-Identifier: Apache-2.0
       *ngIf="showEditButton"
       mat-raised-button
       color="primary"
+      aria-label="Edit data specification"
       (click)="onEditClick()"
     >
       <span class="fa-solid fa-pen-to-square"></span>
@@ -54,10 +63,21 @@ SPDX-License-Identifier: Apache-2.0
       *ngIf="showShareButton"
       mat-raised-button
       color="primary"
+      aria-label="Share data specification"
       (click)="onShareClick()"
     >
       <span class="fa-solid fa-share-nodes"></span>
       Share
+    </button>
+    <button
+      *ngIf="showNewVersionButton"
+      mat-raised-button
+      color="primary"
+      aria-label="Create new version of a data specification"
+      (click)="onNewVersionClick()"
+    >
+      <span class="fa-solid fa-code-branch"></span>
+      New Version
     </button>
   </ng-container>
   <ng-container>

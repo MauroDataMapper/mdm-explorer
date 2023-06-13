@@ -19,7 +19,17 @@ SPDX-License-Identifier: Apache-2.0
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
-import { FolderDetail, FolderDetailResponse, Uuid } from '@maurodatamapper/mdm-resources';
+import {
+  CatalogueItem,
+  ContainerDomainType,
+  FolderDetail,
+  FolderDetailResponse,
+  MdmTreeItemListResponse,
+  Securable,
+  TreeItemListQueryParameters,
+  Uuid,
+  Version,
+} from '@maurodatamapper/mdm-resources';
 import { ContainerUpdatePayload } from '@maurodatamapper/mdm-resources';
 @Injectable({
   providedIn: 'root',
@@ -39,4 +49,40 @@ export class FolderService {
       .update(id, payload)
       .pipe(map((response: FolderDetailResponse) => response.body));
   }
+
+  treeList(): Observable<MdmTreeItem[]> {
+    const queryStringParams: TreeItemListQueryParameters = {
+      includeDocumentSuperseded: false,
+      includeModelSuperseded: true,
+      includeDeleted: false,
+      noCache: true,
+    };
+
+    return this.endpoints.tree
+      .list(ContainerDomainType.Folders, queryStringParams)
+      .pipe(map((response: MdmTreeItemListResponse) => response.body));
+  }
+}
+
+export interface MdmTreeItem extends Required<CatalogueItem>, Securable {
+  [key: string]: any;
+  label?: string;
+  children?: MdmTreeItem[];
+  hasChildFolders?: boolean;
+  deleted?: boolean;
+  finalised?: boolean;
+  type?: string;
+  parentFolder?: string;
+  superseded?: boolean;
+  documentationVersion?: Version;
+  branchName?: string;
+  modelVersion?: Version;
+  modelId?: Uuid;
+  parentId?: Uuid;
+}
+export interface TreeItemListParameters {
+  includeDocumentSuperseded?: boolean;
+  includeModelSupersedd?: boolean;
+  includeDeleted?: boolean;
+  noCache?: boolean;
 }

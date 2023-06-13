@@ -1,4 +1,4 @@
-/*
+<!--
 Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -15,25 +15,24 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
-*/
-@use "@angular/material" as mat;
-@import "ngx-toastr/toastr.css";
+-->
 
-// Include the common styles for Angular Material. Only required to include this once!
-@include mat.core();
+<div class="version_control">
+  <mat-form-field *ngIf="!showVersionOnly" appearance="outline">
+    <mat-label class="select-label">Version</mat-label>
+    <mat-select
+      [value]="currentVersion"
+      [disableOptionCentering]="true"
+      (selectionChange)="select($event)"
+      [disabled]="versionOptions.length <= 1"
+    >
+      <mat-option *ngFor="let option of versionOptions" [value]="option">
+        {{ option.displayName }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
 
-/*
-Themes
-Import more theme SASS files here to make them available to the app
-*/
-@import "styles/themes/active";
-
-@import "styles/base/all";
-@import "styles/resets";
-@import "styles/app";
-@import "styles/layout";
-@import "styles/icons";
-@import "styles/forms";
-@import "styles/home";
-@import "styles/querybuilder";
-@import "styles/versioncontrol";
+  <div *ngIf="showVersionOnly">
+    <span>{{ currentVersion?.displayName }}</span>
+  </div>
+</div>

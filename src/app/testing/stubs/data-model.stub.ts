@@ -30,6 +30,7 @@ import {
   ModelUpdatePayload,
   RequestSettings,
   SearchQueryParameters,
+  SimpleModelVersionTree,
   SourceTargetIntersection,
   SourceTargetIntersectionPayload,
   Uuid,
@@ -96,6 +97,10 @@ export type UpdateDataModelFn = (
   data: ModelUpdatePayload,
   options?: RequestSettings
 ) => Observable<DataModelDetail>;
+export type SimpleModelVersionTreeFn = (
+  dataModelId: Uuid,
+  branchesOnlyParameter?: boolean
+) => Observable<SimpleModelVersionTree[]>;
 
 export interface DataModelServiceStub {
   getDataModelById: jest.MockedFunction<(id: Uuid) => Observable<DataModelDetail>>;
@@ -119,6 +124,7 @@ export interface DataModelServiceStub {
     (modelId: Uuid, targetFolderId: Uuid) => Observable<DataModelDetail>
   >;
   update: jest.MockedFunction<UpdateDataModelFn>;
+  simpleModelVersionTree: jest.MockedFunction<SimpleModelVersionTreeFn>;
 }
 
 export const createDataModelServiceStub = (): DataModelServiceStub => {
@@ -146,5 +152,6 @@ export const createDataModelServiceStub = (): DataModelServiceStub => {
     dataElementToBasic: jest.fn() as jest.MockedFunction<DataModelDataElementToBasicFn>,
     moveToFolder: jest.fn(),
     update: jest.fn() as jest.MockedFunction<UpdateDataModelFn>,
+    simpleModelVersionTree: jest.fn() as jest.MockedFunction<SimpleModelVersionTreeFn>,
   };
 };

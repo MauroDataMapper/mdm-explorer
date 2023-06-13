@@ -30,7 +30,7 @@ export class SdeRestHandler implements ISdeRestHandler {
   get<T>(url: string): any {
     return this.httpClient
       .get<T>(url)
-      .pipe(catchError((error) => this.handleError(error)));
+      .pipe(catchError((error: HttpErrorResponse) => this.handleError(error)));
   }
 
   private handleError(error: HttpErrorResponse) {

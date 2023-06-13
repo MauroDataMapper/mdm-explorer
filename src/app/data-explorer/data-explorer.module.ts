@@ -50,6 +50,7 @@ import { SelectionExpandedDialogComponent } from './selection-expanded-dialog/se
 import { SelectionCompactComponent } from './selection-compact/selection-compact.component';
 import { ShareDataSpecificationDialogComponent } from './share-data-specification-dialog/share-data-specification-dialog.component';
 import { FilterByComponent } from './filter-by/filter-by.component';
+import { VersionSelectorComponent } from './version-selector/version-selector.component';
 
 @NgModule({
   declarations: [
@@ -82,6 +83,7 @@ import { FilterByComponent } from './filter-by/filter-by.component';
     SelectionCompactComponent,
     ShareDataSpecificationDialogComponent,
     FilterByComponent,
+    VersionSelectorComponent,
   ],
   imports: [CoreModule, SharedModule, QueryBuilderModule],
   exports: [

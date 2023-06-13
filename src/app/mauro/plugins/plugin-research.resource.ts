@@ -141,4 +141,17 @@ export class MdmPluginResearchResource extends MdmResource {
     const url = `${this.apiEndpoint}/explorer/sharedDataSpecifications`;
     return this.simpleGet(url, query, options);
   }
+
+  /**
+   * `HTTP GET` - Gets a list of the most recent model
+   * versions for each data specification.
+   *
+   * @returns The result of the `GET` request:
+   *
+   * `200 OK` - will return a list of DataModels
+   */
+  getLatestModelDataSpecifications() {
+    const url = `${this.apiEndpoint}/explorer/getLatestModelDataSpecifications`;
+    return this.simpleGet(url);
+  }
 }
