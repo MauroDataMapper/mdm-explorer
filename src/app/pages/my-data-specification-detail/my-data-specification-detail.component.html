@@ -53,9 +53,11 @@ SPDX-License-Identifier: Apache-2.0
           currentUserOwnsDataSpec && dataSpecification.status === 'submitted'
         "
         [showNewVersionButton]="
-          currentUserOwnsDataSpec && dataSpecification.status === 'submitted'
+          currentUserOwnsDataSpec &&
+          dataSpecification.status === 'submitted' &&
+          !newerVersionExists &&
+          currentVersionIsLatest
         "
-        [disableNewVersionButton]="newVersionButtonDisabled"
         (submitClick)="submitDataSpecification()"
         (copyClick)="copyDataSpecification()"
         (editClick)="editDataSpecification()"

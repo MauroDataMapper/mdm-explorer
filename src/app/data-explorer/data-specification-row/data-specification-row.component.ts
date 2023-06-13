@@ -36,7 +36,6 @@ export class DataSpecificationRowComponent {
   @Input() showEditButton = false;
   @Input() showVersionOnly = false;
   @Input() showNewVersionButton = false;
-  @Input() disableNewVersionButton = false;
   @Input() showShareButton = false;
 
   @Output() submitClick = new EventEmitter<void>();

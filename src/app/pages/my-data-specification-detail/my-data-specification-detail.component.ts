@@ -125,7 +125,9 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
   currentUserOwnsDataSpec = false;
 
   version = '';
-  newVersionButtonDisabled = false;
+
+  newerVersionExists = false;
+  currentVersionIsLatest = false;
 
   /**
    * Signal to attach to subscriptions to trigger when they should be unsubscribed.
@@ -711,7 +713,8 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     this.sourceTargetIntersections = intersections;
 
     // A newer draft version already exists
-    const newVersionExists = versionTree.findIndex((node) => node.branch === 'main') >= 0;
+    this.newerVersionExists =
+      versionTree.findIndex((node) => node.branch === 'main') >= 0;
 
     // When all versions are submitted, there will be no main version, in that case
     // If the current version is not the latest version, disable the new version button.
@@ -720,10 +723,8 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     // When a data specification is not submitted the model version is undefined and the sorting
     // will ignore it. That is ok, since when data spec is not submitted the button will be hidden
     const orderedTree = versionTree.sort(this.versionSorter.compareModelVersion());
-    const currentVersionNotLatest =
-      orderedTree.slice(-1)[0]?.id !== this.dataSpecification?.id;
-
-    this.newVersionButtonDisabled = newVersionExists || currentVersionNotLatest;
+    this.currentVersionIsLatest =
+      orderedTree.slice(-1)[0]?.id === this.dataSpecification?.id;
   }
 
   // intersections are data elements that are part of the data specification
