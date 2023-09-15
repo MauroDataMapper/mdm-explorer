@@ -47,6 +47,7 @@ import { DataSpecificationQueryComponent } from './data-specification-query/data
 import { MyDataSpecificationDetailComponent } from './my-data-specification-detail/my-data-specification-detail.component';
 import { TemplateDataSpecificationsComponent } from './template-data-specifications/template-data-specifications.component';
 import { TemplateDataSpecificationDetailComponent } from './template-data-specification-detail/template-data-specification-detail.component';
+import { SdeMainComponent } from './sde-main/sde-main.component';
 
 @NgModule({
   declarations: [
@@ -74,6 +75,7 @@ import { TemplateDataSpecificationDetailComponent } from './template-data-specif
     MyDataSpecificationDetailComponent,
     TemplateDataSpecificationsComponent,
     TemplateDataSpecificationDetailComponent,
+    SdeMainComponent,
   ],
   imports: [
     CoreModule,

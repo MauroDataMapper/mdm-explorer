@@ -41,6 +41,7 @@ import { ModelPageDirtyGuard } from '../shared/guards/model-page-dirty.guard';
 import { MyDataSpecificationDetailComponent } from './my-data-specification-detail/my-data-specification-detail.component';
 import { TemplateDataSpecificationsComponent } from './template-data-specifications/template-data-specifications.component';
 import { TemplateDataSpecificationDetailComponent } from './template-data-specification-detail/template-data-specification-detail.component';
+import { SdeMainComponent } from './sde-main/sde-main.component';
 
 export const buildStaticContentRoute = (path: string, staticAssetPath: string): Route => {
   return {
@@ -180,6 +181,11 @@ export const routes: Route[] = [
   {
     path: 'templates/:dataSpecificationId',
     component: TemplateDataSpecificationDetailComponent,
+    canActivate: [AuthorizedGuard],
+  },
+  {
+    path: 'sde',
+    component: SdeMainComponent,
     canActivate: [AuthorizedGuard],
   },
 ];
