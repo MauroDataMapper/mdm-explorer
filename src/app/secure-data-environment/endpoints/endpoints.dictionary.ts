@@ -23,4 +23,5 @@ export enum SdeApiEndPoints {
   OrganisationMemberList = '/organisation_member/list?',
   AdminUserGet = '/user/admin/get?',
   ResearchUserGet = '/user/research/get?',
+  Impersonate = '/impersonate/with-token/',
 }

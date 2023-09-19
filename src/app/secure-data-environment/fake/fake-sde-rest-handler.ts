@@ -29,7 +29,17 @@ import { FakeResources } from './fake-resources';
   providedIn: 'root',
 })
 export class FakeSdeRestHandler implements ISdeRestHandler {
-  constructor(private fakeResources: FakeResources) {}
+  constructor(private fakeResources: FakeResources) { }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  post<T>(url: string, body: T): any {
+    throw new Error('Method not implemented.');
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  put<T>(url: string, body: T): any {
+    throw new Error('Method not implemented.');
+  }
 
   get(url: string): any {
     if (url === SdeApiEndPoints.OrganisationList) {

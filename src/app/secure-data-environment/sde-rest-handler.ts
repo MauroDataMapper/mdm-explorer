@@ -25,11 +25,23 @@ import { catchError, throwError } from 'rxjs';
   providedIn: 'root',
 })
 export class SdeRestHandler implements ISdeRestHandler {
-  constructor(private httpClient: HttpClient) {}
+  constructor(private httpClient: HttpClient) { }
 
   get<T>(url: string): any {
     return this.httpClient
       .get<T>(url)
+      .pipe(catchError((error: HttpErrorResponse) => this.handleError(error)));
+  }
+
+  post<T>(url: string, body: T): any {
+    return this.httpClient
+      .post<T>(url, body)
+      .pipe(catchError((error: HttpErrorResponse) => this.handleError(error)));
+  }
+
+  put<T>(url: string, body: T): any {
+    return this.httpClient
+      .put<T>(url, body)
       .pipe(catchError((error: HttpErrorResponse) => this.handleError(error)));
   }
 
