@@ -43,7 +43,7 @@ export interface UserDetails {
   providedIn: 'root',
 })
 export class UserDetailsService {
-  constructor() {}
+  constructor() { }
 
   /**
    * Gets the current user in use, or null if there is no current user.
@@ -66,7 +66,7 @@ export class UserDetailsService {
       dataSpecificationFolder: dataSpecificationFolder
         ? (JSON.parse(dataSpecificationFolder) as FolderDetail)
         : undefined,
-      sdeAuthToken: localStorage.getItem('sdeToken') ?? undefined,
+      sdeAuthToken: localStorage.getItem('sdeAuthToken') ?? undefined,
     };
   }
 
