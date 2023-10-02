@@ -31,6 +31,7 @@ export interface UserDetails {
   role?: string;
   needsToResetPassword?: boolean;
   dataSpecificationFolder?: FolderDetail;
+  sdeAuthToken?: string;
 }
 
 /**
@@ -65,6 +66,7 @@ export class UserDetailsService {
       dataSpecificationFolder: dataSpecificationFolder
         ? (JSON.parse(dataSpecificationFolder) as FolderDetail)
         : undefined,
+      sdeAuthToken: localStorage.getItem('sdeToken') ?? undefined,
     };
   }
 
@@ -86,6 +88,7 @@ export class UserDetailsService {
       'dataSpecificationFolder',
       JSON.stringify(user.dataSpecificationFolder)
     );
+    localStorage.setItem('sdeAuthToken', user.sdeAuthToken ?? '');
   }
 
   /**
@@ -100,5 +103,6 @@ export class UserDetailsService {
     localStorage.removeItem('role');
     localStorage.removeItem('needsToResetPassword');
     localStorage.removeItem('dataSpecificationFolder');
+    localStorage.removeItem('sdeAuthToken');
   }
 }

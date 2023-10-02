@@ -25,6 +25,7 @@ import {
   filter,
   finalize,
   map,
+  Observable,
   Subject,
   switchMap,
   takeUntil,
@@ -41,6 +42,7 @@ import { FooterLink } from './shared/footer/footer.component';
 import { HeaderImageLink, HeaderLink } from './shared/header/header.component';
 import { UserIdleService } from './external/user-idle.service';
 import { ThemeService } from './shared/theme.service';
+import { AuthToken } from './security/security.types';
 
 @Component({
   selector: 'mdm-root',
@@ -109,17 +111,18 @@ export class AppComponent implements OnInit, OnDestroy {
       onlySignedIn: true,
     },
     {
-      label: 'SDE',
-      routerLink: '/sde',
-      onlySignedIn: true,
-    },    
-    {
       label: 'Help',
       routerLink: '/help',
       arrow: 'angle-down',
       menuLinks: this.helpMenuLinks,
     },
   ];
+
+  sdeHeaderLink: HeaderLink = {
+    label: 'SDE',
+    routerLink: '/sde',
+    onlySignedIn: true,
+  };
 
   headerRightLinks: HeaderImageLink[] = [
     {
@@ -210,8 +213,11 @@ export class AppComponent implements OnInit, OnDestroy {
       .onUserSignedIn()
       .pipe(
         takeUntil(this.unsubscribe$),
-        switchMap((userSignedIn) => {
-          this.setupSignedInUser(userSignedIn);
+        switchMap((signedInUser: UserDetails) => {
+          return this.attemptToSignInAndSetupSdeUser(signedInUser);
+        }),
+        switchMap((signedInUser) => {
+          this.setupSignedInUser(signedInUser);
           return this.getUnsentDataSpecificationCount();
         }),
         map(
@@ -219,7 +225,7 @@ export class AppComponent implements OnInit, OnDestroy {
             (this.unsentDataSpecificationsCount = unsentDataSpecificationsCount)
         )
       )
-      .subscribe(() => {});
+      .subscribe(() => { });
 
     this.broadcast
       .on('sign-out-user')
@@ -278,7 +284,24 @@ export class AppComponent implements OnInit, OnDestroy {
           this.stateRouter.navigateToKnownPath('');
         })
       )
-      .subscribe(() => {});
+      .subscribe(() => { });
+  }
+
+  private attemptToSignInAndSetupSdeUser(user: UserDetails): Observable<UserDetails> {
+    return this.security.signInToSde(user.email).pipe(
+      map((sdeAuthToken: AuthToken) => {
+        // Save to userDetails. If empty, no token was returned.
+        user.sdeAuthToken = sdeAuthToken.token;
+        this.userDetails.set(user);
+
+        // If a non-empty token, allow user to see SDE section.
+        if (sdeAuthToken.token?.length > 0) {
+          this.headerLinks.push(this.sdeHeaderLink);
+        }
+
+        return user;
+      })
+    );
   }
 
   private subscribeHttpErrorEvent(event: BroadcastEvent, state: string) {
@@ -328,7 +351,7 @@ export class AppComponent implements OnInit, OnDestroy {
             (this.unsentDataSpecificationsCount = unsentDataSpecificationsCount)
         )
       )
-      .subscribe(() => {});
+      .subscribe(() => { });
 
     this.broadcast
       .on('data-specification-submitted')
@@ -340,7 +363,7 @@ export class AppComponent implements OnInit, OnDestroy {
             (this.unsentDataSpecificationsCount = unsentDataSpecificationsCount)
         )
       )
-      .subscribe(() => {});
+      .subscribe(() => { });
   }
 
   private setupIdleTimer() {
@@ -348,7 +371,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.userIdle
       .onTimerStart()
       .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(() => {});
+      .subscribe(() => { });
 
     let lastCheck = new Date();
     this.userIdle
