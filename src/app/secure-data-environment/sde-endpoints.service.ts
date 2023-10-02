@@ -17,7 +17,6 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { FakeSdeRestHandler } from './fake/fake-sde-rest-handler';
 import { OrganisationEndpoints } from './endpoints/organisation.endpoints';
 import { SdeRestHandler } from './sde-rest-handler';
 import { UserEndpoints } from './endpoints/user.endpoints';
@@ -26,11 +25,8 @@ import { UserEndpoints } from './endpoints/user.endpoints';
   providedIn: 'root',
 })
 export class SdeEndpointsService {
-  organisation = new OrganisationEndpoints(this.fakeSdeRestHandler);
-  user = new UserEndpoints(this.fakeSdeRestHandler);
+  organisation = new OrganisationEndpoints(this.sdeRestHandler);
+  user = new UserEndpoints(this.sdeRestHandler);
 
-  constructor(
-    private sdeRestHandler: SdeRestHandler,
-    private fakeSdeRestHandler: FakeSdeRestHandler
-  ) {}
+  constructor(private sdeRestHandler: SdeRestHandler) {}
 }
