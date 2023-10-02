@@ -1,3 +1,4 @@
+import { Uuid } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
 import { UserDetails } from 'src/app/security/user-details.service';
 
@@ -22,6 +23,9 @@ SPDX-License-Identifier: Apache-2.0
 export type SendResetPasswordLinkFn = (email: string) => Observable<boolean>;
 export type SendResetPasswordLinkMockedFn = jest.MockedFunction<SendResetPasswordLinkFn>;
 
+export type GetSdeAuthTokenFn = (email: string) => Observable<Uuid>;
+export type GetSdeAuthTokenMockedFn = jest.MockedFunction<GetSdeAuthTokenFn>;
+
 export type SecurityIsSignedInFn = () => boolean;
 export type SecurityIsSignedInMockedFn = jest.MockedFunction<SecurityIsSignedInFn>;
 
@@ -35,6 +39,7 @@ export interface SecurityServiceStub {
   getSignedInUser: SecurityGetSignedInUserMockedFn;
   sendResetPasswordLink: SendResetPasswordLinkMockedFn;
   getOpenIdConnectProviders: jest.Mock;
+  getSdeAuthToken: GetSdeAuthTokenMockedFn;
 }
 
 export const createSecurityServiceStub = (): SecurityServiceStub => {
@@ -44,5 +49,6 @@ export const createSecurityServiceStub = (): SecurityServiceStub => {
     getSignedInUser: jest.fn() as SecurityGetSignedInUserMockedFn,
     sendResetPasswordLink: jest.fn() as SendResetPasswordLinkMockedFn,
     getOpenIdConnectProviders: jest.fn(),
+    getSdeAuthToken: jest.fn() as GetSdeAuthTokenMockedFn,
   };
 };
