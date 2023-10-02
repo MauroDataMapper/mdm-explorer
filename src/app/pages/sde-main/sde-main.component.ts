@@ -17,16 +17,18 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
+import { UserDetailsService } from 'src/app/security/user-details.service';
 
 @Component({
   templateUrl: './sde-main.component.html',
-  styleUrls: ['./sde-main.component.scss']
+  styleUrls: ['./sde-main.component.scss'],
 })
 export class SdeMainComponent implements OnInit {
+  isLoggedInToSde: boolean;
 
-  constructor() { }
-
-  ngOnInit(): void {
+  constructor(private user: UserDetailsService) {
+    this.isLoggedInToSde = !!this.user.get()?.sdeAuthToken;
   }
 
+  ngOnInit(): void { }
 }

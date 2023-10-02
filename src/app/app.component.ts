@@ -116,13 +116,12 @@ export class AppComponent implements OnInit, OnDestroy {
       arrow: 'angle-down',
       menuLinks: this.helpMenuLinks,
     },
+    {
+      label: 'SDE',
+      routerLink: '/sde',
+      onlySignedIn: true,
+    },
   ];
-
-  sdeHeaderLink: HeaderLink = {
-    label: 'SDE',
-    routerLink: '/sde',
-    onlySignedIn: true,
-  };
 
   headerRightLinks: HeaderImageLink[] = [
     {
@@ -293,11 +292,6 @@ export class AppComponent implements OnInit, OnDestroy {
         // Save to userDetails. If empty, no token was returned.
         user.sdeAuthToken = sdeAuthToken.token;
         this.userDetails.set(user);
-
-        // If a non-empty token, allow user to see SDE section.
-        if (sdeAuthToken.token?.length > 0) {
-          this.headerLinks.push(this.sdeHeaderLink);
-        }
 
         return user;
       })
