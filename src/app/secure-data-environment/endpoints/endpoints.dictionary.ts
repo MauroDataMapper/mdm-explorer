@@ -17,10 +17,13 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 export enum SdeApiEndPoints {
+  // Organisation endpoints
   OrganisationList = '/organisation/list',
   OrganisationGet = '/organisation/get?',
   OrganisationMemberGet = '/organisation_member/get?',
   OrganisationMemberList = '/organisation_member/list?',
+
+  // User endpoints
   AdminUserGet = '/user/admin/get?',
   ResearchUserGet = '/user/research/get?',
   Impersonate = '/impersonate/with-token/',

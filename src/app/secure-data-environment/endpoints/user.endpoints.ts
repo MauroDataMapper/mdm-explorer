@@ -17,13 +17,18 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Observable } from 'rxjs';
-import { ISdeRestHandler } from '../sde-rest-handler.interface';
 import { Uuid } from '@maurodatamapper/mdm-resources';
 import { SdeApiEndPoints } from './endpoints.dictionary';
 import { AdminUser, ResearchUser } from '../resources/users.resources';
+import { Injectable } from '@angular/core';
+import { SdeRestHandler } from '../sde-rest-handler';
+import { AuthToken } from 'src/app/security/security.types';
 
+@Injectable({
+  providedIn: 'root',
+})
 export class UserEndpoints {
-  constructor(private sdeRestHandler: ISdeRestHandler) {}
+  constructor(private sdeRestHandler: SdeRestHandler) { }
 
   getAdminUser(userId: Uuid): Observable<AdminUser> {
     return this.sdeRestHandler.get<AdminUser>(`${SdeApiEndPoints.AdminUserGet}${userId}`);
@@ -33,5 +38,10 @@ export class UserEndpoints {
     return this.sdeRestHandler.get<ResearchUser>(
       `${SdeApiEndPoints.ResearchUserGet}${userId}`
     );
+  }
+
+  impersonate(email: string): Observable<AuthToken> {
+    const body = { email };
+    return this.sdeRestHandler.post<AuthToken>(`${SdeApiEndPoints.Impersonate}`, body);
   }
 }
