@@ -16,21 +16,45 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { ISdeRestHandler } from './sde-rest-handler.interface';
 import { Injectable } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
+import { UserDetailsService } from '../security/user-details.service';
+import { environment } from 'src/environments/environment';
+
+export type HttpRequestDetail = {
+  url: string;
+  headers: HttpHeaders;
+};
 
 @Injectable({
   providedIn: 'root',
 })
 export class SdeRestHandler implements ISdeRestHandler {
-  constructor(private httpClient: HttpClient) {}
+  constructor(private httpClient: HttpClient, private user: UserDetailsService) { }
 
   get<T>(url: string): any {
+    const httpRequestDetail = this.getHttpRequestDetail(url);
     return this.httpClient
-      .get<T>(url)
+      .get<T>(httpRequestDetail.url, { headers: httpRequestDetail.headers })
       .pipe(catchError((error: HttpErrorResponse) => this.handleError(error)));
+  }
+
+  post<T>(url: string, body: any): any {
+    const httpRequestDetail = this.getHttpRequestDetail(url);
+
+    return this.httpClient
+      .post<T>(httpRequestDetail.url, body, { headers: httpRequestDetail.headers })
+      .pipe(catchError((error) => this.handleError(error as HttpErrorResponse)));
+  }
+
+  put<T>(url: string, body: any): any {
+    const httpRequestDetail = this.getHttpRequestDetail(url);
+
+    return this.httpClient
+      .put<T>(httpRequestDetail.url, body, { headers: httpRequestDetail.headers })
+      .pipe(catchError((error) => this.handleError(error as HttpErrorResponse)));
   }
 
   private handleError(error: HttpErrorResponse) {
@@ -38,11 +62,20 @@ export class SdeRestHandler implements ISdeRestHandler {
       // A client-side or network error occurred. Handle it accordingly.
       console.error('An error occurred:', error.error);
     } else {
-      // The backend returned an unsuccessful response code.
-      // The response body may contain clues as to what went wrong.
+      // The backends returned an unsuccessful response code.
+      // The response body may contain clues as to what went wrong
       console.error(`Backend returned code ${error.status}, body was: `, error.error);
     }
-    // Return an observable with a user-facing error message.
-    return throwError(() => new Error('Communication with the API failure'));
+
+    return throwError(() => error);
+  }
+
+  private getHttpRequestDetail(url: string): HttpRequestDetail {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${this.user.get()?.sdeAuthToken ?? ''}`,
+    });
+
+    return { url: environment.sdeResearcherEndpoint + url, headers };
   }
 }

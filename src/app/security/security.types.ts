@@ -31,7 +31,7 @@ export enum SignInErrorType {
  */
 export class LoginError extends MdmHttpError {
   /**
-   * The type of sign-in error that occurered, represented by the `SignInErrorType` enum constants.
+   * The type of sign-in error that occurred, represented by the `SignInErrorType` enum constants.
    */
   type: SignInErrorType;
 
@@ -64,6 +64,9 @@ export class AuthenticatedSessionError extends MdmHttpError {
       response.status === 500 && response.message === 'Session has been invalidated';
   }
 }
+
+export type AuthToken = { token: string };
+export const EMPTY_AUTH_TOKEN: AuthToken = { token: '' };
 
 export interface OpenIdConnectConfiguration {
   redirectUrl: string;

@@ -42,6 +42,8 @@ import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { MdmHttpError } from '../mauro/mauro.types';
 import {
   AuthenticatedSessionError,
+  AuthToken,
+  EMPTY_AUTH_TOKEN,
   LoginError,
   OpenIdConnectConfiguration,
   OpenIdConnectSession,
@@ -49,6 +51,7 @@ import {
 } from './security.types';
 import { UserDetails, UserDetailsService } from './user-details.service';
 import { ResearchPluginService } from '../mauro/research-plugin.service';
+import { SdeUserService } from '../secure-data-environment/services/sde-user.service';
 
 /**
  * Manages security operations on Mauro user interfaces.
@@ -62,12 +65,13 @@ import { ResearchPluginService } from '../mauro/research-plugin.service';
 export class SecurityService {
   constructor(
     private endpoints: MdmEndpointsService,
+    private sdeUserService: SdeUserService,
     private userDetails: UserDetailsService,
     @Optional()
     @Inject(OPENID_CONNECT_CONFIG)
     private openIdConnectConfig: OpenIdConnectConfiguration,
     private researchPlugin: ResearchPluginService
-  ) {}
+  ) { }
 
   /**
    * Log in a user to the Mauro system, and get or create a folder for their data specifications.
@@ -99,11 +103,22 @@ export class SecurityService {
         return this.researchPlugin.userFolder().pipe(
           map((folder: FolderDetail) => {
             user.dataSpecificationFolder = folder;
-
             this.userDetails.set(user);
+
             return user;
           })
         );
+      })
+    );
+  }
+
+  signInToSde(email: string): Observable<AuthToken> {
+    return this.sdeUserService.getSdeAuthToken(email).pipe(
+      catchError((error: HttpErrorResponse): Observable<AuthToken> => {
+        console.log(`Status: ${error.status} | Message: ${error.message}`);
+
+        // If error, then print the error and set the token to the empty string.
+        return of(EMPTY_AUTH_TOKEN);
       })
     );
   }
@@ -119,7 +134,7 @@ export class SecurityService {
       catchError((error: HttpErrorResponse) => {
         return throwError(() => new MdmHttpError(error));
       }),
-      map(() => {}),
+      map(() => { }),
       finalize(() => this.userDetails.clear())
     );
   }

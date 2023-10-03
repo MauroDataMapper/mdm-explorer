@@ -1,3 +1,6 @@
+import { Uuid } from '@maurodatamapper/mdm-resources';
+import { Observable } from 'rxjs';
+
 /*
 Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
@@ -16,15 +19,15 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-export enum SdeApiEndPoints {
-  // Organisation endpoints
-  OrganisationList = '/organisation/list',
-  OrganisationGet = '/organisation/get?',
-  OrganisationMemberGet = '/organisation_member/get?',
-  OrganisationMemberList = '/organisation_member/list?',
+export type GetSdeAuthTokenFn = (email: string) => Observable<Uuid>;
+export type GetSdeAuthTokenMockedFn = jest.MockedFunction<GetSdeAuthTokenFn>;
 
-  // User endpoints
-  AdminUserGet = '/user/admin/get?',
-  ResearchUserGet = '/user/research/get?',
-  Impersonate = '/impersonate/with-token/',
+export interface SdeUserServiceStub {
+  getSdeAuthToken: GetSdeAuthTokenMockedFn;
 }
+
+export const createSdeUserServiceStub = (): SdeUserServiceStub => {
+  return {
+    getSdeAuthToken: jest.fn() as GetSdeAuthTokenMockedFn,
+  };
+};

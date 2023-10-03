@@ -18,4 +18,6 @@ SPDX-License-Identifier: Apache-2.0
 */
 export interface ISdeRestHandler {
   get<T>(url: string): any; // eslint-disable-line @typescript-eslint/no-unused-vars
+  post<T>(url: string, body: any): any; // eslint-disable-line @typescript-eslint/no-unused-vars
+  put<T>(url: string, body: any): any; // eslint-disable-line @typescript-eslint/no-unused-vars
 }

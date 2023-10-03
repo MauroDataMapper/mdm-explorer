@@ -16,15 +16,19 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-export enum SdeApiEndPoints {
-  // Organisation endpoints
-  OrganisationList = '/organisation/list',
-  OrganisationGet = '/organisation/get?',
-  OrganisationMemberGet = '/organisation_member/get?',
-  OrganisationMemberList = '/organisation_member/list?',
+import { TestBed } from '@angular/core/testing';
 
-  // User endpoints
-  AdminUserGet = '/user/admin/get?',
-  ResearchUserGet = '/user/research/get?',
-  Impersonate = '/impersonate/with-token/',
-}
+import { SdeOrganisationService } from './sde-organisation.service';
+
+describe('SdeOrganisationService', () => {
+  let service: SdeOrganisationService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(SdeOrganisationService);
+  });
+
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+});

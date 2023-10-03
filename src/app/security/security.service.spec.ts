@@ -31,6 +31,8 @@ import {
 } from '../testing/stubs/mdm-endpoints.stub';
 import { setupTestModuleForService } from '../testing/testing.helpers';
 import {
+  AuthToken,
+  EMPTY_AUTH_TOKEN,
   OpenIdConnectConfiguration,
   OpenIdConnectSession,
   OPENID_CONNECT_CONFIG,
@@ -38,6 +40,8 @@ import {
 import { SecurityService } from './security.service';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { UserDetails, UserDetailsService } from './user-details.service';
+import { createSdeUserServiceStub } from '../testing/stubs/sde/sde-user.stub';
+import { SdeUserService } from '../secure-data-environment/services/sde-user.service';
 
 interface UserDetailsServiceStub {
   set: jest.Mock;
@@ -47,6 +51,7 @@ interface UserDetailsServiceStub {
 describe('SecurityService', () => {
   let service: SecurityService;
   let endpointsStub: MdmEndpointsServiceStub;
+  const sdeUserServiceStub = createSdeUserServiceStub();
 
   const userDetailsStub: UserDetailsServiceStub = {
     set: jest.fn(),
@@ -69,6 +74,10 @@ describe('SecurityService', () => {
         {
           provide: UserDetailsService,
           useValue: userDetailsStub,
+        },
+        {
+          provide: SdeUserService,
+          useValue: sdeUserServiceStub,
         },
         {
           provide: OPENID_CONNECT_CONFIG,
@@ -185,6 +194,34 @@ describe('SecurityService', () => {
       expect(actual$).toSatisfyOnFlush(() => {
         expect(userDetailsStub.clear).toHaveBeenCalled();
       });
+    });
+  });
+
+  describe('sign in to sde', () => {
+    it('should sign in to sde', () => {
+      const emailAssociatedWithSDE = 'test@email.com';
+      const expected = { token: 'valid-token' } as AuthToken;
+
+      sdeUserServiceStub.getSdeAuthToken.mockReturnValueOnce(
+        cold('--a|', { a: expected })
+      );
+
+      const actual$ = service.signInToSde(emailAssociatedWithSDE);
+
+      expect(actual$).toBeObservable(cold('--a|', { a: expected }));
+    });
+
+    it('should return empty token if sde sign in fails', () => {
+      const emailNOTAssociatedWithSDE = 'test@email.com';
+      const expected = EMPTY_AUTH_TOKEN;
+
+      sdeUserServiceStub.getSdeAuthToken.mockReturnValueOnce(
+        cold('--#', new HttpErrorResponse({}))
+      );
+
+      const actual$ = service.signInToSde(emailNOTAssociatedWithSDE);
+
+      expect(actual$).toBeObservable(cold('--(a|)', { a: expected }));
     });
   });
 

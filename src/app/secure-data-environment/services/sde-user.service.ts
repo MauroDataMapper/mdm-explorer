@@ -16,15 +16,26 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-export enum SdeApiEndPoints {
-  // Organisation endpoints
-  OrganisationList = '/organisation/list',
-  OrganisationGet = '/organisation/get?',
-  OrganisationMemberGet = '/organisation_member/get?',
-  OrganisationMemberList = '/organisation_member/list?',
+import { Injectable } from '@angular/core';
+import { map, Observable } from 'rxjs';
+import { AuthToken } from 'src/app/security/security.types';
+import { UserEndpoints } from '../endpoints/user.endpoints';
 
-  // User endpoints
-  AdminUserGet = '/user/admin/get?',
-  ResearchUserGet = '/user/research/get?',
-  Impersonate = '/impersonate/with-token/',
+@Injectable({
+  providedIn: 'root',
+})
+export class SdeUserService {
+  constructor(private userEndpoints: UserEndpoints) { }
+
+  /**
+   * Attempt to log the current user into the SDE.
+   *
+   */
+  getSdeAuthToken(email: string): Observable<AuthToken> {
+    return this.userEndpoints.impersonate(email).pipe(
+      map((sdeAuthToken: AuthToken) => {
+        return sdeAuthToken;
+      })
+    );
+  }
 }
