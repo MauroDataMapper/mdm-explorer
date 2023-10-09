@@ -18,6 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 interface EnvironmentVariables {
   mauroCoreEndpoint: string;
+  sdeResearcherEndpoint: string;
 }
 
 declare let $ENV: EnvironmentVariables;

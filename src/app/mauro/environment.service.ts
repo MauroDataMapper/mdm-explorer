@@ -25,4 +25,5 @@ import { environment } from 'src/environments/environment.prod';
 })
 export class EnvironmentService {
   readonly mauroCoreEndpoint?: string = environment?.mauroCoreEndpoint;
+  readonly sdeResearcherEndpoint?: string = environment?.sdeResearcherEndpoint;
 }

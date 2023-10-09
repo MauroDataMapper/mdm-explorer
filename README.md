@@ -155,11 +155,13 @@ The enviroment service will take a set enviroment key and expose a class with an
 
 Current enviroment keys:
 `MDM_EXPLORER_API_ENDPOINT` - the api web root
+`SDE_RESEARCHER_API_ENDPOINT` - the Secure Data Environment (SDE) api web root
 
 Example setup for a unix terminal:
 
 Set the api root in the enviroment
 `expose MDM_EXPLORER_API_ENDPOINT="MyTestEndpoint`
+`expose SDE_RESEARCHER_API_ENDPOINT="MySDETestEndpoint`
 
 create a distribution with the custom api set 
 `npm run dist`

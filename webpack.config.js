@@ -44,6 +44,7 @@ module.exports = {
     new webpack.DefinePlugin({
       $ENV: {
         mauroCoreEndpoint: JSON.stringify(process.env["MDM_EXPLORER_API_ENDPOINT"]),
+        sdeResearcherEndpoint: JSON.stringify(process.env["SDE_RESEARCHER_API_ENDPOINT"]),
       },
     }),
   ],
