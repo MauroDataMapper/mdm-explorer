@@ -1,3 +1,5 @@
+import { Observable } from 'rxjs';
+
 /*
 Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
@@ -17,7 +19,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 export interface ISdeRestHandler {
-  get<T>(url: string): any; // eslint-disable-line @typescript-eslint/no-unused-vars
-  post<T>(url: string, body: any): any; // eslint-disable-line @typescript-eslint/no-unused-vars
-  put<T>(url: string, body: any): any; // eslint-disable-line @typescript-eslint/no-unused-vars
+  get<T>(url: string): Observable<T>;
+  post<T>(url: string, body: any): Observable<T>;
+  put<T>(url: string, body: any): Observable<T>;
 }

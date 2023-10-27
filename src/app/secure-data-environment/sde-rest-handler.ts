@@ -19,41 +19,44 @@ SPDX-License-Identifier: Apache-2.0
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { ISdeRestHandler } from './sde-rest-handler.interface';
 import { Injectable } from '@angular/core';
-import { catchError, throwError } from 'rxjs';
+import { Observable, catchError, throwError } from 'rxjs';
 import { UserDetailsService } from '../security/user-details.service';
 import { environment } from 'src/environments/environment';
 
 export type HttpRequestDetail = {
   url: string;
-  headers: HttpHeaders;
+  httpRequestOptions: {
+    headers: HttpHeaders;
+    withCredentials: boolean;
+  };
 };
 
 @Injectable({
   providedIn: 'root',
 })
 export class SdeRestHandler implements ISdeRestHandler {
-  constructor(private httpClient: HttpClient, private user: UserDetailsService) { }
+  constructor(private httpClient: HttpClient, private user: UserDetailsService) {}
 
-  get<T>(url: string): any {
+  get<T>(url: string): Observable<T> {
     const httpRequestDetail = this.getHttpRequestDetail(url);
     return this.httpClient
-      .get<T>(httpRequestDetail.url, { headers: httpRequestDetail.headers })
+      .get<T>(httpRequestDetail.url, httpRequestDetail.httpRequestOptions)
       .pipe(catchError((error: HttpErrorResponse) => this.handleError(error)));
   }
 
-  post<T>(url: string, body: any): any {
+  post<T>(url: string, body: any): Observable<T> {
     const httpRequestDetail = this.getHttpRequestDetail(url);
 
     return this.httpClient
-      .post<T>(httpRequestDetail.url, body, { headers: httpRequestDetail.headers })
+      .post<T>(httpRequestDetail.url, body, httpRequestDetail.httpRequestOptions)
       .pipe(catchError((error) => this.handleError(error as HttpErrorResponse)));
   }
 
-  put<T>(url: string, body: any): any {
+  put<T>(url: string, body: any): Observable<T> {
     const httpRequestDetail = this.getHttpRequestDetail(url);
 
     return this.httpClient
-      .put<T>(httpRequestDetail.url, body, { headers: httpRequestDetail.headers })
+      .put<T>(httpRequestDetail.url, body, httpRequestDetail.httpRequestOptions)
       .pipe(catchError((error) => this.handleError(error as HttpErrorResponse)));
   }
 
@@ -71,11 +74,19 @@ export class SdeRestHandler implements ISdeRestHandler {
   }
 
   private getHttpRequestDetail(url: string): HttpRequestDetail {
+    // TODO: change this impersonation method
+    const bearerToken = this.user.get()?.sdeAuthToken;
+
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${this.user.get()?.sdeAuthToken ?? ''}`,
+      ...(bearerToken && {
+        Authorization: `Bearer ${bearerToken}`,
+      }),
     });
 
-    return { url: environment.sdeResearcherEndpoint + url, headers };
+    return {
+      url: environment.sdeResearcherEndpoint + url,
+      httpRequestOptions: { headers, withCredentials: true },
+    };
   }
 }

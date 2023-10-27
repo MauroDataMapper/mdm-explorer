@@ -20,6 +20,8 @@ import { Component, OnInit } from '@angular/core';
 import { catchError, EMPTY, finalize } from 'rxjs';
 import { SecurityService } from '../security.service';
 import { LoginError, SignInErrorType } from '../security.types';
+import { BroadcastService } from 'src/app/core/broadcast.service';
+import { StateRouterService } from 'src/app/core/state-router.service';
 
 /**
  * Component to authorize a user session authenticated via an OpenID Connect provider.
@@ -47,10 +49,14 @@ export class OpenIdConnectAuthorizeComponent implements OnInit {
   authorizing = true;
   errorMessage = '';
 
-  constructor(private security: SecurityService) {}
+  constructor(
+    private security: SecurityService,
+    private broadcast: BroadcastService,
+    private stateRouter: StateRouterService
+  ) {}
 
   ngOnInit(): void {
-    if (this.verifyLoggedIn()) {
+    if (this.security.isSignedIn()) {
       return;
     }
 
@@ -100,20 +106,9 @@ export class OpenIdConnectAuthorizeComponent implements OnInit {
         }),
         finalize(() => (this.authorizing = false))
       )
-      .subscribe(() => {
-        this.verifyLoggedIn();
+      .subscribe((user) => {
+        this.broadcast.userSignedIn(user);
+        this.stateRouter.navigateToKnownPath('/dashboard');
       });
-  }
-
-  private verifyLoggedIn() {
-    if (this.security.isSignedIn()) {
-      // this.messages.loggedInChanged(true);
-      // this.broadcast.userLoggedIn({
-      //   nextRoute: 'appContainer.mainApp.twoSidePanel.catalogue.allDataModel'
-      // });
-      return true;
-    }
-
-    return false;
   }
 }

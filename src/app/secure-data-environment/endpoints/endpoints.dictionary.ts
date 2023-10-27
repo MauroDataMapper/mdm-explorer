@@ -17,6 +17,10 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 export enum SdeApiEndPoints {
+  // Authentication
+  AuthenticationListOpenIdConnectProviders = '/authentication/oauth/providers',
+  AuthenticationUserDetailsGet = '/authentication/user/details',
+
   // Organisation endpoints
   OrganisationList = '/organisation/list',
   OrganisationGet = '/organisation/get?',

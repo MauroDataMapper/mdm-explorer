@@ -16,10 +16,24 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<div class="container">
+<div class="container sde-main">
   <div class="main-row hero">
     <h1>Secure Data Environment</h1>
-    <mat-tab-group *ngIf="isLoggedInToSde">
+    <mdm-sde-sign-in *ngIf="!signedIn"></mdm-sde-sign-in>
+    <section *ngIf="signedIn && researchUser" class="form-section">
+      <div class="sub-heading-with-actions">
+        <h2>{{ researchUser.preferredName }} ({{ researchUser.email }})</h2>
+        <form
+          #signOutForm
+          method="post"
+          action="{{ signOutUrl }}"
+          (ngSubmit)="signOutForm.submit()"
+        >
+          <button type="submit" mat-flat-button color="primary">Sign out</button>
+        </form>
+      </div>
+    </section>
+    <mat-tab-group *ngIf="signedIn">
       <mat-tab label="Requests">
         <p>SDE Requests Subpage to go here</p>
       </mat-tab>
@@ -30,15 +44,5 @@ SPDX-License-Identifier: Apache-2.0
         <p>SDE Projects Subpage to go here</p>
       </mat-tab>
     </mat-tab-group>
-    <mat-card *ngIf="!isLoggedInToSde">
-      <mat-card-content>
-        <p>You are not logged in to the Secure Data Environment.</p>
-        <p>
-          Please
-          <a href="https://thamesvalleyandsurreyhealthandcaredata.nhs.uk/">look here</a>
-          for more information about the SDE.
-        </p>
-      </mat-card-content>
-    </mat-card>
   </div>
 </div>

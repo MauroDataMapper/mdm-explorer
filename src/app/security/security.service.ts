@@ -52,6 +52,7 @@ import {
 import { UserDetails, UserDetailsService } from './user-details.service';
 import { ResearchPluginService } from '../mauro/research-plugin.service';
 import { SdeUserService } from '../secure-data-environment/services/sde-user.service';
+import { SdeResearchUser } from '../secure-data-environment/resources/authentication.resources';
 
 /**
  * Manages security operations on Mauro user interfaces.
@@ -71,7 +72,7 @@ export class SecurityService {
     @Inject(OPENID_CONNECT_CONFIG)
     private openIdConnectConfig: OpenIdConnectConfiguration,
     private researchPlugin: ResearchPluginService
-  ) { }
+  ) {}
 
   /**
    * Log in a user to the Mauro system, and get or create a folder for their data specifications.
@@ -134,8 +135,11 @@ export class SecurityService {
       catchError((error: HttpErrorResponse) => {
         return throwError(() => new MdmHttpError(error));
       }),
-      map(() => { }),
-      finalize(() => this.userDetails.clear())
+      map(() => {}),
+      finalize(() => {
+        this.userDetails.clear();
+        this.userDetails.clearSdeResearchUser();
+      })
     );
   }
 
@@ -177,6 +181,10 @@ export class SecurityService {
     return !!this.userDetails.get();
   }
 
+  isSignedInToSde(): boolean {
+    return !!this.userDetails.getSdeResearchUser();
+  }
+
   /**
    * Gets the details of the current signed in user, or will get null if no user is signed in.
    *
@@ -184,6 +192,10 @@ export class SecurityService {
    */
   getSignedInUser(): UserDetails | null {
     return this.userDetails.get();
+  }
+
+  getSignedInSdeResearchUser(): SdeResearchUser | null {
+    return this.userDetails.getSdeResearchUser();
   }
 
   /**
@@ -200,6 +212,7 @@ export class SecurityService {
       catchError((error: AuthenticatedSessionError) => {
         if (error.invalidated) {
           this.userDetails.clear();
+          this.userDetails.clearSdeResearchUser();
           return of(true);
         }
 
@@ -208,6 +221,7 @@ export class SecurityService {
       tap((authenticated) => {
         if (!authenticated) {
           this.userDetails.clear();
+          this.userDetails.clearSdeResearchUser();
         }
       })
     );

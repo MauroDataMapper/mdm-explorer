@@ -18,6 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
 import { FolderDetail } from '@maurodatamapper/mdm-resources';
+import { SdeResearchUser } from '../secure-data-environment/resources/authentication.resources';
 
 /**
  * Represents the common details of a signed in user.
@@ -43,7 +44,7 @@ export interface UserDetails {
   providedIn: 'root',
 })
 export class UserDetailsService {
-  constructor() { }
+  constructor() {}
 
   /**
    * Gets the current user in use, or null if there is no current user.
@@ -104,5 +105,31 @@ export class UserDetailsService {
     localStorage.removeItem('needsToResetPassword');
     localStorage.removeItem('dataSpecificationFolder');
     localStorage.removeItem('sdeAuthToken');
+  }
+
+  setSdeResearchUser(user: SdeResearchUser) {
+    localStorage.setItem('sdeUserId', user.id);
+    localStorage.setItem('sdeEmail', user.email);
+    localStorage.setItem('sdePreferredName', user.preferredName ?? '');
+  }
+
+  getSdeResearchUser(): SdeResearchUser | null {
+    const userEmail = localStorage.getItem('sdeEmail');
+    if (!userEmail || userEmail.length === 0) {
+      return null;
+    }
+
+    return {
+      id: localStorage.getItem('sdeUserId') ?? '',
+      email: localStorage.getItem('sdeEmail') ?? '',
+      preferredName: localStorage.getItem('sdePreferredName') ?? '',
+      isDeleted: false,
+    };
+  }
+
+  clearSdeResearchUser() {
+    localStorage.removeItem('sdeUserId');
+    localStorage.removeItem('sdeEmail');
+    localStorage.removeItem('sdePreferredName');
   }
 }

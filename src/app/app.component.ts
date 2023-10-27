@@ -212,9 +212,6 @@ export class AppComponent implements OnInit, OnDestroy {
       .onUserSignedIn()
       .pipe(
         takeUntil(this.unsubscribe$),
-        switchMap((signedInUser: UserDetails) => {
-          return this.attemptToSignInAndSetupSdeUser(signedInUser);
-        }),
         switchMap((signedInUser) => {
           this.setupSignedInUser(signedInUser);
           return this.getUnsentDataSpecificationCount();
@@ -224,7 +221,7 @@ export class AppComponent implements OnInit, OnDestroy {
             (this.unsentDataSpecificationsCount = unsentDataSpecificationsCount)
         )
       )
-      .subscribe(() => { });
+      .subscribe(() => {});
 
     this.broadcast
       .on('sign-out-user')
@@ -283,19 +280,7 @@ export class AppComponent implements OnInit, OnDestroy {
           this.stateRouter.navigateToKnownPath('');
         })
       )
-      .subscribe(() => { });
-  }
-
-  private attemptToSignInAndSetupSdeUser(user: UserDetails): Observable<UserDetails> {
-    return this.security.signInToSde(user.email).pipe(
-      map((sdeAuthToken: AuthToken) => {
-        // Save to userDetails. If empty, no token was returned.
-        user.sdeAuthToken = sdeAuthToken.token;
-        this.userDetails.set(user);
-
-        return user;
-      })
-    );
+      .subscribe(() => {});
   }
 
   private subscribeHttpErrorEvent(event: BroadcastEvent, state: string) {
@@ -345,7 +330,7 @@ export class AppComponent implements OnInit, OnDestroy {
             (this.unsentDataSpecificationsCount = unsentDataSpecificationsCount)
         )
       )
-      .subscribe(() => { });
+      .subscribe(() => {});
 
     this.broadcast
       .on('data-specification-submitted')
@@ -357,7 +342,7 @@ export class AppComponent implements OnInit, OnDestroy {
             (this.unsentDataSpecificationsCount = unsentDataSpecificationsCount)
         )
       )
-      .subscribe(() => { });
+      .subscribe(() => {});
   }
 
   private setupIdleTimer() {
@@ -365,7 +350,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.userIdle
       .onTimerStart()
       .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(() => { });
+      .subscribe(() => {});
 
     let lastCheck = new Date();
     this.userIdle

@@ -20,11 +20,13 @@ import { Injectable } from '@angular/core';
 import { OrganisationEndpoints } from './endpoints/organisation.endpoints';
 import { SdeRestHandler } from './sde-rest-handler';
 import { UserEndpoints } from './endpoints/user.endpoints';
+import { AuthenticationEndpoints } from './endpoints/authentication.endpoints';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SdeEndpointsService {
+  authentication = new AuthenticationEndpoints(this.sdeRestHandler);
   organisation = new OrganisationEndpoints(this.sdeRestHandler);
   user = new UserEndpoints(this.sdeRestHandler);
 
