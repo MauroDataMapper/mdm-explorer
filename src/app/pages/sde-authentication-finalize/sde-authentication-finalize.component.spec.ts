@@ -94,7 +94,7 @@ describe('SdeAuthenticationFinalizeComponent', () => {
 
     it('should get user details then redirect', () => {
       const userDetailsSpy = jest.spyOn(userDetailsStub, 'setSdeResearchUser');
-      const stateRouterSpy = jest.spyOn(stateRouterStub, 'navigateTo');
+      const stateRouterSpy = jest.spyOn(stateRouterStub, 'navigateToKnownPath');
 
       const expectedUser: SdeResearchUser = {
         id: '1234',
@@ -107,7 +107,7 @@ describe('SdeAuthenticationFinalizeComponent', () => {
       harness.component.ngOnInit();
 
       expect(userDetailsSpy).toHaveBeenCalledWith(expectedUser);
-      expect(stateRouterSpy).toHaveBeenCalledWith(['/sde']);
+      expect(stateRouterSpy).toHaveBeenCalledWith('/dashboard');
     });
   });
 
@@ -135,14 +135,14 @@ describe('SdeAuthenticationFinalizeComponent', () => {
 
     it('should clear user details and redirect', fakeAsync(() => {
       const userDetailsSpy = jest.spyOn(userDetailsStub, 'clearSdeResearchUser');
-      const stateRouterSpy = jest.spyOn(stateRouterStub, 'navigateTo');
+      const stateRouterSpy = jest.spyOn(stateRouterStub, 'navigateToKnownPath');
 
       harness.component.ngOnInit();
 
       tick(2000);
 
       expect(userDetailsSpy).toHaveBeenCalled();
-      expect(stateRouterSpy).toHaveBeenCalledWith(['/sde']);
+      expect(stateRouterSpy).toHaveBeenCalledWith('/home');
     }));
   });
 });

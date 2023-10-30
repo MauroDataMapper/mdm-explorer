@@ -101,7 +101,7 @@ export class SdeAuthenticationFinalizeComponent implements OnInit {
         }
 
         this.userDetails.setSdeResearchUser(user);
-        this.stateRouter.navigateTo(['/dashboard']);
+        this.stateRouter.navigateToKnownPath('/dashboard');
       })
     );
   }
