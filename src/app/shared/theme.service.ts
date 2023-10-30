@@ -215,6 +215,8 @@ export interface ThemeImageUrl {
   providedIn: 'root',
 })
 export class ThemeService {
+  allCss = {};
+
   constructor(private researchPlugin: ResearchPluginService) {}
 
   private static multiply(rgb1: ColorFormats.RGBA, rgb2: ColorFormats.RGBA) {
@@ -222,6 +224,16 @@ export class ThemeService {
     rgb1.g = Math.floor((rgb1.g * rgb2.g) / 255);
     rgb1.r = Math.floor((rgb1.r * rgb2.r) / 255);
     return tinycolor(`rgb ${rgb1.r} ${rgb1.g} ${rgb1.b}`);
+  }
+
+  getColor(key: string): string {
+    const typedKey = key as keyof typeof this.allCss;
+    console.log(`allCss.length = ${Object.keys(this.allCss)}`);
+    return this.allCss[typedKey];
+  }
+
+  applyAllCss() {
+    // TODO - Delete this from sde-resources interface
   }
 
   /**
@@ -469,6 +481,10 @@ export class ThemeService {
    * Apply a set of values to the DOM using CSS custom properties.
    */
   private applyCss(values: { [prop: string]: string | number }) {
+    this.allCss = {
+      ...this.allCss,
+      ...values,
+    };
     Object.entries(values).forEach(([property, value]) => {
       if (value) {
         document.documentElement.style.setProperty(property, value.toString());

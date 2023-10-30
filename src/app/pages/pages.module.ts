@@ -48,6 +48,7 @@ import { MyDataSpecificationDetailComponent } from './my-data-specification-deta
 import { TemplateDataSpecificationsComponent } from './template-data-specifications/template-data-specifications.component';
 import { TemplateDataSpecificationDetailComponent } from './template-data-specification-detail/template-data-specification-detail.component';
 import { SdeMainComponent } from './sde-main/sde-main.component';
+import { SecureDataEnvironmentModule } from '../secure-data-environment/secure-data-environment.module';
 
 @NgModule({
   declarations: [
@@ -80,6 +81,7 @@ import { SdeMainComponent } from './sde-main/sde-main.component';
   imports: [
     CoreModule,
     SharedModule,
+    SecureDataEnvironmentModule,
     SecurityModule,
     DataExplorerModule,
     NgxJsonViewerModule,

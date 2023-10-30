@@ -37,6 +37,22 @@ import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-
 import { AutocompleteSelectComponent } from './autocomplete-select/autocomplete-select.component';
 import { BackLinkComponent } from './back-link/back-link.component';
 import { HeaderAndContentBoxComponent } from './header-and-content-box/header-and-content-box.component';
+import {
+  DataViewModePipe,
+  DialogIsEditablePipe,
+  DataDialogComponent,
+  DataTableControlComponent,
+  ChangeRequestStatusComponent,
+  ListComponent,
+  RequestButtonLabelPipe,
+  IsDatePipe,
+  IsRequestStatusPipe,
+  IsStringPipe,
+  SetDisplayValuePipe,
+  RequestsListComponent,
+  RequestUpdatesListComponent,
+  RequestDialogComponent,
+} from 'sde-resources';
 
 @NgModule({
   declarations: [
@@ -77,6 +93,24 @@ import { HeaderAndContentBoxComponent } from './header-and-content-box/header-an
     AutocompleteSelectComponent,
     BackLinkComponent,
     HeaderAndContentBoxComponent,
+    DataViewModePipe,
+    DialogIsEditablePipe,
+    DataDialogComponent,
+    DataTableControlComponent,
+    ChangeRequestStatusComponent,
+    ListComponent,
+    RequestButtonLabelPipe,
+    SetDisplayValuePipe,
+    RequestsListComponent,
+    RequestUpdatesListComponent,
+    RequestDialogComponent,
+  ],
+  providers: [
+    IsRequestStatusPipe,
+    IsDatePipe,
+    IsStringPipe,
+    SetDisplayValuePipe,
+    RequestButtonLabelPipe,
   ],
 })
 export class SharedModule {}
