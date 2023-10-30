@@ -16,26 +16,32 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SdeMainComponent } from './sde-main.component';
+import {
+  ComponentHarness,
+  setupTestModuleForComponent,
+} from 'src/app/testing/testing.helpers';
+import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
+import { SecurityService } from 'src/app/security/security.service';
 
 describe('SdeMainComponent', () => {
-  let component: SdeMainComponent;
-  let fixture: ComponentFixture<SdeMainComponent>;
+  let harness: ComponentHarness<SdeMainComponent>;
+
+  const securityStub = createSecurityServiceStub();
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ SdeMainComponent ]
-    })
-    .compileComponents();
-
-    fixture = TestBed.createComponent(SdeMainComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    harness = await setupTestModuleForComponent(SdeMainComponent, {
+      providers: [
+        {
+          provide: SecurityService,
+          useValue: securityStub,
+        },
+      ],
+    });
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(harness.isComponentCreated).toBeTruthy();
   });
 });

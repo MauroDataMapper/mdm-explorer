@@ -46,6 +46,7 @@ import { SdeUserService } from '../secure-data-environment/services/sde-user.ser
 interface UserDetailsServiceStub {
   set: jest.Mock;
   clear: jest.Mock;
+  clearSdeResearchUser: jest.Mock;
 }
 
 describe('SecurityService', () => {
@@ -56,6 +57,7 @@ describe('SecurityService', () => {
   const userDetailsStub: UserDetailsServiceStub = {
     set: jest.fn(),
     clear: jest.fn(),
+    clearSdeResearchUser: jest.fn(),
   };
 
   const openIdConnectConfig: OpenIdConnectConfiguration = {

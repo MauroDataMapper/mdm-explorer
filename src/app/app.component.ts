@@ -25,7 +25,6 @@ import {
   filter,
   finalize,
   map,
-  Observable,
   Subject,
   switchMap,
   takeUntil,
@@ -42,7 +41,6 @@ import { FooterLink } from './shared/footer/footer.component';
 import { HeaderImageLink, HeaderLink } from './shared/header/header.component';
 import { UserIdleService } from './external/user-idle.service';
 import { ThemeService } from './shared/theme.service';
-import { AuthToken } from './security/security.types';
 
 @Component({
   selector: 'mdm-root',

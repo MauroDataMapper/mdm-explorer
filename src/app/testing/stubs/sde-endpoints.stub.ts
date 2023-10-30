@@ -16,23 +16,17 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-$openid-connect-icon-width: 24px;
+import {
+  SdeAuthenticationEndpointsStub,
+  createSdeAuthenticationEndpointsStub,
+} from './sde/sde-authentication-endpoints.stub';
 
-.mdm-sde-sign-in {
-  &__providers {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-
-    button {
-      padding: 8px 0;
-      margin: 8px 0;
-    }
-  }
-
-  &__provider-icon {
-    width: $openid-connect-icon-width;
-    height: $openid-connect-icon-width;
-    margin: 4px 8px;
-  }
+export interface SdeEndpointsStub {
+  authentication: SdeAuthenticationEndpointsStub;
 }
+
+export const createSdeEndpointsStub = (): SdeEndpointsStub => {
+  return {
+    authentication: createSdeAuthenticationEndpointsStub(),
+  };
+};
