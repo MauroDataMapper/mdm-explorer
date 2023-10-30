@@ -101,7 +101,7 @@ export class SdeAuthenticationFinalizeComponent implements OnInit {
         }
 
         this.userDetails.setSdeResearchUser(user);
-        this.stateRouter.navigateTo(['/sde']);
+        this.stateRouter.navigateTo(['/dashboard']);
       })
     );
   }
@@ -120,7 +120,7 @@ export class SdeAuthenticationFinalizeComponent implements OnInit {
       delay(1000),
       tap(() => {
         this.userDetails.clearSdeResearchUser();
-        this.stateRouter.navigateTo(['/sde']);
+        this.stateRouter.navigateToKnownPath('/home');
       })
     );
   }

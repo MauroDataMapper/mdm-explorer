@@ -22,6 +22,7 @@ import { SecurityService } from '../security.service';
 import { LoginError, SignInErrorType } from '../security.types';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
+import { SdeEndpointsService } from 'src/app/secure-data-environment/sde-endpoints.service';
 
 /**
  * Component to authorize a user session authenticated via an OpenID Connect provider.
@@ -52,7 +53,8 @@ export class OpenIdConnectAuthorizeComponent implements OnInit {
   constructor(
     private security: SecurityService,
     private broadcast: BroadcastService,
-    private stateRouter: StateRouterService
+    private stateRouter: StateRouterService,
+    private sdeEndpoints: SdeEndpointsService
   ) {}
 
   ngOnInit(): void {
@@ -81,6 +83,10 @@ export class OpenIdConnectAuthorizeComponent implements OnInit {
       throw new Error('Cannot retrieve OpenID Connect provider identifier.');
     }
 
+    // Was an SDE OpenID Provider tracked as well? If so, this will be auto signed-in
+    // straight after this
+    const sdeProviderName = localStorage.getItem('sdeOpenIdConnectProviderName');
+
     this.security
       .authorizeOpenIdConnectSession({
         providerId,
@@ -107,8 +113,21 @@ export class OpenIdConnectAuthorizeComponent implements OnInit {
         finalize(() => (this.authorizing = false))
       )
       .subscribe((user) => {
-        this.broadcast.userSignedIn(user);
-        this.stateRouter.navigateToKnownPath('/dashboard');
+        if (!sdeProviderName) {
+          this.broadcast.userSignedIn(user);
+          this.stateRouter.navigateToKnownPath('/dashboard');
+          return;
+        }
+
+        // Auto single sign-on to SDE. There is a big assumption that the OpenID Connect
+        // provider that just succeeded for Mauro is configured exactly the same as for this
+        // SDE provider, so that the sign-in is seamless
+        const redirectUrl =
+          this.sdeEndpoints.authentication.getOpenIdConnectAuthorizationUrl(
+            sdeProviderName
+          );
+
+        window.open(redirectUrl.toString(), '_self');
       });
   }
 }

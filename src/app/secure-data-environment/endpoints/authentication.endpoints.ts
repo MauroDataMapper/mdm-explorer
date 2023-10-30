@@ -42,9 +42,9 @@ export class AuthenticationEndpoints {
       );
   }
 
-  getOpenIdConnectAuthorizationUrl(provider: SdeOpenIdConnectProvider): URL {
+  getOpenIdConnectAuthorizationUrl(providerName: string): URL {
     // Micronaut backend provides a standard URL route to redirect to
-    return new URL(environment.sdeResearcherEndpoint + `/oauth/login/${provider.name}`);
+    return new URL(environment.sdeResearcherEndpoint + `/oauth/login/${providerName}`);
   }
 
   getSignOutUrl(): string {

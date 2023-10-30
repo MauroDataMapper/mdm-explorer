@@ -37,8 +37,9 @@ export class SdeSignInComponent implements OnInit {
   }
 
   authenticateWithOpenIdConnect(provider: SdeOpenIdConnectProvider) {
-    const redirectUrl =
-      this.sdeEndpoints.authentication.getOpenIdConnectAuthorizationUrl(provider);
+    const redirectUrl = this.sdeEndpoints.authentication.getOpenIdConnectAuthorizationUrl(
+      provider.name
+    );
     window.open(redirectUrl.toString(), '_self');
   }
 }

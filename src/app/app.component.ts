@@ -17,7 +17,14 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import {
   catchError,
@@ -41,6 +48,7 @@ import { FooterLink } from './shared/footer/footer.component';
 import { HeaderImageLink, HeaderLink } from './shared/header/header.component';
 import { UserIdleService } from './external/user-idle.service';
 import { ThemeService } from './shared/theme.service';
+import { SdeEndpointsService } from './secure-data-environment/sde-endpoints.service';
 
 @Component({
   selector: 'mdm-root',
@@ -48,6 +56,12 @@ import { ThemeService } from './shared/theme.service';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
+  /**
+   * Hidden HTML form element to manually trigger a sign out of the SDE.
+   * This is automatically handled in the broadcast 'sign-out-user' event.
+   */
+  @ViewChild('sdeSignOutForm') sdeSignOutForm?: ElementRef<HTMLFormElement>;
+
   title = 'mdm-explorer';
 
   isLoading = false;
@@ -168,6 +182,8 @@ export class AppComponent implements OnInit, OnDestroy {
     },
   ];
 
+  sdeSignOutUrl?: string;
+
   /**
    * Signal to attach to subscriptions to trigger when they should be unsubscribed.
    */
@@ -182,7 +198,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private toastr: ToastrService,
     private userIdle: UserIdleService,
     private error: ErrorService,
-    private themes: ThemeService
+    private themes: ThemeService,
+    private sdeEndpoints: SdeEndpointsService
   ) {
     // Load the theme into the DOM as the first thing to do
     this.themes.loadTheme().subscribe((theme) => {
@@ -197,6 +214,8 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.sdeSignOutUrl = this.sdeEndpoints.authentication.getSignOutUrl();
+
     this.broadcast
       .on<HttpErrorResponse>('http-application-offline')
       .pipe(takeUntil(this.unsubscribe$))
@@ -278,7 +297,13 @@ export class AppComponent implements OnInit, OnDestroy {
           this.stateRouter.navigateToKnownPath('');
         })
       )
-      .subscribe(() => {});
+      .subscribe(() => {
+        if (this.sdeSignOutForm) {
+          // If SDE sign out form is available, trigger a form POST request
+          // This will force the app to sign out of the SDE too automatically
+          this.sdeSignOutForm.nativeElement.submit();
+        }
+      });
   }
 
   private subscribeHttpErrorEvent(event: BroadcastEvent, state: string) {

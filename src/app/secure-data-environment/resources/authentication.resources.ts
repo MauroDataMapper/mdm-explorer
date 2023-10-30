@@ -27,7 +27,7 @@ export interface SdeOpenIdConnectProvider {
 export const sdeOpenIdConnectProviders: SdeOpenIdConnectProvider[] = [
   {
     name: 'microsoft-azure',
-    label: 'Microsoft',
+    label: 'Microsoft Azure',
     imageUrl:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/256px-Microsoft_logo.svg.png',
   },

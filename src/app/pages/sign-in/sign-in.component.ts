@@ -19,10 +19,11 @@ SPDX-License-Identifier: Apache-2.0
 import { Component, OnInit } from '@angular/core';
 import { PublicOpenIdConnectProvider } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, finalize } from 'rxjs';
+import { catchError, EMPTY, finalize, map } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { FeaturesService } from 'src/app/core/features.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
+import { SdeEndpointsService } from 'src/app/secure-data-environment/sde-endpoints.service';
 import { SecurityService } from 'src/app/security/security.service';
 import { LoginError, SignInErrorType } from 'src/app/security/security.types';
 import { SignInClickEvent } from 'src/app/security/sign-in-form/sign-in-form.component';
@@ -42,7 +43,8 @@ export class SignInComponent implements OnInit {
     private broadcast: BroadcastService,
     private features: FeaturesService,
     private stateRouter: StateRouterService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private sdeEndpoints: SdeEndpointsService
   ) {}
 
   ngOnInit(): void {
@@ -80,10 +82,29 @@ export class SignInComponent implements OnInit {
       return;
     }
 
-    // Track which provider was used, will be needed once redirected back to Mauro
-    localStorage.setItem('openIdConnectProviderId', provider.id);
-    const redirectUrl = this.security.getOpenIdConnectAuthorizationUrl(provider);
-    window.open(redirectUrl.toString(), '_self');
+    // Try to synchronise the Mauro and SDE OpenID Connect providers to sequence in order
+    this.sdeEndpoints.authentication
+      .listOpenIdConnectProviders()
+      .pipe(
+        catchError(() => []),
+        map((sdeProviders) =>
+          // Big assumption - that Mauro and SDE have OpenID Connect providers are configured
+          // with _exactly_ the same labels! If not, the SDE single sign-on won't automatically
+          // trigger after Mauro single sign-on
+          sdeProviders.find((sdeProvider) => sdeProvider.label === provider.label)
+        )
+      )
+      .subscribe((sdeProvider) => {
+        if (sdeProvider) {
+          // Track the SDE provider name, to be used at the end of Mauro SSO (see open-id-connect-authorize component)
+          localStorage.setItem('sdeOpenIdConnectProviderName', sdeProvider.name);
+        }
+
+        // Track which provider was used, will be needed once redirected back to Mauro
+        localStorage.setItem('openIdConnectProviderId', provider.id);
+        const redirectUrl = this.security.getOpenIdConnectAuthorizationUrl(provider);
+        window.open(redirectUrl.toString(), '_self');
+      });
   }
 
   private loadOpenIdConnectProviders() {

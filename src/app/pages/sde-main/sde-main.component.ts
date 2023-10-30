@@ -17,8 +17,6 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
-import { SdeResearchUser } from 'src/app/secure-data-environment/resources/authentication.resources';
-import { SdeEndpointsService } from 'src/app/secure-data-environment/sde-endpoints.service';
 import { SecurityService } from 'src/app/security/security.service';
 
 @Component({
@@ -27,17 +25,10 @@ import { SecurityService } from 'src/app/security/security.service';
 })
 export class SdeMainComponent implements OnInit {
   signedIn = false;
-  researchUser: SdeResearchUser | null = null;
-  signOutUrl = '';
 
-  constructor(
-    private security: SecurityService,
-    private sdeEndpoints: SdeEndpointsService
-  ) {}
+  constructor(private security: SecurityService) {}
 
   ngOnInit(): void {
     this.signedIn = this.security.isSignedInToSde();
-    this.researchUser = this.security.getSignedInSdeResearchUser();
-    this.signOutUrl = this.sdeEndpoints.authentication.getSignOutUrl();
   }
 }
