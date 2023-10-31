@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ISdeSecurity, SignedInUserDetails } from 'sde-resources';
+import { ISdeSecurity, SignedInUserDetails } from '@maurodatamapper/sde-resources';
 import { SecurityService } from 'src/app/security/security.service';
 
 @Injectable({ providedIn: 'root' })

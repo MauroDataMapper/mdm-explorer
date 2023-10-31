@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SdeResourcesConfig, SdeResourcesMode } from 'sde-resources';
+import { SdeResourcesConfig, SdeResourcesMode } from '@maurodatamapper/sde-resources';
 import { SdeSecurity } from './sde-security';
 import { SdeColors } from './sde-colors';
 import { environment } from 'src/environments/environment';

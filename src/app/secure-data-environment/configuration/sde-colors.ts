@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ISdeColors } from 'sde-resources';
+import { ISdeColors } from '@maurodatamapper/sde-resources';
 import { ThemeService } from 'src/app/shared/theme.service';
-
 
 @Injectable({ providedIn: 'root' })
 export class SdeColors implements ISdeColors {

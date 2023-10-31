@@ -52,7 +52,7 @@ import {
   RequestsListComponent,
   RequestUpdatesListComponent,
   RequestDialogComponent,
-} from 'sde-resources';
+} from '@maurodatamapper/sde-resources';
 
 @NgModule({
   declarations: [
