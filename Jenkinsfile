@@ -49,7 +49,7 @@ pipeline {
       steps {
         nvm('') {
           sh 'npm ci'
-          sh 'npm link @maurodatamapper/mdm-resources'
+          sh 'npm link @maurodatamapper/mdm-resources @maurodatamapper/sde-resources'
           sh 'symlinked names'
         }
       }
