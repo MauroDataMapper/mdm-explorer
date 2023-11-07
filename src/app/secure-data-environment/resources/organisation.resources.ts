@@ -18,6 +18,8 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Uuid } from '@maurodatamapper/mdm-resources';
 
+export const EMPTY_ORG: Organisation = {} as Organisation;
+
 export interface Organisation {
   id: Uuid;
   createdAt: Date;

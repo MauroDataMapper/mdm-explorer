@@ -16,16 +16,24 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { TestBed } from '@angular/core/testing';
-
+import { createSdeOrganisationEndpointsStub } from 'src/app/testing/stubs/sde/sde-organisation-endpoints.stub';
+import { setupTestModuleForService } from 'src/app/testing/testing.helpers';
+import { OrganisationEndpoints } from '../endpoints/organisation.endpoints';
 import { SdeOrganisationService } from './sde-organisation.service';
 
 describe('SdeOrganisationService', () => {
   let service: SdeOrganisationService;
+  const organisationEndpointsStub = createSdeOrganisationEndpointsStub();
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(SdeOrganisationService);
+    service = setupTestModuleForService(SdeOrganisationService, {
+      providers: [
+        {
+          provide: OrganisationEndpoints,
+          useValue: organisationEndpointsStub,
+        },
+      ],
+    });
   });
 
   it('should be created', () => {

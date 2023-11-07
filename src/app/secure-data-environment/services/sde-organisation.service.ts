@@ -17,11 +17,52 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
+import {
+  Organisation,
+  OrganisationEndpoints,
+  OrganisationMemberDTO,
+  UserOrganisationDto,
+  Uuid,
+} from '@maurodatamapper/sde-resources';
+import { BehaviorSubject, Observable, of, tap } from 'rxjs';
 
+// Responsible for retrieving, caching, and updating organisation data.
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SdeOrganisationService {
+  private _organisationData = new BehaviorSubject<Organisation[]>([]);
 
-  constructor() { }
+  constructor(private organisationEndpoints: OrganisationEndpoints) {}
+
+  get organisationData$(): Observable<Organisation[]> {
+    return this._organisationData.asObservable();
+  }
+
+  get organisationData(): Organisation[] {
+    return this._organisationData.value;
+  }
+
+  get(organisationId: Uuid): Observable<Organisation> {
+    const cachedOrg = this.organisationData.find((org) => org.id === organisationId);
+    return cachedOrg ? of(cachedOrg) : this.fetch(organisationId);
+  }
+
+  fetch(organisationId: Uuid): Observable<Organisation> {
+    return this.organisationEndpoints.getOrganisation(organisationId).pipe(
+      tap((org: Organisation) => {
+        this._organisationData.next([...this.organisationData, org]);
+      })
+    );
+  }
+
+  getUsersOrganisations(): Observable<UserOrganisationDto[]> {
+    return this.organisationEndpoints.listResearchersOrganisationMemberships();
+  }
+
+  getApproversForOrganisation(organisationId: Uuid): Observable<OrganisationMemberDTO[]> {
+    return this.organisationEndpoints.listOrganisationApproversAndProjectPeers(
+      organisationId
+    );
+  }
 }

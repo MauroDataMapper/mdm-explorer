@@ -1,0 +1,15 @@
+@import "../../../../styles/base/all";
+
+.mat-card {
+  background-color: $color-accent-light;
+  color: $color-accent-contrast;
+  display: flex;
+  justify-content: start;
+  gap: 20px;
+  align-items: center;
+
+  h2 {
+    color: $color-accent-contrast;
+    margin: 0;
+  }
+}
