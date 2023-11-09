@@ -75,7 +75,7 @@ export class CatalogueUserService {
    */
   update(
     id: Uuid,
-    payload: CatalogueUserPayload | CatalogueUserContactPayload
+    payload: CatalogueUserPayload | CatalogueUserContactPayload,
   ): Observable<CatalogueUser> {
     return this.endpoints.catalogueUser
       .update(id, payload)
@@ -105,7 +105,7 @@ export class CatalogueUserService {
    */
   updateContactInfo(
     id: Uuid,
-    payload: CatalogueUserPayload | CatalogueUserContactPayload
+    payload: CatalogueUserPayload | CatalogueUserContactPayload,
   ): Observable<CatalogueUser> {
     return this.endpoints.catalogueUser
       .update(id, payload)

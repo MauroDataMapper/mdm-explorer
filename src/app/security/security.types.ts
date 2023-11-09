@@ -73,7 +73,7 @@ export interface OpenIdConnectConfiguration {
 }
 
 export const OPENID_CONNECT_CONFIG = new InjectionToken<OpenIdConnectConfiguration>(
-  'OpenID Connect Configuration'
+  'OpenID Connect Configuration',
 );
 
 export interface OpenIdConnectSession {
@@ -84,5 +84,5 @@ export interface OpenIdConnectSession {
 }
 
 export const AUTHORIZATION_REDIRECT_URL = new InjectionToken<string>(
-  'Authorization Redirect URL'
+  'Authorization Redirect URL',
 );

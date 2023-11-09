@@ -42,7 +42,7 @@ export class ErrorComponent {
   constructor(
     protected clipboard: ClipboardService,
     protected toastr: ToastrService,
-    private error: ErrorService
+    private error: ErrorService,
   ) {
     this.lastHttpError = this.error.lastError;
   }
@@ -66,7 +66,7 @@ export class ErrorComponent {
       `${this.message}\n\n`,
       '## Details\n\n',
       jsonMd,
-      '\n'
+      '\n',
     );
   }
 }

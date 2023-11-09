@@ -31,13 +31,13 @@ export class OrganisationEndpoints {
 
   getOrganisation(organisationId: Uuid): Observable<Organisation> {
     return this.sdeRestHandler.get<Organisation>(
-      `${SdeApiEndPoints.OrganisationGet}${organisationId}`
+      `${SdeApiEndPoints.OrganisationGet}${organisationId}`,
     );
   }
 
   listOrganisationMembers(organisationId: Uuid): Observable<OrganisationMember[]> {
     return this.sdeRestHandler.get<OrganisationMember[]>(
-      `${SdeApiEndPoints.OrganisationMemberList}${organisationId}`
+      `${SdeApiEndPoints.OrganisationMemberList}${organisationId}`,
     );
   }
 }

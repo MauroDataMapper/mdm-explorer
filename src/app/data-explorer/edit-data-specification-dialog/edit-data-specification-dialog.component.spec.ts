@@ -55,7 +55,7 @@ describe('EditDataSpecificationDialogComponent', () => {
   dataSpecificationStub.isDataSpecificationNameAvailable.mockImplementation(
     (): Observable<boolean> => {
       return of(true);
-    }
+    },
   );
   const label = 'label 1';
   const description = 'description';
@@ -124,9 +124,9 @@ describe('EditDataSpecificationDialogComponent', () => {
         harness.component.name?.hasAsyncValidator(
           dontAllowDuplicatedNames(
             dataSpecificationStub as unknown as DataSpecificationService,
-            label
-          )
-        )
+            label,
+          ),
+        ),
       ).toBeTruthy(); // eslint-disable-line @typescript-eslint/unbound-method
     }, 100);
   });
@@ -152,7 +152,7 @@ describe('EditDataSpecificationDialogComponent', () => {
     dataSpecificationStub.isDataSpecificationNameAvailable.mockImplementation(
       (): Observable<boolean> => {
         return of(true);
-      }
+      },
     );
     dialogsStub.usage.afterClosed.mockReturnValue(of(okCancelResponse));
 
@@ -190,7 +190,7 @@ describe('EditDataSpecificationDialogComponent', () => {
     dataSpecificationStub.isDataSpecificationNameAvailable.mockImplementation(
       (): Observable<boolean> => {
         return of(true);
-      }
+      },
     );
     const expected: EditDataSpecificationDialogResponse = {
       name: 'Test data specification',

@@ -26,7 +26,7 @@ import { cold, ObservableWithSubscriptions } from 'jest-marbles';
 const toHaveCssVariable = (
   style: CSSStyleDeclaration,
   name: string,
-  expected: string
+  expected: string,
 ) => {
   const actual = style.getPropertyValue(name);
   const pass = Object.is(actual, expected);
@@ -73,7 +73,7 @@ describe('ThemeService', () => {
   describe('load theme', () => {
     it('should return the default theme if unable to fetch from server', () => {
       researchPluginStub.theme.mockImplementationOnce(() =>
-        cold('#', null, new Error('Server error'))
+        cold('#', null, new Error('Server error')),
       );
 
       const expected$ = cold('(a|)', { a: defaultTheme });
@@ -257,7 +257,7 @@ describe('ThemeService', () => {
     it('should set the Material typography values', () => {
       expectCssVariable(
         '--theme-mat-typography-font-family',
-        'Roboto, "Helvetica Neue", sans-serif'
+        'Roboto, "Helvetica Neue", sans-serif',
       );
       expectCssVariable('--theme-mat-typography-body1-font-size', '14px');
       expectCssVariable('--theme-mat-typography-body1-line-height', '20px');

@@ -54,7 +54,7 @@ export class DataSpecificationCreatedDialogComponent implements OnInit {
       DataSpecificationCreatedDialogComponent,
       DataSpecificationCreatedAction
     >,
-    @Inject(MAT_DIALOG_DATA) private data: DataSpecificationCreatedData
+    @Inject(MAT_DIALOG_DATA) private data: DataSpecificationCreatedData,
   ) {}
 
   ngOnInit(): void {

@@ -146,7 +146,7 @@ export class DataModelService {
       ? this.endpoints.dataClass.getChildDataClass(
           id.dataModelId,
           id.parentDataClassId,
-          id.dataClassId
+          id.dataClassId,
         )
       : this.endpoints.dataClass.get(id.dataModelId, id.dataClassId);
 
@@ -162,7 +162,7 @@ export class DataModelService {
    */
   getDataElements(
     id: DataClassIdentifier,
-    params?: DataElementIndexParameters
+    params?: DataElementIndexParameters,
   ): Observable<MdmIndexBody<DataElementDto>> {
     return this.endpoints.dataElement
       .list(id.dataModelId, id.dataClassId, params)
@@ -180,7 +180,7 @@ export class DataModelService {
   getDataElement(
     dataModelId: Uuid,
     dataClassId: Uuid,
-    dataElementId: Uuid
+    dataElementId: Uuid,
   ): Observable<DataElementDetail> {
     return this.endpoints.dataElement
       .get(dataModelId, dataClassId, dataElementId)
@@ -197,7 +197,7 @@ export class DataModelService {
    */
   searchDataModel(
     id: Uuid,
-    params: SearchQueryParameters
+    params: SearchQueryParameters,
   ): Observable<MdmIndexBody<CatalogueItemSearchResult>> {
     return this.endpoints.dataModel
       .search(id, params)
@@ -224,7 +224,7 @@ export class DataModelService {
    */
   addToFolder(
     folder: Uuid,
-    dataModelCreatePayload: DataModelCreatePayload
+    dataModelCreatePayload: DataModelCreatePayload,
   ): Observable<DataModelDetail> {
     return this.endpoints.dataModel
       .addToFolder(folder, dataModelCreatePayload)
@@ -256,7 +256,7 @@ export class DataModelService {
   copySubset(
     sourceId: Uuid,
     targetId: Uuid,
-    payload: DataModelSubsetPayload
+    payload: DataModelSubsetPayload,
   ): Observable<DataModelDetail> {
     return this.endpoints.dataModel
       .copySubset(sourceId, targetId, payload)
@@ -293,12 +293,12 @@ export class DataModelService {
             dataClassId: dc.id ?? '',
             dataModelId: dc.model ?? '',
             parentDataClassId: dc.parentDataClass,
-          }).pipe(map((response) => response.items))
+          }).pipe(map((response) => response.items)),
         );
 
         return forkJoin(elements$);
       }),
-      map((dataElements) => dataElements.flatMap((de) => de))
+      map((dataElements) => dataElements.flatMap((de) => de)),
     );
   }
 
@@ -311,7 +311,7 @@ export class DataModelService {
    */
   getIntersection(
     sourceDataModelId: Uuid,
-    targetDataModelId: Uuid
+    targetDataModelId: Uuid,
   ): Observable<DataModelIntersection> {
     return this.endpoints.dataModel
       .intersects(sourceDataModelId, targetDataModelId)
@@ -327,7 +327,7 @@ export class DataModelService {
    */
   getIntersectionMany(
     sourceDataModelId: Uuid,
-    data: SourceTargetIntersectionPayload
+    data: SourceTargetIntersectionPayload,
   ): Observable<MdmIndexBody<SourceTargetIntersection>> {
     return this.endpoints.dataModel
       .intersectsMany(sourceDataModelId, data)
@@ -338,7 +338,7 @@ export class DataModelService {
     return this.endpoints.dataElement.remove(
       dataElement.model,
       dataElement.dataClass,
-      dataElement.id
+      dataElement.id,
     );
   }
 
@@ -346,7 +346,7 @@ export class DataModelService {
     return this.endpoints.dataClass.removeChildDataClass(
       dataClass.model ?? '',
       dataClass.parentDataClass ?? '',
-      dataClass.id ?? ''
+      dataClass.id ?? '',
     );
   }
 
@@ -397,7 +397,7 @@ export class DataModelService {
 
   elementsInAnotherModel(
     rootModel: DataModelDetail,
-    dataElements: DataElementDto[]
+    dataElements: DataElementDto[],
   ): Observable<DataElementDto[]> {
     return from(dataElements).pipe(
       mergeMap((dataElement: DataElementDto) => {
@@ -425,7 +425,7 @@ export class DataModelService {
         DataElementDto | null,
         DataElementDto
       >,
-      toArray()
+      toArray(),
     );
   }
 
@@ -440,7 +440,7 @@ export class DataModelService {
   update(
     id: Uuid,
     data: ModelUpdatePayload,
-    options?: RequestSettings
+    options?: RequestSettings,
   ): Observable<DataModelDetail> {
     if (!id || !data.id) {
       return throwError(() => new Error('No data model id provided'));
@@ -479,7 +479,7 @@ export class DataModelService {
 
   simpleModelVersionTree(
     dataModelId: Uuid,
-    branchesOnlyParameter: boolean = false
+    branchesOnlyParameter: boolean = false,
   ): Observable<SimpleModelVersionTree[]> {
     return this.endpoints.dataModel
       .simpleModelVersionTree(dataModelId, {

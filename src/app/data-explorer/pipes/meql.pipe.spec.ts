@@ -388,7 +388,7 @@ describe('MeqlPipe', () => {
         const expected = `${line1}${line2}${line3}`;
         const actual = pipe.transform(query);
         expect(actual).toBe(expected);
-      }
+      },
     );
 
     it.each<[string, QueryOperator, string[]]>([
@@ -421,7 +421,7 @@ describe('MeqlPipe', () => {
         const expected = `${line1}${line2}${line3}`;
         const actual = pipe.transform(query);
         expect(actual).toBe(expected);
-      }
+      },
     );
   });
 });

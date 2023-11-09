@@ -49,7 +49,7 @@ export class ConfirmationDialogComponent implements OnInit {
 
   constructor(
     private dialogRef: MatDialogRef<ConfirmationDialogComponent, DialogResult>,
-    @Inject(MAT_DIALOG_DATA) public data: ConfirmationDialogConfig
+    @Inject(MAT_DIALOG_DATA) public data: ConfirmationDialogConfig,
   ) {}
 
   ngOnInit() {

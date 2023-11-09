@@ -41,7 +41,7 @@ export interface RulesServiceStub {
       domainType: RuleDomainType,
       itemId: Uuid,
       ruleId: Uuid,
-      data: RulePayload
+      data: RulePayload,
     ) => Observable<Rule>
   >;
   delete: jest.MockedFunction<
@@ -51,7 +51,7 @@ export interface RulesServiceStub {
     (
       domainType: RuleDomainType,
       itemId: Uuid,
-      ruleId: Uuid
+      ruleId: Uuid,
     ) => Observable<RuleRepresentation[]>
   >;
   getRepresentation: jest.MockedFunction<
@@ -59,7 +59,7 @@ export interface RulesServiceStub {
       domainType: RuleDomainType,
       itemId: Uuid,
       ruleId: Uuid,
-      representationId: Uuid
+      representationId: Uuid,
     ) => Observable<RuleRepresentation>
   >;
   createRepresentation: jest.MockedFunction<
@@ -67,7 +67,7 @@ export interface RulesServiceStub {
       domainType: RuleDomainType,
       itemId: Uuid,
       ruleId: Uuid,
-      data: RuleRepresentationPayload
+      data: RuleRepresentationPayload,
     ) => Observable<RuleRepresentation>
   >;
   updateRepresentation: jest.MockedFunction<
@@ -76,7 +76,7 @@ export interface RulesServiceStub {
       itemId: Uuid,
       ruleId: Uuid,
       representationId: Uuid,
-      data: RuleRepresentationPayload
+      data: RuleRepresentationPayload,
     ) => Observable<RuleRepresentation>
   >;
   deleteRepresentation: jest.MockedFunction<
@@ -84,7 +84,7 @@ export interface RulesServiceStub {
       domainType: RuleDomainType,
       itemId: Uuid,
       ruleId: Uuid,
-      representationId: Uuid
+      representationId: Uuid,
     ) => Observable<boolean>
   >;
 }

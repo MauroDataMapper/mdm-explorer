@@ -125,7 +125,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
     private selectionService: SelectionService,
     @Optional()
     @Inject(PAGINATION_CONFIG)
-    private paginationConfig?: PaginationConfiguration
+    private paginationConfig?: PaginationConfiguration,
   ) {
     this.sourceTargetIntersections = {
       dataSpecifications: [],
@@ -154,13 +154,13 @@ export class SearchListingComponent implements OnInit, OnDestroy {
 
           this.filters = this.createSearchFiltersFromProfileFields(
             profileFields,
-            this.parameters.filters
+            this.parameters.filters,
           );
 
           // Set sortBy from route val, or set to default value.
           this.sortBy = this.setSortByFromRouteOrAsDefault(
             this.parameters.sort,
-            this.parameters.order
+            this.parameters.order,
           );
 
           // If there is a Data Class ID provided, then these parameters came from the "Browse" page,
@@ -184,7 +184,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
           this.addIsSelectedToResults();
           this.addIsBookmarkedToResults();
           return this.loadIntersections();
-        })
+        }),
       )
       .subscribe((intersections) => {
         this.sourceTargetIntersections = intersections;
@@ -319,7 +319,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
       catchError(() => {
         this.toastr.error('Unable to retrieve the chosen Data Class.');
         return EMPTY;
-      })
+      }),
     );
   }
 
@@ -337,7 +337,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
       catchError(() => {
         this.status = 'error';
         return EMPTY;
-      })
+      }),
     );
   }
 
@@ -358,15 +358,15 @@ export class SearchListingComponent implements OnInit, OnDestroy {
 
         return this.dataSpecification.getDataSpecificationIntersections(
           dataModel.id,
-          dataElementIds
+          dataElementIds,
         );
-      })
+      }),
     );
   }
 
   private createSearchFiltersFromProfileFields(
     profileFields: ProfileField[],
-    filters?: DataElementSearchFilters
+    filters?: DataElementSearchFilters,
   ): SearchFilterField[] {
     return profileFields
       .filter((field) => field.dataType === 'enumeration')
@@ -391,7 +391,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
       .on('data-specification-added')
       .pipe(
         takeUntil(this.unsubscribe$),
-        switchMap(() => this.loadIntersections())
+        switchMap(() => this.loadIntersections()),
       )
       .subscribe((intersections) => {
         this.sourceTargetIntersections = intersections;
@@ -440,7 +440,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
    */
   private setSortByFromRouteOrAsDefault(
     sort: string | undefined,
-    order: string | undefined
+    order: string | undefined,
   ): SortByOption {
     if (!sort || !order) {
       return this.sortByDefaultOption;
@@ -448,7 +448,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
     const valueString = `${sort}-${order}`;
 
     const filteredOptionsList = this.searchListingSortByOptions.filter(
-      (item: SortByOption) => item.value === valueString
+      (item: SortByOption) => item.value === valueString,
     );
 
     return filteredOptionsList.length === 0

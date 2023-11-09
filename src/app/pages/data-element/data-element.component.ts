@@ -78,7 +78,7 @@ export class DataElementComponent implements OnInit {
     private toastr: ToastrService,
     private terminologies: TerminologyService,
     private broadcast: BroadcastService,
-    @Inject(DATA_EXPLORER_CONFIGURATION) private config: DataExplorerConfiguration
+    @Inject(DATA_EXPLORER_CONFIGURATION) private config: DataExplorerConfiguration,
   ) {
     this.sourceTargetIntersections = {
       dataSpecifications: [],
@@ -100,7 +100,7 @@ export class DataElementComponent implements OnInit {
             this.loadProfile(),
             this.loadIntersections(),
           ]);
-        })
+        }),
       )
       .subscribe(
         ([dataElementDetail, isBookmarked, profile, sourceTargetIntersections]) => {
@@ -125,7 +125,7 @@ export class DataElementComponent implements OnInit {
           this.setIdentifiableData();
           this.setDataTypeModel();
           this.subscribeDataSpecificationChanges();
-        }
+        },
       );
   }
 
@@ -158,7 +158,7 @@ export class DataElementComponent implements OnInit {
         catchError(() => {
           this.toastr.error('Unable to retrieve the chosen Data Element.');
           return EMPTY;
-        })
+        }),
       );
   }
 
@@ -168,14 +168,14 @@ export class DataElementComponent implements OnInit {
         CatalogueItemDomainType.DataElement,
         this.dataElementId,
         this.config.profileNamespace,
-        this.config.profileServiceName
+        this.config.profileServiceName,
       )
       .pipe(
         catchError(() => {
           this.toastr.error('Unable to retrieve the Data Element Profile.');
           return EMPTY;
         }),
-        map((profile) => this.trimProfile(profile))
+        map((profile) => this.trimProfile(profile)),
       );
   }
 
@@ -187,19 +187,19 @@ export class DataElementComponent implements OnInit {
           console.log(error);
           this.toastr.error('Unable to retrieve data specifications.');
           return EMPTY;
-        })
+        }),
       );
   }
 
   private setIdentifiableData() {
     if (this.researchProfile && this.researchProfile.sections.length > 0) {
       const identifiableInformation = this.researchProfile.sections.find(
-        (section) => section.name === 'Identifiable Information'
+        (section) => section.name === 'Identifiable Information',
       );
 
       if (identifiableInformation && identifiableInformation.fields.length > 0) {
         const identifiableDataField = identifiableInformation.fields.find(
-          (field) => field.fieldName === 'Identifiable Data'
+          (field) => field.fieldName === 'Identifiable Data',
         );
         if (identifiableDataField) {
           this.identifiableData = identifiableDataField.currentValue;
@@ -249,7 +249,7 @@ export class DataElementComponent implements OnInit {
             name: section.name,
             description: section.description,
             fields: section.fields.filter(
-              (field) => field.currentValue && field.currentValue.length > 0
+              (field) => field.currentValue && field.currentValue.length > 0,
             ),
           };
         })
@@ -262,7 +262,7 @@ export class DataElementComponent implements OnInit {
       .on('data-specification-added')
       .pipe(
         takeUntil(this.unsubscribe$),
-        switchMap(() => this.loadIntersections())
+        switchMap(() => this.loadIntersections()),
       )
       .subscribe((intersections) => {
         this.sourceTargetIntersections = intersections;

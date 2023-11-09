@@ -30,7 +30,7 @@ export type CatalogueUserGetMockedFn = jest.MockedFunction<CatalogueUserGetFn>;
 
 export type CatalogueUserUpdateFn = (
   id: Uuid,
-  data: CatalogueUserPayload
+  data: CatalogueUserPayload,
 ) => Observable<MdmResponse<CatalogueUser>>;
 export type CatalogueUserUpdateMockedFn = jest.MockedFunction<CatalogueUserUpdateFn>;
 
@@ -48,7 +48,7 @@ export type CatalogueUserUpdatePreferencesMockedFn =
 
 export type CatalogueUserChangePasswordFn = (
   id: Uuid,
-  payload: ChangePasswordPayload
+  payload: ChangePasswordPayload,
 ) => Observable<MdmResponse<CatalogueUser>>;
 
 export interface MdmCatalogueUserResourceStub {

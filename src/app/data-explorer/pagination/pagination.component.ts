@@ -62,7 +62,7 @@ export class PaginationComponent implements OnInit, OnChanges {
 
     this.totalPages = this.pagination.getTotalNumberOfPages(
       this.totalResults,
-      this.pageSize
+      this.pageSize,
     );
     this.pages = this.pagination.getPageNumbers(this.currentPage, this.totalPages);
   }

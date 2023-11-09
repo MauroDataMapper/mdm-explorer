@@ -32,7 +32,7 @@ export class ServerErrorComponent extends ErrorComponent {
     super(clipboard, toastr, error);
 
     this.heading = 'Server Error';
-    this.message = 'We\'re sorry, but the server responded with an error message.';
+    this.message = "We're sorry, but the server responded with an error message.";
     this.resolution =
       'This may be a temporary issue, so you might like to try again later';
 

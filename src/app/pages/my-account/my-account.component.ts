@@ -52,7 +52,7 @@ export class MyAccountComponent implements OnInit {
     private toastr: ToastrService,
     private broadcast: BroadcastService,
     private folder: FolderService,
-    public dialog: DialogService
+    public dialog: DialogService,
   ) {}
 
   ngOnInit(): void {
@@ -68,7 +68,7 @@ export class MyAccountComponent implements OnInit {
         catchError(() => {
           this.toastr.error('There was a problem finding your account details.');
           return EMPTY;
-        })
+        }),
       )
       .subscribe((user) => {
         this.user = user;
@@ -97,7 +97,7 @@ export class MyAccountComponent implements OnInit {
           this.toastr.error('There was a problem updating your account details.');
           this.basicInfoMode = 'edit';
           return EMPTY;
-        })
+        }),
       )
       .subscribe((user) => {
         this.user = user;
@@ -164,16 +164,16 @@ export class MyAccountComponent implements OnInit {
           return this.folder.update(folder.id, {
             id: folder.id,
             label: this.dataSpecification.getDataSpecificationFolderName(
-              user.emailAddress
+              user.emailAddress,
             ),
           });
-        })
+        }),
       )
       .subscribe(() => {
         this.contactInfoMode = 'view';
         this.toastr.success(
           'Your account was updated. Please sign-in again with your new email address.',
-          'Account updated'
+          'Account updated',
         );
         this.signOut();
       });

@@ -24,12 +24,12 @@ import {
 import { Observable } from 'rxjs';
 
 export type MdmFolderSaveFn = (
-  payload: ContainerCreatePayload
+  payload: ContainerCreatePayload,
 ) => Observable<FolderDetailResponse>;
 export type MdmFolderSaveMockedFn = jest.MockedFunction<MdmFolderSaveFn>;
 export type MdmFolderUpdateFn = (
   folderId: Uuid,
-  payload: ContainerCreatePayload
+  payload: ContainerCreatePayload,
 ) => Observable<FolderDetailResponse>;
 export type MdmFolderUpdateMockedFn = jest.MockedFunction<MdmFolderUpdateFn>;
 export interface MdmFolderResourceStub {

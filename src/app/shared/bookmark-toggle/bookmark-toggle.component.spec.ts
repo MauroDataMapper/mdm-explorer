@@ -50,7 +50,7 @@ describe('BookmarkToggleComponent', () => {
       harness.component.selected = initial;
       harness.component.toggleState();
       expect(emitSpy).toHaveBeenCalledWith(!initial);
-    }
+    },
   );
 
   describe('getting tooltip text', () => {
@@ -64,7 +64,7 @@ describe('BookmarkToggleComponent', () => {
         harness.component.selected = selected;
 
         expect(harness.component.getTooltipText()).toEqual(expectedText);
-      }
+      },
     );
 
     it.each([true, false])(
@@ -78,7 +78,7 @@ describe('BookmarkToggleComponent', () => {
         harness.component.toggleState();
 
         expect(harness.component.tooltipText).toEqual(expectedText);
-      }
+      },
     );
   });
 });

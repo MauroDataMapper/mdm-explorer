@@ -29,7 +29,7 @@ export class AuthorizedGuard implements CanActivate {
   constructor(
     private security: SecurityService,
     private router: Router,
-    @Inject(AUTHORIZATION_REDIRECT_URL) private redirectUrl: string
+    @Inject(AUTHORIZATION_REDIRECT_URL) private redirectUrl: string,
   ) {}
 
   canActivate():

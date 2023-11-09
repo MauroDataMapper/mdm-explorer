@@ -116,7 +116,7 @@ describe('HeaderComponent', () => {
     const signOutElement = dom.querySelector('.mdm-header__overlayUserInitials');
     const bookmarks = dom.querySelector('#app\\.container\\.my-bookmarks');
     const dataSpecifications = dom.querySelector(
-      '#app\\.container\\.my-data-specifications'
+      '#app\\.container\\.my-data-specifications',
     );
     expect(signInElement).toBeFalsy();
     expect(signOutElement).toBeTruthy();

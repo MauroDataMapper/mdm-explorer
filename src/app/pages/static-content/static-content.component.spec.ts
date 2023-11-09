@@ -51,7 +51,7 @@ describe('ContentComponent', () => {
 
   const implementErrorOnContent = () => {
     staticContentStub.getContent.mockImplementationOnce(() =>
-      throwError(() => new Error())
+      throwError(() => new Error()),
     );
   };
 

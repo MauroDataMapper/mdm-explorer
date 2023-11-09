@@ -27,10 +27,10 @@ import { KeyValueIdentifier } from 'src/app/mauro/mauro.types';
 import { PluginResearchContactPayload } from 'src/app/mauro/plugins/plugin-research.resource';
 
 export type ResearchPluginContactFn = (
-  data: PluginResearchContactPayload
+  data: PluginResearchContactPayload,
 ) => Observable<PluginResearchContactPayload>;
 export type ResearchPluginSubmitDataSpecificationFn = (
-  id: Uuid
+  id: Uuid,
 ) => Observable<DataModelDetail>;
 export type ResearchPluginUserFolderFn = (id: Uuid) => Observable<FolderDetail>;
 

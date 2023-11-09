@@ -39,7 +39,7 @@ export class ForgotPasswordComponent {
     this.security
       .sendResetPasswordLink(event.email)
       .subscribe(
-        (success) => (this.state = success ? 'email-sent' : 'error-sending-email')
+        (success) => (this.state = success ? 'email-sent' : 'error-sending-email'),
       );
   }
 }

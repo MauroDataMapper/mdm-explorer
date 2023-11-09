@@ -59,7 +59,7 @@ export class BrowseComponent implements OnInit {
     private dataModels: DataModelService,
     private toastr: ToastrService,
     private stateRouter: StateRouterService,
-    security: SecurityService
+    security: SecurityService,
   ) {
     this.user = security.getSignedInUser();
   }
@@ -98,7 +98,7 @@ export class BrowseComponent implements OnInit {
 
     if (!this.selected) {
       this.toastr.error(
-        'You must have selected an element to create a data specification with.'
+        'You must have selected an element to create a data specification with.',
       );
       return;
     }
@@ -114,7 +114,7 @@ export class BrowseComponent implements OnInit {
             } as DataElementInstance;
           });
           return of(dataElementInstances);
-        })
+        }),
       );
     };
 
@@ -175,17 +175,17 @@ export class BrowseComponent implements OnInit {
       .pipe(
         catchError(() => {
           this.toastr.error(
-            'There was a problem getting the root data model required for browsing.'
+            'There was a problem getting the root data model required for browsing.',
           );
           return EMPTY;
         }),
         switchMap((parent) => this.dataModels.getDataClasses(parent)),
         catchError(() => {
           this.toastr.error(
-            'There was a problem getting the data classes required for browsing.'
+            'There was a problem getting the data classes required for browsing.',
           );
           return EMPTY;
-        })
+        }),
       )
       .subscribe((dataClasses) => (this.parentDataClasses = dataClasses));
   }
@@ -196,10 +196,10 @@ export class BrowseComponent implements OnInit {
       .pipe(
         catchError(() => {
           this.toastr.error(
-            'There was a problem getting the data classes required for browsing.'
+            'There was a problem getting the data classes required for browsing.',
           );
           return EMPTY;
-        })
+        }),
       )
       .subscribe((dataClasses) => (this.childDataClasses = dataClasses));
   }

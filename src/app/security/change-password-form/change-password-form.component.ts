@@ -77,7 +77,7 @@ export class ChangePasswordFormComponent {
     },
     {
       validators: [mustMatch('newPassword', 'confirmPassword')],
-    }
+    },
   );
 
   /**

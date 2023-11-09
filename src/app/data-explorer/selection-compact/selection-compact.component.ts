@@ -36,7 +36,10 @@ export class SelectionCompactComponent {
   @Input() sourceTargetIntersections: DataSpecificationSourceTargetIntersections;
   selectedElements$: Observable<DataElementSearchResult[]>;
 
-  constructor(private selectionService: SelectionService, private matDialog: MatDialog) {
+  constructor(
+    private selectionService: SelectionService,
+    private matDialog: MatDialog,
+  ) {
     this.sourceTargetIntersections = {
       dataSpecifications: [],
       sourceTargetIntersections: [],
@@ -55,7 +58,7 @@ export class SelectionCompactComponent {
         {
           data: { sourceTargetIntersections: this.sourceTargetIntersections },
           panelClass: 'mdm-selection-expanded-dialog',
-        }
+        },
       );
     }
   }

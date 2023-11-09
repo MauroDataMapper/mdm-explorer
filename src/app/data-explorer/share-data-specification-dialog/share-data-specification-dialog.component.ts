@@ -41,7 +41,7 @@ export class ShareDataSpecificationDialogComponent implements OnInit {
     >,
     @Inject(MAT_DIALOG_DATA)
     @Optional()
-    private data: ShareDataSpecificationDialogInputOutput
+    private data: ShareDataSpecificationDialogInputOutput,
   ) {
     this.initialSharedValue = this.data.sharedWithCommunity;
     this.dialogCheckboxValue = this.data.sharedWithCommunity;

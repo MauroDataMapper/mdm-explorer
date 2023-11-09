@@ -26,9 +26,8 @@ describe('SdeMainComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SdeMainComponent ]
-    })
-    .compileComponents();
+      declarations: [SdeMainComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SdeMainComponent);
     component = fixture.componentInstance;

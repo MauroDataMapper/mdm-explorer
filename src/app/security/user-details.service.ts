@@ -43,7 +43,7 @@ export interface UserDetails {
   providedIn: 'root',
 })
 export class UserDetailsService {
-  constructor() { }
+  constructor() {}
 
   /**
    * Gets the current user in use, or null if there is no current user.
@@ -82,11 +82,11 @@ export class UserDetailsService {
     localStorage.setItem('role', user.role ?? '');
     localStorage.setItem(
       'needsToResetPassword',
-      (user.needsToResetPassword ?? false).toString()
+      (user.needsToResetPassword ?? false).toString(),
     );
     localStorage.setItem(
       'dataSpecificationFolder',
-      JSON.stringify(user.dataSpecificationFolder)
+      JSON.stringify(user.dataSpecificationFolder),
     );
     localStorage.setItem('sdeAuthToken', user.sdeAuthToken ?? '');
   }

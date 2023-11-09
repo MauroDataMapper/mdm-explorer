@@ -38,7 +38,7 @@ const defaultMaxPagesToShow = 10;
 })
 export class PaginationService {
   constructor(
-    @Optional() @Inject(PAGINATION_CONFIG) private config?: PaginationConfiguration
+    @Optional() @Inject(PAGINATION_CONFIG) private config?: PaginationConfiguration,
   ) {}
 
   /**

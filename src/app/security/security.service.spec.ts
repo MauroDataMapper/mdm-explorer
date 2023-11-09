@@ -102,7 +102,7 @@ describe('SecurityService', () => {
             lastName: expectedUser.lastName,
           },
         },
-      })
+      }),
     );
 
     endpointsStub.pluginResearch.userFolder.mockImplementationOnce(() =>
@@ -115,7 +115,7 @@ describe('SecurityService', () => {
             availableActions: [],
           },
         },
-      })
+      }),
     );
   };
 
@@ -160,7 +160,7 @@ describe('SecurityService', () => {
 
     it('should throw error if sign in fails', () => {
       endpointsStub.security.login.mockImplementationOnce(() =>
-        cold('--#', null, new HttpErrorResponse({}))
+        cold('--#', null, new HttpErrorResponse({})),
       );
 
       const expected$ = cold('--#');
@@ -172,7 +172,7 @@ describe('SecurityService', () => {
   describe('sign out', () => {
     it('should sign out user', () => {
       endpointsStub.security.logout.mockImplementationOnce(() =>
-        cold('--a|', { a: EMPTY })
+        cold('--a|', { a: EMPTY }),
       );
 
       const expected$ = cold('--a|', { a: undefined });
@@ -185,7 +185,7 @@ describe('SecurityService', () => {
 
     it('should throw error if sign out fails', () => {
       endpointsStub.security.logout.mockImplementationOnce(() =>
-        cold('--#', null, new HttpErrorResponse({}))
+        cold('--#', null, new HttpErrorResponse({})),
       );
 
       const expected$ = cold('--#');
@@ -203,7 +203,7 @@ describe('SecurityService', () => {
       const expected = { token: 'valid-token' } as AuthToken;
 
       sdeUserServiceStub.getSdeAuthToken.mockReturnValueOnce(
-        cold('--a|', { a: expected })
+        cold('--a|', { a: expected }),
       );
 
       const actual$ = service.signInToSde(emailAssociatedWithSDE);
@@ -216,7 +216,7 @@ describe('SecurityService', () => {
       const expected = EMPTY_AUTH_TOKEN;
 
       sdeUserServiceStub.getSdeAuthToken.mockReturnValueOnce(
-        cold('--#', new HttpErrorResponse({}))
+        cold('--#', new HttpErrorResponse({})),
       );
 
       const actual$ = service.signInToSde(emailNOTAssociatedWithSDE);
@@ -232,7 +232,7 @@ describe('SecurityService', () => {
 
     it('should return ok when password reset link sent', () => {
       endpointsStub.catalogueUser.resetPasswordLink.mockImplementationOnce(() =>
-        cold('--a|', { a: EMPTY })
+        cold('--a|', { a: EMPTY }),
       );
 
       const expected$ = cold('--a|', { a: true });
@@ -242,7 +242,7 @@ describe('SecurityService', () => {
 
     it('should return fail when password rest link has error', () => {
       endpointsStub.catalogueUser.resetPasswordLink.mockImplementationOnce(() =>
-        cold('--#', null, new HttpErrorResponse({}))
+        cold('--#', null, new HttpErrorResponse({})),
       );
 
       const expected$ = cold('--(a|)', { a: false });
@@ -262,18 +262,18 @@ describe('SecurityService', () => {
                 authenticatedSession: authenticated,
               },
             },
-          })
+          }),
         );
 
         const expected$ = cold('--a|', { a: authenticated });
         const actual$ = service.isAuthenticated();
         expect(actual$).toBeObservable(expected$);
-      }
+      },
     );
 
     it('should throw error if authentication fails', () => {
       endpointsStub.session.isAuthenticated.mockImplementationOnce(() =>
-        cold('--#', null, new HttpErrorResponse({}))
+        cold('--#', null, new HttpErrorResponse({})),
       );
 
       const expected$ = cold('--#');
@@ -294,7 +294,7 @@ describe('SecurityService', () => {
       const expectedUrl = new URL(provider.authorizationEndpoint);
       expectedUrl.searchParams.append(
         'redirect_uri',
-        openIdConnectConfig.redirectUrl.toString()
+        openIdConnectConfig.redirectUrl.toString(),
       );
 
       const actualUrl = service.getOpenIdConnectAuthorizationUrl(provider);

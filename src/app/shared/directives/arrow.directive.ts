@@ -24,7 +24,10 @@ import { Directive, ElementRef, Input, Renderer2, OnInit } from '@angular/core';
 export class ArrowDirective implements OnInit {
   @Input() mdmArrow?: ArrowDirection = 'arrow-down';
 
-  constructor(private element: ElementRef, private renderer: Renderer2) {}
+  constructor(
+    private element: ElementRef,
+    private renderer: Renderer2,
+  ) {}
 
   ngOnInit(): void {
     let arrowClass = '';

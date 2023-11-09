@@ -54,7 +54,7 @@ export class ResearchPluginService {
   submitDataSpecification(id: Uuid): Observable<DataModelDetail> {
     return this.endpoints.pluginResearch.submitDataSpecification(id).pipe(
       switchMap(() => this.endpoints.dataModel.get(id)),
-      map((response: DataModelDetailResponse) => response.body)
+      map((response: DataModelDetailResponse) => response.body),
     );
   }
 
@@ -87,8 +87,8 @@ export class ResearchPluginService {
       .listSharedDataSpecifications()
       .pipe(
         map((response: DataModelIndexResponse) =>
-          response.body.items.map(mapToDataSpecification)
-        )
+          response.body.items.map(mapToDataSpecification),
+        ),
       );
   }
 
@@ -97,7 +97,7 @@ export class ResearchPluginService {
       switchMap((response: DataModelIndexResponse): Observable<DataModel[]> => {
         return of(response.body.items); // eslint-disable-line @typescript-eslint/no-non-null-assertion
       }),
-      map((dataModels: DataModel[]) => dataModels.map(mapToDataSpecification))
+      map((dataModels: DataModel[]) => dataModels.map(mapToDataSpecification)),
     );
   }
 }

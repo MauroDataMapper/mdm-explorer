@@ -50,7 +50,10 @@ export interface TestComponentConfiguration {
  * @typedef T The type of component under test.
  */
 export class ComponentHarness<T> {
-  constructor(public component: T, public fixture: ComponentFixture<T>) {}
+  constructor(
+    public component: T,
+    public fixture: ComponentFixture<T>,
+  ) {}
 
   get isComponentCreated() {
     return !!this.component;
@@ -74,7 +77,7 @@ export class ComponentHarness<T> {
  */
 export const setupTestModuleForService = <T>(
   service: Type<T>,
-  configuration?: TestModuleConfiguration
+  configuration?: TestModuleConfiguration,
 ): T => {
   TestBed.configureTestingModule({
     imports: [TestingModule, ...(configuration?.imports ?? [])],
@@ -95,7 +98,7 @@ export const setupTestModuleForService = <T>(
 export const setupTestModuleForComponent = async <T>(
   componentType: Type<T>,
   moduleConfig?: TestModuleConfiguration,
-  componentConfig?: TestComponentConfiguration
+  componentConfig?: TestComponentConfiguration,
 ) => {
   await TestBed.configureTestingModule({
     imports: [TestingModule, ...(moduleConfig?.imports ?? [])],

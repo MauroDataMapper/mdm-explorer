@@ -98,7 +98,7 @@ export class DataSpecificationService {
     private broadcast: BroadcastService,
     private dialogs: DialogService,
     private rules: RulesService,
-    private researchPlugin: ResearchPluginService
+    private researchPlugin: ResearchPluginService,
   ) {}
 
   /**
@@ -138,7 +138,7 @@ export class DataSpecificationService {
   updateWithDialog(
     id: Uuid,
     name: string,
-    description?: string
+    description?: string,
   ): Observable<DataModelDetail> {
     const user = this.security.getSignedInUser();
     if (!user) return EMPTY;
@@ -176,13 +176,13 @@ export class DataSpecificationService {
         catchError((error) => {
           this.toastr.error(
             `There was a problem creating updating the data specification. ${error}`,
-            'Data specification edition error'
+            'Data specification edition error',
           );
           return EMPTY;
         }),
         finalize(() => {
           this.broadcast.loading({ isLoading: false });
-        })
+        }),
       );
   }
 
@@ -210,10 +210,10 @@ export class DataSpecificationService {
         catchError((error) => {
           this.toastr.error(
             `There was a problem sharing the specification. ${error}`,
-            'Data specification edition error'
+            'Data specification edition error',
           );
           return EMPTY;
-        })
+        }),
       );
   }
 
@@ -227,7 +227,7 @@ export class DataSpecificationService {
       switchMap((dataSpecificationFolder: FolderDetail): Observable<DataModel[]> => {
         return this.dataModels.listInFolder(dataSpecificationFolder.id!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
       }),
-      map((dataModels) => dataModels.map(mapToDataSpecification))
+      map((dataModels) => dataModels.map(mapToDataSpecification)),
     );
   }
 
@@ -241,7 +241,7 @@ export class DataSpecificationService {
       switchMap((folder: FolderDetail): Observable<DataModel[]> => {
         return this.dataModels.listInFolder(folder.id!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
       }),
-      map((dataModels) => dataModels.map(mapToDataSpecification))
+      map((dataModels) => dataModels.map(mapToDataSpecification)),
     );
   }
 
@@ -267,7 +267,7 @@ export class DataSpecificationService {
             }) ?? [];
           return parentElements.concat(childElements);
         });
-      })
+      }),
     );
   }
 
@@ -281,10 +281,10 @@ export class DataSpecificationService {
    */
   deleteDataElementMultiple(
     elements: DataElementInstance[],
-    targetModel: DataModelDetail
+    targetModel: DataModelDetail,
   ): Observable<DataElementMultipleOperationResult> {
     const items: DataElementDto[] = elements.map(
-      (dataElementInstance) => dataElementInstance as DataElementDto
+      (dataElementInstance) => dataElementInstance as DataElementDto,
     );
     return of(items).pipe(
       switchMap((dataElements: DataElementDto[]) => {
@@ -305,7 +305,7 @@ export class DataSpecificationService {
           destination.push(result);
         });
         return of({ successes, failures });
-      })
+      }),
     );
   }
 
@@ -327,7 +327,7 @@ export class DataSpecificationService {
       }),
       catchError((response: HttpErrorResponse) => {
         return of({ success: false, message: response.message, item });
-      })
+      }),
     );
   }
 
@@ -342,7 +342,7 @@ export class DataSpecificationService {
   create(
     user: UserDetails,
     name: string,
-    description?: string
+    description?: string,
   ): Observable<DataSpecification> {
     return forkJoin([
       this.getDataSpecificationFolder(),
@@ -366,7 +366,7 @@ export class DataSpecificationService {
       }),
       map((dataModel) => {
         return mapToDataSpecification(dataModel);
-      })
+      }),
     );
   }
 
@@ -379,7 +379,7 @@ export class DataSpecificationService {
    * @returns: Observable of DataElementMultipleOperationResult
    */
   deleteDataClassMultiple(
-    dataClasses: DataClass[]
+    dataClasses: DataClass[],
   ): Observable<DataElementMultipleOperationResult> {
     return of(dataClasses).pipe(
       switchMap((dataClassArray: DataClass[]) => from(dataClassArray)),
@@ -396,7 +396,7 @@ export class DataSpecificationService {
           destination.push(result);
         });
         return of({ successes, failures });
-      })
+      }),
     );
   }
 
@@ -418,7 +418,7 @@ export class DataSpecificationService {
       }),
       catchError((response: HttpErrorResponse) => {
         return of({ success: false, message: response.message, dataClass });
-      })
+      }),
     );
   }
 
@@ -431,7 +431,7 @@ export class DataSpecificationService {
    * @returns: Observable of DataElementMultipleOperationResult
    */
   deleteDataSchemaMultiple(
-    dataSchemas: DataSchema[]
+    dataSchemas: DataSchema[],
   ): Observable<DataElementMultipleOperationResult> {
     return of(dataSchemas).pipe(
       switchMap((dataSchemaArray: DataSchema[]) => from(dataSchemaArray)),
@@ -448,7 +448,7 @@ export class DataSpecificationService {
           destination.push(result);
         });
         return of({ successes, failures });
-      })
+      }),
     );
   }
 
@@ -470,7 +470,7 @@ export class DataSpecificationService {
       }),
       catchError((response: HttpErrorResponse) => {
         return of({ success: false, message: response.message, dataSchema });
-      })
+      }),
     );
   }
 
@@ -484,7 +484,7 @@ export class DataSpecificationService {
    */
   getDataSpecificationIntersections(
     sourceDataModelId: Uuid,
-    dataElementIds: Uuid[]
+    dataElementIds: Uuid[],
   ): Observable<DataSpecificationSourceTargetIntersections> {
     const user = this.security.getSignedInUser();
 
@@ -494,7 +494,7 @@ export class DataSpecificationService {
 
     return this.list().pipe(
       map((dataSpecifications: DataSpecification[]) =>
-        dataSpecifications.filter((dr) => dr.status === 'unsent')
+        dataSpecifications.filter((dr) => dr.status === 'unsent'),
       ),
       switchMap((dataSpecifications: DataSpecification[]) => {
         const sourceTargetIntersections: DataSpecificationSourceTargetIntersections = {
@@ -517,9 +517,9 @@ export class DataSpecificationService {
           map((result) => {
             sourceTargetIntersections.sourceTargetIntersections = result.items;
             return sourceTargetIntersections;
-          })
+          }),
         );
-      })
+      }),
     );
   }
 
@@ -537,7 +537,7 @@ export class DataSpecificationService {
     elements: DataElementInstance[],
     user: UserDetails,
     name: string,
-    description?: string
+    description?: string,
   ): Observable<DataSpecification> {
     return forkJoin([
       // TODO: assume there is only one data model, will have to change in future
@@ -558,7 +558,7 @@ export class DataSpecificationService {
           deletions: [],
         });
       }),
-      map((targetDataModel) => mapToDataSpecification(targetDataModel))
+      map((targetDataModel) => mapToDataSpecification(targetDataModel)),
     );
   }
 
@@ -574,7 +574,7 @@ export class DataSpecificationService {
    */
   createWithDialogs(
     getDataElements: () => Observable<DataElementInstance[]>,
-    suppressViewDataSpecificationDialogButton: boolean = false
+    suppressViewDataSpecificationDialogButton: boolean = false,
   ): Observable<DataSpecificationCreatedResponse> {
     const user = this.security.getSignedInUser();
     if (!user) return EMPTY;
@@ -602,7 +602,7 @@ export class DataSpecificationService {
               dataElements,
               user,
               response.name,
-              response.description
+              response.description,
             ),
             of(dataElements),
           ]);
@@ -610,7 +610,7 @@ export class DataSpecificationService {
         catchError((error) => {
           this.toastr.error(
             `There was a problem creating your data specification. ${error}`,
-            'Data specification creation error'
+            'Data specification creation error',
           );
           return EMPTY;
         }),
@@ -627,10 +627,10 @@ export class DataSpecificationService {
             .pipe(
               map((action) => {
                 return { dataSpecification, action: action ?? 'continue' };
-              })
+              }),
             );
         }),
-        finalize(() => this.broadcast.loading({ isLoading: false }))
+        finalize(() => this.broadcast.loading({ isLoading: false })),
       );
   }
 
@@ -643,7 +643,7 @@ export class DataSpecificationService {
    */
   forkWithDialogs(
     dataSpecification: DataSpecification,
-    options?: ForkDataSpecificationOptions
+    options?: ForkDataSpecificationOptions,
   ) {
     if (
       !dataSpecification ||
@@ -674,7 +674,7 @@ export class DataSpecificationService {
         catchError(() => {
           this.toastr.error(
             'There was a problem creating your data specification. Please try again or contact us for support.',
-            'Copying error'
+            'Copying error',
           );
           return EMPTY;
         }),
@@ -682,7 +682,7 @@ export class DataSpecificationService {
           if (options?.targetFolder?.id && nextDraftModel.id) {
             return this.dataModels.moveToFolder(
               nextDraftModel.id,
-              options.targetFolder.id
+              options.targetFolder.id,
             );
           }
 
@@ -697,7 +697,7 @@ export class DataSpecificationService {
           });
           return nextDataSpecification;
         }),
-        finalize(() => this.broadcast.loading({ isLoading: false }))
+        finalize(() => this.broadcast.loading({ isLoading: false })),
       );
   }
 
@@ -721,7 +721,7 @@ export class DataSpecificationService {
    */
   getQuery(
     dataSpecificationId: Uuid,
-    type: DataSpecificationQueryType
+    type: DataSpecificationQueryType,
   ): Observable<DataSpecificationQuery | undefined> {
     return this.rules.list('dataModels', dataSpecificationId).pipe(
       map((rules) => {
@@ -731,7 +731,7 @@ export class DataSpecificationService {
         }
 
         const representation = rule?.ruleRepresentations.find(
-          (rr) => rr.language === dataSpecificationQueryLanguage
+          (rr) => rr.language === dataSpecificationQueryLanguage,
         );
         if (!representation) {
           return undefined;
@@ -743,13 +743,13 @@ export class DataSpecificationService {
           type,
           condition: JSON.parse(representation.representation),
         };
-      })
+      }),
     );
   }
 
   createOrUpdateQuery(
     dataSpecificationId: Uuid,
-    payload: DataSpecificationQueryPayload
+    payload: DataSpecificationQueryPayload,
   ): Observable<DataSpecificationQuery> {
     const rule$ = payload.ruleId
       ? this.rules.get('dataModels', dataSpecificationId, payload.ruleId)
@@ -772,20 +772,20 @@ export class DataSpecificationService {
               dataSpecificationId,
               rule.id,
               payload.representationId,
-              representation
+              representation,
             )
           : this.rules.createRepresentation(
               'dataModels',
               dataSpecificationId,
               rule.id,
-              representation
+              representation,
             );
 
         return forkJoin([of(rule), representation$]);
       }),
       catchError(() => {
         this.toastr.error(
-          'There was a problem getting the representation for your query.'
+          'There was a problem getting the representation for your query.',
         );
         return EMPTY;
       }),
@@ -796,7 +796,7 @@ export class DataSpecificationService {
           type: payload.type,
           condition: JSON.parse(representation.representation),
         };
-      })
+      }),
     );
   }
 
@@ -812,7 +812,7 @@ export class DataSpecificationService {
   deleteDataElementsFromQuery(
     dataSpecificationId: Uuid,
     type: DataSpecificationQueryType,
-    dataElementLabels: string[]
+    dataElementLabels: string[],
   ): Observable<DataSpecificationQueryPayload | undefined> {
     let updatedQuery: DataSpecificationQueryPayload;
 
@@ -826,12 +826,12 @@ export class DataSpecificationService {
 
         dataElementLabels.forEach((label) => {
           updatedQuery.condition.rules = query.condition.rules.filter(
-            (item) => !(item as QueryExpression)?.field?.startsWith(label)
+            (item) => !(item as QueryExpression)?.field?.startsWith(label),
           );
         });
 
         return this.createOrUpdateQuery(dataSpecificationId, updatedQuery);
-      })
+      }),
     );
   }
 
@@ -847,7 +847,7 @@ export class DataSpecificationService {
         }
 
         return of(!dataSpecifications.some((element) => element.label === name));
-      })
+      }),
     );
   }
 }

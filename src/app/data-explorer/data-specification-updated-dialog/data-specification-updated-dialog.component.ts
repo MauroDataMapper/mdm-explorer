@@ -49,7 +49,7 @@ export class DataSpecificationUpdatedDialogComponent implements OnInit {
       DataSpecificationUpdatedDialogComponent,
       DataSpecificationUpdatedAction
     >,
-    @Inject(MAT_DIALOG_DATA) private data: DataSpecificationUpdatedData
+    @Inject(MAT_DIALOG_DATA) private data: DataSpecificationUpdatedData,
   ) {}
 
   ngOnInit(): void {

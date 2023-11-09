@@ -300,7 +300,7 @@ describe('MyAccountComponent', () => {
         (email) => {
           expect(email).toBe(updatedUser.emailAddress);
           return newFolderName;
-        }
+        },
       );
 
       dataSpecificationStub.updateDataSpecificationsFolder.mockImplementationOnce(
@@ -308,7 +308,7 @@ describe('MyAccountComponent', () => {
           expect(folderId).toBe(folder.id);
           expect(email).toBe(updatedUser.emailAddress);
           return of();
-        }
+        },
       );
 
       folderStub.update.mockImplementationOnce((folderId, pl) => {

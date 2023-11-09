@@ -92,7 +92,7 @@ describe('MdmHttpClientService', () => {
       const request = httpMock.expectOne(url);
       expect(request.request.method).toBe(httpMethod);
       request.flush(expectedResponseBody);
-    }
+    },
   );
 
   it('should throw an error from a HTTPErrorResponse', () => {
@@ -129,7 +129,7 @@ describe('MdmHttpClientService', () => {
     const testHttpRequest = (
       options: RequestSettings,
       expectedStatus: number,
-      expectedBroadcastEvent: BroadcastEvent
+      expectedBroadcastEvent: BroadcastEvent,
     ) => {
       service.process(url, options).subscribe({
         next: () => {
@@ -146,12 +146,12 @@ describe('MdmHttpClientService', () => {
         {
           status: expectedStatus,
           statusText: 'Failed',
-        }
+        },
       );
 
       expect(broadcastStub.dispatch).toHaveBeenCalledWith(
         expectedBroadcastEvent,
-        expect.any(Object)
+        expect.any(Object),
       );
     };
 
@@ -163,7 +163,7 @@ describe('MdmHttpClientService', () => {
           withCredentials: true,
         },
         0,
-        'http-application-offline'
+        'http-application-offline',
       );
     });
 
@@ -175,7 +175,7 @@ describe('MdmHttpClientService', () => {
           withCredentials: true,
         },
         401,
-        'http-not-authorized'
+        'http-not-authorized',
       );
     });
 
@@ -187,7 +187,7 @@ describe('MdmHttpClientService', () => {
           withCredentials: true,
         },
         504,
-        'http-server-timeout'
+        'http-server-timeout',
       );
     });
 
@@ -200,7 +200,7 @@ describe('MdmHttpClientService', () => {
           handleGetErrors: true, // Triggers internal handling of error
         },
         404,
-        'http-not-found'
+        'http-not-found',
       );
     });
 
@@ -213,7 +213,7 @@ describe('MdmHttpClientService', () => {
           handleGetErrors: true, // Triggers internal handling of error
         },
         400,
-        'http-not-found'
+        'http-not-found',
       );
     });
 
@@ -225,7 +225,7 @@ describe('MdmHttpClientService', () => {
           withCredentials: true,
         },
         501,
-        'http-not-implemented'
+        'http-not-implemented',
       );
     });
 
@@ -237,7 +237,7 @@ describe('MdmHttpClientService', () => {
           withCredentials: true,
         },
         500,
-        'http-server-error'
+        'http-server-error',
       );
     });
   });

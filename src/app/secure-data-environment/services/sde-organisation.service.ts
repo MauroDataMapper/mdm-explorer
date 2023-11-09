@@ -19,9 +19,8 @@ SPDX-License-Identifier: Apache-2.0
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SdeOrganisationService {
-
-  constructor() { }
+  constructor() {}
 }

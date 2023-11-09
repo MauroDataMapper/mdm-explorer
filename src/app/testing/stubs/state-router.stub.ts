@@ -21,11 +21,11 @@ import { KnownRouterPath } from 'src/app/core/state-router.service';
 
 export type StateRouterNavigateToFn = (
   fragments: any[],
-  queryParams?: Params
+  queryParams?: Params,
 ) => Promise<boolean>;
 export type StateRouterNavigateToKnownPathFn = (
   path: KnownRouterPath,
-  queryParams?: Params
+  queryParams?: Params,
 ) => Promise<boolean>;
 export type StateRouterNavigateToNotFoundFn = () => Promise<boolean>;
 

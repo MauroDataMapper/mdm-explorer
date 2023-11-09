@@ -32,7 +32,7 @@ export class MauroModule {
   }
 
   static forRoot(
-    configuration: MdmResourcesConfiguration
+    configuration: MdmResourcesConfiguration,
   ): ModuleWithProviders<MauroModule> {
     return {
       ngModule: MauroModule,

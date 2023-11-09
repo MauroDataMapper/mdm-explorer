@@ -32,18 +32,18 @@ export type ProfileGetFn = (
   catalogueItemDomainType: CatalogueItemDomainType,
   catalogueItemId: Uuid,
   profileNamespace: string,
-  profileName: string
+  profileName: string,
 ) => Observable<Profile>;
 
 export type ProfileDefinitionFn = (
   profileNamespace: string,
-  profileName: string
+  profileName: string,
 ) => Observable<ProfileDefinition>;
 
 export type ProfileSearchFn = (
   profileNamespace: string,
   profileName: string,
-  query: SearchQueryParameters
+  query: SearchQueryParameters,
 ) => Observable<MdmIndexBody<ProfileSearchResult>>;
 
 export type ProfileSearchCatalogueItemFn = (
@@ -51,7 +51,7 @@ export type ProfileSearchCatalogueItemFn = (
   id: Uuid,
   profileNamespace: string,
   profileName: string,
-  query: SearchQueryParameters
+  query: SearchQueryParameters,
 ) => Observable<MdmIndexBody<ProfileSearchResult>>;
 
 export interface MdmProfileResourcesStub {

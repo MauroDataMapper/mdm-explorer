@@ -39,7 +39,7 @@ export class SelectionExpandedDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<SelectionExpandedDialogComponent>,
     private selectionService: SelectionService,
-    @Inject(MAT_DIALOG_DATA) data: SelectionExpandedDialogData
+    @Inject(MAT_DIALOG_DATA) data: SelectionExpandedDialogData,
   ) {
     this.selectedElements$ = selectionService.list$;
     this.sourceTargetIntersections = data.sourceTargetIntersections;

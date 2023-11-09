@@ -60,7 +60,7 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
     private dataSpecification: DataSpecificationService,
     private explorer: DataExplorerService,
     private toastr: ToastrService,
-    private broadcast: BroadcastService
+    private broadcast: BroadcastService,
   ) {
     this.sourceTargetIntersections = {
       dataSpecifications: [],
@@ -75,7 +75,9 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
         .list()
         .subscribe((dataSpecifications: DataSpecification[]) => {
           this.openDataSpecifications = [
-            ...dataSpecifications.filter((dataSpecification) => dataSpecification.status === 'unsent'),
+            ...dataSpecifications.filter(
+              (dataSpecification) => dataSpecification.status === 'unsent',
+            ),
           ];
         });
     }
@@ -98,7 +100,7 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
 
   onAddToDataSpecification(event: AddToDataSpecificationEvent) {
     alert(
-      `Add bookmark: ${event.item} to data specification with Id: ${event.dataSpecificationId}`
+      `Add bookmark: ${event.item} to data specification with Id: ${event.dataSpecificationId}`,
     );
   }
 
@@ -108,7 +110,7 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
     });
 
     this.userBookmarks = this.userBookmarks.filter(
-      (bookmark) => bookmark.id !== event.item.id
+      (bookmark) => bookmark.id !== event.item.id,
     );
   }
 
@@ -143,7 +145,7 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
       .on('data-specification-added')
       .pipe(
         takeUntil(this.unsubscribe$),
-        switchMap(() => this.loadIntersections(this.userBookmarks))
+        switchMap(() => this.loadIntersections(this.userBookmarks)),
       )
       .subscribe((intersections) => {
         this.sourceTargetIntersections = intersections;
@@ -165,7 +167,7 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
         }),
         switchMap((bookmarks: DataElementSearchResult[]) => {
           return forkJoin([this.loadIntersections(bookmarks), of(bookmarks)]);
-        })
+        }),
       )
       .subscribe(([intersections, bookmarks]) => {
         this.sourceTargetIntersections = intersections;
@@ -194,9 +196,9 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
 
         return this.dataSpecification.getDataSpecificationIntersections(
           dataModel.id,
-          dataElementIds
+          dataElementIds,
         );
-      })
+      }),
     );
   }
 

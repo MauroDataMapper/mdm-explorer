@@ -126,7 +126,7 @@ describe('DataElementSearchService', () => {
               }),
             },
           });
-        }
+        },
       );
 
       const expected$ = cold('--a|', { a: expectedResultSet });
@@ -139,7 +139,7 @@ describe('DataElementSearchService', () => {
     it('should throw an error if no root Data Model exists', () => {
       const expectedError = new Error('fail');
       dataExplorerStub.getRootDataModel.mockImplementationOnce(() =>
-        cold('#', null, expectedError)
+        cold('#', null, expectedError),
       );
 
       const expected$ = cold('#', null, expectedError);
@@ -210,7 +210,7 @@ describe('DataElementSearchService', () => {
               }),
             },
           });
-        }
+        },
       );
 
       const expected$ = cold('----a|', { a: expectedResultSet });

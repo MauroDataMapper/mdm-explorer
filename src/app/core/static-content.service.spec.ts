@@ -68,6 +68,6 @@ describe('StaticContentService', () => {
       const request = httpMock.expectOne(expectedUrl);
       expect(request.request.method).toBe('GET');
       request.flush(expectedContent);
-    }
+    },
   );
 });

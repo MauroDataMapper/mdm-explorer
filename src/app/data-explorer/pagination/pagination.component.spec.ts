@@ -68,7 +68,7 @@ describe('PaginationComponent', () => {
     pageSize: number,
     totalResults: number,
     expectedTotalPages: number,
-    expectedPages: number[]
+    expectedPages: number[],
   ) => {
     harness.component.currentPage = currentPage;
     harness.component.pageSize = pageSize;
@@ -89,9 +89,9 @@ describe('PaginationComponent', () => {
         pageSize,
         totalResults,
         expectedTotalPages,
-        expectedPages
+        expectedPages,
       );
-    }
+    },
   );
 
   it.each(pageNumberTestCases)(
@@ -103,9 +103,9 @@ describe('PaginationComponent', () => {
         pageSize,
         totalResults,
         expectedTotalPages,
-        expectedPages
+        expectedPages,
       );
-    }
+    },
   );
 
   it('should not select a page if selecting the same current page', () => {

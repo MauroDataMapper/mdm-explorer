@@ -48,7 +48,7 @@ export class TerminologyService {
    */
   getModel(
     id: Uuid,
-    domainType?: CatalogueItemDomainType
+    domainType?: CatalogueItemDomainType,
   ): Observable<TerminologyDetail> {
     const request$ =
       domainType === CatalogueItemDomainType.CodeSet
@@ -68,7 +68,7 @@ export class TerminologyService {
   listTerms(
     id: Uuid,
     domainType?: CatalogueItemDomainType,
-    query?: FilterQueryParameters
+    query?: FilterQueryParameters,
   ): Observable<MdmIndexBody<Term>> {
     const request$ =
       domainType === CatalogueItemDomainType.CodeSet

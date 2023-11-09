@@ -185,7 +185,7 @@ describe('DataElementComponent', () => {
 
   const setupDataSpecificationService = () => {
     dataSpecificationStub.getDataSpecificationIntersections.mockReturnValue(
-      of({ dataSpecifications: [], sourceTargetIntersections: [] })
+      of({ dataSpecifications: [], sourceTargetIntersections: [] }),
     );
   };
 
@@ -236,10 +236,10 @@ describe('DataElementComponent', () => {
     harness.component.researchProfile = profile;
     harness.detectChanges();
     const headingContainers = Array.from(
-      dom.querySelectorAll('h2') as NodeList
+      dom.querySelectorAll('h2') as NodeList,
     ) as HTMLElement[];
     const profileContainer = headingContainers.find((heading) =>
-      heading.innerHTML.includes('Profile')
+      heading.innerHTML.includes('Profile'),
     );
     expect(profileContainer).toBeTruthy();
     // any further details of the profile display should be tested within the data-element-profile.component tests
@@ -253,10 +253,9 @@ describe('DataElementComponent', () => {
     const breadcrumbs: Breadcrumb[] | undefined = component.dataElement?.breadcrumbs;
     /* eslint-disable @typescript-eslint/no-non-null-assertion */
     const breadcrumbMatcher = new RegExp(
-      `.*${breadcrumbs![1].label}.*\\&gt;.*${breadcrumbs![2].label}.*\\&gt;.*${
-        component.dataElement?.label
-      }.*`,
-      's'
+      `.*${breadcrumbs![1].label}.*\\&gt;.*${breadcrumbs![2].label}.*\\&gt;.*${component
+        .dataElement?.label}.*`,
+      's',
     );
     /* eslint-enable @typescript-eslint/no-non-null-assertion */
     expect(breadcrumbContainer.innerHTML).toMatch(breadcrumbMatcher);

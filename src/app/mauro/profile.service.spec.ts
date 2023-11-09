@@ -69,7 +69,7 @@ describe('ProfileService', () => {
               body: expectedProfile,
             },
           });
-        }
+        },
       );
 
       const expected$ = cold('--a|', { a: expectedProfile });
@@ -77,7 +77,7 @@ describe('ProfileService', () => {
         CatalogueItemDomainType.DataElement,
         '1',
         'namespace',
-        'name'
+        'name',
       );
       expect(actual$).toBeObservable(expected$);
     });
@@ -180,7 +180,7 @@ describe('ProfileService', () => {
               },
             },
           });
-        }
+        },
       );
 
       const expected$ = cold('--a|', {
@@ -191,7 +191,7 @@ describe('ProfileService', () => {
         id,
         profileNamespace,
         profileName,
-        query
+        query,
       );
       expect(actual$).toBeObservable(expected$);
     });

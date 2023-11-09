@@ -102,14 +102,14 @@ describe('DataSchemaRowComponent', () => {
       harness.component.expanded = initialState;
       harness.component.toggleExpanded();
       expect(harness.component.expanded).toBe(!initialState);
-    }
+    },
   );
 
   describe('ngOnModelChange', () => {
     it('should not raise a updateAllOrSomeChildrenSelected when model changes but has no data schema', () => {
       const emitSpy = jest.spyOn(
         harness.component.updateAllOrSomeChildrenSelected,
-        'emit'
+        'emit',
       );
       harness.component.onNgModelChange();
       expect(emitSpy).not.toHaveBeenCalled();
@@ -118,7 +118,7 @@ describe('DataSchemaRowComponent', () => {
     it('should raise a updateAllOrSomeChildrenSelected when has a data schema, and model changes', () => {
       const emitSpy = jest.spyOn(
         harness.component.updateAllOrSomeChildrenSelected,
-        'emit'
+        'emit',
       );
 
       harness.component.dataSchema = dataSchema;
@@ -132,7 +132,7 @@ describe('DataSchemaRowComponent', () => {
     it('should not raise an event when there is no dataSchema', () => {
       const emitSpy = jest.spyOn(
         harness.component.updateAllOrSomeChildrenSelected,
-        'emit'
+        'emit',
       );
       harness.component.updateAllChildrenSelectedHandler();
       expect(emitSpy).not.toHaveBeenCalled();
@@ -141,7 +141,7 @@ describe('DataSchemaRowComponent', () => {
     it('should raise an event and state dataSchema is not selected when only some data elements are checked', () => {
       const emitSpy = jest.spyOn(
         harness.component.updateAllOrSomeChildrenSelected,
-        'emit'
+        'emit',
       );
 
       dataSchemasStub.reduceDataElementsFromSchema.mockImplementationOnce(() => {
@@ -162,7 +162,7 @@ describe('DataSchemaRowComponent', () => {
     it('should raise an event and state dataSchema is selected when all data elements are checked', () => {
       const emitSpy = jest.spyOn(
         harness.component.updateAllOrSomeChildrenSelected,
-        'emit'
+        'emit',
       );
 
       dataSchemasStub.reduceDataElementsFromSchema.mockImplementationOnce(() => {

@@ -33,9 +33,9 @@ export class NotImplementedComponent extends ErrorComponent {
 
     this.heading = 'Not Implemented';
     this.message =
-      'We\'re sorry, but the server responded to say that the feature you have requested has not yet been implemented';
+      "We're sorry, but the server responded to say that the feature you have requested has not yet been implemented";
     this.resolution =
-      'If you are running a development or test instance of the server, this may be something we\'re currently working on.';
+      "If you are running a development or test instance of the server, this may be something we're currently working on.";
 
     this.data.push({ name: 'Message', value: this.lastHttpError?.message, code: false });
     this.data.push({ name: 'Status', value: this.lastHttpError?.status, code: false });

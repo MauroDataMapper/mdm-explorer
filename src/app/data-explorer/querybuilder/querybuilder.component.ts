@@ -78,7 +78,7 @@ export class QueryBuilderComponent implements OnInit {
 
   constructor(
     private terminology: TerminologyService,
-    private queryBuilderService: QueryBuilderService
+    private queryBuilderService: QueryBuilderService,
   ) {}
 
   get hasFields(): boolean {
@@ -130,7 +130,7 @@ export class QueryBuilderComponent implements OnInit {
               };
             }),
           };
-        })
+        }),
       )
       .subscribe((results: AutocompleteSelectOptionSet) => {
         this.termSearchResults[rule.field] = results;

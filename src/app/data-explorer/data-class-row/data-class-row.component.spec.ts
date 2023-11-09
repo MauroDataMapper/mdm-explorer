@@ -93,7 +93,7 @@ describe('DataClassRowComponent', () => {
       harness.component.dataClassWithElements = dataClassWithElements;
       harness.component.ngOnInit();
       expect(harness.component.classElements).toStrictEqual(
-        dataClassWithElements.dataElements
+        dataClassWithElements.dataElements,
       );
     });
   });
@@ -154,7 +154,7 @@ describe('DataClassRowComponent', () => {
       harness.component.expanded = initialState;
       harness.component.toggleExpanded();
       expect(harness.component.expanded).toBe(!initialState);
-    }
+    },
   );
 
   describe('event handlers', () => {

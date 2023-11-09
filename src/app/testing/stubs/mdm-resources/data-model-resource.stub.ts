@@ -37,41 +37,41 @@ import { Observable } from 'rxjs';
 export type DataModelGetFn = (id: Uuid) => Observable<DataModelDetailResponse>;
 export type DataModelSearchFn = (
   id: Uuid,
-  query?: SearchQueryParameters
+  query?: SearchQueryParameters,
 ) => Observable<CatalogueItemSearchResponse>;
 
 export type DataModelListInFolderFn = (
   id: Uuid,
-  query?: SearchQueryParameters
+  query?: SearchQueryParameters,
 ) => Observable<DataModelIndexResponse>;
 
 export type DataModelHierarchyFn = (id: Uuid) => Observable<DataModelFullResponse>;
 
 export type DataModelAddToFolderFn = (
   folderId: Uuid,
-  payload: DataModelCreatePayload
+  payload: DataModelCreatePayload,
 ) => Observable<DataModelDetailResponse>;
 
 export type DataModelCopySubsetFn = (
   sourceId: Uuid,
   targetId: Uuid,
-  payload: DataModelSubsetPayload
+  payload: DataModelSubsetPayload,
 ) => Observable<DataModelDetail>;
 
 export type DataModelBranchVersionFn = (
   id: string,
-  data: Payload | BranchModelPayload
+  data: Payload | BranchModelPayload,
 ) => Observable<DataModelDetailResponse>;
 
 export type DataModelForkVersionFn = (
   id: Uuid,
-  payload: ForkModelPayload
+  payload: ForkModelPayload,
 ) => Observable<DataModelDetailResponse>;
 
 export type UpdateDataModelFn<Payload extends ModelUpdatePayload> = (
   id: Uuid,
   data: Payload,
-  options?: RequestSettings
+  options?: RequestSettings,
 ) => Observable<DataModelDetailResponse>;
 
 export interface MdmDataModelResourcesStub {

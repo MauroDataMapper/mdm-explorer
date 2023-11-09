@@ -78,7 +78,7 @@ describe('ResearchPluginService', () => {
       (ident) => {
         expect(ident).toBe(id);
         return cold('--a|', { a: { body: {} } });
-      }
+      },
     );
 
     endpointsStub.dataModel.get.mockImplementationOnce((ident) => {

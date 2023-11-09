@@ -149,7 +149,7 @@ describe('MyDataSpecificationsComponent', () => {
     expect(harness.component.state).toBe('idle');
     expect(harness.component.allDataSpecifications).toStrictEqual(dataSpecifications);
     expect(harness.component.filteredDataSpecifications).toStrictEqual(
-      dataSpecifications
+      dataSpecifications,
     ); // No filters yet
   });
 
@@ -157,7 +157,7 @@ describe('MyDataSpecificationsComponent', () => {
     mockSignedInUser();
 
     researchPluginStub.getLatestModelDataSpecifications.mockImplementationOnce(() =>
-      throwError(() => new Error())
+      throwError(() => new Error()),
     );
 
     harness.component.ngOnInit();
@@ -216,7 +216,7 @@ describe('MyDataSpecificationsComponent', () => {
 
       expect(harness.component.statusFilters).toStrictEqual(['submitted', 'unsent']);
       expect(harness.component.filteredDataSpecifications).toStrictEqual(
-        dataSpecifications
+        dataSpecifications,
       );
     });
 
@@ -229,9 +229,9 @@ describe('MyDataSpecificationsComponent', () => {
 
         expect(harness.component.statusFilters).toStrictEqual([status]);
         expect(harness.component.filteredDataSpecifications).toStrictEqual(
-          dataSpecifications.filter((r) => r.status === status)
+          dataSpecifications.filter((r) => r.status === status),
         );
-      }
+      },
     );
   });
 });

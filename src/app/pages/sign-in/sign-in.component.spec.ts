@@ -111,7 +111,7 @@ describe('SignInComponent', () => {
 
       featuresStub.useOpenIdConnect = true;
       securityStub.getOpenIdConnectProviders.mockImplementationOnce(() =>
-        of(expectedProviders)
+        of(expectedProviders),
       );
       harness.component.ngOnInit();
 
@@ -160,9 +160,9 @@ describe('SignInComponent', () => {
             new LoginError(
               new HttpErrorResponse({
                 status: 401,
-              })
-            )
-        )
+              }),
+            ),
+        ),
       );
 
       harness.component.signIn({ userName: 'invalid', password: 'wrong' });

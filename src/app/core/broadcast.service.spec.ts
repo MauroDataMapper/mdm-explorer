@@ -47,6 +47,6 @@ describe('BroadcastService', () => {
       const actual$ = service.on(event);
 
       expect(actual$).toBeObservable(expected$);
-    }
+    },
   );
 });

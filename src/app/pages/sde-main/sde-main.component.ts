@@ -30,5 +30,5 @@ export class SdeMainComponent implements OnInit {
     this.isLoggedInToSde = !!this.user.get()?.sdeAuthToken;
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {}
 }

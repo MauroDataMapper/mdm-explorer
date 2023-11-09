@@ -73,7 +73,7 @@ export class DataClassRowComponent implements OnInit {
       return;
     }
     this.dataClassWithElements.dataClass.isSelected = this.classElements.every(
-      (dataElement) => dataElement.isSelected
+      (dataElement) => dataElement.isSelected,
     );
 
     this.updateAllChildrenSelected.emit();

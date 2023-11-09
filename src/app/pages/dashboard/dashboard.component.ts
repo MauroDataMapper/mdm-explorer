@@ -43,7 +43,7 @@ export class DashboardComponent implements OnInit {
     private security: SecurityService,
     private stateRouter: StateRouterService,
     private dataSpecification: DataSpecificationService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
   ) {}
 
   get currentCardsHeightString(): string {
@@ -66,13 +66,13 @@ export class DashboardComponent implements OnInit {
       .pipe(
         catchError((error) => {
           this.toastr.error(
-            'Unable to retrieve your current data specifications from the server.'
+            'Unable to retrieve your current data specifications from the server.',
           );
           return throwError(() => error);
         }),
         map((dataSpecifications) =>
-          dataSpecifications.filter((specification) => specification.status === 'unsent')
-        )
+          dataSpecifications.filter((specification) => specification.status === 'unsent'),
+        ),
       )
       .subscribe((dataSpecifications: DataSpecification[]) => {
         this.currentUserDataSpecifications = [...dataSpecifications];
@@ -117,7 +117,7 @@ export class DashboardComponent implements OnInit {
         ? Math.max(
             ...currentUserDataSpecifications.map((x) => {
               return x.description ? x.description.length : 0;
-            })
+            }),
           )
         : 1;
 
@@ -141,7 +141,7 @@ export class DashboardComponent implements OnInit {
     // some padding.
     const baseHeightNeeded = 4;
     this.currentCardsHeight = Math.ceil(
-      this.itemCardNumerOfLinesToShow * 2 + baseHeightNeeded
+      this.itemCardNumerOfLinesToShow * 2 + baseHeightNeeded,
     );
   }
 }

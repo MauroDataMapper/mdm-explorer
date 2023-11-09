@@ -88,7 +88,7 @@ describe('BookmarkService', () => {
 
       expect(actual$).toBeObservable(expected$);
       expect(endpointsStub.catalogueUser.userPreferences).toHaveBeenCalledWith(
-        userDetails.id
+        userDetails.id,
       );
     });
 
@@ -102,7 +102,7 @@ describe('BookmarkService', () => {
 
       expect(actual$).toBeObservable(expected$);
       expect(endpointsStub.catalogueUser.userPreferences).toHaveBeenCalledWith(
-        userDetails.id
+        userDetails.id,
       );
     });
 
@@ -305,7 +305,7 @@ describe('BookmarkService', () => {
         const actual$ = service.isBookmarked(dataElementToCheckId);
 
         expect(actual$).toBeObservable(expected$);
-      }
+      },
     );
 
     it('should return false if given the empty string', () => {

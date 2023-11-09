@@ -59,7 +59,7 @@ import { MomentDateAdapter } from '@angular/material-moment-adapter';
  * app during startup. It will initialise the configuration required for the application to continue functioning.
  */
 const appInitializerFactory = (
-  explorer: DataExplorerService
+  explorer: DataExplorerService,
 ): (() => Observable<DataExplorerConfiguration>) => {
   return () => explorer.initialise();
 };
@@ -79,7 +79,7 @@ const appInitializerFactory = (
  * thrown.
  */
 const dataExplorerConfigurationFactory = (
-  explorer: DataExplorerService
+  explorer: DataExplorerService,
 ): DataExplorerConfiguration => {
   if (!explorer.config) {
     throw new Error('DataExplorerService.initialse() has not been invoked');

@@ -29,5 +29,8 @@ export class ResearcherSdeResourcesConfig implements SdeResourcesConfig {
   colors = this.sdeColors;
   sdeEndpoint = environment.sdeResearcherEndpoint;
 
-  constructor(private researcherSdeSecurity: SdeSecurity, private sdeColors: SdeColors) {}
+  constructor(
+    private researcherSdeSecurity: SdeSecurity,
+    private sdeColors: SdeColors,
+  ) {}
 }

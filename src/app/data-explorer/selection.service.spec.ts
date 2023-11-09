@@ -23,7 +23,7 @@ import { SelectionService } from './selection.service';
 
 const sortDataElementSearchResults = (
   a: DataElementSearchResult,
-  b: DataElementSearchResult
+  b: DataElementSearchResult,
 ) => (a.id < b.id ? -1 : b.id < a.id ? 1 : 0);
 
 describe('SelectionService', () => {
@@ -50,7 +50,7 @@ describe('SelectionService', () => {
             ({
               id: id.toString(),
               label: `Element ${id}`,
-            } as DataElementSearchResult)
+            }) as DataElementSearchResult,
         );
 
         service.add(dataElementInstances);
@@ -58,9 +58,9 @@ describe('SelectionService', () => {
         const listResponse = await firstValueFrom(service.list$);
 
         expect(listResponse.sort(sortDataElementSearchResults)).toEqual(
-          dataElementInstances.sort(sortDataElementSearchResults)
+          dataElementInstances.sort(sortDataElementSearchResults),
         );
-      }
+      },
     );
 
     test.each([
@@ -80,7 +80,7 @@ describe('SelectionService', () => {
             ({
               id: id.toString(),
               label: `Element ${id}`,
-            } as DataElementSearchResult)
+            }) as DataElementSearchResult,
         );
 
         service.add(dataElementInstances);
@@ -102,7 +102,7 @@ describe('SelectionService', () => {
             ({
               id: id.toString(),
               label: `Element ${id}`,
-            } as DataElementSearchResult)
+            }) as DataElementSearchResult,
         );
 
         service.add(initialElements);
@@ -113,7 +113,7 @@ describe('SelectionService', () => {
 
         const listResponse = await firstValueFrom(service.list$);
         expect(listResponse.map((e) => e.id).sort()).toEqual(expected.sort());
-      }
+      },
     );
   });
 
@@ -133,7 +133,7 @@ describe('SelectionService', () => {
       const newService = new SelectionService();
       const listResponse = await firstValueFrom(newService.list$);
       expect(listResponse.sort(sortDataElementSearchResults)).toEqual(
-        addList.sort(sortDataElementSearchResults)
+        addList.sort(sortDataElementSearchResults),
       );
     });
 
@@ -156,7 +156,7 @@ describe('SelectionService', () => {
       const newService = new SelectionService();
       const listResponse = await firstValueFrom(newService.list$);
       expect(listResponse.sort(sortDataElementSearchResults)).toEqual(
-        expected.sort(sortDataElementSearchResults)
+        expected.sort(sortDataElementSearchResults),
       );
     });
 

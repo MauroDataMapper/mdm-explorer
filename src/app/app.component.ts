@@ -184,7 +184,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private toastr: ToastrService,
     private userIdle: UserIdleService,
     private error: ErrorService,
-    private themes: ThemeService
+    private themes: ThemeService,
   ) {
     // Load the theme into the DOM as the first thing to do
     this.themes.loadTheme().subscribe((theme) => {
@@ -204,8 +204,8 @@ export class AppComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe(() =>
         this.toastr.warning(
-          'Unfortunately there was a problem with connectivity. Please try again later.'
-        )
+          'Unfortunately there was a problem with connectivity. Please try again later.',
+        ),
       );
 
     this.broadcast
@@ -221,10 +221,10 @@ export class AppComponent implements OnInit, OnDestroy {
         }),
         map(
           (unsentDataSpecificationsCount) =>
-            (this.unsentDataSpecificationsCount = unsentDataSpecificationsCount)
-        )
+            (this.unsentDataSpecificationsCount = unsentDataSpecificationsCount),
+        ),
       )
-      .subscribe(() => { });
+      .subscribe(() => {});
 
     this.broadcast
       .on('sign-out-user')
@@ -236,7 +236,7 @@ export class AppComponent implements OnInit, OnDestroy {
       this.setupSignedInUser(user);
       this.getUnsentDataSpecificationCount().subscribe(
         (unsentDataSpecificationsCount) =>
-          (this.unsentDataSpecificationsCount = unsentDataSpecificationsCount)
+          (this.unsentDataSpecificationsCount = unsentDataSpecificationsCount),
       );
     }
 
@@ -274,16 +274,16 @@ export class AppComponent implements OnInit, OnDestroy {
       .pipe(
         catchError((error: MdmHttpError) => {
           console.log(
-            `There was a problem signing out: ${error.response.status} ${error.response.message}`
+            `There was a problem signing out: ${error.response.status} ${error.response.message}`,
           );
           return EMPTY;
         }),
         finalize(() => {
           this.setupSignedInUser(null);
           this.stateRouter.navigateToKnownPath('');
-        })
+        }),
       )
-      .subscribe(() => { });
+      .subscribe(() => {});
   }
 
   private attemptToSignInAndSetupSdeUser(user: UserDetails): Observable<UserDetails> {
@@ -294,7 +294,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.userDetails.set(user);
 
         return user;
-      })
+      }),
     );
   }
 
@@ -322,15 +322,15 @@ export class AppComponent implements OnInit, OnDestroy {
     return this.dataSpecification.list().pipe(
       catchError(() => {
         this.toastr.error(
-          'There was a problem locating your current data specifications.'
+          'There was a problem locating your current data specifications.',
         );
         return EMPTY;
       }),
       map((dataSpecifications) => {
         return dataSpecifications.filter(
-          (specification) => specification.status === 'unsent'
+          (specification) => specification.status === 'unsent',
         ).length;
-      })
+      }),
     );
   }
 
@@ -342,10 +342,10 @@ export class AppComponent implements OnInit, OnDestroy {
         switchMap(() => this.getUnsentDataSpecificationCount()),
         map(
           (unsentDataSpecificationsCount) =>
-            (this.unsentDataSpecificationsCount = unsentDataSpecificationsCount)
-        )
+            (this.unsentDataSpecificationsCount = unsentDataSpecificationsCount),
+        ),
       )
-      .subscribe(() => { });
+      .subscribe(() => {});
 
     this.broadcast
       .on('data-specification-submitted')
@@ -354,10 +354,10 @@ export class AppComponent implements OnInit, OnDestroy {
         switchMap(() => this.getUnsentDataSpecificationCount()),
         map(
           (unsentDataSpecificationsCount) =>
-            (this.unsentDataSpecificationsCount = unsentDataSpecificationsCount)
-        )
+            (this.unsentDataSpecificationsCount = unsentDataSpecificationsCount),
+        ),
       )
-      .subscribe(() => { });
+      .subscribe(() => {});
   }
 
   private setupIdleTimer() {
@@ -365,7 +365,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.userIdle
       .onTimerStart()
       .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(() => { });
+      .subscribe(() => {});
 
     let lastCheck = new Date();
     this.userIdle

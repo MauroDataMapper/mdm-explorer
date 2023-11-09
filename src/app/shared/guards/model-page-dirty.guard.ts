@@ -41,12 +41,12 @@ export class ModelPageDirtyGuard implements CanDeactivate<IModelPage> {
     component: IModelPage,
     _currentRoute: ActivatedRouteSnapshot,
     _currentState: RouterStateSnapshot,
-    _nextState?: RouterStateSnapshot
+    _nextState?: RouterStateSnapshot,
   ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     const isDirty = component.isDirty();
     if (isDirty) {
       const response = confirm(
-        'There are unsaved changes, are you sure you want to leave?'
+        'There are unsaved changes, are you sure you want to leave?',
       );
       return response;
     }

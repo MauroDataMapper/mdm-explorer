@@ -79,7 +79,7 @@ describe('DataExplorerService', () => {
   describe('initialise', () => {
     it('should fail if error occurred getting api properties', () => {
       apiPropertiesStub.listPublic.mockImplementationOnce(() =>
-        cold('#', null, new Error())
+        cold('#', null, new Error()),
       );
 
       const expected$ = cold('#', null, new Error());
@@ -96,7 +96,7 @@ describe('DataExplorerService', () => {
               value: 'wrongValue',
             },
           ],
-        })
+        }),
       );
 
       const expected$ = cold('--#', null, new Error());
@@ -121,7 +121,7 @@ describe('DataExplorerService', () => {
       apiPropertiesStub.listPublic.mockImplementationOnce(() =>
         cold('--a|', {
           a: properties,
-        })
+        }),
       );
 
       const expectedConfig: DataExplorerConfiguration = {
@@ -150,7 +150,7 @@ describe('DataExplorerService', () => {
       };
 
       researchPluginStub.rootDataModel.mockImplementationOnce(() =>
-        cold('--a|', { a: dataModel })
+        cold('--a|', { a: dataModel }),
       );
 
       const expected$ = cold('--a|', {
@@ -164,7 +164,7 @@ describe('DataExplorerService', () => {
 
   describe('profile filter fields', () => {
     const createProfileDefinition = (
-      dataType: ProfileFieldDataType
+      dataType: ProfileFieldDataType,
     ): ProfileDefinition => {
       return {
         sections: [
@@ -233,7 +233,7 @@ describe('DataExplorerService', () => {
         const expected$ = cold('--a|', { a: [] });
         const actual$ = service.getProfileFieldsForFilters();
         expect(actual$).toBeObservable(expected$);
-      }
+      },
     );
 
     it.each(supportedDataTypes)(
@@ -249,7 +249,7 @@ describe('DataExplorerService', () => {
         const expected$ = cold('--a|', { a: expectedFields });
         const actual$ = service.getProfileFieldsForFilters();
         expect(actual$).toBeObservable(expected$);
-      }
+      },
     );
   });
 });

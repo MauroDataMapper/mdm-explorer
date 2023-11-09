@@ -157,7 +157,7 @@ describe('DataElementMultiSelectComponent', () => {
       expect(spy).not.toHaveBeenCalled();
     });
 
-    it('should transition to data specifications page if DataSpecificationCreatedAction is \'view-data-specifications\'', () => {
+    it("should transition to data specifications page if DataSpecificationCreatedAction is 'view-data-specifications'", () => {
       // arrange
       dataSpecificationStub.createWithDialogs.mockImplementationOnce(() => {
         return of({
@@ -173,7 +173,7 @@ describe('DataElementMultiSelectComponent', () => {
       expect(navigateKnownSpy).toHaveBeenCalledWith('/dataSpecifications');
     });
 
-    it('should transition to data specification detail page if DataSpecificationCreatedAction is \'view-data-specification-detail\'', () => {
+    it("should transition to data specification detail page if DataSpecificationCreatedAction is 'view-data-specification-detail'", () => {
       // arrange
       dataSpecificationStub.createWithDialogs.mockImplementationOnce(() => {
         return of({
@@ -192,7 +192,7 @@ describe('DataElementMultiSelectComponent', () => {
       ]);
     });
 
-    it('should not transition to data specifications page if DataSpecificationCreatedAction is \'continue\'', () => {
+    it("should not transition to data specifications page if DataSpecificationCreatedAction is 'continue'", () => {
       // arrange
       dataSpecificationStub.createWithDialogs.mockImplementationOnce(() => {
         return of({

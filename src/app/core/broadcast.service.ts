@@ -41,7 +41,10 @@ export type BroadcastEvent =
  * Represents a message to broadcast with an optional data payload.
  */
 export class BroadcastMessage<TPayload = any> {
-  constructor(public event: BroadcastEvent, public payload?: TPayload) {}
+  constructor(
+    public event: BroadcastEvent,
+    public payload?: TPayload,
+  ) {}
 }
 
 /**
@@ -66,7 +69,7 @@ export class BroadcastService {
   on<TPayload = any>(event: BroadcastEvent): Observable<TPayload> {
     return this.handler.pipe(
       filter((message) => message.event === event),
-      map((message) => message.payload)
+      map((message) => message.payload),
     );
   }
 

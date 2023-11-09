@@ -112,7 +112,7 @@ describe('MyBookmarkComponent', () => {
         return of(bookmarks);
       });
       dataSpecificationStub.getDataSpecificationIntersections.mockImplementationOnce(() =>
-        of({} as DataSpecificationSourceTargetIntersections)
+        of({} as DataSpecificationSourceTargetIntersections),
       );
 
       harness.component.ngOnInit();
@@ -125,28 +125,28 @@ describe('MyBookmarkComponent', () => {
         return of(bookmarks);
       });
       dataSpecificationStub.getDataSpecificationIntersections.mockImplementationOnce(() =>
-        of(intersections)
+        of(intersections),
       );
 
       harness.component.ngOnInit();
 
       expect(harness.component.sourceTargetIntersections.dataSpecifications.length).toBe(
-        2
+        2,
       );
       expect(
-        harness.component.sourceTargetIntersections.sourceTargetIntersections.length
+        harness.component.sourceTargetIntersections.sourceTargetIntersections.length,
       ).toBe(2);
       expect(harness.component.sourceTargetIntersections.dataSpecifications[0]).toBe(
-        dataSpecification1
+        dataSpecification1,
       );
       expect(harness.component.sourceTargetIntersections.dataSpecifications[1]).toBe(
-        dataSpecification2
+        dataSpecification2,
       );
       expect(
-        harness.component.sourceTargetIntersections.sourceTargetIntersections[0]
+        harness.component.sourceTargetIntersections.sourceTargetIntersections[0],
       ).toBe(sti1);
       expect(
-        harness.component.sourceTargetIntersections.sourceTargetIntersections[1]
+        harness.component.sourceTargetIntersections.sourceTargetIntersections[1],
       ).toBe(sti2);
     });
   });
@@ -166,7 +166,7 @@ describe('MyBookmarkComponent', () => {
         harness.component.onChecked(event);
 
         expect(harness.component.userBookmarks).toStrictEqual(expected);
-      }
+      },
     );
   });
 

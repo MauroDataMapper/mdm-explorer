@@ -120,7 +120,7 @@ describe('VersionSelectorComponent', () => {
         displayName: 'V2.0.0',
       });
       expect(harness.component.versionOptions).toStrictEqual(
-        expectedVersionOptionsFromModelTree
+        expectedVersionOptionsFromModelTree,
       );
     });
   });

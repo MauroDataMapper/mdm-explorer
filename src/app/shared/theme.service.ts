@@ -171,7 +171,7 @@ export const defaultTheme: Theme = {
 const mapKviToTypographyLevel = (
   items: KeyValueIdentifier[],
   key: string,
-  defaultValue: ThemeMaterialTypographyLevel
+  defaultValue: ThemeMaterialTypographyLevel,
 ) => {
   const value = getKviValue(items, key, '');
   if (value === '') {
@@ -183,7 +183,7 @@ const mapKviToTypographyLevel = (
   const parts = value.replace(/\s/g, '').split(',');
   if (parts.length !== 3) {
     console.warn(
-      `Theme value "${key}" does not have 3 values. Got "${value}", expected "fontSize, lineHeight, fontWeight"`
+      `Theme value "${key}" does not have 3 values. Got "${value}", expected "fontSize, lineHeight, fontWeight"`,
     );
     return defaultValue;
   }
@@ -248,7 +248,7 @@ export class ThemeService {
         console.error(error);
         return of(undefined);
       }),
-      map((props) => (props ? this.mapValuesToTheme(props) : defaultTheme))
+      map((props) => (props ? this.mapValuesToTheme(props) : defaultTheme)),
     );
   }
 
@@ -281,59 +281,59 @@ export class ThemeService {
           primary: getKviValue(
             props,
             'material.colors.primary',
-            defaultTheme.material.colors.primary
+            defaultTheme.material.colors.primary,
           ),
           accent: getKviValue(
             props,
             'material.colors.accent',
-            defaultTheme.material.colors.accent
+            defaultTheme.material.colors.accent,
           ),
           warn: getKviValue(
             props,
             'material.colors.warn',
-            defaultTheme.material.colors.warn
+            defaultTheme.material.colors.warn,
           ),
         },
         typography: {
           fontFamily: getKviValue(
             props,
             'material.typography.fontfamily',
-            defaultTheme.material.typography.fontFamily
+            defaultTheme.material.typography.fontFamily,
           ),
           body1: mapKviToTypographyLevel(
             props,
             'material.typography.bodyone',
-            defaultTheme.material.typography.body1
+            defaultTheme.material.typography.body1,
           ),
           body2: mapKviToTypographyLevel(
             props,
             'material.typography.bodytwo',
-            defaultTheme.material.typography.body2
+            defaultTheme.material.typography.body2,
           ),
           headline: mapKviToTypographyLevel(
             props,
             'material.typography.headline',
-            defaultTheme.material.typography.headline
+            defaultTheme.material.typography.headline,
           ),
           title: mapKviToTypographyLevel(
             props,
             'material.typography.title',
-            defaultTheme.material.typography.title
+            defaultTheme.material.typography.title,
           ),
           subheading1: mapKviToTypographyLevel(
             props,
             'material.typography.subheadingone',
-            defaultTheme.material.typography.subheading1
+            defaultTheme.material.typography.subheading1,
           ),
           subheading2: mapKviToTypographyLevel(
             props,
             'material.typography.subheadingtwo',
-            defaultTheme.material.typography.subheading2
+            defaultTheme.material.typography.subheading2,
           ),
           button: mapKviToTypographyLevel(
             props,
             'material.typography.button',
-            defaultTheme.material.typography.button
+            defaultTheme.material.typography.button,
           ),
           // Intentionally use hardcoded values for input typography, required for Angular Material theme to compile
           input: defaultTheme.material.typography.input,
@@ -343,12 +343,12 @@ export class ThemeService {
         hyperlink: getKviValue(
           props,
           'regularcolors.hyperlink',
-          defaultTheme.regularColors.hyperlink
+          defaultTheme.regularColors.hyperlink,
         ),
         dataSpecificationCount: getKviValue(
           props,
           'regularcolors.data-specification-count',
-          defaultTheme.regularColors.dataSpecificationCount
+          defaultTheme.regularColors.dataSpecificationCount,
         ),
       },
       contrastColors: {
@@ -356,17 +356,17 @@ export class ThemeService {
         unsentDataSpecification: getKviValue(
           props,
           'contrastcolors.unsent-data-specification',
-          defaultTheme.contrastColors.unsentDataSpecification
+          defaultTheme.contrastColors.unsentDataSpecification,
         ),
         submittedDataSpecification: getKviValue(
           props,
           'contrastcolors.submitted-data-specification',
-          defaultTheme.contrastColors.submittedDataSpecification
+          defaultTheme.contrastColors.submittedDataSpecification,
         ),
         classRow: getKviValue(
           props,
           'contrastcolors.classrow',
-          defaultTheme.contrastColors.classRow
+          defaultTheme.contrastColors.classRow,
         ),
       },
       images: {
@@ -417,7 +417,7 @@ export class ThemeService {
     const levels = Object.entries(typography)
       .filter(([property, _]) => property !== 'fontFamily')
       .map(([property, value]: [string, ThemeMaterialTypographyLevel]) =>
-        this.computeTypographyLevel(property, value)
+        this.computeTypographyLevel(property, value),
       )
       .reduce((prev, current) => {
         return {
@@ -471,7 +471,7 @@ export class ThemeService {
           [`--theme-color-${property}`]: tinycolor(value as string).toHexString(),
         };
       },
-      {}
+      {},
     );
 
     this.applyCss(regularColors);
@@ -507,7 +507,7 @@ export class ThemeService {
     const baseLight = tinycolor('#ffffff');
     const baseDark = ThemeService.multiply(
       tinycolor(baseHex).toRgb(),
-      tinycolor(baseHex).toRgb()
+      tinycolor(baseHex).toRgb(),
     );
 
     // Note: there is a bug in the original source code, commented out below. A tetrad is retrieved
@@ -533,19 +533,19 @@ export class ThemeService {
       this.getColorObject(tinycolor.mix(baseDark, baseHex, 25), '900'),
       this.getColorObject(
         tinycolor.mix(baseDark, triad4, 15).saturate(80).lighten(65),
-        'A100'
+        'A100',
       ),
       this.getColorObject(
         tinycolor.mix(baseDark, triad4, 15).saturate(80).lighten(55),
-        'A200'
+        'A200',
       ),
       this.getColorObject(
         tinycolor.mix(baseDark, triad4, 15).saturate(100).lighten(45),
-        'A400'
+        'A400',
       ),
       this.getColorObject(
         tinycolor.mix(baseDark, triad4, 15).saturate(100).lighten(40),
-        'A700'
+        'A700',
       ),
     ];
   }

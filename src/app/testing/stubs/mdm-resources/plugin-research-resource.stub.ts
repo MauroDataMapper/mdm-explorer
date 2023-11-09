@@ -30,10 +30,10 @@ import {
 } from 'src/app/mauro/plugins/plugin-research.resource';
 
 export type PluginResearchContactFn = (
-  data: PluginResearchContactPayload
+  data: PluginResearchContactPayload,
 ) => Observable<PluginResearchContactResponse>;
 export type PluginResearchSubmitDataSpecificationFn = (
-  id: Uuid
+  id: Uuid,
 ) => Observable<MdmResponse<any>>;
 export type PluginResearchUserFolderFn = () => Observable<MdmResponse<any>>;
 

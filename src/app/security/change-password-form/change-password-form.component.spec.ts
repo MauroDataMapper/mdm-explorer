@@ -84,7 +84,7 @@ describe('ChangePasswordFormComponent', () => {
       expectFieldInHiddenState(harness.component.fieldState[prop]);
       harness.component.toggleVisibility(prop);
       expectFieldInVisibleState(harness.component.fieldState[prop]);
-    }
+    },
   );
 
   it.each(fieldProperties)(
@@ -94,7 +94,7 @@ describe('ChangePasswordFormComponent', () => {
       expectFieldInVisibleState(harness.component.fieldState[prop]);
       harness.component.toggleVisibility(prop);
       expectFieldInHiddenState(harness.component.fieldState[prop]);
-    }
+    },
   );
 
   it.each([0, 20, 40, 60, 80, 100])(
@@ -102,7 +102,7 @@ describe('ChangePasswordFormComponent', () => {
     (value) => {
       harness.component.passwordStrengthChanged(value);
       expect(harness.component.passwordStrength?.value).toBe(value);
-    }
+    },
   );
 
   it('should emit a cancel event', () => {

@@ -37,10 +37,10 @@ export const configurationKeys = {
 
 const getExplorerApiProperty = (
   props: ApiProperty[],
-  key: string
+  key: string,
 ): ApiProperty | undefined => {
   return props.find(
-    (p) => p.category === configurationKeys.category && p.key === key && p.value
+    (p) => p.category === configurationKeys.category && p.key === key && p.value,
   );
 };
 
@@ -49,7 +49,7 @@ const getExplorerApiProperties = (props: ApiProperty[]) => {
     profileNamespace: getExplorerApiProperty(props, configurationKeys.profileNamespace),
     profileServiceName: getExplorerApiProperty(
       props,
-      configurationKeys.profileServiceName
+      configurationKeys.profileServiceName,
     ),
   };
 };
@@ -63,14 +63,14 @@ export class DataExplorerService {
   constructor(
     private apiProperties: ApiPropertiesService,
     private profiles: ProfileService,
-    private researchPlugin: ResearchPluginService
+    private researchPlugin: ResearchPluginService,
   ) {}
 
   initialise(): Observable<DataExplorerConfiguration> {
     return this.apiProperties.listPublic().pipe(
       catchError((error) => {
         console.error(
-          'Cannot initialise application - error when fetching configuration properties from Mauro'
+          'Cannot initialise application - error when fetching configuration properties from Mauro',
         );
         return throwError(() => error);
       }),
@@ -97,7 +97,7 @@ export class DataExplorerService {
         };
 
         return of(this.config);
-      })
+      }),
     );
   }
 
@@ -108,7 +108,7 @@ export class DataExplorerService {
   getProfileFieldsForFilters(): Observable<ProfileField[]> {
     if (!this.config) {
       return throwError(
-        () => new Error('DataExplorerService.initialise() has not been invoked')
+        () => new Error('DataExplorerService.initialise() has not been invoked'),
       );
     }
 
@@ -120,7 +120,7 @@ export class DataExplorerService {
           return definition.sections
             .flatMap((section: ProfileSection) => section.fields)
             .filter((field: ProfileField) => field.dataType === 'enumeration');
-        })
+        }),
       );
   }
 }

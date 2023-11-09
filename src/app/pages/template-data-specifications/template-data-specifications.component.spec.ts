@@ -110,7 +110,7 @@ describe('TemplateDataSpecificationsComponent', () => {
       const toastrSpy = jest.spyOn(toastrStub, 'error');
 
       dataSpecificationStub.listTemplates.mockImplementationOnce(() =>
-        throwError(() => new Error('list templates failed'))
+        throwError(() => new Error('list templates failed')),
       );
 
       harness.component.ngOnInit();
@@ -136,7 +136,7 @@ describe('TemplateDataSpecificationsComponent', () => {
 
     beforeEach(() => {
       dataSpecificationStub.getDataSpecificationFolder.mockImplementationOnce(() =>
-        of(dataSpecificationFolder)
+        of(dataSpecificationFolder),
       );
       dataSpecificationStub.forkWithDialogs.mockClear();
     });
@@ -152,7 +152,7 @@ describe('TemplateDataSpecificationsComponent', () => {
             label: 'copied data specification',
             status: 'unsent',
           });
-        }
+        },
       );
 
       harness.component.copy(dataSpecification);

@@ -56,7 +56,7 @@ export class DataSchemaRowComponent implements OnInit {
   ngOnInit(): void {
     if (this.dataSchema) {
       this.schemaElements = this.dataSchemaService.reduceDataElementsFromSchema(
-        this.dataSchema
+        this.dataSchema,
       );
     }
   }
@@ -115,7 +115,7 @@ export class DataSchemaRowComponent implements OnInit {
       return;
     }
     this.dataSchema.schema.isSelected = this.schemaElements.every(
-      (dataElement) => dataElement.isSelected
+      (dataElement) => dataElement.isSelected,
     );
 
     this.updateAllOrSomeChildrenSelected.emit();

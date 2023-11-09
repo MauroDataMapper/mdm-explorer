@@ -29,7 +29,10 @@ import { BroadcastEvent, BroadcastService } from '../core/broadcast.service';
   providedIn: 'root',
 })
 export class MdmHttpClientService implements MdmRestHandler {
-  constructor(private http: HttpClient, private broadcast: BroadcastService) {}
+  constructor(
+    private http: HttpClient,
+    private broadcast: BroadcastService,
+  ) {}
 
   process(url: string, options: RequestSettings) {
     if (
@@ -66,13 +69,13 @@ export class MdmHttpClientService implements MdmRestHandler {
           }
 
           return throwError(() => response);
-        })
+        }),
       );
   }
 
   private getBroadcastEvent(
     response: HttpErrorResponse,
-    options: RequestSettings
+    options: RequestSettings,
   ): BroadcastEvent | null {
     // For any GET requests that return 4XX response, automatically handle them unless overridden
     const handleGetErrors: boolean = options?.handleGetErrors ?? true;

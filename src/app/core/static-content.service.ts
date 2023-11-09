@@ -48,7 +48,7 @@ export class StaticContentService {
   constructor(
     private http: HttpClient,
     private sanitizer: DomSanitizer,
-    @Inject(STATIC_CONTENT_CONFIGURATION) private config: StaticContentConfiguration
+    @Inject(STATIC_CONTENT_CONFIGURATION) private config: StaticContentConfiguration,
   ) {
     this.contentHeaders = new HttpHeaders({
       'Content-Type': 'text/html',

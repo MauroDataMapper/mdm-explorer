@@ -32,7 +32,7 @@ export class NotFoundComponent extends ErrorComponent {
     super(clipboard, toastr, error);
 
     this.heading = 'Not Found';
-    this.message = 'We\'re sorry, but the server returned a \'Not Found\' error';
+    this.message = "We're sorry, but the server returned a 'Not Found' error";
     this.resolution =
       'You may need to check that the item you have requested actually exists, and that you have permission to view it';
 

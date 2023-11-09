@@ -157,7 +157,7 @@ describe('DataSpecificationQueryComponent', () => {
       const toastrSpy = jest.spyOn(toastrStub, 'error');
 
       dataSpecificationStub.get.mockImplementationOnce(() =>
-        throwError(() => new Error())
+        throwError(() => new Error()),
       );
 
       harness.component.ngOnInit();
@@ -189,7 +189,7 @@ describe('DataSpecificationQueryComponent', () => {
 
       expect(harness.component.status).toBe('ready');
       expect(harness.component.dataElements).toStrictEqual(
-        dataElements.map((de) => de as DataElementSearchResult)
+        dataElements.map((de) => de as DataElementSearchResult),
       );
       expect(harness.component.query).toBeUndefined();
       expect(harness.component.condition.rules).toStrictEqual([]);
@@ -245,7 +245,7 @@ describe('DataSpecificationQueryComponent', () => {
 
       expect(harness.component.status).toBe('ready');
       expect(harness.component.dataElements).toStrictEqual(
-        dataElements.map((de) => de as DataElementSearchResult)
+        dataElements.map((de) => de as DataElementSearchResult),
       );
       expect(harness.component.query).toStrictEqual(query);
       expect(harness.component.condition.rules).toStrictEqual(condition.rules);
