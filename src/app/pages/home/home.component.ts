@@ -33,7 +33,7 @@ export class HomeComponent implements OnInit {
   constructor(
     private security: SecurityService,
     private stateRouter: StateRouterService,
-    private staticContent: StaticContentService
+    private staticContent: StaticContentService,
   ) {}
 
   ngOnInit(): void {

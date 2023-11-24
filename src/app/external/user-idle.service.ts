@@ -76,7 +76,7 @@ export class UserIdleConfiguration {
 }
 
 export const USER_IDLE_CONFIGURATION = new InjectionToken<UserIdleConfiguration>(
-  'UserIdleConfiguration'
+  'UserIdleConfiguration',
 );
 
 @Injectable({
@@ -134,7 +134,7 @@ export class UserIdleService {
 
   constructor(
     @Optional() @Inject(USER_IDLE_CONFIGURATION) config: UserIdleConfiguration,
-    private ngZone: NgZone
+    private ngZone: NgZone,
   ) {
     if (config) {
       this.setConfig(config);
@@ -149,7 +149,7 @@ export class UserIdleService {
       this.activityEvents$ = merge(
         fromEvent(window, 'mousemove'),
         fromEvent(window, 'resize'),
-        fromEvent(document, 'keydown')
+        fromEvent(document, 'keydown'),
       );
     }
 
@@ -178,17 +178,17 @@ export class UserIdleService {
                     tap(() => {
                       this.isInactivityTimer = true;
                       this.timerStart$.next(true);
-                    })
-                  )
-                )
+                    }),
+                  ),
+                ),
               ),
               finalize(() => {
                 this.isIdleDetected = false;
                 this.idleDetected$.next(false);
-              })
-            )
-          )
-        )
+              }),
+            ),
+          ),
+        ),
       )
       .subscribe();
 
@@ -219,7 +219,7 @@ export class UserIdleService {
   onTimerStart(): Observable<number> {
     return this.timerStart$.pipe(
       distinctUntilChanged(),
-      switchMap((start) => (start && this.timer$ ? this.timer$ : of(null)))
+      switchMap((start) => (start && this.timer$ ? this.timer$ : of(null))),
     );
   }
 
@@ -237,7 +237,7 @@ export class UserIdleService {
     return this.timeout$.pipe(
       filter((timeout) => !!timeout),
       tap(() => (this.isTimeout = true)),
-      map(() => true)
+      map(() => true),
     );
   }
 
@@ -317,9 +317,9 @@ export class UserIdleService {
               if (elapsed >= timeout) {
                 this.timeout$.next(true);
               }
-            })
-          )
-        )
+            }),
+          ),
+        ),
       );
     });
   }

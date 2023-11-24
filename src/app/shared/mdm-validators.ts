@@ -35,7 +35,7 @@ import { DataSpecificationService } from 'src/app/data-explorer/data-specificati
  */
 export const mustMatch = (
   controlName: string,
-  matchingControlName: string
+  matchingControlName: string,
 ): ValidatorFn => {
   return (control: AbstractControl): ValidationErrors | null => {
     const firstControl = control.get(controlName);
@@ -72,7 +72,7 @@ export const mustMatch = (
  */
 export const dontAllowDuplicatedNames = (
   dataSpecificationService: DataSpecificationService,
-  dataSpecificationInitialName?: string
+  dataSpecificationInitialName?: string,
 ): AsyncValidatorFn => {
   return (control: AbstractControl): Observable<ValidationErrors | null> => {
     if (control) {
@@ -88,7 +88,7 @@ export const dontAllowDuplicatedNames = (
             return { duplicatedNames: true };
           }
           return null;
-        })
+        }),
       );
     }
     return of(null);

@@ -34,7 +34,7 @@ export interface TerminologyServiceStub {
     (
       id: Uuid,
       domainType?: CatalogueItemDomainType,
-      query?: FilterQueryParameters
+      query?: FilterQueryParameters,
     ) => Observable<MdmIndexBody<Term>>
   >;
 }

@@ -42,33 +42,33 @@ import { UserDetails } from 'src/app/security/user-details.service';
 export type DataSpecificationsGetFn = (id: string) => Observable<DataModel>;
 export type DataSpecificationsListFn = (username: string) => Observable<DataModel[]>;
 export type DataSpecificationsListElementsFn = (
-  dataSpecification: DataSpecification
+  dataSpecification: DataSpecification,
 ) => Observable<DataElementDto[]>;
 export type DataSpecificationsCreateFromDataClassFn = (
   dataSpecificationName: string,
   dataSpecificationDescription: string,
   user: UserDetails,
-  dataClass: DataClass
+  dataClass: DataClass,
 ) => Observable<[DataModel, string[]]>;
 export type DataSpecificationsCreateFromDataElementsFn = (
   elements: DataElementInstance[],
   user: UserDetails,
   name: string,
-  description: string
+  description: string,
 ) => Observable<DataSpecification>;
 export type CreateFromDialogsFn = (
-  callback: () => Observable<DataElementInstance[]>
+  callback: () => Observable<DataElementInstance[]>,
 ) => Observable<DataSpecificationCreatedResponse>;
 export type DataSpecificationsSourceTargetIntersectionsFn = (
-  sourceDataModelId: Uuid
+  sourceDataModelId: Uuid,
 ) => Observable<DataSpecificationSourceTargetIntersections>;
 export type DeleteDataElementMultipleFn = (
   elements: [DataElementInstance],
-  targetModel: DataModelDetail
+  targetModel: DataModelDetail,
 ) => Observable<DataElementMultipleOperationResult>;
 export type DataSpecificationsUpdateDataSpecificationsFolderFn = (
   folderId: Uuid,
-  label: string
+  label: string,
 ) => Observable<[DataModel, string[]]>;
 export type DataSpecificationGetDataSpecificationFolderFn =
   () => Observable<FolderDetail>;
@@ -76,14 +76,14 @@ export type DataSpecificationGetFolderNameFn = (userEmail: string) => string;
 export type DeleteDataElementsFromQueryFn = (
   dataSpecificationId: Uuid,
   type: DataSpecificationQueryType,
-  dataElementLabels: string[]
+  dataElementLabels: string[],
 ) => Observable<DataSpecificationQueryPayload>;
 export type IsDataSpecificationNameAvailableFn = (name: string) => Observable<boolean>;
 export type DeleteDataSchemaFn = (
-  dataSchema: DataClass
+  dataSchema: DataClass,
 ) => Observable<DataElementOperationResult>;
 export type DeleteDataClassFn = (
-  dataClass: DataClass
+  dataClass: DataClass,
 ) => Observable<DataElementOperationResult>;
 
 export interface DataSpecificationServiceStub {
@@ -96,7 +96,7 @@ export interface DataSpecificationServiceStub {
   forkWithDialogs: jest.MockedFunction<
     (
       dataSpecification: DataSpecification,
-      options?: ForkDataSpecificationOptions
+      options?: ForkDataSpecificationOptions,
     ) => Observable<DataSpecification>
   >;
   getDataSpecificationIntersections: jest.MockedFunction<DataSpecificationsSourceTargetIntersectionsFn>;
@@ -107,13 +107,13 @@ export interface DataSpecificationServiceStub {
   getQuery: jest.MockedFunction<
     (
       id: Uuid,
-      type: DataSpecificationQueryType
+      type: DataSpecificationQueryType,
     ) => Observable<DataSpecificationQuery | undefined>
   >;
   createOrUpdateQuery: jest.MockedFunction<
     (
       dataSpecificationId: string,
-      payload: DataSpecificationQueryPayload
+      payload: DataSpecificationQueryPayload,
     ) => Observable<DataSpecificationQuery>
   >;
   deleteDataElementsFromQuery: jest.MockedFunction<DeleteDataElementsFromQueryFn>;

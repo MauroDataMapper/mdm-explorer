@@ -102,7 +102,7 @@ export class DataElementInDataSpecificationComponent implements OnInit, OnDestro
     private toastr: ToastrService,
     private broadcast: BroadcastService,
     private explorer: DataExplorerService,
-    private dataModelService: DataModelService
+    private dataModelService: DataModelService,
   ) {
     this.user = security.getSignedInUser();
     this.sourceTargetIntersections = {
@@ -158,7 +158,7 @@ export class DataElementInDataSpecificationComponent implements OnInit, OnDestro
           switchMap((rootModel: DataModelDetail) => {
             return this.dataModelService.elementsInAnotherModel(
               rootModel,
-              this.dataElementSearchResultsToDataElementDTOs(dataElements)
+              this.dataElementSearchResultsToDataElementDTOs(dataElements),
             );
           }),
           switchMap((rootDataElements) => {
@@ -174,25 +174,25 @@ export class DataElementInDataSpecificationComponent implements OnInit, OnDestro
             if (event.checked) {
               // Do a subset add for this data element in the data specification
               datamodelSubsetPayload.additions = transposedDataElements.map(
-                (de) => de.id
+                (de) => de.id,
               );
             } else {
               // Do a subset remove for this data element in the data
               // specification
               datamodelSubsetPayload.deletions = transposedDataElements.map(
-                (de) => de.id
+                (de) => de.id,
               );
             }
             return this.endpoints.dataModel.copySubset(
               transposedDataElements[0].model,
               targetDataModelId,
-              datamodelSubsetPayload
+              datamodelSubsetPayload,
             );
           }),
           finalize(() => {
             this.processingChangedEvent = false;
             this.broadcast.loading({ isLoading: false });
-          })
+          }),
         )
         .subscribe(() => {
           // Communicate change to the outside world
@@ -251,8 +251,8 @@ export class DataElementInDataSpecificationComponent implements OnInit, OnDestro
             .filter((sti) => sti.intersects.includes(element!.id)) // eslint-disable-line @typescript-eslint/no-non-null-assertion
             .map((sti) => sti.targetDataModelId)
         : this.sourceTargetIntersections.sourceTargetIntersections
-            .filter((sti) =>
-              this.dataElements?.every((de) => sti.intersects.includes(de.id))
+            .filter(
+              (sti) => this.dataElements?.every((de) => sti.intersects.includes(de.id)),
             ) // eslint-disable-line @typescript-eslint/no-non-null-assertion
             .map((sti) => sti.targetDataModelId);
 
@@ -261,7 +261,7 @@ export class DataElementInDataSpecificationComponent implements OnInit, OnDestro
         return {
           dataModel: specification,
           containsElement: idsOfDataSpecificationsContainingElement.includes(
-            specification.id ?? ''
+            specification.id ?? '',
           ),
         };
       })
@@ -303,17 +303,17 @@ export class DataElementInDataSpecificationComponent implements OnInit, OnDestro
           return this.dataModelService.elementsInAnotherModel(
             rootModel,
             this.dataElementSearchResultsToDataElementDTOs(
-              this.dataElements ?? ([] as DataElementSearchResult[])
-            )
+              this.dataElements ?? ([] as DataElementSearchResult[]),
+            ),
           );
         }),
         switchMap((dataElements: DataElement[]) => {
           return of(
             dataElements.map((dataElement) => {
               return dataElement as DataElementInstance;
-            })
+            }),
           );
-        })
+        }),
       );
     };
 
@@ -346,7 +346,7 @@ export class DataElementInDataSpecificationComponent implements OnInit, OnDestro
   }
 
   private dataElementSearchResultsToDataElementDTOs(
-    dataElements: DataElementSearchResult[]
+    dataElements: DataElementSearchResult[],
   ): DataElementDto[] {
     return dataElements.map((element) => {
       return (
@@ -364,7 +364,7 @@ export class DataElementInDataSpecificationComponent implements OnInit, OnDestro
   }
 
   private dataElementDTOsToDataElementSearchResults(
-    dataElements: (DataElementDto | null)[]
+    dataElements: (DataElementDto | null)[],
   ): DataElementSearchResult[] {
     return dataElements.map((element) => {
       return (

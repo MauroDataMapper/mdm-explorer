@@ -98,7 +98,7 @@ export class OpenIdConnectAuthorizeComponent implements OnInit {
 
           return EMPTY;
         }),
-        finalize(() => (this.authorizing = false))
+        finalize(() => (this.authorizing = false)),
       )
       .subscribe(() => {
         this.verifyLoggedIn();

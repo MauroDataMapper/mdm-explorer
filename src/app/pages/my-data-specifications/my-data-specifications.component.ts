@@ -57,12 +57,12 @@ export class MyDataSpecificationsComponent implements OnInit {
   constructor(
     private security: SecurityService,
     private toastr: ToastrService,
-    private researcherPlugin: ResearchPluginService
+    private researcherPlugin: ResearchPluginService,
   ) {}
 
   get hasMultipleStatuses() {
     const statuses = this.allDataSpecifications.map(
-      (specification) => specification.status
+      (specification) => specification.status,
     );
     const distinct = new Set(statuses);
     return distinct.size > 1;
@@ -101,20 +101,20 @@ export class MyDataSpecificationsComponent implements OnInit {
       catchError(() => {
         this.toastr.error('There was a problem finding your data specifications.');
         return EMPTY;
-      })
+      }),
     );
   }
 
   private filterAndSortDataSpecifications(
     filters?: DataSpecificationStatus[],
-    sortBy?: SortByOption
+    sortBy?: SortByOption,
   ) {
     this.statusFilters = filters ?? ['submitted', 'unsent'];
     const filtered =
       this.statusFilters.length === 0
         ? this.allDataSpecifications
         : this.allDataSpecifications.filter((specification) =>
-            this.statusFilters.includes(specification.status)
+            this.statusFilters.includes(specification.status),
           );
 
     this.sortBy = sortBy ?? this.sortByDefaultOption;

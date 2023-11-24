@@ -64,7 +64,7 @@ export class RulesService {
     domainType: RuleDomainType,
     itemId: Uuid,
     ruleId: Uuid,
-    data: RulePayload
+    data: RulePayload,
   ): Observable<Rule> {
     return this.endpoints.catalogueItem
       .updateRule(domainType, itemId, ruleId, data)
@@ -80,7 +80,7 @@ export class RulesService {
   listRepresentations(
     domainType: RuleDomainType,
     itemId: Uuid,
-    ruleId: Uuid
+    ruleId: Uuid,
   ): Observable<RuleRepresentation[]> {
     return this.endpoints.catalogueItem
       .listRuleRepresentations(domainType, itemId, ruleId)
@@ -91,7 +91,7 @@ export class RulesService {
     domainType: RuleDomainType,
     itemId: Uuid,
     ruleId: Uuid,
-    representationId: Uuid
+    representationId: Uuid,
   ): Observable<RuleRepresentation> {
     return this.endpoints.catalogueItem
       .getRuleRepresentation(domainType, itemId, ruleId, representationId)
@@ -102,7 +102,7 @@ export class RulesService {
     domainType: RuleDomainType,
     itemId: Uuid,
     ruleId: Uuid,
-    data: RuleRepresentationPayload
+    data: RuleRepresentationPayload,
   ): Observable<RuleRepresentation> {
     return this.endpoints.catalogueItem
       .saveRuleRepresentation(domainType, itemId, ruleId, data)
@@ -114,7 +114,7 @@ export class RulesService {
     itemId: Uuid,
     ruleId: Uuid,
     representationId: Uuid,
-    data: RuleRepresentationPayload
+    data: RuleRepresentationPayload,
   ): Observable<RuleRepresentation> {
     return this.endpoints.catalogueItem
       .updateRuleRepresentation(domainType, itemId, ruleId, representationId, data)
@@ -125,7 +125,7 @@ export class RulesService {
     domainType: RuleDomainType,
     itemId: Uuid,
     ruleId: Uuid,
-    representationId: Uuid
+    representationId: Uuid,
   ): Observable<boolean> {
     return this.endpoints.catalogueItem
       .removeRuleRepresentation(domainType, itemId, ruleId, representationId)

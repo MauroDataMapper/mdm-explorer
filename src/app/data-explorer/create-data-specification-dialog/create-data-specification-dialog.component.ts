@@ -51,7 +51,7 @@ export class CreateDataSpecificationDialogComponent implements OnInit {
     >,
     @Inject(MAT_DIALOG_DATA)
     @Optional()
-    private data: CreateDataSpecificationDialogOptions
+    private data: CreateDataSpecificationDialogOptions,
   ) {}
 
   get name() {

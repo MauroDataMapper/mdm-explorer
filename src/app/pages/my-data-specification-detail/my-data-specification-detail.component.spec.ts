@@ -206,7 +206,7 @@ describe('MyDataSpecificationDetailComponent', () => {
     it('should display an error if failed to get data specifications', () => {
       // Arrange
       dataSpecificationStub.get.mockImplementationOnce(() =>
-        throwError(() => new Error())
+        throwError(() => new Error()),
       );
 
       // Act
@@ -221,7 +221,7 @@ describe('MyDataSpecificationDetailComponent', () => {
     it('should handle having no data specifications available', () => {
       // Arrange
       dataSpecificationStub.get.mockImplementationOnce(() =>
-        throwError(() => new HttpErrorResponse({}))
+        throwError(() => new HttpErrorResponse({})),
       );
 
       // Act
@@ -474,7 +474,7 @@ describe('MyDataSpecificationDetailComponent', () => {
       // Assert
       expect(toastrStub.error).toBeCalledWith(
         'Data schema undefined',
-        'Unable to delete items'
+        'Unable to delete items',
       );
       expect(dialogSpy).toHaveBeenCalledTimes(0);
     });
@@ -489,7 +489,7 @@ describe('MyDataSpecificationDetailComponent', () => {
 
       const dataSpecificationServiceSpy = jest.spyOn(
         dataSpecificationStub,
-        'deleteDataSchema'
+        'deleteDataSchema',
       );
 
       // Act
@@ -508,13 +508,13 @@ describe('MyDataSpecificationDetailComponent', () => {
 
       const dataSpecificationServiceSpy = jest.spyOn(
         dataSpecificationStub,
-        'deleteDataSchema'
+        'deleteDataSchema',
       );
 
       dataSpecificationStub.deleteDataSchema.mockReturnValueOnce(of(deleteElementResult));
       const dataSpecificationServiceDeleteFromQuerySpy = jest.spyOn(
         dataSpecificationStub,
-        'deleteDataElementsFromQuery'
+        'deleteDataElementsFromQuery',
       );
       const broadcastSpy = jest.spyOn(broadcastStub, 'loading');
 
@@ -523,26 +523,26 @@ describe('MyDataSpecificationDetailComponent', () => {
 
       // Assert
       expect(dataSpecificationServiceSpy).toHaveBeenCalledWith(
-        eventDeleteDataSchema.dataSchema?.schema
+        eventDeleteDataSchema.dataSchema?.schema,
       );
       expect(broadcastSpy).toHaveBeenNthCalledWith(
         1,
         expect.objectContaining({
           isLoading: true,
-        })
+        }),
       );
       expect(broadcastSpy).toHaveBeenNthCalledWith(2, { isLoading: false });
       expect(dataSpecificationServiceDeleteFromQuerySpy).toHaveBeenNthCalledWith(
         1,
         dataSpecification.id,
         'data',
-        labels
+        labels,
       );
       expect(dataSpecificationServiceDeleteFromQuerySpy).toHaveBeenNthCalledWith(
         2,
         dataSpecification.id,
         'cohort',
-        labels
+        labels,
       );
     });
 
@@ -556,17 +556,17 @@ describe('MyDataSpecificationDetailComponent', () => {
 
       const dataSpecificationServiceSpy = jest.spyOn(
         dataSpecificationStub,
-        'deleteDataSchema'
+        'deleteDataSchema',
       );
       const dataSpecificationDeleteDataClassSpy = jest.spyOn(
         dataSpecificationStub,
-        'deleteDataClass'
+        'deleteDataClass',
       );
 
       dataSpecificationStub.deleteDataSchema.mockReturnValueOnce(of(deleteElementResult));
       const dataSpecificationServiceDeleteFromQuerySpy = jest.spyOn(
         dataSpecificationStub,
-        'deleteDataElementsFromQuery'
+        'deleteDataElementsFromQuery',
       );
       const broadcastSpy = jest.spyOn(broadcastStub, 'loading');
 
@@ -575,26 +575,26 @@ describe('MyDataSpecificationDetailComponent', () => {
 
       // Assert
       expect(dataSpecificationServiceSpy).toHaveBeenCalledWith(
-        eventDeleteDataSchema.dataSchema?.schema
+        eventDeleteDataSchema.dataSchema?.schema,
       );
       expect(broadcastSpy).toHaveBeenNthCalledWith(
         1,
         expect.objectContaining({
           isLoading: true,
-        })
+        }),
       );
       expect(broadcastSpy).toHaveBeenNthCalledWith(2, { isLoading: false });
       expect(dataSpecificationServiceDeleteFromQuerySpy).toHaveBeenNthCalledWith(
         1,
         dataSpecification.id,
         'data',
-        labels
+        labels,
       );
       expect(dataSpecificationServiceDeleteFromQuerySpy).toHaveBeenNthCalledWith(
         2,
         dataSpecification.id,
         'cohort',
-        labels
+        labels,
       );
       expect(dataSpecificationDeleteDataClassSpy).toHaveBeenCalledTimes(0);
     });
@@ -609,17 +609,17 @@ describe('MyDataSpecificationDetailComponent', () => {
 
       const dataSpecificationServiceSpy = jest.spyOn(
         dataSpecificationStub,
-        'deleteDataSchema'
+        'deleteDataSchema',
       );
       const dataSpecificationDeleteDataClassSpy = jest.spyOn(
         dataSpecificationStub,
-        'deleteDataClass'
+        'deleteDataClass',
       );
 
       dataSpecificationStub.deleteDataSchema.mockReturnValueOnce(of(deleteElementResult));
       const dataSpecificationServiceDeleteFromQuerySpy = jest.spyOn(
         dataSpecificationStub,
-        'deleteDataElementsFromQuery'
+        'deleteDataElementsFromQuery',
       );
       const broadcastSpy = jest.spyOn(broadcastStub, 'loading');
 
@@ -634,20 +634,20 @@ describe('MyDataSpecificationDetailComponent', () => {
         1,
         expect.objectContaining({
           isLoading: true,
-        })
+        }),
       );
       expect(broadcastSpy).toHaveBeenNthCalledWith(2, { isLoading: false });
       expect(dataSpecificationServiceDeleteFromQuerySpy).toHaveBeenNthCalledWith(
         1,
         dataSpecification.id,
         'data',
-        labels
+        labels,
       );
       expect(dataSpecificationServiceDeleteFromQuerySpy).toHaveBeenNthCalledWith(
         2,
         dataSpecification.id,
         'cohort',
-        labels
+        labels,
       );
     });
 
@@ -661,21 +661,21 @@ describe('MyDataSpecificationDetailComponent', () => {
 
       const dataSpecificationDeleteDataSchemaSpy = jest.spyOn(
         dataSpecificationStub,
-        'deleteDataSchema'
+        'deleteDataSchema',
       );
       const dataSpecificationDeleteElementMultipleSpy = jest.spyOn(
         dataSpecificationStub,
-        'deleteDataElementMultiple'
+        'deleteDataElementMultiple',
       );
       const dataSpecificationDeleteDataClassSpy = jest.spyOn(
         dataSpecificationStub,
-        'deleteDataClass'
+        'deleteDataClass',
       );
 
       dataSpecificationStub.deleteDataSchema.mockReturnValueOnce(of(deleteElementResult));
       const dataSpecificationServiceDeleteFromQuerySpy = jest.spyOn(
         dataSpecificationStub,
-        'deleteDataElementsFromQuery'
+        'deleteDataElementsFromQuery',
       );
       const broadcastSpy = jest.spyOn(broadcastStub, 'loading');
 
@@ -690,20 +690,20 @@ describe('MyDataSpecificationDetailComponent', () => {
         1,
         expect.objectContaining({
           isLoading: true,
-        })
+        }),
       );
       expect(broadcastSpy).toHaveBeenNthCalledWith(2, { isLoading: false });
       expect(dataSpecificationServiceDeleteFromQuerySpy).toHaveBeenNthCalledWith(
         1,
         dataSpecification.id,
         'data',
-        labels
+        labels,
       );
       expect(dataSpecificationServiceDeleteFromQuerySpy).toHaveBeenNthCalledWith(
         2,
         dataSpecification.id,
         'cohort',
-        labels
+        labels,
       );
     });
 
@@ -717,21 +717,21 @@ describe('MyDataSpecificationDetailComponent', () => {
 
       const dataSpecificationDeleteDataSchemaSpy = jest.spyOn(
         dataSpecificationStub,
-        'deleteDataSchema'
+        'deleteDataSchema',
       );
       const dataSpecificationDeleteElementMultipleSpy = jest.spyOn(
         dataSpecificationStub,
-        'deleteDataElementMultiple'
+        'deleteDataElementMultiple',
       );
       const dataSpecificationDeleteDataClassSpy = jest.spyOn(
         dataSpecificationStub,
-        'deleteDataClass'
+        'deleteDataClass',
       );
 
       dataSpecificationStub.deleteDataSchema.mockReturnValueOnce(of(deleteElementResult));
       const dataSpecificationServiceDeleteFromQuerySpy = jest.spyOn(
         dataSpecificationStub,
-        'deleteDataElementsFromQuery'
+        'deleteDataElementsFromQuery',
       );
       const broadcastSpy = jest.spyOn(broadcastStub, 'loading');
 
@@ -746,20 +746,20 @@ describe('MyDataSpecificationDetailComponent', () => {
         1,
         expect.objectContaining({
           isLoading: true,
-        })
+        }),
       );
       expect(broadcastSpy).toHaveBeenNthCalledWith(2, { isLoading: false });
       expect(dataSpecificationServiceDeleteFromQuerySpy).toHaveBeenNthCalledWith(
         1,
         dataSpecification.id,
         'data',
-        labels
+        labels,
       );
       expect(dataSpecificationServiceDeleteFromQuerySpy).toHaveBeenNthCalledWith(
         2,
         dataSpecification.id,
         'cohort',
-        labels
+        labels,
       );
     });
 
@@ -787,7 +787,7 @@ describe('MyDataSpecificationDetailComponent', () => {
       dataSchemaStub.loadDataSchemas.mockReturnValueOnce(of([dataSchema]));
       dataSchemaStub.reduceDataElementsFromSchemas.mockReturnValueOnce(dataElements);
       dataSpecificationStub.getDataSpecificationIntersections.mockReturnValueOnce(
-        of(intersections)
+        of(intersections),
       );
       const broadcastDispatchSpy = jest.spyOn(broadcastStub, 'dispatch');
       harness.component.dataSpecification = dataSpecification;
@@ -829,7 +829,7 @@ describe('MyDataSpecificationDetailComponent', () => {
 
       dataSchemaStub.reduceDataElementsFromSchemas.mockReturnValueOnce(dataElements);
       dataSpecificationStub.getDataSpecificationIntersections.mockReturnValueOnce(
-        of(intersections)
+        of(intersections),
       );
       const broadcastDispatchSpy = jest.spyOn(broadcastStub, 'dispatch');
       const dataSchemaLoadSchemasSpy = jest.spyOn(dataSchemaStub, 'loadDataSchemas');
@@ -844,7 +844,7 @@ describe('MyDataSpecificationDetailComponent', () => {
       expect(dataSchemaLoadSchemasSpy).toHaveBeenCalledTimes(0);
       expect(broadcastDispatchSpy).toHaveBeenCalledWith(
         'data-intersections-refreshed',
-        intersections
+        intersections,
       );
     });
   });
@@ -922,7 +922,7 @@ describe('MyDataSpecificationDetailComponent', () => {
       ];
 
       dataSchemaStub.reduceDataElementsFromSchemas.mockReturnValue(
-        dataElementsNotSelected
+        dataElementsNotSelected,
       );
 
       dataSpecificationStub.get.mockImplementationOnce(() => {
@@ -945,7 +945,7 @@ describe('MyDataSpecificationDetailComponent', () => {
       // Arrange
       dataSchemaStub.loadDataSchemas.mockReturnValueOnce(of(dataSchemaWithDataElements));
       dataSpecificationStub.getDataSpecificationIntersections.mockReturnValueOnce(
-        of(intersections)
+        of(intersections),
       );
       dataSpecificationStub.getQuery
         .mockReturnValueOnce(of(undefined))
@@ -965,7 +965,7 @@ describe('MyDataSpecificationDetailComponent', () => {
       // Arrange
       dataSchemaStub.loadDataSchemas.mockReturnValueOnce(of(dataSchemaWithDataElements));
       dataSpecificationStub.getDataSpecificationIntersections.mockReturnValueOnce(
-        of(intersections)
+        of(intersections),
       );
 
       // Act
@@ -1063,7 +1063,7 @@ describe('MyDataSpecificationDetailComponent', () => {
       });
       dataSchemaStub.loadDataSchemas.mockReturnValueOnce(of(dataSchemaWithDataElements));
       dataSpecificationStub.getDataSpecificationIntersections.mockReturnValueOnce(
-        of(intersections)
+        of(intersections),
       );
     });
 

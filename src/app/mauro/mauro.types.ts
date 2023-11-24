@@ -45,7 +45,7 @@ export const isDataModel = (item: DataModel | DataClass): item is DataModel =>
   item.domainType === CatalogueItemDomainType.DataModel;
 
 export const isDataClass = (
-  item: DataModel | DataClass | DataElement
+  item: DataModel | DataClass | DataElement,
 ): item is DataClass => item.domainType === CatalogueItemDomainType.DataClass;
 
 export const isDataElement = (item: DataClass | DataElement): item is DataElement =>
@@ -60,7 +60,7 @@ export interface KeyValueIdentifier {
 export const getKviValue = (
   items: KeyValueIdentifier[],
   key: string,
-  defaultValue: string
+  defaultValue: string,
 ) => {
   return items.find((i) => i.key === key)?.value ?? defaultValue;
 };

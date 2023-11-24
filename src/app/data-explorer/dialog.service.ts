@@ -118,7 +118,7 @@ export class DialogService {
 
   openFeedbackForm() {
     return this.matDialog.open<FeedbackDialogComponent, any, FeedbackDialogResponse>(
-      FeedbackDialogComponent
+      FeedbackDialogComponent,
     );
   }
 
@@ -139,7 +139,7 @@ export class DialogService {
       {
         maxWidth: 500,
         data,
-      }
+      },
     );
   }
 

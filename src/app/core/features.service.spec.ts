@@ -59,7 +59,7 @@ describe('FeaturesService', () => {
       of({
         count: 1,
         items: [apiProperty],
-      })
+      }),
     );
 
     service.loadFromServer();

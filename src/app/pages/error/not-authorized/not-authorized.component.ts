@@ -32,7 +32,7 @@ export class NotAuthorizedComponent extends ErrorComponent {
     super(clipboard, toastr, error);
 
     this.heading = 'Not Authorized';
-    this.message = 'We\'re sorry, but the server does not allow you to view this page.';
+    this.message = "We're sorry, but the server does not allow you to view this page.";
     this.resolution =
       'You may need to check that the item you have requested actually exists, and that you have permission to view it';
 

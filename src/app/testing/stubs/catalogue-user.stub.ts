@@ -30,17 +30,17 @@ export type CatalogueUserGetMockedFn = jest.MockedFunction<CatalogueUserGetFn>;
 
 export type CatalogueUserUpdateFn = (
   id: Uuid,
-  payload: CatalogueUserPayload
+  payload: CatalogueUserPayload,
 ) => Observable<CatalogueUser>;
 export type CatalogueUserUpdateMockedFn = jest.MockedFunction<CatalogueUserUpdateFn>;
 
 export type CatalogueUserChangePasswordFn = (
   id: Uuid,
-  payload: ChangePasswordPayload
+  payload: ChangePasswordPayload,
 ) => Observable<CatalogueUser>;
 export type CatalogueUserUpdateContactFn = (
   id: Uuid,
-  payload: CatalogueUserContactPayload
+  payload: CatalogueUserContactPayload,
 ) => Observable<CatalogueUser>;
 export type CatalogueUserUpdateContactMockedFn =
   jest.MockedFunction<CatalogueUserUpdateContactFn>;

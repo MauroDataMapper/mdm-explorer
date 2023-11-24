@@ -43,7 +43,7 @@ describe('ModelPageDirtyGuard', () => {
       component,
       {} as ActivatedRouteSnapshot,
       {} as RouterStateSnapshot,
-      {} as RouterStateSnapshot
+      {} as RouterStateSnapshot,
     );
     expect(actual).toBeTruthy();
   });
@@ -59,7 +59,7 @@ describe('ModelPageDirtyGuard', () => {
       component,
       {} as ActivatedRouteSnapshot,
       {} as RouterStateSnapshot,
-      {} as RouterStateSnapshot
+      {} as RouterStateSnapshot,
     );
     expect(actual).toBeTruthy();
   });
@@ -75,7 +75,7 @@ describe('ModelPageDirtyGuard', () => {
       component,
       {} as ActivatedRouteSnapshot,
       {} as RouterStateSnapshot,
-      {} as RouterStateSnapshot
+      {} as RouterStateSnapshot,
     );
     expect(actual).toBeFalsy();
   });

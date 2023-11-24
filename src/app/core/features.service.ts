@@ -29,7 +29,10 @@ import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 export class FeaturesService {
   useOpenIdConnect = false;
 
-  constructor(private endpoints: MdmEndpointsService, private toastr: ToastrService) {
+  constructor(
+    private endpoints: MdmEndpointsService,
+    private toastr: ToastrService,
+  ) {
     this.setFeatures([]);
     this.loadFromServer();
   }
@@ -40,14 +43,14 @@ export class FeaturesService {
       .pipe(
         catchError(() => {
           this.toastr.error(
-            'There was a problem getting the configuration properties for features.'
+            'There was a problem getting the configuration properties for features.',
           );
           return EMPTY;
-        })
+        }),
       )
       .subscribe((response: ApiPropertyIndexResponse) => {
         const featureFlags = response.body.items.filter(
-          (prop) => prop.category === 'Features'
+          (prop) => prop.category === 'Features',
         );
         this.setFeatures(featureFlags);
       });
@@ -57,14 +60,14 @@ export class FeaturesService {
     this.useOpenIdConnect = this.getBooleanValue(
       properties,
       'feature.use_open_id_connect',
-      environment.features.useOpenIdConnect
+      environment.features.useOpenIdConnect,
     );
   }
 
   private getBooleanValue(
     properties: ApiProperty[],
     key: string,
-    defaultValue: boolean
+    defaultValue: boolean,
   ): boolean {
     const feature = properties.find((prop) => prop.key === key);
     return feature ? feature.value === 'true' : defaultValue;

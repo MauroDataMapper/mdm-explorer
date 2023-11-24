@@ -126,7 +126,7 @@ describe('DataSchemaService', () => {
     expect(actual$).toBeObservable(expected$);
     expect(actual$).toSatisfyOnFlush(() => {
       expect(dataModelsStub.getDataElementsForDataClass).toHaveBeenCalledWith(
-        dataClass1Schema1.dataClass
+        dataClass1Schema1.dataClass,
       );
     });
   });
@@ -151,11 +151,11 @@ describe('DataSchemaService', () => {
       expect(dataModelsStub.getDataClasses).toHaveBeenCalledWith(dataSchema1.schema);
       expect(dataModelsStub.getDataElementsForDataClass).toHaveBeenNthCalledWith(
         1,
-        dataClass1Schema1.dataClass
+        dataClass1Schema1.dataClass,
       );
       expect(dataModelsStub.getDataElementsForDataClass).toHaveBeenNthCalledWith(
         2,
-        dataClass2Schema1.dataClass
+        dataClass2Schema1.dataClass,
       );
     });
   });
@@ -186,7 +186,7 @@ describe('DataSchemaService', () => {
 
       return cold('--a|', {
         a: schemas[schemaIndex].dataClasses.find(
-          (dsc) => dsc.dataClass.label === dc.label
+          (dsc) => dsc.dataClass.label === dc.label,
         )?.dataElements,
       });
     });
@@ -201,25 +201,25 @@ describe('DataSchemaService', () => {
       // Schemas
       expect(dataModelsStub.getDataClasses).toHaveBeenNthCalledWith(
         2,
-        dataSchema1.schema
+        dataSchema1.schema,
       );
       expect(dataModelsStub.getDataClasses).toHaveBeenNthCalledWith(
         3,
-        dataSchema2.schema
+        dataSchema2.schema,
       );
 
       // Classes
       expect(dataModelsStub.getDataElementsForDataClass).toHaveBeenNthCalledWith(
         1,
-        dataClass1Schema1.dataClass
+        dataClass1Schema1.dataClass,
       );
       expect(dataModelsStub.getDataElementsForDataClass).toHaveBeenNthCalledWith(
         2,
-        dataClass2Schema1.dataClass
+        dataClass2Schema1.dataClass,
       );
       expect(dataModelsStub.getDataElementsForDataClass).toHaveBeenNthCalledWith(
         3,
-        dataClass1Schema2.dataClass
+        dataClass1Schema2.dataClass,
       );
     });
   });

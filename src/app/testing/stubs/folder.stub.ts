@@ -26,7 +26,7 @@ import { Observable } from 'rxjs';
 
 export type FolderUpdateFn = (
   id: Uuid,
-  payload: ContainerUpdatePayload
+  payload: ContainerUpdatePayload,
 ) => Observable<FolderDetail>;
 
 export type FolderTreeListFn = () => Observable<MdmTreeItem[]>;

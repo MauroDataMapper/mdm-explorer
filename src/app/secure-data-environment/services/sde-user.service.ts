@@ -25,7 +25,7 @@ import { UserEndpoints } from '../endpoints/user.endpoints';
   providedIn: 'root',
 })
 export class SdeUserService {
-  constructor(private userEndpoints: UserEndpoints) { }
+  constructor(private userEndpoints: UserEndpoints) {}
 
   /**
    * Attempt to log the current user into the SDE.
@@ -35,7 +35,7 @@ export class SdeUserService {
     return this.userEndpoints.impersonate(email).pipe(
       map((sdeAuthToken: AuthToken) => {
         return sdeAuthToken;
-      })
+      }),
     );
   }
 }

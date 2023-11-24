@@ -92,7 +92,7 @@ export interface AutocompleteSelectOptionSet {
 }
 
 export const isAutocompleteSelectOption = (
-  value: any
+  value: any,
 ): value is AutocompleteSelectOption => {
   const hasName = value?.name;
   const hasValue = value?.value;
@@ -100,7 +100,7 @@ export const isAutocompleteSelectOption = (
 };
 
 export const isAutocompleteSelectOptionArray = (
-  value: any
+  value: any,
 ): value is AutocompleteSelectOption[] => {
   if (!Array.isArray(value)) {
     return false;
@@ -133,9 +133,9 @@ const _AutocompleteSelectComponentMixinBase = mixinErrorState(
        * Form control bound to the component.
        * Implemented as part of `MatFormFieldControl`.
        */
-      public ngControl: NgControl
+      public ngControl: NgControl,
     ) {}
-  }
+  },
 );
 
 /**
@@ -351,7 +351,7 @@ export class AutocompleteSelectComponent
     @Optional() parentForm: NgForm,
     @Optional() parentFormGroup: FormGroupDirective,
     @Optional() @Self() ngControl: NgControl,
-    private _focusMonitor: FocusMonitor
+    private _focusMonitor: FocusMonitor,
   ) {
     super(elementRef, defaultErrorStateMatcher, parentForm, parentFormGroup, ngControl);
 
@@ -369,7 +369,7 @@ export class AutocompleteSelectComponent
         tap((focusOrigin) => {
           this.focused = !!focusOrigin;
           this.stateChanges.next();
-        })
+        }),
       )
       .subscribe();
 
@@ -379,7 +379,7 @@ export class AutocompleteSelectComponent
         startWith(''),
         debounceTime(400),
         distinctUntilChanged(),
-        filter((val) => typeof val === 'string')
+        filter((val) => typeof val === 'string'),
       )
       .subscribe((value) => {
         this.searchChange.emit(value ?? '');

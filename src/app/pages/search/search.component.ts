@@ -40,7 +40,7 @@ export class SearchComponent implements OnInit {
   constructor(
     private stateRouter: StateRouterService,
     private explorer: DataExplorerService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {

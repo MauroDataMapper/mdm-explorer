@@ -89,7 +89,7 @@ describe('TemplateDataSpecificationDetailComponent', () => {
             useValue: securityStub,
           },
         ],
-      }
+      },
     );
   });
 
@@ -127,7 +127,7 @@ describe('TemplateDataSpecificationDetailComponent', () => {
       const toastrSpy = jest.spyOn(toastrStub, 'error');
 
       dataSpecificationStub.get.mockImplementationOnce(() =>
-        throwError(() => new Error('get template failed'))
+        throwError(() => new Error('get template failed')),
       );
 
       harness.component.ngOnInit();
@@ -221,7 +221,7 @@ describe('TemplateDataSpecificationDetailComponent', () => {
 
     beforeEach(() => {
       dataSpecificationStub.getDataSpecificationFolder.mockImplementationOnce(() =>
-        of(dataSpecificationFolder)
+        of(dataSpecificationFolder),
       );
       dataSpecificationStub.forkWithDialogs.mockClear();
     });

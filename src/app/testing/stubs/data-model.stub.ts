@@ -45,61 +45,61 @@ import {
 
 export type DataModelGetDataModelFn = (path: string) => Observable<DataModelDetail>;
 export type DataModelGetDataClassesFn = (
-  parent: DataModel | DataClass
+  parent: DataModel | DataClass,
 ) => Observable<DataClass[]>;
 export type DataModelGetDataClassFn = (
-  id: DataClassIdentifier
+  id: DataClassIdentifier,
 ) => Observable<DataClassDetail>;
 export type DataModelGetDataElementsFn = (
-  id: DataClassIdentifier
+  id: DataClassIdentifier,
 ) => Observable<MdmIndexBody<DataElementDto>>;
 export type DataModelGetDataElementFn = (
-  id: DataClassIdentifier
+  id: DataClassIdentifier,
 ) => Observable<DataElementDetail>;
 export type DataModelSearchDataModelFn = (
   id: Uuid,
-  params: SearchQueryParameters
+  params: SearchQueryParameters,
 ) => Observable<MdmIndexBody<CatalogueItemSearchResult>>;
 export type DataModelListInFolderFn = (folderId: Uuid) => Observable<DataModel[]>;
 export type DataModelGetHierarchyFn = (
-  dataSpecification: DataSpecification
+  dataSpecification: DataSpecification,
 ) => Observable<DataElementDto[]>;
 export type DataModelAddToFolderFn = (
   folderId: Uuid,
-  payload: DataModelCreatePayload
+  payload: DataModelCreatePayload,
 ) => Observable<DataModelDetail>;
 export type DataModelCopySubsetFn = (
   sourceId: Uuid,
   targetId: Uuid,
-  payload: DataModelSubsetPayload
+  payload: DataModelSubsetPayload,
 ) => Observable<DataModelDetail>;
 export type DataModelElementsForClassFn = (
-  dataClass: DataClass
+  dataClass: DataClass,
 ) => Observable<DataElementDto[]>;
 export type DataModelGetIntersectionManyFn = (
   sourceId: Uuid,
-  data: SourceTargetIntersectionPayload
+  data: SourceTargetIntersectionPayload,
 ) => Observable<MdmIndexBody<SourceTargetIntersection>>;
 export type DataModeNextVersionFn = (model: DataModel) => Observable<DataModel>;
 export type DataModelForkFn = (
   model: DataModel,
-  payload: ForkModelPayload
+  payload: ForkModelPayload,
 ) => Observable<DataModel>;
 export type DataModelElementsInAnotherModelFn = (
   model: DataModelDetail,
-  elements: DataElementDto[]
+  elements: DataElementDto[],
 ) => Observable<DataElementDto[]>;
 export type DataModelDataElementToBasicFn = (
-  element: DataElementDto
+  element: DataElementDto,
 ) => DataElementInstance;
 export type UpdateDataModelFn = (
   id: Uuid,
   data: ModelUpdatePayload,
-  options?: RequestSettings
+  options?: RequestSettings,
 ) => Observable<DataModelDetail>;
 export type SimpleModelVersionTreeFn = (
   dataModelId: Uuid,
-  branchesOnlyParameter?: boolean
+  branchesOnlyParameter?: boolean,
 ) => Observable<SimpleModelVersionTree[]>;
 
 export interface DataModelServiceStub {

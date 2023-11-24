@@ -33,7 +33,7 @@ import { BookmarkDto, DataElementSearchResult } from './data-explorer.types';
 export class BookmarkService {
   constructor(
     private endpoints: MdmEndpointsService,
-    private security: SecurityService
+    private security: SecurityService,
   ) {}
 
   /**
@@ -50,7 +50,7 @@ export class BookmarkService {
           userBookmarks.push(bookmark);
         }
         return this.save(userBookmarks);
-      })
+      }),
     );
   }
 
@@ -61,16 +61,16 @@ export class BookmarkService {
    * @returns the users bookmarks after the removal.
    */
   public remove(
-    bookmarks: DataElementSearchResult[]
+    bookmarks: DataElementSearchResult[],
   ): Observable<DataElementSearchResult[]> {
     const idsToRemove = bookmarks.map((bookmark) => bookmark.id);
     return this.index().pipe(
       switchMap((userBookmarks: DataElementSearchResult[]) => {
         const filteredBookmarks = userBookmarks.filter(
-          (bm) => !idsToRemove.includes(bm.id)
+          (bm) => !idsToRemove.includes(bm.id),
         );
         return this.save(filteredBookmarks);
-      })
+      }),
     );
   }
 
@@ -95,7 +95,7 @@ export class BookmarkService {
     return this.index().pipe(
       switchMap((userBookmarks: DataElementSearchResult[]) => {
         return of(userBookmarks.some((bookmark) => bookmark.id === dataElementId));
-      })
+      }),
     );
   }
 
@@ -105,7 +105,7 @@ export class BookmarkService {
    * @param bookmarks the array of bookmarks to replace the existing bookmarks
    */
   private save(
-    bookmarks: DataElementSearchResult[]
+    bookmarks: DataElementSearchResult[],
   ): Observable<DataElementSearchResult[]> {
     const userDetails = this.security.getSignedInUser();
     if (userDetails) {
@@ -118,7 +118,7 @@ export class BookmarkService {
         }),
         switchMap((userPrefs: UserPreferences) => {
           return of(userPrefs.bookmarks ?? []);
-        })
+        }),
       );
     } else {
       return throwError(() => new Error('Must be logged in to use User Preferences'));
@@ -132,10 +132,10 @@ export class BookmarkService {
    * @returns just the bookmarks property on userPreferences, or [] if there is no such property.
    */
   private getBookmarksFromUserPreferences(
-    userId: string
+    userId: string,
   ): Observable<DataElementSearchResult[]> {
     return this.getPreferences(userId).pipe(
-      map((data: UserPreferences) => (data && data.bookmarks ? data.bookmarks : []))
+      map((data: UserPreferences) => (data && data.bookmarks ? data.bookmarks : [])),
     );
   }
 
@@ -157,11 +157,11 @@ export class BookmarkService {
                 label: nativeBookmark.label,
                 breadcrumbs: nativeBookmark.breadcrumbs,
               };
-            }
+            },
           );
         }
         return response.body;
-      })
+      }),
     );
   }
 

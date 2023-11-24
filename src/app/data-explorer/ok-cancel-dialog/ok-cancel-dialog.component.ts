@@ -38,7 +38,7 @@ export interface OkCancelDialogData {
 export class OkCancelDialogComponent implements OnInit {
   constructor(
     private dialogRef: MatDialogRef<OkCancelDialogComponent, OkCancelDialogResponse>,
-    @Inject(MAT_DIALOG_DATA) private data: OkCancelDialogData
+    @Inject(MAT_DIALOG_DATA) private data: OkCancelDialogData,
   ) {}
 
   get heading() {

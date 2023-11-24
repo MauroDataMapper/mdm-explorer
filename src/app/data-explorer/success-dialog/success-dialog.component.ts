@@ -32,7 +32,7 @@ export interface SuccessDialogData {
 export class SuccessDialogComponent {
   constructor(
     private dialogRef: MatDialogRef<SuccessDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) private data: SuccessDialogData
+    @Inject(MAT_DIALOG_DATA) private data: SuccessDialogData,
   ) {}
 
   get heading() {

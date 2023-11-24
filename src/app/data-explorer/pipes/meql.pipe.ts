@@ -77,7 +77,7 @@ export class MeqlPipe implements PipeTransform {
     connective: string = '',
     depth = 0,
     firstRule: boolean = true,
-    lastRule: boolean = true
+    lastRule: boolean = true,
   ) {
     let meql = firstRule && !(connective === '') ? '(' : '';
     if (depth > 0) {
@@ -110,7 +110,7 @@ export class MeqlPipe implements PipeTransform {
               nextConnective,
               depth + 1,
               i === 0,
-              i === rules.length - 1
+              i === rules.length - 1,
             );
           }
           break;

@@ -70,8 +70,8 @@ export class SecurityService {
     @Optional()
     @Inject(OPENID_CONNECT_CONFIG)
     private openIdConnectConfig: OpenIdConnectConfiguration,
-    private researchPlugin: ResearchPluginService
-  ) { }
+    private researchPlugin: ResearchPluginService,
+  ) {}
 
   /**
    * Log in a user to the Mauro system, and get or create a folder for their data specifications.
@@ -106,9 +106,9 @@ export class SecurityService {
             this.userDetails.set(user);
 
             return user;
-          })
+          }),
         );
-      })
+      }),
     );
   }
 
@@ -119,7 +119,7 @@ export class SecurityService {
 
         // If error, then print the error and set the token to the empty string.
         return of(EMPTY_AUTH_TOKEN);
-      })
+      }),
     );
   }
 
@@ -134,8 +134,8 @@ export class SecurityService {
       catchError((error: HttpErrorResponse) => {
         return throwError(() => new MdmHttpError(error));
       }),
-      map(() => { }),
-      finalize(() => this.userDetails.clear())
+      map(() => {}),
+      finalize(() => this.userDetails.clear()),
     );
   }
 
@@ -148,7 +148,7 @@ export class SecurityService {
   sendResetPasswordLink(email: string): Observable<boolean> {
     return this.endpoints.catalogueUser.resetPasswordLink(email).pipe(
       switchMap(() => of(true)),
-      catchError(() => of(false))
+      catchError(() => of(false)),
     );
   }
 
@@ -162,9 +162,9 @@ export class SecurityService {
   isAuthenticated(): Observable<boolean> {
     return this.endpoints.session.isAuthenticated().pipe(
       catchError((error: HttpErrorResponse) =>
-        throwError(() => new AuthenticatedSessionError(error))
+        throwError(() => new AuthenticatedSessionError(error)),
       ),
-      map((response: AuthenticatedResponse) => response.body.authenticatedSession)
+      map((response: AuthenticatedResponse) => response.body.authenticatedSession),
     );
   }
 
@@ -209,7 +209,7 @@ export class SecurityService {
         if (!authenticated) {
           this.userDetails.clear();
         }
-      })
+      }),
     );
   }
 
@@ -225,7 +225,7 @@ export class SecurityService {
 
     return this.endpoints.pluginOpenIdConnect.listPublic({}, requestOptions).pipe(
       catchError(() => EMPTY),
-      map((response: PublicOpenIdConnectProvidersIndexResponse) => response.body)
+      map((response: PublicOpenIdConnectProvidersIndexResponse) => response.body),
     );
   }
 
@@ -240,7 +240,7 @@ export class SecurityService {
   getOpenIdConnectAuthorizationUrl(provider: PublicOpenIdConnectProvider): URL {
     if (!this.openIdConnectConfig) {
       throw new Error(
-        'OPENID_CONNECT_CONFIG injection token is missing - requires redirectUrl to come back to'
+        'OPENID_CONNECT_CONFIG injection token is missing - requires redirectUrl to come back to',
       );
     }
 

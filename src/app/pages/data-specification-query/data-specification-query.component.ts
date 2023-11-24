@@ -67,7 +67,7 @@ export class DataSpecificationQueryComponent implements OnInit, IModelPage {
     private toastr: ToastrService,
     private broadcast: BroadcastService,
     private queryBuilderService: QueryBuilderService,
-    private stateRouter: StateRouterService
+    private stateRouter: StateRouterService,
   ) {}
 
   ngOnInit(): void {
@@ -82,7 +82,7 @@ export class DataSpecificationQueryComponent implements OnInit, IModelPage {
         }),
         catchError(() => {
           return this.errorResponse(
-            'There was a problem finding your data specification.'
+            'There was a problem finding your data specification.',
           );
         }),
         switchMap((dataSpecification) => {
@@ -99,7 +99,7 @@ export class DataSpecificationQueryComponent implements OnInit, IModelPage {
         }),
         catchError(() => {
           return this.errorResponse(
-            'There was a problem finding your data specification queries.'
+            'There was a problem finding your data specification queries.',
           );
         }),
         switchMap(([dataElements, query]) => {
@@ -113,14 +113,14 @@ export class DataSpecificationQueryComponent implements OnInit, IModelPage {
 
           return this.queryBuilderService.setupConfig(
             this.mapDataElements(dataElements),
-            query
+            query,
           );
         }),
         catchError(() => {
           return this.errorResponse(
-            'There was a problem configuring your data specification queries.'
+            'There was a problem configuring your data specification queries.',
           );
-        })
+        }),
       )
       .subscribe((queryConfiguration) => {
         this.dataElements = queryConfiguration.dataElementSearchResult;
@@ -161,7 +161,7 @@ export class DataSpecificationQueryComponent implements OnInit, IModelPage {
           this.toastr.error('There was a problem saving your query.');
           return EMPTY;
         }),
-        finalize(() => this.broadcast.loading({ isLoading: false }))
+        finalize(() => this.broadcast.loading({ isLoading: false })),
       )
       .subscribe((submitted) => {
         this.toastr.success(`Your ${this.queryType} query was saved successfully.`);

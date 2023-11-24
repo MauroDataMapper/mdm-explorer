@@ -32,7 +32,10 @@ export class ContactSupportComponent {
   state: ContactFormState = 'idle';
   contactData?: PluginResearchContactPayload;
 
-  constructor(private research: ResearchPluginService, private dialog: DialogService) {}
+  constructor(
+    private research: ResearchPluginService,
+    private dialog: DialogService,
+  ) {}
 
   reset() {
     this.contactData = {
@@ -73,21 +76,21 @@ export class ContactSupportComponent {
           // Send feedback to the same endpoint as contact form submission, minus contact details.
           // This may change in the future, but will do for now
           return this.sendContactPayload(data, onStateChange);
-        })
+        }),
       )
       .subscribe(() => {});
   }
 
   private sendContactPayload(
     data: PluginResearchContactPayload,
-    onStateChange: (success: boolean) => void
+    onStateChange: (success: boolean) => void,
   ) {
     return this.research.contact(data).pipe(
       catchError(() => {
         onStateChange(false);
         return EMPTY;
       }),
-      tap(() => onStateChange(true))
+      tap(() => onStateChange(true)),
     );
   }
 }

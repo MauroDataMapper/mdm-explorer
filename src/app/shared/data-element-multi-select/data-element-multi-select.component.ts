@@ -76,7 +76,7 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
     private dialogs: DialogService,
     private toastr: ToastrService,
     private broadcast: BroadcastService,
-    private bookmarks: BookmarkService
+    private bookmarks: BookmarkService,
   ) {
     this.user = security.getSignedInUser();
     this.sourceTargetIntersections = {
@@ -206,7 +206,7 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
           }
 
           return EMPTY;
-        })
+        }),
       )
       .subscribe(() => {
         this.broadcast.dispatch('data-bookmarks-refreshed');

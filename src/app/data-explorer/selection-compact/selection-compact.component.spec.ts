@@ -87,17 +87,17 @@ describe('SearchFiltersComponent', () => {
 
       expect(spy).toHaveBeenCalledWith(
         SelectionExpandedDialogComponent,
-        expect.anything()
+        expect.anything(),
       );
     });
 
     it('should forward properties to mdm-data-element-multi-select', () => {
       const withSelected = ngMocks.find<DataElementMultiSelectComponent>(
-        'mdm-data-element-multi-select'
+        'mdm-data-element-multi-select',
       ).componentInstance;
       expect(withSelected.dataElements).toEqual(startingSelection);
       expect(withSelected.sourceTargetIntersections).toEqual(
-        harness.component.sourceTargetIntersections
+        harness.component.sourceTargetIntersections,
       );
     });
   });

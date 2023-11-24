@@ -40,7 +40,7 @@ export class ChangePasswordComponent implements OnInit {
     private security: SecurityService,
     private catalogueUser: CatalogueUserService,
     private stateRouter: StateRouterService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
   ) {}
 
   ngOnInit(): void {
@@ -69,12 +69,12 @@ export class ChangePasswordComponent implements OnInit {
           this.toastr.error('There was a problem changing your password.');
           return EMPTY;
         }),
-        finalize(() => (this.isUpdating = false))
+        finalize(() => (this.isUpdating = false)),
       )
       .subscribe(() => {
         this.toastr.success(
           'Your password was changed successfully, and will take affect the next time you sign in.',
-          'Password changed'
+          'Password changed',
         );
         this.stateRouter.navigateToKnownPath('/account');
       });

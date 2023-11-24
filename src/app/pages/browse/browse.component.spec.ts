@@ -137,7 +137,7 @@ describe('BrowseComponent', () => {
 
     it('should display an error when root data model is missing', () => {
       dataExplorerStub.getRootDataModel.mockImplementationOnce(() =>
-        throwError(() => new HttpErrorResponse({ status: 400 }))
+        throwError(() => new HttpErrorResponse({ status: 400 })),
       );
 
       harness.component.ngOnInit();
@@ -151,7 +151,7 @@ describe('BrowseComponent', () => {
       dataExplorerStub.getRootDataModel.mockImplementationOnce(() => of(rootDataModel));
 
       dataModelStub.getDataClasses.mockImplementationOnce(() =>
-        throwError(() => new HttpErrorResponse({ status: 400 }))
+        throwError(() => new HttpErrorResponse({ status: 400 })),
       );
 
       harness.component.ngOnInit();
@@ -209,7 +209,7 @@ describe('BrowseComponent', () => {
 
     it('should display an error when child data classes are missing', () => {
       dataModelStub.getDataClasses.mockImplementationOnce(() =>
-        throwError(() => new HttpErrorResponse({ status: 400 }))
+        throwError(() => new HttpErrorResponse({ status: 400 })),
       );
 
       harness.component.selectParentDataClass(event);
@@ -374,7 +374,7 @@ describe('BrowseComponent', () => {
           dm: harness.component.selected.model,
           dc: harness.component.selected.id,
           pdc: harness.component.selected.parentDataClass,
-        }
+        },
       );
     });
   });
@@ -434,11 +434,11 @@ describe('BrowseComponent', () => {
 
       // assert
       expect(spy).toHaveBeenCalledWith(
-        'You must have selected an element to create a data specification with.'
+        'You must have selected an element to create a data specification with.',
       );
     });
 
-    it('should transition to dataSpecifications page if DataSpecificationCreatedAction is \'view-data-specifications\'', () => {
+    it("should transition to dataSpecifications page if DataSpecificationCreatedAction is 'view-data-specifications'", () => {
       // act
       harness.component.createDataSpecification();
 
@@ -446,7 +446,7 @@ describe('BrowseComponent', () => {
       expect(navigateKnownSpy).toHaveBeenCalledWith('/dataSpecifications');
     });
 
-    it('should transition to data specification detail page if DataSpecificationCreatedAction is \'view-data-specification-detail\'', () => {
+    it("should transition to data specification detail page if DataSpecificationCreatedAction is 'view-data-specification-detail'", () => {
       // arrange
       dataSpecificationStub.createWithDialogs.mockImplementationOnce(() => {
         return of({
@@ -465,7 +465,7 @@ describe('BrowseComponent', () => {
       ]);
     });
 
-    it('should not transition to dataSpecifications page if DataSpecificationCreatedAction is \'continue\'', () => {
+    it("should not transition to dataSpecifications page if DataSpecificationCreatedAction is 'continue'", () => {
       // arrange
       dataSpecificationStub.createWithDialogs.mockImplementationOnce(() => {
         return of({

@@ -38,11 +38,11 @@ export class DataSchemaService {
    */
   reduceDataClassesFromSchemas(dataSchemas: DataSchema[]): DataClassWithElements[] {
     const dataSpecificationClasses = dataSchemas.map(
-      (dataSchema) => dataSchema.dataClasses
+      (dataSchema) => dataSchema.dataClasses,
     );
     return dataSpecificationClasses.reduce(
       (accumulator, value) => accumulator.concat(value),
-      []
+      [],
     );
   }
 
@@ -51,11 +51,11 @@ export class DataSchemaService {
    */
   reduceDataElementsFromSchemas(dataSchemas: DataSchema[]): DataElementSearchResult[] {
     const dataSpecificationElements = dataSchemas.map((dataSchema) =>
-      this.reduceDataElementsFromSchema(dataSchema)
+      this.reduceDataElementsFromSchema(dataSchema),
     );
     return dataSpecificationElements.reduce(
       (accumulator, value) => accumulator.concat(value),
-      []
+      [],
     );
   }
 
@@ -64,11 +64,11 @@ export class DataSchemaService {
    */
   reduceDataElementsFromSchema(dataSchema: DataSchema): DataElementSearchResult[] {
     const dataSchemaElements = dataSchema.dataClasses.map(
-      (dataClass) => dataClass.dataElements
+      (dataClass) => dataClass.dataElements,
     );
     return dataSchemaElements.reduce(
       (accumulator, value) => accumulator.concat(value),
-      []
+      [],
     );
   }
 
@@ -82,12 +82,12 @@ export class DataSchemaService {
                 schema,
                 dataClasses: dataClassWithElements,
               };
-            })
+            }),
           );
         });
 
         return forkJoin(dataSchema);
-      })
+      }),
     );
   }
 
@@ -95,9 +95,9 @@ export class DataSchemaService {
     return this.dataModels.getDataClasses(dataSchema).pipe(
       switchMap((dataClasses: DataClass[]) => {
         return forkJoin(
-          dataClasses.map((dataClass) => this.loadDataClassElements(dataClass))
+          dataClasses.map((dataClass) => this.loadDataClassElements(dataClass)),
         );
-      })
+      }),
     );
   }
 
@@ -108,7 +108,7 @@ export class DataSchemaService {
           dataClass,
           dataElements: dataElements as DataElementSearchResult[],
         };
-      })
+      }),
     );
   }
 }

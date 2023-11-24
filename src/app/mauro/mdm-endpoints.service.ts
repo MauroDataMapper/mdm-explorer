@@ -59,7 +59,7 @@ export class MdmEndpointsService {
   pluginDoi = new MdmPluginDoiResource(this.configuration, this.httpClient);
   pluginOpenIdConnect = new MdmPluginOpenIdConnectResource(
     this.configuration,
-    this.httpClient
+    this.httpClient,
   );
   pluginResearch = new MdmPluginResearchResource(this.configuration, this.httpClient);
   profile = new MdmProfileResource(this.configuration, this.httpClient);
@@ -72,6 +72,6 @@ export class MdmEndpointsService {
 
   constructor(
     private configuration: MdmResourcesConfiguration,
-    private httpClient: MdmHttpClientService
+    private httpClient: MdmHttpClientService,
   ) {}
 }

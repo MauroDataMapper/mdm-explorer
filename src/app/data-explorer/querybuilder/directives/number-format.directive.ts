@@ -51,7 +51,7 @@ export class NumberFormatDirective implements OnInit, OnDestroy {
           return this.numberFormat === 'integer'
             ? this.attemptToParseIntegerInput(v)
             : this.attemptToParseDecimalInput(v);
-        })
+        }),
       )
       .subscribe((v) => ctrl.setValue(v, { emitEvent: false }));
   }

@@ -37,7 +37,7 @@ export class FeedbackDialogComponent {
   });
 
   constructor(
-    private dialogRef: MatDialogRef<FeedbackDialogComponent, FeedbackDialogResponse>
+    private dialogRef: MatDialogRef<FeedbackDialogComponent, FeedbackDialogResponse>,
   ) {}
 
   get message() {

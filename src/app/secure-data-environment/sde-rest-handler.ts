@@ -32,7 +32,10 @@ export type HttpRequestDetail = {
   providedIn: 'root',
 })
 export class SdeRestHandler implements ISdeRestHandler {
-  constructor(private httpClient: HttpClient, private user: UserDetailsService) { }
+  constructor(
+    private httpClient: HttpClient,
+    private user: UserDetailsService,
+  ) {}
 
   get<T>(url: string): any {
     const httpRequestDetail = this.getHttpRequestDetail(url);

@@ -98,7 +98,7 @@ describe('SearchListingComponent', () => {
 
   const implementProfileFieldsForFilters = () => {
     dataExplorerStub.getProfileFieldsForFilters.mockImplementationOnce(() =>
-      of(profileFieldsForFilters)
+      of(profileFieldsForFilters),
     );
   };
 
@@ -262,10 +262,10 @@ describe('SearchListingComponent', () => {
 
       bookmarkStub.index.mockImplementationOnce(() => of([]));
       dataExplorerStub.getRootDataModel.mockImplementationOnce(() =>
-        of(mockedRootDataModel)
+        of(mockedRootDataModel),
       );
       dataSpecificationStub.getDataSpecificationIntersections.mockImplementationOnce(() =>
-        of(mockedIntersections)
+        of(mockedIntersections),
       );
       harness.component.ngOnInit();
       tick();
@@ -287,10 +287,10 @@ describe('SearchListingComponent', () => {
 
       bookmarkStub.index.mockImplementationOnce(() => of([]));
       dataExplorerStub.getRootDataModel.mockImplementationOnce(() =>
-        of(mockedRootDataModel)
+        of(mockedRootDataModel),
       );
       dataSpecificationStub.getDataSpecificationIntersections.mockImplementationOnce(() =>
-        of(mockedIntersections)
+        of(mockedIntersections),
       );
       harness.component.ngOnInit();
       tick();
@@ -310,10 +310,10 @@ describe('SearchListingComponent', () => {
 
       bookmarkStub.index.mockImplementationOnce(() => of([]));
       dataExplorerStub.getRootDataModel.mockImplementationOnce(() =>
-        of(mockedRootDataModel)
+        of(mockedRootDataModel),
       );
       dataSpecificationStub.getDataSpecificationIntersections.mockImplementationOnce(() =>
-        of(mockedIntersections)
+        of(mockedIntersections),
       );
       harness.component.ngOnInit();
       tick();
@@ -332,10 +332,10 @@ describe('SearchListingComponent', () => {
 
       bookmarkStub.index.mockImplementationOnce(() => of([]));
       dataExplorerStub.getRootDataModel.mockImplementationOnce(() =>
-        of(mockedRootDataModel)
+        of(mockedRootDataModel),
       );
       dataSpecificationStub.getDataSpecificationIntersections.mockImplementationOnce(() =>
-        of(mockedIntersections)
+        of(mockedIntersections),
       );
       harness.component.ngOnInit();
 
@@ -419,10 +419,10 @@ describe('SearchListingComponent', () => {
 
         bookmarkStub.index.mockImplementationOnce(() => of([]));
         dataExplorerStub.getRootDataModel.mockImplementationOnce(() =>
-          of(mockedRootDataModel)
+          of(mockedRootDataModel),
         );
         dataSpecificationStub.getDataSpecificationIntersections.mockImplementationOnce(
-          () => of(mockedIntersections)
+          () => of(mockedIntersections),
         );
       });
 
@@ -453,23 +453,23 @@ describe('SearchListingComponent', () => {
         harness.component.ngOnInit();
         tick();
         expect(
-          harness.component.resultSet?.items.filter((i) => i.isSelected)
+          harness.component.resultSet?.items.filter((i) => i.isSelected),
         ).toHaveLength(0);
 
         selectionService.add([searchResults.items[0]]);
 
         expect(
-          harness.component.resultSet?.items.filter((i) => i.isSelected)
+          harness.component.resultSet?.items.filter((i) => i.isSelected),
         ).toHaveLength(1);
         expect(
           harness.component.resultSet?.items.find(
-            (i) => i.id === searchResults.items[0].id
-          )?.isSelected
+            (i) => i.id === searchResults.items[0].id,
+          )?.isSelected,
         ).toBe(true);
 
         selectionService.remove([searchResults.items[0].id]);
         expect(
-          harness.component.resultSet?.items.filter((i) => i.isSelected)
+          harness.component.resultSet?.items.filter((i) => i.isSelected),
         ).toHaveLength(0);
       }));
 
@@ -512,7 +512,7 @@ describe('SearchListingComponent', () => {
         harness.component.onSelectAll({ checked: false } as MatCheckboxChange);
 
         expect(spy).toHaveBeenCalledWith(
-          harness.component.resultSet?.items.map((item) => item.id)
+          harness.component.resultSet?.items.map((item) => item.id),
         );
       }));
     });
@@ -525,10 +525,10 @@ describe('SearchListingComponent', () => {
 
       bookmarkStub.index.mockImplementationOnce(() => of([]));
       dataExplorerStub.getRootDataModel.mockImplementationOnce(() =>
-        of(mockedRootDataModel)
+        of(mockedRootDataModel),
       );
       dataSpecificationStub.getDataSpecificationIntersections.mockImplementationOnce(() =>
-        of(mockedIntersections)
+        of(mockedIntersections),
       );
       harness.component.ngOnInit();
       expect(harness.component.source).toBe('search');
@@ -549,7 +549,7 @@ describe('SearchListingComponent', () => {
         '/search/listing',
         {
           search: searchTerm,
-        }
+        },
       );
     });
   });
@@ -628,7 +628,7 @@ describe('SearchListingComponent', () => {
         {
           sort: 'label',
           order: 'asc',
-        }
+        },
       );
     });
   });
@@ -650,7 +650,7 @@ describe('SearchListingComponent', () => {
         {
           page: 1,
           [name]: value,
-        }
+        },
       );
     });
 
@@ -661,7 +661,7 @@ describe('SearchListingComponent', () => {
         '/search/listing',
         {
           page: 1,
-        }
+        },
       );
     });
 
@@ -673,7 +673,7 @@ describe('SearchListingComponent', () => {
         {
           page: 1,
           pageSize: 123,
-        }
+        },
       );
     });
   });

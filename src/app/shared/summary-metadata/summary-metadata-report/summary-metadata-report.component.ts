@@ -44,7 +44,7 @@ export class SummaryMetadataReportComponent implements OnInit {
         .listReports(
           this.catalogueItemDomainType,
           this.catalogueItemId,
-          this.summaryMetadata.id
+          this.summaryMetadata.id,
         )
         .subscribe((data) => {
           this.summaryMetadataReports = data.items;

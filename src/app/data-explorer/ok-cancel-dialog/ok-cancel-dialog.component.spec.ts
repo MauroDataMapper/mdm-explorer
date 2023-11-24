@@ -70,7 +70,8 @@ describe('OkCancelDialogComponent', () => {
     const dom = harness.fixture.debugElement;
     const okButton = dom.query(
       (el) =>
-        el.name === 'button' && el.nativeElement.innerHTML.indexOf(component.okLabel) > -1
+        el.name === 'button' &&
+        el.nativeElement.innerHTML.indexOf(component.okLabel) > -1,
     );
     dialogRefStub.close.mockReset();
     okButton.triggerEventHandler('click', {});
@@ -85,7 +86,7 @@ describe('OkCancelDialogComponent', () => {
     const okButton = dom.query(
       (el) =>
         el.name === 'button' &&
-        el.nativeElement.innerHTML.indexOf(component.cancelLabel) > -1
+        el.nativeElement.innerHTML.indexOf(component.cancelLabel) > -1,
     );
     dialogRefStub.close.mockReset();
     okButton.triggerEventHandler('click', {});

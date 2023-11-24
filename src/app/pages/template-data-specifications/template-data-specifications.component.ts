@@ -65,7 +65,7 @@ export class TemplateDataSpecificationsComponent implements OnInit {
     private dataSpecification: DataSpecificationService,
     private toastr: ToastrService,
     private researchPlugin: ResearchPluginService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
@@ -88,7 +88,7 @@ export class TemplateDataSpecificationsComponent implements OnInit {
           this.toastr.error('There was a problem finding the templates.');
           return EMPTY;
         }),
-        finalize(() => (this.state = 'idle'))
+        finalize(() => (this.state = 'idle')),
       )
       .subscribe((sharedDataSpecs) => {
         this.sharedDataSpecifications = sharedDataSpecs;
@@ -108,8 +108,8 @@ export class TemplateDataSpecificationsComponent implements OnInit {
         switchMap((dataSpecificationFolder) =>
           this.dataSpecification.forkWithDialogs(dataSpecification, {
             targetFolder: dataSpecificationFolder,
-          })
-        )
+          }),
+        ),
       )
       .subscribe();
   }
@@ -125,10 +125,10 @@ export class TemplateDataSpecificationsComponent implements OnInit {
     this.sortBy = sortBy ?? this.sortByDefaultOption;
     const [property, order] = Sort.defineSortParams(this.sortBy.value);
     const sortedTemplates = filteredTemplates.sort((a, b) =>
-      Sort.compareByString(a, b, property, order)
+      Sort.compareByString(a, b, property, order),
     );
     const sortedSharedDataspecs = filteredSharedDataSpecs.sort((a, b) =>
-      Sort.compareByString(a, b, property, order)
+      Sort.compareByString(a, b, property, order),
     );
 
     this.filteredDataSpecifications = sortedTemplates;

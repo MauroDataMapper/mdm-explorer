@@ -28,7 +28,7 @@ import { AuthToken } from 'src/app/security/security.types';
   providedIn: 'root',
 })
 export class UserEndpoints {
-  constructor(private sdeRestHandler: SdeRestHandler) { }
+  constructor(private sdeRestHandler: SdeRestHandler) {}
 
   getAdminUser(userId: Uuid): Observable<AdminUser> {
     return this.sdeRestHandler.get<AdminUser>(`${SdeApiEndPoints.AdminUserGet}${userId}`);
@@ -36,7 +36,7 @@ export class UserEndpoints {
 
   getResearchUser(userId: Uuid): Observable<ResearchUser> {
     return this.sdeRestHandler.get<ResearchUser>(
-      `${SdeApiEndPoints.ResearchUserGet}${userId}`
+      `${SdeApiEndPoints.ResearchUserGet}${userId}`,
     );
   }
 

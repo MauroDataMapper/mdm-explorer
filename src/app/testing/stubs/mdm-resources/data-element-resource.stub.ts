@@ -21,7 +21,7 @@ import { Observable } from 'rxjs';
 
 export type DataElementListFn = (
   dataModelId: Uuid,
-  dataClassId: Uuid
+  dataClassId: Uuid,
 ) => Observable<DataElementIndexResponse>;
 
 export interface MdmDataElementResourceStub {

@@ -120,7 +120,7 @@ describe('SafePipe', () => {
 
   it('throws exception for unknown operation', () => {
     expect(() => pipe.transform('a string', 'random')).toThrow(
-      'Invalid safe type specified: random'
+      'Invalid safe type specified: random',
     );
   });
 });

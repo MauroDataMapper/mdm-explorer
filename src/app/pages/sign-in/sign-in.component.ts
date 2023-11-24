@@ -42,7 +42,7 @@ export class SignInComponent implements OnInit {
     private broadcast: BroadcastService,
     private features: FeaturesService,
     private stateRouter: StateRouterService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
   ) {}
 
   ngOnInit(): void {
@@ -64,7 +64,7 @@ export class SignInComponent implements OnInit {
         }),
         finalize(() => {
           this.authenticating = false;
-        })
+        }),
       )
       .subscribe((user) => {
         this.broadcast.userSignedIn(user);
@@ -75,7 +75,7 @@ export class SignInComponent implements OnInit {
   authenticateWithOpenIdConnect(provider: PublicOpenIdConnectProvider) {
     if (!provider.authorizationEndpoint) {
       this.toastr.error(
-        `Unable to authenticate with ${provider.label} because of a missing endpoint. Please contact your administrator for further support.`
+        `Unable to authenticate with ${provider.label} because of a missing endpoint. Please contact your administrator for further support.`,
       );
       return;
     }

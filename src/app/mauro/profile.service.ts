@@ -59,7 +59,15 @@ export class ProfileService {
     options?: RequestSettings,
   ): Observable<Profile> {
     return this.endpoints.profile
-      .profile(catalogueItemDomainType, catalogueItemId, profileNamespace, profileName, undefined, undefined, options)
+      .profile(
+        catalogueItemDomainType,
+        catalogueItemId,
+        profileNamespace,
+        profileName,
+        undefined,
+        undefined,
+        options,
+      )
       .pipe(map((response: Profile) => response.body));
   }
 
@@ -72,7 +80,7 @@ export class ProfileService {
    */
   definition(
     profileNamespace: string,
-    profileName: string
+    profileName: string,
   ): Observable<ProfileDefinition> {
     return this.endpoints.profile
       .definition(profileNamespace, profileName)
@@ -91,7 +99,7 @@ export class ProfileService {
   search(
     profileNamespace: string,
     profileName: string,
-    query: SearchQueryParameters
+    query: SearchQueryParameters,
   ): Observable<MdmIndexBody<ProfileSearchResult>> {
     return this.endpoints.profile
       .search(profileNamespace, profileName, query)
@@ -114,7 +122,7 @@ export class ProfileService {
     id: Uuid,
     profileNamespace: string,
     profileName: string,
-    query: SearchQueryParameters
+    query: SearchQueryParameters,
   ): Observable<MdmIndexBody<ProfileSearchResult>> {
     return this.endpoints.profile
       .searchCatalogueItem(domainType, id, profileNamespace, profileName, query)

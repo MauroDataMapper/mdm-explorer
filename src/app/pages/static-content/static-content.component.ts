@@ -40,7 +40,7 @@ export class StaticContentComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private staticContent: StaticContentService,
-    private stateRouter: StateRouterService
+    private stateRouter: StateRouterService,
   ) {}
 
   ngOnInit(): void {
@@ -59,7 +59,7 @@ export class StaticContentComponent implements OnInit {
         catchError(() => {
           this.stateRouter.navigateToNotFound();
           return EMPTY;
-        })
+        }),
       )
       .subscribe((content) => {
         this.content = content;

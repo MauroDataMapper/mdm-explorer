@@ -523,7 +523,7 @@ describe('DataSpecificationService', () => {
       // Actual
       const actual$ = service.getDataSpecificationIntersections(
         sourceDataModelId,
-        dataElementIds
+        dataElementIds,
       );
 
       // Assert
@@ -699,7 +699,7 @@ describe('DataSpecificationService', () => {
       const actual$ = service.updateWithDialog(
         expectedPayload.id,
         expectedPayload.label,
-        expectedPayload.description
+        expectedPayload.description,
       );
 
       // assert
@@ -718,7 +718,7 @@ describe('DataSpecificationService', () => {
       const actual$ = service.updateWithDialog(
         expectedPayload.id,
         expectedPayload.label,
-        expectedPayload.description
+        expectedPayload.description,
       );
 
       // assert
@@ -736,7 +736,7 @@ describe('DataSpecificationService', () => {
       const actual$ = service.updateWithDialog(
         expectedPayload.id,
         expectedPayload.label,
-        expectedPayload.description
+        expectedPayload.description,
       );
 
       // assert
@@ -763,7 +763,7 @@ describe('DataSpecificationService', () => {
       const actual$ = service.updateWithDialog(
         expectedPayload.id,
         expectedPayload.label,
-        expectedPayload.description
+        expectedPayload.description,
       );
 
       // assert
@@ -786,7 +786,7 @@ describe('DataSpecificationService', () => {
       const actual$ = service.updateWithDialog(
         expectedPayload.id,
         expectedPayload.label,
-        expectedPayload.description
+        expectedPayload.description,
       );
 
       // assert
@@ -816,7 +816,7 @@ describe('DataSpecificationService', () => {
       const actual$ = service.updateWithDialog(
         expectedPayload.id,
         expectedPayload.label,
-        expectedPayload.description
+        expectedPayload.description,
       );
 
       // assert
@@ -897,7 +897,7 @@ describe('DataSpecificationService', () => {
       const toastrSpy = jest.spyOn(toastrStub, 'error');
 
       dataModelsStub.createFork.mockImplementationOnce(() =>
-        cold('#', null, new Error('fork fails'))
+        cold('#', null, new Error('fork fails')),
       );
 
       const expected$ = cold('|');
@@ -916,7 +916,7 @@ describe('DataSpecificationService', () => {
       dialogStub.usage.afterClosed.mockImplementationOnce(() => of('continue'));
 
       dataModelsStub.createFork.mockImplementationOnce(() =>
-        cold('--a|', { a: forkedDataSpecification })
+        cold('--a|', { a: forkedDataSpecification }),
       );
 
       const expected$ = cold('--a|', { a: forkedDataSpecification });
@@ -942,7 +942,7 @@ describe('DataSpecificationService', () => {
       dialogStub.usage.afterClosed.mockImplementationOnce(() => of('continue'));
 
       dataModelsStub.createFork.mockImplementationOnce(() =>
-        cold('--a|', { a: forkedDataSpecification })
+        cold('--a|', { a: forkedDataSpecification }),
       );
 
       dataModelsStub.moveToFolder.mockImplementationOnce((mId, fId) => {
@@ -991,7 +991,7 @@ describe('DataSpecificationService', () => {
         const expected$ = cold('--a|', { a: undefined });
         const actual$ = service.getQuery(dataSpecificationId, type);
         expect(actual$).toBeObservable(expected$);
-      }
+      },
     );
 
     it.each(queryTypes)(
@@ -1013,7 +1013,7 @@ describe('DataSpecificationService', () => {
         const expected$ = cold('--a|', { a: undefined });
         const actual$ = service.getQuery(dataSpecificationId, type);
         expect(actual$).toBeObservable(expected$);
-      }
+      },
     );
 
     it.each(queryTypes)('should return query for %p rule', (type) => {
@@ -1134,7 +1134,7 @@ describe('DataSpecificationService', () => {
         const expected$ = cold('---(a|)', { a: expected });
         const actual$ = service.createOrUpdateQuery(dataSpecificationId, payload);
         expect(actual$).toBeObservable(expected$);
-      }
+      },
     );
 
     it.each(queryTypes)('should update a representation for a %p rule', (type) => {
@@ -1206,7 +1206,7 @@ describe('DataSpecificationService', () => {
       service.getQuery = jest.fn().mockReturnValueOnce(
         cold('a|', {
           a: queryPayload,
-        })
+        }),
       );
       service.createOrUpdateQuery = jest
         .fn()
@@ -1257,7 +1257,7 @@ describe('DataSpecificationService', () => {
       service.getQuery = jest.fn().mockReturnValueOnce(
         cold('a|', {
           a: queryPayload,
-        })
+        }),
       );
       service.createOrUpdateQuery = jest
         .fn()
@@ -1327,7 +1327,7 @@ describe('DataSpecificationService', () => {
       service.list = jest.fn().mockReturnValueOnce(
         cold('a|', {
           a: dataSpecifications,
-        })
+        }),
       );
 
       // Act
@@ -1347,7 +1347,7 @@ describe('DataSpecificationService', () => {
       service.list = jest.fn().mockReturnValueOnce(
         cold('a|', {
           a: dataSpecifications,
-        })
+        }),
       );
 
       // Act
@@ -1367,7 +1367,7 @@ describe('DataSpecificationService', () => {
       service.list = jest.fn().mockReturnValueOnce(
         cold('a|', {
           a: EMPTY,
-        })
+        }),
       );
 
       // Act
@@ -1387,7 +1387,7 @@ describe('DataSpecificationService', () => {
       service.list = jest.fn().mockReturnValueOnce(
         cold('a|', {
           a: emptyDataSpecifications,
-        })
+        }),
       );
 
       // Act
@@ -1407,7 +1407,7 @@ describe('DataSpecificationService', () => {
       service.list = jest.fn().mockReturnValueOnce(
         cold('a|', {
           a: emptyDataSpecifications,
-        })
+        }),
       );
 
       // Act

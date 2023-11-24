@@ -113,7 +113,7 @@ describe('DataModelService', () => {
         const expected$ = cold('(a|)', { a: [] });
         const actual$ = service.getDataClasses(parent!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
         expect(actual$).toBeObservable(expected$);
-      }
+      },
     );
 
     it('should return an empty list if no parent id provided', () => {
@@ -167,7 +167,7 @@ describe('DataModelService', () => {
               items: expectedClasses,
             },
           },
-        })
+        }),
       );
 
       const expected$ = cold('--a|', { a: expectedClasses });
@@ -204,7 +204,7 @@ describe('DataModelService', () => {
               items: expectedClasses,
             },
           },
-        })
+        }),
       );
 
       const expected$ = cold('--a|', { a: expectedClasses });
@@ -266,7 +266,7 @@ describe('DataModelService', () => {
               body: expectedDataClass,
             },
           });
-        }
+        },
       );
 
       const expected$ = cold('--a|', { a: expectedDataClass });
@@ -535,7 +535,7 @@ describe('DataModelService', () => {
               items: dataClasses,
             },
           },
-        })
+        }),
       );
     };
 
@@ -666,7 +666,7 @@ describe('DataModelService', () => {
               body: nextModel,
             },
           });
-        }
+        },
       );
 
       const expected$ = cold('--a|', {
@@ -691,7 +691,7 @@ describe('DataModelService', () => {
           label: 'test',
           domainType: CatalogueItemDomainType.DataModel,
         },
-        { label: 'next' }
+        { label: 'next' },
       );
       expect(actual$).toBeObservable(expected$);
     });
@@ -704,7 +704,7 @@ describe('DataModelService', () => {
           label: 'test',
           domainType: CatalogueItemDomainType.DataModel,
         },
-        { label: 'next' }
+        { label: 'next' },
       );
       expect(actual$).toBeObservable(expected$);
     });
@@ -745,7 +745,7 @@ describe('DataModelService', () => {
           domainType: CatalogueItemDomainType.DataModel,
           modelVersion: '1.0.0',
         },
-        { label: nextModel.label }
+        { label: nextModel.label },
       );
       expect(actual$).toBeObservable(expected$);
     });

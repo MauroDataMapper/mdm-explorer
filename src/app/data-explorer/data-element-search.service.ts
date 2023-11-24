@@ -47,7 +47,8 @@ export class DataElementSearchService {
     private profiles: ProfileService,
     private dataExplorer: DataExplorerService,
     private pagination: PaginationService,
-    @Inject(DATA_EXPLORER_CONFIGURATION) private explorerConfig: DataExplorerConfiguration
+    @Inject(DATA_EXPLORER_CONFIGURATION)
+    private explorerConfig: DataExplorerConfiguration,
   ) {}
 
   /**
@@ -75,7 +76,7 @@ export class DataElementSearchService {
       params.dataClass.dataClassId,
       query,
       page,
-      pageParams
+      pageParams,
     );
   }
 
@@ -106,14 +107,14 @@ export class DataElementSearchService {
           dataModel.id,
           query,
           page,
-          pageParams
+          pageParams,
         );
-      })
+      }),
     );
   }
 
   private getPageParameters(
-    params: DataElementSearchParameters
+    params: DataElementSearchParameters,
   ): [number, PageParameters] {
     const page = params.page ?? 1;
     const pageParams = this.pagination.buildPageParameters(page, params.pageSize);
@@ -121,7 +122,7 @@ export class DataElementSearchService {
   }
 
   private getCommonQueryParameters(
-    params: DataElementSearchParameters
+    params: DataElementSearchParameters,
   ): SearchQueryParameters {
     return {
       sort: params.sort,
@@ -136,7 +137,7 @@ export class DataElementSearchService {
     id: Uuid,
     query: SearchQueryParameters,
     page: number,
-    pageParams: PageParameters
+    pageParams: PageParameters,
   ): Observable<DataElementSearchResultSet> {
     // Force search to be limited to a domain, this might change in future to do catalogue-wide search...
     return this.profiles
@@ -145,7 +146,7 @@ export class DataElementSearchService {
         id,
         this.explorerConfig.profileNamespace,
         this.explorerConfig.profileServiceName,
-        query
+        query,
       )
       .pipe(
         map((dataElements) => {
@@ -155,7 +156,7 @@ export class DataElementSearchService {
             page,
             items: dataElements.items.map(mapProfileSearchResult),
           };
-        })
+        }),
       );
   }
 }

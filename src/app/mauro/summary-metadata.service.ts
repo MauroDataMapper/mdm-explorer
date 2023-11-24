@@ -55,7 +55,7 @@ export class SummaryMetadataService {
    */
   list(
     catalogueItemDomainType: string,
-    catalogueItemId: Uuid
+    catalogueItemId: Uuid,
   ): Observable<MdmIndexBody<SummaryMetadata>> {
     return this.endpoints.summaryMetadata
       .list(catalogueItemDomainType, catalogueItemId)
@@ -72,7 +72,7 @@ export class SummaryMetadataService {
   listReports(
     catalogueItemDomainType: string,
     catalogueItemId: Uuid,
-    summaryMetadataId: Uuid
+    summaryMetadataId: Uuid,
   ): Observable<MdmIndexBody<SummaryMetadataReport>> {
     return this.endpoints.summaryMetadata
       .listReports(catalogueItemDomainType, catalogueItemId, summaryMetadataId)

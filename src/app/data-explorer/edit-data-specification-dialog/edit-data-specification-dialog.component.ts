@@ -50,7 +50,7 @@ export class EditDataSpecificationDialogComponent implements OnInit {
     >,
     private dataSpecifications: DataSpecificationService,
     private dialogs: DialogService,
-    @Inject(MAT_DIALOG_DATA) @Optional() private data: EditDataSpecificationDialogOptions
+    @Inject(MAT_DIALOG_DATA) @Optional() private data: EditDataSpecificationDialogOptions,
   ) {}
 
   get name() {
@@ -71,7 +71,7 @@ export class EditDataSpecificationDialogComponent implements OnInit {
         [
           Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
         ],
-        dontAllowDuplicatedNames(this.dataSpecifications, this.initialName)
+        dontAllowDuplicatedNames(this.dataSpecifications, this.initialName),
       ),
 
       description: new FormControl(this.initialDescription),

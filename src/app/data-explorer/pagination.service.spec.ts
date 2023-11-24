@@ -54,7 +54,7 @@ describe('PaginationService', () => {
     (pageSize) => {
       const actual = service.buildPageParameters(1, pageSize);
       expect(actual.max).toBe(pageSize);
-    }
+    },
   );
 
   it.each([
@@ -69,7 +69,7 @@ describe('PaginationService', () => {
     (expectedOffset, page, pageSize) => {
       const actual = service.buildPageParameters(page, pageSize);
       expect(actual.offset).toBe(expectedOffset);
-    }
+    },
   );
 
   it.each([
@@ -82,7 +82,7 @@ describe('PaginationService', () => {
     (expectedPageCount, totalResults, pageSize) => {
       const actualPageCount = service.getTotalNumberOfPages(totalResults, pageSize);
       expect(actualPageCount).toBe(expectedPageCount);
-    }
+    },
   );
 
   const pageNumberTestCases: [number, number, number[]][] = [
@@ -98,6 +98,6 @@ describe('PaginationService', () => {
     (currentPage, totalPages, expected) => {
       const actual = service.getPageNumbers(currentPage, totalPages);
       expect(actual).toStrictEqual(expected);
-    }
+    },
   );
 });

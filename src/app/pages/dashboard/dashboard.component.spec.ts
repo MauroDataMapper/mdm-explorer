@@ -123,7 +123,7 @@ describe('DashboardComponent', () => {
       harness.component.loadDataSpecifications();
 
       expect(spy).toHaveBeenCalledWith(
-        'Unable to retrieve your current data specifications from the server.'
+        'Unable to retrieve your current data specifications from the server.',
       );
       expect(harness.component.currentUserDataSpecifications).toEqual([]);
     });
@@ -143,7 +143,7 @@ describe('DashboardComponent', () => {
 
       expect(stateRouterStub.navigateToKnownPath).toHaveBeenCalledWith(
         '/search/listing',
-        expectedPayload
+        expectedPayload,
       );
     });
   });

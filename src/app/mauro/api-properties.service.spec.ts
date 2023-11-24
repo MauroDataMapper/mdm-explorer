@@ -63,7 +63,7 @@ describe('ApiPropertiesService', () => {
             items: properties,
           },
         },
-      })
+      }),
     );
 
     const expected$ = cold('--a|', { a: properties });

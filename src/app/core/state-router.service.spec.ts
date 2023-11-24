@@ -71,7 +71,7 @@ describe('StateRouterService', () => {
 
       service.navigateToKnownPath(path);
       expect(routerStub.navigateByUrl).toHaveBeenCalledWith(expectedUrlTree);
-    }
+    },
   );
 
   it('should navigate to "not found" route', () => {

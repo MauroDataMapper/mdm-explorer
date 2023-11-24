@@ -32,14 +32,14 @@ import { Observable } from 'rxjs';
 
 export type CatalogueItemGetPathFn = (
   domainType: PathableDomainType,
-  path: string
+  path: string,
 ) => Observable<MdmResponse<any>>;
 export type CatalogueItemGetPathMockedFn = jest.MockedFunction<CatalogueItemGetPathFn>;
 
 export type CatalogueItemGetPathFromParentFn = (
   domainType: PathableDomainType,
   parentId: Uuid,
-  path: string
+  path: string,
 ) => Observable<MdmResponse<any>>;
 export type CatalogueItemGetPathFromParentMockedFn =
   jest.MockedFunction<CatalogueItemGetPathFromParentFn>;
@@ -65,7 +65,7 @@ export interface MdmCatalogueItemResourceStub {
       domain: RuleDomainType,
       itemId: Uuid,
       ruleId: Uuid,
-      data: RulePayload
+      data: RulePayload,
     ) => Observable<RuleResponse>
   >;
 
@@ -77,7 +77,7 @@ export interface MdmCatalogueItemResourceStub {
     (
       domain: RuleDomainType,
       itemId: Uuid,
-      ruleId: Uuid
+      ruleId: Uuid,
     ) => Observable<RuleRepresentationIndexResponse>
   >;
 
@@ -86,7 +86,7 @@ export interface MdmCatalogueItemResourceStub {
       domain: RuleDomainType,
       itemId: Uuid,
       ruleId: Uuid,
-      representationId: Uuid
+      representationId: Uuid,
     ) => Observable<RuleRepresentationResponse>
   >;
 
@@ -95,7 +95,7 @@ export interface MdmCatalogueItemResourceStub {
       domain: RuleDomainType,
       itemId: Uuid,
       ruleId: Uuid,
-      data: RuleRepresentationPayload
+      data: RuleRepresentationPayload,
     ) => Observable<RuleRepresentationResponse>
   >;
 
@@ -105,7 +105,7 @@ export interface MdmCatalogueItemResourceStub {
       itemId: Uuid,
       ruleId: Uuid,
       representationId: Uuid,
-      data: RuleRepresentationPayload
+      data: RuleRepresentationPayload,
     ) => Observable<RuleRepresentationResponse>
   >;
 
@@ -114,7 +114,7 @@ export interface MdmCatalogueItemResourceStub {
       domain: RuleDomainType,
       itemId: Uuid,
       ruleId: Uuid,
-      representationId: Uuid
+      representationId: Uuid,
     ) => Observable<any>
   >;
 }
@@ -133,7 +133,7 @@ export const createCatalogueItemStub = (): MdmCatalogueItemResourceStub => {
       (
         domain: RuleDomainType,
         itemId: Uuid,
-        data: RulePayload
+        data: RulePayload,
       ) => Observable<RuleResponse>
     >,
     updateRule: jest.fn() as jest.MockedFunction<
@@ -141,7 +141,7 @@ export const createCatalogueItemStub = (): MdmCatalogueItemResourceStub => {
         domain: RuleDomainType,
         itemId: Uuid,
         ruleId: Uuid,
-        data: RulePayload
+        data: RulePayload,
       ) => Observable<RuleResponse>
     >,
     removeRule: jest.fn() as jest.MockedFunction<
@@ -151,7 +151,7 @@ export const createCatalogueItemStub = (): MdmCatalogueItemResourceStub => {
       (
         domain: RuleDomainType,
         itemId: Uuid,
-        ruleId: Uuid
+        ruleId: Uuid,
       ) => Observable<RuleRepresentationIndexResponse>
     >,
     getRuleRepresentation: jest.fn() as jest.MockedFunction<
@@ -159,7 +159,7 @@ export const createCatalogueItemStub = (): MdmCatalogueItemResourceStub => {
         domain: RuleDomainType,
         itemId: Uuid,
         ruleId: Uuid,
-        representationId: Uuid
+        representationId: Uuid,
       ) => Observable<RuleRepresentationResponse>
     >,
     saveRuleRepresentation: jest.fn() as jest.MockedFunction<
@@ -167,7 +167,7 @@ export const createCatalogueItemStub = (): MdmCatalogueItemResourceStub => {
         domain: RuleDomainType,
         itemId: Uuid,
         ruleId: Uuid,
-        data: RuleRepresentationPayload
+        data: RuleRepresentationPayload,
       ) => Observable<RuleRepresentationResponse>
     >,
     updateRuleRepresentation: jest.fn() as jest.MockedFunction<
@@ -176,7 +176,7 @@ export const createCatalogueItemStub = (): MdmCatalogueItemResourceStub => {
         itemId: Uuid,
         ruleId: Uuid,
         representationId: Uuid,
-        data: RuleRepresentationPayload
+        data: RuleRepresentationPayload,
       ) => Observable<RuleRepresentationResponse>
     >,
     removeRuleRepresentation: jest.fn() as jest.MockedFunction<
@@ -184,7 +184,7 @@ export const createCatalogueItemStub = (): MdmCatalogueItemResourceStub => {
         domain: RuleDomainType,
         itemId: Uuid,
         ruleId: Uuid,
-        representationId: Uuid
+        representationId: Uuid,
       ) => Observable<any>
     >,
   };

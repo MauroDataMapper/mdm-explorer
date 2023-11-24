@@ -105,6 +105,6 @@ describe('DataSpecificationCreatedDialogComponent', () => {
       await setupTestbed({} as DataSpecificationCreatedData);
       harness.component.close(action);
       expect(dialogRefStub.close).toHaveBeenCalledWith(action);
-    }
+    },
   );
 });

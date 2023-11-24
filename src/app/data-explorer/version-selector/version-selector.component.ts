@@ -45,7 +45,7 @@ export class VersionSelectorComponent implements OnInit, OnChanges {
 
   constructor(
     private dataModels: DataModelService,
-    private versionSorter: VersionTreeSortingService
+    private versionSorter: VersionTreeSortingService,
   ) {}
 
   ngOnInit(): void {
@@ -110,7 +110,7 @@ export class VersionSelectorComponent implements OnInit, OnChanges {
     });
 
     this.versionOptions = this.versionOptions.sort(
-      this.versionSorter.compareVersionOptions()
+      this.versionSorter.compareVersionOptions(),
     );
   }
 

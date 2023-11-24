@@ -194,7 +194,7 @@ describe('RulesService', () => {
             },
           },
         });
-      }
+      },
     );
 
     const expected$ = cold('--a|', { a: rule.ruleRepresentations });
@@ -217,7 +217,7 @@ describe('RulesService', () => {
         expect(rid).toBe(ruleId);
         expect(repid).toBe(representation.id);
         return cold('--a|', { a: { body: representation } });
-      }
+      },
     );
 
     const expected$ = cold('--a|', { a: representation });
@@ -225,7 +225,7 @@ describe('RulesService', () => {
       domainType,
       itemId,
       ruleId,
-      representation.id
+      representation.id,
     );
     expect(actual$).toBeObservable(expected$);
   });
@@ -248,7 +248,7 @@ describe('RulesService', () => {
         expect(rid).toBe(ruleId);
         expect(pl).toBe(payload);
         return cold('--a|', { a: { body: representation } });
-      }
+      },
     );
 
     const expected$ = cold('--a|', { a: representation });
@@ -275,7 +275,7 @@ describe('RulesService', () => {
         expect(repid).toBe(representation.id);
         expect(pl).toBe(payload);
         return cold('--a|', { a: { body: representation } });
-      }
+      },
     );
 
     const expected$ = cold('--a|', { a: representation });
@@ -284,7 +284,7 @@ describe('RulesService', () => {
       itemId,
       ruleId,
       representation.id,
-      payload
+      payload,
     );
     expect(actual$).toBeObservable(expected$);
   });
@@ -300,7 +300,7 @@ describe('RulesService', () => {
         expect(rid).toBe(ruleId);
         expect(repid).toBe(representationId);
         return cold('--a|', { a: { body: null } });
-      }
+      },
     );
 
     const expected$ = cold('--a|', { a: true });
@@ -308,7 +308,7 @@ describe('RulesService', () => {
       domainType,
       itemId,
       ruleId,
-      representationId
+      representationId,
     );
     expect(actual$).toBeObservable(expected$);
   });

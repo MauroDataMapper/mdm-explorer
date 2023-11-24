@@ -23,7 +23,7 @@ import {
 } from 'src/app/data-explorer/data-explorer.types';
 
 export type DataElementSearchFn = (
-  params: DataElementSearchParameters
+  params: DataElementSearchParameters,
 ) => Observable<DataElementSearchResultSet>;
 
 export interface DataElementSearchServiceStub {

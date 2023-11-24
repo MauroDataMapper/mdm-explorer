@@ -147,6 +147,6 @@ describe('DataElementSearchResultComponent', () => {
       harness.component.toggleBookmark(selected);
 
       expect(emitSpy).toHaveBeenCalledWith({ item, selected });
-    }
+    },
   );
 });

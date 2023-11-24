@@ -28,20 +28,20 @@ export type DataClassListMockedFn = jest.MockedFunction<DataClassListFn>;
 
 export type DataClassListChildrenFn = (
   dataModelId: Uuid,
-  dataClassId: Uuid
+  dataClassId: Uuid,
 ) => Observable<DataClassIndexResponse>;
 export type DataClassListChildrenMockedFn = jest.MockedFunction<DataClassListChildrenFn>;
 
 export type DataClassGetFn = (
   dataModelId: Uuid,
-  dataClassId: Uuid
+  dataClassId: Uuid,
 ) => Observable<DataClassDetailResponse>;
 export type DataClassGetMockedFn = jest.MockedFunction<DataClassGetFn>;
 
 export type DataClassGetChildFn = (
   dataModelId: Uuid,
   dataClassId: Uuid,
-  childDataClassId: Uuid
+  childDataClassId: Uuid,
 ) => Observable<DataClassDetailResponse>;
 export type DataClassGetChildMockedFn = jest.MockedFunction<DataClassGetChildFn>;
 

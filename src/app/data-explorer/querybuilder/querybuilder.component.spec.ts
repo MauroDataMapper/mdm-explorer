@@ -134,10 +134,10 @@ describe('QueryBuilderComponent', () => {
       };
 
       expect(harness.component.termSearchResults['testField1']).toStrictEqual(
-        expectedSetup
+        expectedSetup,
       );
       expect(harness.component.termSearchResults['testField2']).toStrictEqual(
-        expectedSetup
+        expectedSetup,
       );
     });
 
@@ -304,7 +304,7 @@ describe('QueryBuilderComponent', () => {
         harness.component.termSearchChanged('search value', rule, options);
 
         expect(harness.component.termSearchResults[rule.field]).toStrictEqual(
-          expectedResults
+          expectedResults,
         );
       });
     });
