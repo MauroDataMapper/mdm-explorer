@@ -228,7 +228,6 @@ export class ThemeService {
 
   getColor(key: string): string {
     const typedKey = key as keyof typeof this.allCss;
-    console.log(`allCss.length = ${Object.keys(this.allCss)}`);
     return this.allCss[typedKey];
   }
 

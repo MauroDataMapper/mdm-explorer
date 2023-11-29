@@ -17,17 +17,17 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
+import { RequestsListMode } from '@maurodatamapper/sde-resources';
 
 @Component({
   selector: 'mdm-sde-requests',
   templateUrl: './sde-requests.component.html',
-  styleUrls: ['./sde-requests.component.scss']
+  styleUrls: ['./sde-requests.component.scss'],
 })
 export class SdeRequestsComponent implements OnInit {
+  requestsListConfig: RequestsListMode = RequestsListMode.CreatedByMe;
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit(): void {
-  }
-
+  ngOnInit(): void {}
 }
