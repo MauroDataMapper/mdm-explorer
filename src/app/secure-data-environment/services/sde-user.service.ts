@@ -17,15 +17,15 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
+import { UserEndpointsShared } from '@maurodatamapper/sde-resources';
 import { map, Observable } from 'rxjs';
 import { AuthToken } from 'src/app/security/security.types';
-import { UserEndpoints } from '../endpoints/user.endpoints';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SdeUserService {
-  constructor(private userEndpoints: UserEndpoints) { }
+  constructor(private userEndpoints: UserEndpointsShared) {}
 
   /**
    * Attempt to log the current user into the SDE.

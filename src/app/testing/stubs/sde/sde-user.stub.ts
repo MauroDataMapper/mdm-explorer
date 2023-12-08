@@ -1,6 +1,3 @@
-import { Uuid } from '@maurodatamapper/mdm-resources';
-import { Observable } from 'rxjs';
-
 /*
 Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
@@ -19,6 +16,8 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { Uuid } from '@maurodatamapper/sde-resources';
+import { Observable } from 'rxjs';
 export type GetSdeAuthTokenFn = (email: string) => Observable<Uuid>;
 export type GetSdeAuthTokenMockedFn = jest.MockedFunction<GetSdeAuthTokenFn>;
 

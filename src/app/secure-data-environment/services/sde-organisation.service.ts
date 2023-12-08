@@ -17,16 +17,15 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, of, tap } from 'rxjs';
 import {
+  Uuid,
   Organisation,
-  OrganisationEndpoints,
   OrganisationMemberDTO,
   UserOrganisationDto,
-  Uuid,
+  OrganisationEndpoints,
 } from '@maurodatamapper/sde-resources';
-import { BehaviorSubject, Observable, of, tap } from 'rxjs';
 
-// Responsible for retrieving, caching, and updating organisation data.
 @Injectable({
   providedIn: 'root',
 })

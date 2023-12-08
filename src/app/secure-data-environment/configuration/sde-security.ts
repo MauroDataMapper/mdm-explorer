@@ -18,14 +18,14 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
 import { ISdeSecurity, SignedInUserDetails } from '@maurodatamapper/sde-resources';
-import { SecurityService } from 'src/app/security/security.service';
+import { UserDetailsService } from 'src/app/security/user-details.service';
 
 @Injectable({ providedIn: 'root' })
 export class SdeSecurity implements ISdeSecurity {
-  constructor(private securityService: SecurityService) {}
+  constructor(private userDetails: UserDetailsService) {}
 
   getSignedInUser() {
-    const securityDetails = this.securityService.getSignedInUser();
+    const securityDetails = this.userDetails.get();
     if (securityDetails) {
       return {
         id: securityDetails.id,

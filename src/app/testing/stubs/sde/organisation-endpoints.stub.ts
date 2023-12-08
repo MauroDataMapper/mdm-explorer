@@ -17,11 +17,6 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 
-import {
-  Organisation,
-  OrganisationMember,
-} from '@maurodatamapper/sde-resources/lib/resources/organisation.resources';
-import { Uuid } from '@maurodatamapper/sde-resources/lib/types';
 import { Observable } from 'rxjs';
 
 export type ListOrganisationsFn = () => Observable<Organisation[]>;
@@ -36,10 +31,17 @@ export type ListOrganisationMembersFn = (
 export type ListOrganisationMembersMockedFn =
   jest.MockedFunction<ListOrganisationMembersFn>;
 
+export type ListOrganisationApproversAndProjectPeersFn = (
+  organisationId: Uuid
+) => Observable<OrganisationMemberDTO[]>;
+export type ListOrganisationApproversAndProjectPeersMockedFn =
+  jest.MockedFunction<ListOrganisationApproversAndProjectPeersFn>;
+
 export interface SdeOrganisationEndpointsStub {
   listOrganisations: ListOrganisationsMockedFn;
   getOrganisation: GetOrganisationMockedFn;
   listOrganisationMembers: ListOrganisationMembersMockedFn;
+  listOrganisationApproversAndProjectPeers: ListOrganisationApproversAndProjectPeersMockedFn;
 }
 
 export const createSdeOrganisationEndpointsStub = (): SdeOrganisationEndpointsStub => {
@@ -47,5 +49,7 @@ export const createSdeOrganisationEndpointsStub = (): SdeOrganisationEndpointsSt
     listOrganisations: jest.fn() as ListOrganisationsMockedFn,
     getOrganisation: jest.fn() as GetOrganisationMockedFn,
     listOrganisationMembers: jest.fn() as ListOrganisationMembersMockedFn,
+    listOrganisationApproversAndProjectPeers:
+      jest.fn() as ListOrganisationApproversAndProjectPeersMockedFn,
   };
 };

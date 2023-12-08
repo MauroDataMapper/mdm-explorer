@@ -51,7 +51,7 @@ import {
 } from './security.types';
 import { UserDetails, UserDetailsService } from './user-details.service';
 import { ResearchPluginService } from '../mauro/research-plugin.service';
-import { SdeUserService } from '../secure-data-environment/services/sde-user.service';
+import { SdeUserService } from '@maurodatamapper/sde-resources';
 
 /**
  * Manages security operations on Mauro user interfaces.
@@ -71,7 +71,7 @@ export class SecurityService {
     @Inject(OPENID_CONNECT_CONFIG)
     private openIdConnectConfig: OpenIdConnectConfiguration,
     private researchPlugin: ResearchPluginService
-  ) { }
+  ) {}
 
   /**
    * Log in a user to the Mauro system, and get or create a folder for their data specifications.
@@ -134,7 +134,7 @@ export class SecurityService {
       catchError((error: HttpErrorResponse) => {
         return throwError(() => new MdmHttpError(error));
       }),
-      map(() => { }),
+      map(() => {}),
       finalize(() => this.userDetails.clear())
     );
   }
