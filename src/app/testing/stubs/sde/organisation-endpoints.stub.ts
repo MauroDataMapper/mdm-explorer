@@ -17,6 +17,12 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 
+import {
+  Organisation,
+  OrganisationMember,
+  OrganisationMemberDTO,
+  Uuid,
+} from '@maurodatamapper/sde-resources';
 import { Observable } from 'rxjs';
 
 export type ListOrganisationsFn = () => Observable<Organisation[]>;

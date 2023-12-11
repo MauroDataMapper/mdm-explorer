@@ -20,15 +20,15 @@ SPDX-License-Identifier: Apache-2.0
 import {
   Organisation,
   OrganisationMemberDTO,
-  UserOrganisationDto,
-} from '@maurodatamapper/sde-resources/lib/resources/organisation.resources';
-import { Uuid } from '@maurodatamapper/sde-resources/lib/types/shared.types';
+  UserOrganisationDTO,
+} from '@maurodatamapper/sde-resources';
+import { Uuid } from '@maurodatamapper/sde-resources';
 import { Observable } from 'rxjs';
 
 export type GetOrganisationFn = (organisationId: Uuid) => Observable<Organisation>;
 export type GetOrganisationMockedFn = jest.MockedFunction<GetOrganisationFn>;
 
-export type GetUsersOrganisationsFn = () => Observable<UserOrganisationDto[]>;
+export type GetUsersOrganisationsFn = () => Observable<UserOrganisationDTO[]>;
 export type GetUsersOrganisationsMockedFn = jest.MockedFunction<GetUsersOrganisationsFn>;
 
 export type GetApproversForOrganisationFn = (

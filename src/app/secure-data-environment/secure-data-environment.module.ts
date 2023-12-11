@@ -22,21 +22,10 @@ import { CoreModule } from '../core/core.module';
 import { SdeRequestsComponent } from './components/sde-requests/sde-requests.component';
 import { OrganisationListComponent } from './components/organisation-list/organisation-list.component';
 import { OrganisationsComponent } from './pages/organisations/organisations.component';
-import { ItemSelectorComponent } from './components/item-selector/item-selector.component';
 
 @NgModule({
-  declarations: [
-    SdeRequestsComponent,
-    OrganisationListComponent,
-    OrganisationsComponent,
-    ItemSelectorComponent,
-  ],
+  declarations: [SdeRequestsComponent, OrganisationListComponent, OrganisationsComponent],
   imports: [CoreModule, SharedModule],
-  exports: [
-    SdeRequestsComponent,
-    OrganisationListComponent,
-    OrganisationsComponent,
-    ItemSelectorComponent,
-  ],
+  exports: [SdeRequestsComponent, OrganisationListComponent, OrganisationsComponent],
 })
-export class SecureDataEnvironmentModule { }
+export class SecureDataEnvironmentModule {}

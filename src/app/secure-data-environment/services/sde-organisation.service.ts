@@ -21,8 +21,7 @@ import { BehaviorSubject, Observable, of, tap } from 'rxjs';
 import {
   Uuid,
   Organisation,
-  OrganisationMemberDTO,
-  UserOrganisationDto,
+  UserOrganisationDTO,
   OrganisationEndpoints,
 } from '@maurodatamapper/sde-resources';
 
@@ -30,38 +29,36 @@ import {
   providedIn: 'root',
 })
 export class SdeOrganisationService {
-  private _organisationData = new BehaviorSubject<Organisation[]>([]);
+  private _organisations = new BehaviorSubject<Organisation[]>([]);
 
   constructor(private organisationEndpoints: OrganisationEndpoints) {}
 
-  get organisationData$(): Observable<Organisation[]> {
-    return this._organisationData.asObservable();
+  get organisations$(): Observable<Organisation[]> {
+    return this._organisations.asObservable();
   }
 
-  get organisationData(): Organisation[] {
-    return this._organisationData.value;
+  get organisations(): Organisation[] {
+    return this._organisations.value;
   }
 
   get(organisationId: Uuid): Observable<Organisation> {
-    const cachedOrg = this.organisationData.find((org) => org.id === organisationId);
+    const cachedOrg = this.organisations.find((org) => org.id === organisationId);
     return cachedOrg ? of(cachedOrg) : this.fetch(organisationId);
   }
 
-  fetch(organisationId: Uuid): Observable<Organisation> {
-    return this.organisationEndpoints.getOrganisation(organisationId).pipe(
-      tap((org: Organisation) => {
-        this._organisationData.next([...this.organisationData, org]);
-      })
-    );
-  }
-
-  getUsersOrganisations(): Observable<UserOrganisationDto[]> {
+  getUsersOrganisations(): Observable<UserOrganisationDTO[]> {
     return this.organisationEndpoints.listResearchersOrganisationMemberships();
   }
 
-  getApproversForOrganisation(organisationId: Uuid): Observable<OrganisationMemberDTO[]> {
-    return this.organisationEndpoints.listOrganisationApproversAndProjectPeers(
-      organisationId
+  addOrganisationToCache(organisation: Organisation): void {
+    this._organisations.next([...this.organisations, organisation]);
+  }
+
+  private fetch(organisationId: Uuid): Observable<Organisation> {
+    return this.organisationEndpoints.getOrganisation(organisationId).pipe(
+      tap((org: Organisation) => {
+        this.addOrganisationToCache(org);
+      })
     );
   }
 }

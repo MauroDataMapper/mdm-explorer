@@ -18,8 +18,16 @@ SPDX-License-Identifier: Apache-2.0
 -->
 <dialog #dataDialog></dialog>
 
+<!-- Display this div if for some reason the user has no organisations -->
+<div *ngIf="!userHasOrganisations">
+  <p class="mt-3">
+    Sorry, you are not a member of any organisations. If you think something is wrong,
+    please submit a help request or contact your administrator.
+  </p>
+</div>
+
 <!-- resizable divs -->
-<div style="display: flex; height: 100%">
+<div *ngIf="userHasOrganisations" style="display: flex; height: 100%">
   <!-- left side -->
   <div class="container side-bar medium-top-spacer">
     <div class="flex-container">
@@ -32,7 +40,8 @@ SPDX-License-Identifier: Apache-2.0
         <mdm-organisation-list
           [myOrganisations]="myOrganisations"
           (rowClickEvent)="onOrganisationSelectEvent($event)"
-        ></mdm-organisation-list>
+        >
+        </mdm-organisation-list>
       </div>
     </div>
   </div>
@@ -55,8 +64,10 @@ SPDX-License-Identifier: Apache-2.0
           </mat-card>
           <div class="medium-top-spacer">
             <h2>Organisation Members</h2>
-            <sde-organisation-member-list [organisation]="selectedOrganisation">
-            </sde-organisation-member-list>
+            <sde-organisation-member-list
+              [organisation]="selectedOrganisation"
+              [displayColumns]="displayColumnsForOrganisationMemberList"
+            ></sde-organisation-member-list>
           </div>
         </div>
       </div>

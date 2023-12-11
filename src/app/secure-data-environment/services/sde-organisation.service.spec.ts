@@ -16,10 +16,11 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { createSdeOrganisationEndpointsStub } from 'src/app/testing/stubs/sde/sde-organisation-endpoints.stub';
 import { setupTestModuleForService } from 'src/app/testing/testing.helpers';
-import { OrganisationEndpoints } from '../endpoints/organisation.endpoints';
 import { SdeOrganisationService } from './sde-organisation.service';
+import { createSdeOrganisationEndpointsStub } from 'src/app/testing/stubs/sde/organisation-endpoints.stub';
+import { Organisation, OrganisationEndpoints } from '@maurodatamapper/sde-resources';
+import { of } from 'rxjs';
 
 describe('SdeOrganisationService', () => {
   let service: SdeOrganisationService;
@@ -38,5 +39,37 @@ describe('SdeOrganisationService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+
+  it('add an organisation to the cache', () => {
+    const expectedOrg = { id: 'test-org-id' } as Organisation;
+
+    service.addOrganisationToCache(expectedOrg);
+
+    expect(service.organisations).toContain(expectedOrg);
+  });
+
+  it('should return cached organisation data when available', () => {
+    const orgId = 'test-org-id';
+    const expectedOrg = { id: orgId } as Organisation;
+
+    service.addOrganisationToCache(expectedOrg);
+
+    service.get(orgId).subscribe((org) => {
+      expect(org).toEqual(expectedOrg);
+      expect(organisationEndpointsStub.getOrganisation).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should fetch organisation data when not cached and add that org to the cache', () => {
+    const orgId = 'test-org-id';
+    const expectedOrg = { id: orgId } as Organisation;
+
+    organisationEndpointsStub.getOrganisation.mockReturnValueOnce(of(expectedOrg));
+
+    service.get(orgId).subscribe((org) => {
+      expect(org).toEqual(expectedOrg);
+      expect(service.organisations).toContain(expectedOrg);
+    });
   });
 });
