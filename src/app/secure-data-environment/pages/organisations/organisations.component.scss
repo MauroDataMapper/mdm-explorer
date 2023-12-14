@@ -57,3 +57,15 @@ SPDX-License-Identifier: Apache-2.0
 .header-content i {
   margin-left: auto; /* Push <i> to the right by pushing <h2> to the left */
 }
+
+.info-icon {
+  color: $color-primary-dark;
+}
+
+.help-text {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  font-size: small;
+  text-align: left;
+}
