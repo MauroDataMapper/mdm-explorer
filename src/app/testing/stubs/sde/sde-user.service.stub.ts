@@ -18,6 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Uuid } from '@maurodatamapper/sde-resources';
 import { Observable } from 'rxjs';
+
 export type GetSdeAuthTokenFn = (email: string) => Observable<Uuid>;
 export type GetSdeAuthTokenMockedFn = jest.MockedFunction<GetSdeAuthTokenFn>;
 

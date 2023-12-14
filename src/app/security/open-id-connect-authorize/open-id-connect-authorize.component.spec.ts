@@ -23,10 +23,13 @@ import {
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
 import { OpenIdConnectAuthorizeComponent } from './open-id-connect-authorize.component';
+import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
+import { SecurityService } from '../security.service';
 
 describe('OpenIdConnectAuthorizeComponent', () => {
   let harness: ComponentHarness<OpenIdConnectAuthorizeComponent>;
   const endpointsStub = createMdmEndpointsStub();
+  const sdeSecurityStub = createSecurityServiceStub();
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(OpenIdConnectAuthorizeComponent, {
@@ -34,6 +37,10 @@ describe('OpenIdConnectAuthorizeComponent', () => {
         {
           provide: MdmEndpointsService,
           useValue: endpointsStub,
+        },
+        {
+          provide: SecurityService,
+          useValue: sdeSecurityStub,
         },
       ],
     });
