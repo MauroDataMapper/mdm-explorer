@@ -23,13 +23,21 @@ import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
-import { Organisation, UserOrganisationDTO } from '@maurodatamapper/sde-resources';
+import {
+  APPROVER_DISPLAY_COLUMNS_FOR_ORG_MEMBER_LIST,
+  ListColumn,
+  MEMBER_DISPLAY_COLUMNS_FOR_ORG_MEMBER_LIST,
+  Organisation,
+  OrganisationMemberService,
+  UserOrganisationDTO,
+} from '@maurodatamapper/sde-resources';
+import { createOrganisationMemberServiceStub } from 'src/app/testing/stubs/sde/organisation-member.service.stub';
 import { of } from 'rxjs';
 
 describe('OrganisationsComponent', () => {
   let harness: ComponentHarness<OrganisationsComponent>;
-
   const sdeOrganisationServiceStub = createSdeOrganisationServiceStub();
+  const organisationMemberService = createOrganisationMemberServiceStub();
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(OrganisationsComponent, {
@@ -37,6 +45,10 @@ describe('OrganisationsComponent', () => {
         {
           provide: SdeOrganisationService,
           useValue: sdeOrganisationServiceStub,
+        },
+        {
+          provide: OrganisationMemberService,
+          useValue: organisationMemberService,
         },
       ],
     });
@@ -46,40 +58,58 @@ describe('OrganisationsComponent', () => {
     expect(harness.component).toBeTruthy();
   });
 
-  it('should handle no organisations for user', () => {
-    sdeOrganisationServiceStub.getUsersOrganisations.mockReturnValueOnce(of([]));
+  describe('ngOnInit: setting initial selectedOrg, myOrganisations, userHasOrganisations, and displayColumns', () => {
+    it('should handle the case where the user has no organisations', () => {
+      sdeOrganisationServiceStub.getUsersOrganisations.mockReturnValueOnce(of([]));
 
-    harness.detectChanges();
+      harness.detectChanges();
 
-    expect(harness.component.myOrganisations).toEqual([]);
-    expect(harness.component.selectedOrganisation).toBeUndefined();
-    expect(harness.component.userHasOrganisations).toBe(false);
-  });
+      expect(harness.component.myOrganisations).toEqual([]);
+      expect(harness.component.selectedOrganisation).toBeUndefined();
+      expect(harness.component.userHasOrganisations).toBe(false);
+      expect(harness.component.displayColumnsForOrganisationMemberList).toEqual([]);
+    });
 
-  it('should get and set user organisations on init', () => {
-    const expectedOrg = { id: '1', name: 'Org 1' } as Organisation;
-    const userOrgDto = { organisationId: '1' } as UserOrganisationDTO;
+    it('should initialise for an APPROVER', () => {
+      const userOrgs = [{ organisationId: '1', role: 'APPROVER' } as UserOrganisationDTO];
+      const expectedOrg = { id: '1' } as Organisation;
+      const expectedDisplayColumns = APPROVER_DISPLAY_COLUMNS_FOR_ORG_MEMBER_LIST;
 
-    sdeOrganisationServiceStub.getUsersOrganisations.mockReturnValueOnce(
-      of([userOrgDto])
-    );
-    sdeOrganisationServiceStub.get.mockReturnValueOnce(of(expectedOrg));
+      sdeOrganisationServiceStub.getUsersOrganisations.mockReturnValueOnce(of(userOrgs));
+      sdeOrganisationServiceStub.get.mockReturnValueOnce(of(expectedOrg));
+      organisationMemberService.getDisplayColumnsForResearcher.mockReturnValueOnce(
+        APPROVER_DISPLAY_COLUMNS_FOR_ORG_MEMBER_LIST as ListColumn[]
+      );
 
-    harness.detectChanges();
+      harness.detectChanges();
 
-    expect(harness.component.myOrganisations).toEqual([userOrgDto]);
-    expect(harness.component.selectedOrganisation).toEqual(expectedOrg);
-    expect(harness.component.userHasOrganisations).toBe(true);
-  });
+      expect(harness.component.myOrganisations).toEqual(userOrgs);
+      expect(harness.component.selectedOrganisation).toEqual(expectedOrg);
+      expect(harness.component.userHasOrganisations).toBe(true);
+      expect(harness.component.displayColumnsForOrganisationMemberList).toBe(
+        expectedDisplayColumns
+      );
+    });
 
-  it('should update selected organisation on organisation select event', () => {
-    const expectedOrg = { id: '2', name: 'Org 2' } as Organisation;
-    const userOrgDto = { organisationId: '2' } as UserOrganisationDto;
+    it('should initialise for a MEMBER', () => {
+      const userOrgs = [{ organisationId: '1', role: 'MEMBER' } as UserOrganisationDTO];
+      const expectedOrg = { id: '1' } as Organisation;
+      const expectedDisplayColumns = MEMBER_DISPLAY_COLUMNS_FOR_ORG_MEMBER_LIST;
 
-    sdeOrganisationServiceStub.get.mockReturnValueOnce(of(expectedOrg));
+      sdeOrganisationServiceStub.getUsersOrganisations.mockReturnValueOnce(of(userOrgs));
+      sdeOrganisationServiceStub.get.mockReturnValueOnce(of(expectedOrg));
+      organisationMemberService.getDisplayColumnsForResearcher.mockReturnValueOnce(
+        MEMBER_DISPLAY_COLUMNS_FOR_ORG_MEMBER_LIST as ListColumn[]
+      );
 
-    harness.component.onOrganisationSelectEvent(userOrgDto);
+      harness.detectChanges();
 
-    expect(harness.component.selectedOrganisation).toEqual(expectedOrg);
+      expect(harness.component.myOrganisations).toEqual(userOrgs);
+      expect(harness.component.selectedOrganisation).toEqual(expectedOrg);
+      expect(harness.component.userHasOrganisations).toBe(true);
+      expect(harness.component.displayColumnsForOrganisationMemberList).toBe(
+        expectedDisplayColumns
+      );
+    });
   });
 });
