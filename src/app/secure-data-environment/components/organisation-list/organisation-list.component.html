@@ -1,4 +1,4 @@
-/*
+<!--
 Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -15,16 +15,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
-*/
-export enum SdeApiEndPoints {
-  // Organisation endpoints
-  OrganisationList = '/organisation/list',
-  OrganisationGet = '/organisation/get?',
-  OrganisationMemberGet = '/organisation_member/get?',
-  OrganisationMemberList = '/organisation_member/list?',
-
-  // User endpoints
-  AdminUserGet = '/user/admin/get?',
-  ResearchUserGet = '/user/research/get?',
-  Impersonate = '/impersonate/with-token/',
-}
+-->
+<sde-list
+  [data]="myOrganisations"
+  [displayedColumns]="displayColumns"
+  [canFilter]="false"
+  [paginated]="false"
+  (rowClickEvent)="onRowClickEvent($event)"
+>
+</sde-list>

@@ -20,10 +20,12 @@ import { NgModule } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
 import { CoreModule } from '../core/core.module';
 import { SdeRequestsComponent } from './components/sde-requests/sde-requests.component';
+import { OrganisationListComponent } from './components/organisation-list/organisation-list.component';
+import { OrganisationsComponent } from './pages/organisations/organisations.component';
 
 @NgModule({
-  declarations: [SdeRequestsComponent],
+  declarations: [SdeRequestsComponent, OrganisationListComponent, OrganisationsComponent],
   imports: [CoreModule, SharedModule],
-  exports: [SdeRequestsComponent],
+  exports: [SdeRequestsComponent, OrganisationListComponent, OrganisationsComponent],
 })
 export class SecureDataEnvironmentModule {}

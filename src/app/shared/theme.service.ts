@@ -217,7 +217,7 @@ export interface ThemeImageUrl {
 export class ThemeService {
   allCss = {};
 
-  constructor(private researchPlugin: ResearchPluginService) {}
+  constructor(private researchPlugin: ResearchPluginService) { }
 
   private static multiply(rgb1: ColorFormats.RGBA, rgb2: ColorFormats.RGBA) {
     rgb1.b = Math.floor((rgb1.b * rgb2.b) / 255);

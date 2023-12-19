@@ -16,24 +16,18 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Uuid } from '@maurodatamapper/mdm-resources';
+import { Uuid } from '@maurodatamapper/sde-resources';
+import { Observable } from 'rxjs';
 
-export interface Organisation {
-  id: Uuid;
-  createdAt: Date;
-  createdBy: Uuid;
-  name: string;
-  description: string;
-  mauroCoreGroup: string;
-  isDeleted: boolean;
+export type GetSdeAuthTokenFn = (email: string) => Observable<Uuid>;
+export type GetSdeAuthTokenMockedFn = jest.MockedFunction<GetSdeAuthTokenFn>;
+
+export interface SdeUserServiceStub {
+  getSdeAuthToken: GetSdeAuthTokenMockedFn;
 }
 
-export interface OrganisationMember {
-  id: Uuid;
-  createdAt: Date;
-  createdBy: Uuid;
-  organisationId: Uuid;
-  userId: Uuid;
-  role: string;
-  endDate: Date;
-}
+export const createSdeUserServiceStub = (): SdeUserServiceStub => {
+  return {
+    getSdeAuthToken: jest.fn() as GetSdeAuthTokenMockedFn,
+  };
+};

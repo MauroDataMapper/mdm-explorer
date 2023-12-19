@@ -17,11 +17,48 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, of, tap } from 'rxjs';
+import {
+  Uuid,
+  Organisation,
+  UserOrganisationDTO,
+  OrganisationEndpoints,
+} from '@maurodatamapper/sde-resources';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SdeOrganisationService {
+  private _organisations = new BehaviorSubject<Organisation[]>([]);
 
-  constructor() { }
+  constructor(private organisationEndpoints: OrganisationEndpoints) {}
+
+  get organisations$(): Observable<Organisation[]> {
+    return this._organisations.asObservable();
+  }
+
+  get organisations(): Organisation[] {
+    return this._organisations.value;
+  }
+
+  get(organisationId: Uuid): Observable<Organisation> {
+    const cachedOrg = this.organisations.find((org) => org.id === organisationId);
+    return cachedOrg ? of(cachedOrg) : this.fetch(organisationId);
+  }
+
+  getUsersOrganisations(): Observable<UserOrganisationDTO[]> {
+    return this.organisationEndpoints.listResearchersOrganisationMemberships();
+  }
+
+  addOrganisationToCache(organisation: Organisation): void {
+    this._organisations.next([...this.organisations, organisation]);
+  }
+
+  private fetch(organisationId: Uuid): Observable<Organisation> {
+    return this.organisationEndpoints.getOrganisation(organisationId).pipe(
+      tap((org: Organisation) => {
+        this.addOrganisationToCache(org);
+      })
+    );
+  }
 }
