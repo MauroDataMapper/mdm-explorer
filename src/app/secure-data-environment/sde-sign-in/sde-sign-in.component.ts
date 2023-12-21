@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
 import { SdeOpenIdConnectProvider } from '../resources/authentication.resources';
-import { SdeEndpointsService } from '../sde-endpoints.service';
+import { AuthenticationEndpoints } from '../endpoints/authentication.endpoints';
 
 @Component({
   selector: 'mdm-sde-sign-in',
@@ -28,16 +28,16 @@ import { SdeEndpointsService } from '../sde-endpoints.service';
 export class SdeSignInComponent implements OnInit {
   providers?: SdeOpenIdConnectProvider[];
 
-  constructor(private sdeEndpoints: SdeEndpointsService) {}
+  constructor(private sdeAuthentication: AuthenticationEndpoints) {}
 
   ngOnInit(): void {
-    this.sdeEndpoints.authentication
+    this.sdeAuthentication
       .listOpenIdConnectProviders()
       .subscribe((providers) => (this.providers = providers));
   }
 
   authenticateWithOpenIdConnect(provider: SdeOpenIdConnectProvider) {
-    const redirectUrl = this.sdeEndpoints.authentication.getOpenIdConnectAuthorizationUrl(
+    const redirectUrl = this.sdeAuthentication.getOpenIdConnectAuthorizationUrl(
       provider.name
     );
     window.open(redirectUrl.toString(), '_self');

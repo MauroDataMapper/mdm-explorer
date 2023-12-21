@@ -48,7 +48,7 @@ import { FooterLink } from './shared/footer/footer.component';
 import { HeaderImageLink, HeaderLink } from './shared/header/header.component';
 import { UserIdleService } from './external/user-idle.service';
 import { ThemeService } from './shared/theme.service';
-import { SdeEndpointsService } from './secure-data-environment/sde-endpoints.service';
+import { AuthenticationEndpoints } from './secure-data-environment/endpoints/authentication.endpoints';
 
 @Component({
   selector: 'mdm-root',
@@ -199,7 +199,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private userIdle: UserIdleService,
     private error: ErrorService,
     private themes: ThemeService,
-    private sdeEndpoints: SdeEndpointsService
+    private sdeAuthentication: AuthenticationEndpoints
   ) {
     // Load the theme into the DOM as the first thing to do
     this.themes.loadTheme().subscribe((theme) => {
@@ -214,7 +214,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.sdeSignOutUrl = this.sdeEndpoints.authentication.getSignOutUrl();
+    this.sdeSignOutUrl = this.sdeAuthentication.getSignOutUrl();
 
     this.broadcast
       .on<HttpErrorResponse>('http-application-offline')

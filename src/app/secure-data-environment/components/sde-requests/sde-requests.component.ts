@@ -16,24 +16,18 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Uuid } from '@maurodatamapper/mdm-resources';
+import { Component, OnInit } from '@angular/core';
+import { RequestsListMode } from '@maurodatamapper/sde-resources';
 
-export interface Organisation {
-  id: Uuid;
-  createdAt: Date;
-  createdBy: Uuid;
-  name: string;
-  description: string;
-  mauroCoreGroup: string;
-  isDeleted: boolean;
-}
+@Component({
+  selector: 'mdm-sde-requests',
+  templateUrl: './sde-requests.component.html',
+  styleUrls: ['./sde-requests.component.scss'],
+})
+export class SdeRequestsComponent implements OnInit {
+  requestsListConfig: RequestsListMode = RequestsListMode.CreatedByMe;
 
-export interface OrganisationMember {
-  id: Uuid;
-  createdAt: Date;
-  createdBy: Uuid;
-  organisationId: Uuid;
-  userId: Uuid;
-  role: string;
-  endDate: Date;
+  constructor() {}
+
+  ngOnInit(): void {}
 }

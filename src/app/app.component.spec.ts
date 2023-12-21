@@ -35,6 +35,10 @@ import { DataElementSearchService } from './data-explorer/data-element-search.se
 import { createThemeServiceStub } from './testing/stubs/theme.stub';
 import { defaultTheme, ThemeService } from './shared/theme.service';
 import { of } from 'rxjs';
+import { createSecurityServiceStub } from './testing/stubs/security.stub';
+import { SecurityService } from './security/security.service';
+import { createSdeAuthenticationEndpointsStub } from './testing/stubs/sde/sde-authentication-endpoints.stub';
+import { AuthenticationEndpoints } from './secure-data-environment/endpoints/authentication.endpoints';
 
 describe('AppComponent', () => {
   let harness: ComponentHarness<AppComponent>;
@@ -42,6 +46,8 @@ describe('AppComponent', () => {
   const endpointsStub: MdmEndpointsServiceStub = createMdmEndpointsStub();
   const dataElementSearchStub = createDataElementSearchServiceStub();
   const themesStub = createThemeServiceStub();
+  const sdeSecurityStub = createSecurityServiceStub();
+  const sdeAuthenticationStub = createSdeAuthenticationEndpointsStub();
 
   themesStub.loadTheme.mockImplementation(() => of(defaultTheme));
 
@@ -72,6 +78,14 @@ describe('AppComponent', () => {
         {
           provide: ThemeService,
           useValue: themesStub,
+        },
+        {
+          provide: SecurityService,
+          useValue: sdeSecurityStub,
+        },
+        {
+          provide: AuthenticationEndpoints,
+          useValue: sdeAuthenticationStub,
         },
       ],
     });

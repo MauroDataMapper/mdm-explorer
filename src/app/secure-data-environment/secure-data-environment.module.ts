@@ -17,13 +17,26 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { NgModule } from '@angular/core';
+import { SharedModule } from '../shared/shared.module';
 import { CoreModule } from '../core/core.module';
-import { SharedModule } from 'primeng/api';
+import { SdeRequestsComponent } from './components/sde-requests/sde-requests.component';
+import { OrganisationListComponent } from './components/organisation-list/organisation-list.component';
+import { OrganisationsComponent } from './pages/organisations/organisations.component';
 import { SdeSignInComponent } from './sde-sign-in/sde-sign-in.component';
 
 @NgModule({
-  declarations: [SdeSignInComponent],
+  declarations: [
+    SdeRequestsComponent,
+    OrganisationListComponent,
+    OrganisationsComponent,
+    SdeSignInComponent,
+  ],
   imports: [CoreModule, SharedModule],
-  exports: [SdeSignInComponent],
+  exports: [
+    SdeRequestsComponent,
+    OrganisationListComponent,
+    OrganisationsComponent,
+    SdeSignInComponent,
+  ],
 })
 export class SecureDataEnvironmentModule {}

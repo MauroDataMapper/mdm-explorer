@@ -16,19 +16,26 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Injectable } from '@angular/core';
-import { OrganisationEndpoints } from './endpoints/organisation.endpoints';
-import { SdeRestHandler } from './sde-rest-handler';
-import { UserEndpoints } from './endpoints/user.endpoints';
-import { AuthenticationEndpoints } from './endpoints/authentication.endpoints';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class SdeEndpointsService {
-  authentication = new AuthenticationEndpoints(this.sdeRestHandler);
-  organisation = new OrganisationEndpoints(this.sdeRestHandler);
-  user = new UserEndpoints(this.sdeRestHandler);
+import { SdeRequestsComponent } from './sde-requests.component';
 
-  constructor(private sdeRestHandler: SdeRestHandler) {}
-}
+describe('SdeRequestsComponent', () => {
+  let component: SdeRequestsComponent;
+  let fixture: ComponentFixture<SdeRequestsComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [ SdeRequestsComponent ]
+    })
+    .compileComponents();
+
+    fixture = TestBed.createComponent(SdeRequestsComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

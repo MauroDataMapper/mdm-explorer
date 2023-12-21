@@ -1,4 +1,4 @@
-<!--
+/*
 Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -15,23 +15,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
--->
-<div class="container sde-main">
-  <div class="main-row hero">
-    <h1>Secure Data Environment</h1>
-    <mdm-sde-sign-in *ngIf="!signedIn"></mdm-sde-sign-in>
-    <mat-tab-group *ngIf="signedIn">
-      <mat-tab label="Requests">
-        <mdm-sde-requests></mdm-sde-requests>
-      </mat-tab>
+*/
+import { Injectable } from '@angular/core';
+import { SdeResourcesConfig, SdeResourcesMode } from '@maurodatamapper/sde-resources';
+import { SdeSecurity } from './sde-security';
+import { SdeColors } from './sde-colors';
+import { environment } from 'src/environments/environment';
 
-      <mat-tab label="Organisations">
-        <mdm-organisations></mdm-organisations>
-      </mat-tab>
+@Injectable({ providedIn: 'root' })
+export class ResearcherSdeResourcesConfig implements SdeResourcesConfig {
+  sdeSecurity = this.researcherSdeSecurity;
+  sdeResourcesMode = SdeResourcesMode.RESEARCHER;
+  colors = this.sdeColors;
+  sdeEndpoint = environment.sdeResearcherEndpoint;
 
-      <mat-tab label="Projects">
-        <p>SDE Projects Subpage to go here</p>
-      </mat-tab>
-    </mat-tab-group>
-  </div>
-</div>
+  constructor(private researcherSdeSecurity: SdeSecurity, private sdeColors: SdeColors) {}
+}

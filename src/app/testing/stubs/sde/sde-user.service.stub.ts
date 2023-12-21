@@ -16,19 +16,18 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-export enum SdeApiEndPoints {
-  // Authentication
-  AuthenticationListOpenIdConnectProviders = '/authentication/oauth/providers',
-  AuthenticationUserDetailsGet = '/authentication/user/details',
+import { Uuid } from '@maurodatamapper/sde-resources';
+import { Observable } from 'rxjs';
 
-  // Organisation endpoints
-  OrganisationList = '/organisation/list',
-  OrganisationGet = '/organisation/get?',
-  OrganisationMemberGet = '/organisation_member/get?',
-  OrganisationMemberList = '/organisation_member/list?',
+export type GetSdeAuthTokenFn = (email: string) => Observable<Uuid>;
+export type GetSdeAuthTokenMockedFn = jest.MockedFunction<GetSdeAuthTokenFn>;
 
-  // User endpoints
-  AdminUserGet = '/user/admin/get?',
-  ResearchUserGet = '/user/research/get?',
-  Impersonate = '/impersonate/with-token/',
+export interface SdeUserServiceStub {
+  getSdeAuthToken: GetSdeAuthTokenMockedFn;
 }
+
+export const createSdeUserServiceStub = (): SdeUserServiceStub => {
+  return {
+    getSdeAuthToken: jest.fn() as GetSdeAuthTokenMockedFn,
+  };
+};

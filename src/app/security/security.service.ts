@@ -51,8 +51,8 @@ import {
 } from './security.types';
 import { UserDetails, UserDetailsService } from './user-details.service';
 import { ResearchPluginService } from '../mauro/research-plugin.service';
-import { SdeUserService } from '../secure-data-environment/services/sde-user.service';
 import { SdeResearchUser } from '../secure-data-environment/resources/authentication.resources';
+import { SdeUserService } from '@maurodatamapper/sde-resources';
 
 /**
  * Manages security operations on Mauro user interfaces.

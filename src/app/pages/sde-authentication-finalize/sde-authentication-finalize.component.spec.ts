@@ -27,14 +27,14 @@ import { Params, ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { UserDetailsService } from 'src/app/security/user-details.service';
-import { createSdeEndpointsStub } from 'src/app/testing/stubs/sde-endpoints.stub';
-import { SdeEndpointsService } from 'src/app/secure-data-environment/sde-endpoints.service';
 import { SdeResearchUser } from 'src/app/secure-data-environment/resources/authentication.resources';
+import { createSdeAuthenticationEndpointsStub } from 'src/app/testing/stubs/sde/sde-authentication-endpoints.stub';
+import { AuthenticationEndpoints } from 'src/app/secure-data-environment/endpoints/authentication.endpoints';
 
 describe('SdeAuthenticationFinalizeComponent', () => {
   let harness: ComponentHarness<SdeAuthenticationFinalizeComponent>;
 
-  const sdeEndpointsStub = createSdeEndpointsStub();
+  const sdeAuthenticationStub = createSdeAuthenticationEndpointsStub();
   const stateRouterStub = createStateRouterStub();
   const userDetailsStub = {
     setSdeResearchUser: jest.fn(),
@@ -53,8 +53,8 @@ describe('SdeAuthenticationFinalizeComponent', () => {
           useValue: route,
         },
         {
-          provide: SdeEndpointsService,
-          useValue: sdeEndpointsStub,
+          provide: AuthenticationEndpoints,
+          useValue: sdeAuthenticationStub,
         },
         {
           provide: StateRouterService,
@@ -102,7 +102,7 @@ describe('SdeAuthenticationFinalizeComponent', () => {
         isDeleted: false,
       };
 
-      sdeEndpointsStub.authentication.getUserDetails.mockReturnValue(of(expectedUser));
+      sdeAuthenticationStub.getUserDetails.mockReturnValue(of(expectedUser));
 
       harness.component.ngOnInit();
 

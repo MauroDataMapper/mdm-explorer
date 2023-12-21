@@ -1,4 +1,4 @@
-<!--
+/*
 Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -15,23 +15,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
--->
-<div class="container sde-main">
-  <div class="main-row hero">
-    <h1>Secure Data Environment</h1>
-    <mdm-sde-sign-in *ngIf="!signedIn"></mdm-sde-sign-in>
-    <mat-tab-group *ngIf="signedIn">
-      <mat-tab label="Requests">
-        <mdm-sde-requests></mdm-sde-requests>
-      </mat-tab>
+*/
+import { Injectable } from '@angular/core';
+import { ISdeColors } from '@maurodatamapper/sde-resources';
+import { ThemeService } from 'src/app/shared/theme.service';
 
-      <mat-tab label="Organisations">
-        <mdm-organisations></mdm-organisations>
-      </mat-tab>
+@Injectable({ providedIn: 'root' })
+export class SdeColors implements ISdeColors {
+  constructor(private themeService: ThemeService) {}
 
-      <mat-tab label="Projects">
-        <p>SDE Projects Subpage to go here</p>
-      </mat-tab>
-    </mat-tab-group>
-  </div>
-</div>
+  getColor(key: string): string {
+    return this.themeService.getColor(key);
+  }
+
+  applyAllCss() {
+    this.themeService.applyAllCss();
+  }
+}

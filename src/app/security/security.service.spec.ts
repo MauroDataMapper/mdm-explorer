@@ -40,8 +40,8 @@ import {
 import { SecurityService } from './security.service';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { UserDetails, UserDetailsService } from './user-details.service';
-import { createSdeUserServiceStub } from '../testing/stubs/sde/sde-user.stub';
-import { SdeUserService } from '../secure-data-environment/services/sde-user.service';
+import { createSdeUserServiceStub } from '../testing/stubs/sde/sde-user.service.stub';
+import { SdeUserService } from '@maurodatamapper/sde-resources';
 
 interface UserDetailsServiceStub {
   set: jest.Mock;

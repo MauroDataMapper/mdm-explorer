@@ -1,7 +1,4 @@
-import { Uuid } from '@maurodatamapper/mdm-resources';
-import { Observable } from 'rxjs';
-
-/*
+<!--
 Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -18,16 +15,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
-*/
-export type GetSdeAuthTokenFn = (email: string) => Observable<Uuid>;
-export type GetSdeAuthTokenMockedFn = jest.MockedFunction<GetSdeAuthTokenFn>;
-
-export interface SdeUserServiceStub {
-  getSdeAuthToken: GetSdeAuthTokenMockedFn;
-}
-
-export const createSdeUserServiceStub = (): SdeUserServiceStub => {
-  return {
-    getSdeAuthToken: jest.fn() as GetSdeAuthTokenMockedFn,
-  };
-};
+-->
+<sde-list
+  [data]="myOrganisations"
+  [displayedColumns]="displayColumns"
+  [canFilter]="false"
+  [paginated]="false"
+  (rowClickEvent)="onRowClickEvent($event)"
+>
+</sde-list>

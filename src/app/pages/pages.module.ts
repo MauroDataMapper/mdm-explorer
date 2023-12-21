@@ -83,6 +83,7 @@ import { SdeAuthenticationFinalizeComponent } from './sde-authentication-finaliz
   imports: [
     CoreModule,
     SharedModule,
+    SecureDataEnvironmentModule,
     SecurityModule,
     DataExplorerModule,
     SecureDataEnvironmentModule,

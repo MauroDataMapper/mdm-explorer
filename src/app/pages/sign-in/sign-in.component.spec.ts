@@ -37,6 +37,8 @@ import { BroadcastService } from 'src/app/core/broadcast.service';
 import { LoginError, SignInErrorType } from 'src/app/security/security.types';
 import { HttpErrorResponse } from '@angular/common/http';
 import { createStateRouterStub } from 'src/app/testing/stubs/state-router.stub';
+import { createSdeAuthenticationEndpointsStub } from 'src/app/testing/stubs/sde/sde-authentication-endpoints.stub';
+import { AuthenticationEndpoints } from 'src/app/secure-data-environment/endpoints/authentication.endpoints';
 
 interface BroadcastServiceStub {
   userSignedIn: jest.Mock;
@@ -57,6 +59,8 @@ describe('SignInComponent', () => {
 
   const stateRouterStub = createStateRouterStub();
 
+  const sdeAuthenticationStub = createSdeAuthenticationEndpointsStub();
+
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(SignInComponent, {
       declarations: [MockComponent(SignInFormComponent)],
@@ -76,6 +80,10 @@ describe('SignInComponent', () => {
         {
           provide: FeaturesService,
           useValue: featuresStub,
+        },
+        {
+          provide: AuthenticationEndpoints,
+          useValue: sdeAuthenticationStub,
         },
       ],
     });
