@@ -26,7 +26,7 @@ SPDX-License-Identifier: Apache-2.0
 @import "../../../styles/base/all";
 
 $content-color: $color-accent-light;
-.query-builder {
+.query-builder-wrapper {
   &-entity {
     // Style is tied to .q-inline-block-display class override in global styles/_querybuilder.scss
     width: 100%;

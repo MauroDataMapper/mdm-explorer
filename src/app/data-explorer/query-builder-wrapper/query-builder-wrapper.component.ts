@@ -35,11 +35,11 @@ import {
 } from 'src/app/data-explorer/query-builder.service';
 
 @Component({
-  selector: 'mdm-querybuilder',
-  templateUrl: './querybuilder.component.html',
-  styleUrls: ['./querybuilder.component.scss'],
+  selector: 'mdm-query-builder-wrapper',
+  templateUrl: './query-builder-wrapper.component.html',
+  styleUrls: ['./query-builder-wrapper.component.scss'],
 })
-export class QueryBuilderComponent implements OnInit {
+export class QueryBuilderWrapperComponent implements OnInit {
   @Input() dataElements: DataElementSearchResult[] = [];
   @Input() color: ThemePalette = 'primary';
   @Input() query: QueryCondition = {
@@ -78,7 +78,7 @@ export class QueryBuilderComponent implements OnInit {
 
   constructor(
     private terminology: TerminologyService,
-    private queryBuilderService: QueryBuilderService
+    private queryBuilderService: QueryBuilderService,
   ) {}
 
   get hasFields(): boolean {
@@ -130,7 +130,7 @@ export class QueryBuilderComponent implements OnInit {
               };
             }),
           };
-        })
+        }),
       )
       .subscribe((results: AutocompleteSelectOptionSet) => {
         this.termSearchResults[rule.field] = results;

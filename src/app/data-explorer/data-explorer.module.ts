@@ -38,13 +38,13 @@ import { IdentifiableDataIconComponent } from './identifiable-data-icon/identifi
 import { SearchFiltersComponent } from './search-filters/search-filters.component';
 import { CatalogueSearchFormComponent } from './catalogue-search-form/catalogue-search-form.component';
 import { OkCancelDialogComponent } from './ok-cancel-dialog/ok-cancel-dialog.component';
-import { QueryBuilderComponent } from '../data-explorer/querybuilder/querybuilder.component';
+import { QueryBuilderWrapperComponent } from './query-builder-wrapper/query-builder-wrapper.component';
 import { QueryBuilderModule } from 'angular2-query-builder';
 import { MeqlPipe } from './pipes/meql.pipe';
 import { MeqlOutputComponent } from './meql-output/meql-output.component';
 import { DataSpecificationRowComponent } from './data-specification-row/data-specification-row.component';
 import { DataQueryRowComponent } from './data-query-row/data-query-row.component';
-import { NumberFormatDirective } from './querybuilder/directives/number-format.directive';
+import { NumberFormatDirective } from './query-builder-wrapper/directives/number-format.directive';
 import { EditDataSpecificationDialogComponent } from './edit-data-specification-dialog/edit-data-specification-dialog.component';
 import { SelectionExpandedDialogComponent } from './selection-expanded-dialog/selection-expanded-dialog.component';
 import { SelectionCompactComponent } from './selection-compact/selection-compact.component';
@@ -72,7 +72,7 @@ import { VersionSelectorComponent } from './version-selector/version-selector.co
     SearchFiltersComponent,
     CatalogueSearchFormComponent,
     OkCancelDialogComponent,
-    QueryBuilderComponent,
+    QueryBuilderWrapperComponent,
     MeqlPipe,
     MeqlOutputComponent,
     DataSpecificationRowComponent,
@@ -100,7 +100,7 @@ import { VersionSelectorComponent } from './version-selector/version-selector.co
     IdentifiableDataIconComponent,
     SearchFiltersComponent,
     CatalogueSearchFormComponent,
-    QueryBuilderComponent,
+    QueryBuilderWrapperComponent,
     MeqlOutputComponent,
     DataSpecificationRowComponent,
     DataQueryRowComponent,

@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { QueryBuilderComponent } from './querybuilder.component';
+import { QueryBuilderWrapperComponent } from './query-builder-wrapper.component';
 import {
   QueryBuilderComponent as LibQueryBuilderComponent,
   Rule,
@@ -40,12 +40,12 @@ import { of } from 'rxjs';
 import { AutocompleteSelectOptionSet } from 'src/app/shared/autocomplete-select/autocomplete-select.component';
 
 describe('QueryBuilderComponent', () => {
-  let harness: ComponentHarness<QueryBuilderComponent>;
+  let harness: ComponentHarness<QueryBuilderWrapperComponent>;
   const terminologyStub = createTerminologyServiceStub();
   const mdmResourcesConfiguration = new MdmResourcesConfiguration();
 
   beforeEach(async () => {
-    harness = await setupTestModuleForComponent(QueryBuilderComponent, {
+    harness = await setupTestModuleForComponent(QueryBuilderWrapperComponent, {
       providers: [
         {
           provide: TerminologyService,
