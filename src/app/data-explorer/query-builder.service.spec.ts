@@ -32,7 +32,7 @@ import {
   DataElementSearchResult,
   DataSpecificationQueryPayload,
 } from '../data-explorer/data-explorer.types';
-import { QueryBuilderConfig } from 'angular2-query-builder';
+import { QueryBuilderConfig } from './query-builder/query-builder.interfaces';
 import { createProfileServiceStub } from '../testing/stubs/profile.stub';
 import { HttpErrorResponse } from '@angular/common/http';
 import { of } from 'rxjs';

@@ -19,7 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DataElement, Uuid } from '@maurodatamapper/mdm-resources';
-import { QueryBuilderConfig } from 'angular2-query-builder';
+import { QueryBuilderConfig } from '../../data-explorer/query-builder/query-builder.interfaces';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY, finalize, forkJoin, switchMap } from 'rxjs';
 import { BroadcastService } from '../../core/broadcast.service';

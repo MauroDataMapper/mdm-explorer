@@ -23,7 +23,7 @@ import {
   DataType,
   Profile,
 } from '@maurodatamapper/mdm-resources';
-import { QueryBuilderConfig } from 'angular2-query-builder';
+import { QueryBuilderConfig, Option } from './query-builder/query-builder.interfaces';
 import { catchError, forkJoin, map, Observable, of } from 'rxjs';
 import {
   DataElementSearchResult,
@@ -31,7 +31,6 @@ import {
   QueryCondition,
   QueryExpression,
 } from '../data-explorer/data-explorer.types';
-import { Option } from 'angular2-query-builder';
 import { ProfileService } from '../mauro/profile.service';
 
 export interface QueryConfiguration {

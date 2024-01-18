@@ -39,7 +39,6 @@ import { SearchFiltersComponent } from './search-filters/search-filters.componen
 import { CatalogueSearchFormComponent } from './catalogue-search-form/catalogue-search-form.component';
 import { OkCancelDialogComponent } from './ok-cancel-dialog/ok-cancel-dialog.component';
 import { QueryBuilderWrapperComponent } from './query-builder-wrapper/query-builder-wrapper.component';
-import { QueryBuilderModule } from 'angular2-query-builder';
 import { MeqlPipe } from './pipes/meql.pipe';
 import { MeqlOutputComponent } from './meql-output/meql-output.component';
 import { DataSpecificationRowComponent } from './data-specification-row/data-specification-row.component';
@@ -51,6 +50,17 @@ import { SelectionCompactComponent } from './selection-compact/selection-compact
 import { ShareDataSpecificationDialogComponent } from './share-data-specification-dialog/share-data-specification-dialog.component';
 import { FilterByComponent } from './filter-by/filter-by.component';
 import { VersionSelectorComponent } from './version-selector/version-selector.component';
+import { QueryBuilderComponent } from './query-builder/query-builder.component';
+import { QueryInputDirective } from './query-builder/query-input.directive';
+import { QueryOperatorDirective } from './query-builder/query-operator.directive';
+import { QueryFieldDirective } from './query-builder/query-field.directive';
+import { QueryEntityDirective } from './query-builder/query-entity.directive';
+import { QueryButtonGroupDirective } from './query-builder/query-button-group.directive';
+import { QuerySwitchGroupDirective } from './query-builder/query-switch-group.directive';
+import { QueryRemoveButtonDirective } from './query-builder/query-remove-button.directive';
+import { QueryEmptyWarningDirective } from './query-builder/query-empty-warning.directive';
+import { QueryArrowIconDirective } from './query-builder/query-arrow-icon.directive';
+import { LetDirective } from '../shared/directives/let.directive';
 
 @NgModule({
   declarations: [
@@ -84,8 +94,19 @@ import { VersionSelectorComponent } from './version-selector/version-selector.co
     ShareDataSpecificationDialogComponent,
     FilterByComponent,
     VersionSelectorComponent,
+    QueryBuilderComponent,
+    QueryInputDirective,
+    QueryOperatorDirective,
+    QueryFieldDirective,
+    QueryEntityDirective,
+    QueryButtonGroupDirective,
+    QuerySwitchGroupDirective,
+    QueryRemoveButtonDirective,
+    QueryEmptyWarningDirective,
+    QueryArrowIconDirective,
+    LetDirective,
   ],
-  imports: [CoreModule, SharedModule, QueryBuilderModule],
+  imports: [CoreModule, SharedModule],
   exports: [
     DataElementSearchResultComponent,
     DataElementRowComponent,
@@ -107,6 +128,17 @@ import { VersionSelectorComponent } from './version-selector/version-selector.co
     NumberFormatDirective,
     SelectionCompactComponent,
     FilterByComponent,
+    QueryBuilderComponent,
+    QueryInputDirective,
+    QueryOperatorDirective,
+    QueryFieldDirective,
+    QueryEntityDirective,
+    QueryButtonGroupDirective,
+    QuerySwitchGroupDirective,
+    QueryRemoveButtonDirective,
+    QueryEmptyWarningDirective,
+    QueryArrowIconDirective,
+    LetDirective,
   ],
   providers: [
     {

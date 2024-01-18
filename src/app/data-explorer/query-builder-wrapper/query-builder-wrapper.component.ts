@@ -20,7 +20,12 @@ SPDX-License-Identifier: Apache-2.0
 Query builder source: https://github.com/zebzhao/Angular-QueryBuilder
 */
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { QueryBuilderConfig, Rule, RuleSet, Option } from 'angular2-query-builder';
+import {
+  QueryBuilderConfig,
+  Rule,
+  RuleSet,
+  Option,
+} from '../query-builder/query-builder.interfaces';
 import {
   DataElementSearchResult,
   QueryCondition,
@@ -133,7 +138,7 @@ export class QueryBuilderWrapperComponent implements OnInit {
         }),
       )
       .subscribe((results: AutocompleteSelectOptionSet) => {
-        this.termSearchResults[rule.field] = results;
+        this.termSearchResults[rule.field ?? ''] = results;
       });
   }
 

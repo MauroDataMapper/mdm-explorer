@@ -17,10 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { QueryBuilderWrapperComponent } from './query-builder-wrapper.component';
-import {
-  QueryBuilderComponent as LibQueryBuilderComponent,
-  Rule,
-} from 'angular2-query-builder';
+
 import {
   ComponentHarness,
   setupTestModuleForComponent,
@@ -38,6 +35,8 @@ import {
 } from '@maurodatamapper/mdm-resources';
 import { of } from 'rxjs';
 import { AutocompleteSelectOptionSet } from 'src/app/shared/autocomplete-select/autocomplete-select.component';
+import { QueryBuilderComponent } from '../query-builder/query-builder.component';
+import { Rule } from '../query-builder/query-builder.interfaces';
 
 describe('QueryBuilderComponent', () => {
   let harness: ComponentHarness<QueryBuilderWrapperComponent>;
@@ -59,7 +58,7 @@ describe('QueryBuilderComponent', () => {
       declarations: [
         MockComponent(MeqlOutputComponent),
         MockComponent(MatCard),
-        MockComponent(LibQueryBuilderComponent),
+        MockComponent(QueryBuilderComponent),
       ],
     });
   });
@@ -292,7 +291,7 @@ describe('QueryBuilderComponent', () => {
           ],
         };
 
-        expect(harness.component.termSearchResults[rule.field]).toBeUndefined();
+        expect(harness.component.termSearchResults[rule.field ?? '']).toBeUndefined();
 
         terminologyStub.listTerms.mockImplementationOnce(() => {
           return of({
@@ -303,7 +302,7 @@ describe('QueryBuilderComponent', () => {
 
         harness.component.termSearchChanged('search value', rule, options);
 
-        expect(harness.component.termSearchResults[rule.field]).toStrictEqual(
+        expect(harness.component.termSearchResults[rule.field ?? '']).toStrictEqual(
           expectedResults
         );
       });
