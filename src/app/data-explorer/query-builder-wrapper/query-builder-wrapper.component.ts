@@ -28,6 +28,7 @@ import {
 } from '../query-builder/query-builder.interfaces';
 import {
   DataElementSearchResult,
+  DataSpecificationQueryType,
   QueryCondition,
 } from 'src/app/data-explorer/data-explorer.types';
 import { ThemePalette } from '@angular/material/core';
@@ -47,6 +48,7 @@ import {
 export class QueryBuilderWrapperComponent implements OnInit {
   @Input() dataElements: DataElementSearchResult[] = [];
   @Input() color: ThemePalette = 'primary';
+  @Input() queryType?: DataSpecificationQueryType;
   @Input() query: QueryCondition = {
     condition: 'and',
     rules: [],
@@ -54,6 +56,8 @@ export class QueryBuilderWrapperComponent implements OnInit {
   @Input() config: QueryBuilderConfig = {
     fields: {},
   };
+  @Input() hideAddRuleButtonOnRoot = false;
+  @Input() hideOrRadioButtonOnRoot = false;
 
   @Output() queryChange = new EventEmitter<QueryCondition>();
 
@@ -140,6 +144,14 @@ export class QueryBuilderWrapperComponent implements OnInit {
       .subscribe((results: AutocompleteSelectOptionSet) => {
         this.termSearchResults[rule.field ?? ''] = results;
       });
+  }
+
+  isCohortQuery(): boolean {
+    return this.queryType === 'cohort';
+  }
+
+  isDataQuery(): boolean {
+    return this.queryType === 'data';
   }
 
   private setupDescriptions() {

@@ -115,6 +115,9 @@ export class QueryBuilderComponent
   @Input() parentChangeCallback!: () => void;
   @Input() parentTouchedCallback!: () => void;
   @Input() persistValueOnFieldChange = false;
+  @Input() rootComponent = true;
+  @Input() hideAddRuleButtonOnRoot = false;
+  @Input() hideOrRadioButtonOnRoot = false;
 
   @ViewChild('treeContainer', { static: true }) treeContainer!: ElementRef;
 
@@ -131,6 +134,8 @@ export class QueryBuilderComponent
   emptyWarningTemplate!: QueryEmptyWarningDirective;
   @ContentChildren(QueryInputDirective) inputTemplates!: QueryList<QueryInputDirective>;
   @ContentChild(QueryArrowIconDirective) arrowIconTemplate!: QueryArrowIconDirective;
+
+  public shouldShowAddRuleButton1 = false;
 
   public fields?: Field[];
   public filterFields?: Field[];
@@ -857,6 +862,18 @@ export class QueryBuilderComponent
     const invalid =
       !config.allowEmptyRulesets && ruleSet?.rules && ruleSet.rules.length === 0;
     return invalid ?? false;
+  }
+
+  showAddRuleButton(): boolean {
+    return !(this.hideAddRuleButtonOnRoot && this.rootComponent) || !this.rootComponent;
+  }
+
+  showOrRadioButton(): boolean {
+    return !(this.hideOrRadioButtonOnRoot && this.rootComponent) || !this.rootComponent;
+  }
+
+  hasFields(): boolean {
+    return Object.keys(this.config.fields).length > 0;
   }
 
   private calculateFieldChangeValue(

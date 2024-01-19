@@ -44,30 +44,36 @@ SPDX-License-Identifier: Apache-2.0
   <ng-template #defaultButtonGroup>
     <div [ngClass]="getClassNames('buttonGroup', 'rightAlign')">
       <button
+        *ngIf="showAddRuleButton()"
+        class="add-rule-button"
         type="button"
+        mat-button
         (click)="addRule()"
-        [ngClass]="getClassNames('button')"
-        [disabled]="disabled"
       >
-        <i [ngClass]="getClassNames('addIcon')"></i> Rule
+        <mat-icon>add</mat-icon>
+        Rule
       </button>
       <button
+        class="add-rule-button"
         type="button"
+        mat-button
+        *ngIf="addRuleSet"
         (click)="addRuleSet()"
-        [ngClass]="getClassNames('button')"
-        *ngIf="allowRuleset"
-        [disabled]="disabled"
+        [disabled]="!hasFields"
       >
-        <i [ngClass]="getClassNames('addIcon')"></i> Ruleset
+        <mat-icon>add_circle_outline</mat-icon>
+        Rule Set
       </button>
       <ng-container *ngIf="!!parentValue && allowRuleset">
         <button
           type="button"
+          mat-button
+          matTooltip="Remove Rule Set"
+          *ngIf="removeRuleSet"
           (click)="removeRuleSet()"
-          [ngClass]="getClassNames('button', 'removeButton')"
-          [disabled]="disabled"
+          [disabled]="!hasFields"
         >
-          <i [ngClass]="getClassNames('removeIcon')"></i>
+          <mat-icon>remove_circle_outline</mat-icon>
         </button>
       </ng-container>
     </div>
@@ -80,38 +86,12 @@ SPDX-License-Identifier: Apache-2.0
   </ng-container>
 
   <ng-template #defaultSwitchGroup>
-    <div [ngClass]="getClassNames('switchGroup', 'transition')" *ngIf="data">
-      <div [ngClass]="getClassNames('switchControl')">
-        <input
-          type="radio"
-          [ngClass]="getClassNames('switchRadio')"
-          [(ngModel)]="data.condition"
-          [disabled]="disabled"
-          value="and"
-          #andOption
-        />
-        <label
-          (click)="changeCondition(andOption.value)"
-          [ngClass]="getClassNames('switchLabel')"
-          >AND</label
-        >
-      </div>
-      <div [ngClass]="getClassNames('switchControl')">
-        <input
-          type="radio"
-          [ngClass]="getClassNames('switchRadio')"
-          [(ngModel)]="data.condition"
-          [disabled]="disabled"
-          value="or"
-          #orOption
-        />
-        <label
-          (click)="changeCondition(orOption.value)"
-          [ngClass]="getClassNames('switchLabel')"
-          >OR</label
-        >
-      </div>
-    </div>
+    <mat-radio-group *ngIf="data" [(ngModel)]="data.condition">
+      <mat-radio-button color="primary" value="and">AND</mat-radio-button>
+      <mat-radio-button *ngIf="showOrRadioButton()" color="primary" value="or"
+        >OR</mat-radio-button
+      >
+    </mat-radio-group>
   </ng-template>
 </div>
 
@@ -346,6 +326,7 @@ SPDX-License-Identifier: Apache-2.0
                 [allowCollapse]="allowCollapse"
                 [emptyMessage]="emptyMessage"
                 [operatorMap]="operatorMap"
+                [rootComponent]="true"
               >
               </query-builder>
 
