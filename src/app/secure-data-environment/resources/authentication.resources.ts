@@ -32,26 +32,6 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Uuid } from '@maurodatamapper/mdm-resources';
 
-export interface SdeOpenIdConnectProvider {
-  name: string;
-  label: string;
-  imageUrl?: string;
-}
-
-export const sdeOpenIdConnectProviders: SdeOpenIdConnectProvider[] = [
-  {
-    name: 'microsoft-azure',
-    label: 'Microsoft Azure',
-    imageUrl:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/256px-Microsoft_logo.svg.png',
-  },
-  {
-    name: 'keycloak',
-    label: 'Keycloak',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/2/29/Keycloak_Logo.png',
-  },
-];
-
 export interface SdeResearchUser {
   id: Uuid;
   createdAt?: Date;

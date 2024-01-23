@@ -18,9 +18,9 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { AuthenticationEndpointsShared } from '@maurodatamapper/sde-resources';
 import { EMPTY, catchError, delay, map, of, switchMap, tap } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
-import { AuthenticationEndpoints } from 'src/app/secure-data-environment/endpoints/authentication.endpoints';
 import { UserDetailsService } from 'src/app/security/user-details.service';
 
 type AuthenticationFinalizeAction =
@@ -41,7 +41,7 @@ export class SdeAuthenticationFinalizeComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private sdeAuthentication: AuthenticationEndpoints,
+    private authenticationEndpoints: AuthenticationEndpointsShared,
     private userDetails: UserDetailsService,
     private stateRouter: StateRouterService
   ) {}
@@ -89,7 +89,7 @@ export class SdeAuthenticationFinalizeComponent implements OnInit {
     // At this point, the backend should have returned an authorization cookie.
     // This means calling this secure endpoint should work (if it doesn't, then the
     // user clearly isn't logged in!)
-    return this.sdeAuthentication.getUserDetails().pipe(
+    return this.authenticationEndpoints.getUserDetails().pipe(
       catchError((error) => {
         this.errorMessage = error.message;
         return EMPTY;

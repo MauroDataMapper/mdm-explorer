@@ -22,7 +22,7 @@ import { SecurityService } from '../security.service';
 import { LoginError, SignInErrorType } from '../security.types';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
-import { AuthenticationEndpoints } from 'src/app/secure-data-environment/endpoints/authentication.endpoints';
+import { AuthenticationEndpointsShared } from '@maurodatamapper/sde-resources';
 
 /**
  * Component to authorize a user session authenticated via an OpenID Connect provider.
@@ -54,7 +54,7 @@ export class OpenIdConnectAuthorizeComponent implements OnInit {
     private security: SecurityService,
     private broadcast: BroadcastService,
     private stateRouter: StateRouterService,
-    private sdeAuthentication: AuthenticationEndpoints
+    private authenticationEndpoints: AuthenticationEndpointsShared
   ) {}
 
   ngOnInit(): void {
@@ -123,7 +123,7 @@ export class OpenIdConnectAuthorizeComponent implements OnInit {
         // provider that just succeeded for Mauro is configured exactly the same as for this
         // SDE provider, so that the sign-in is seamless
         const redirectUrl =
-          this.sdeAuthentication.getOpenIdConnectAuthorizationUrl(sdeProviderName);
+          this.authenticationEndpoints.getOauthAuthorizationUrl(sdeProviderName);
 
         window.open(redirectUrl.toString(), '_self');
       });

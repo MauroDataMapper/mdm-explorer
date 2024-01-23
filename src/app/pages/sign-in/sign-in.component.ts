@@ -18,12 +18,12 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
 import { PublicOpenIdConnectProvider } from '@maurodatamapper/mdm-resources';
+import { AuthenticationEndpointsShared } from '@maurodatamapper/sde-resources';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY, finalize, map } from 'rxjs';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { FeaturesService } from 'src/app/core/features.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
-import { AuthenticationEndpoints } from 'src/app/secure-data-environment/endpoints/authentication.endpoints';
 import { SecurityService } from 'src/app/security/security.service';
 import { LoginError, SignInErrorType } from 'src/app/security/security.types';
 import { SignInClickEvent } from 'src/app/security/sign-in-form/sign-in-form.component';
@@ -44,7 +44,7 @@ export class SignInComponent implements OnInit {
     private features: FeaturesService,
     private stateRouter: StateRouterService,
     private toastr: ToastrService,
-    private sdeAuthentication: AuthenticationEndpoints
+    private authenticationEndpoints: AuthenticationEndpointsShared
   ) {}
 
   ngOnInit(): void {
@@ -83,8 +83,8 @@ export class SignInComponent implements OnInit {
     }
 
     // Try to synchronise the Mauro and SDE OpenID Connect providers to sequence in order
-    this.sdeAuthentication
-      .listOpenIdConnectProviders()
+    this.authenticationEndpoints
+      .listOauthProviders()
       .pipe(
         catchError(() => []),
         map((sdeProviders) =>
