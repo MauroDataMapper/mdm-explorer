@@ -37,8 +37,8 @@ import { AutocompleteSelectOptionSet } from 'src/app/shared/autocomplete-select/
 import { TerminologyService } from 'src/app/mauro/terminology.service';
 import {
   mapOptionsArrayToModelDataType,
-  QueryBuilderService,
-} from 'src/app/data-explorer/query-builder.service';
+  QueryBuilderWrapperService,
+} from 'src/app/data-explorer/query-builder-wrapper.service';
 
 @Component({
   selector: 'mdm-query-builder-wrapper',
@@ -56,8 +56,6 @@ export class QueryBuilderWrapperComponent implements OnInit {
   @Input() config: QueryBuilderConfig = {
     fields: {},
   };
-  @Input() hideAddRuleButtonOnRoot = false;
-  @Input() hideOrRadioButtonOnRoot = false;
 
   @Output() queryChange = new EventEmitter<QueryCondition>();
 
@@ -87,7 +85,7 @@ export class QueryBuilderWrapperComponent implements OnInit {
 
   constructor(
     private terminology: TerminologyService,
-    private queryBuilderService: QueryBuilderService,
+    private queryBuilderWrapperService: QueryBuilderWrapperService,
   ) {}
 
   get hasFields(): boolean {
@@ -156,7 +154,7 @@ export class QueryBuilderWrapperComponent implements OnInit {
 
   private setupDescriptions() {
     this.dataElements.forEach((element) => {
-      const entity = this.queryBuilderService.getEntity(element);
+      const entity = this.queryBuilderWrapperService.getEntity(element);
       const fullName = `${entity}.${element.label}`;
 
       const description = element.description

@@ -30,7 +30,7 @@ import {
   DataSpecificationQueryPayload,
   QueryCondition,
   QueryExpression,
-} from '../data-explorer/data-explorer.types';
+} from './data-explorer.types';
 import { ProfileService } from '../mauro/profile.service';
 
 export interface QueryConfiguration {
@@ -53,7 +53,7 @@ export const mapModelDataTypeToOptionsArray = (dataType: DataType): Option[] => 
 };
 
 export const mapOptionsArrayToModelDataType = (
-  options: Option[]
+  options: Option[],
 ): Required<CatalogueItem> => {
   const domainType = options.find((o) => o.name === 'modelResourceDomainType')
     ?.value as CatalogueItemDomainType;
@@ -64,12 +64,12 @@ export const mapOptionsArrayToModelDataType = (
 @Injectable({
   providedIn: 'root',
 })
-export class QueryBuilderService {
+export class QueryBuilderWrapperService {
   constructor(private profileService: ProfileService) {}
 
   public setupConfig(
     dataElements: DataElementSearchResult[],
-    query?: DataSpecificationQueryPayload
+    query?: DataSpecificationQueryPayload,
   ): Observable<QueryConfiguration> {
     const dataSpecifications$ = dataElements.map((dataElement) => {
       const profile$ = this.getQueryBuilderDatatype(dataElement.dataType).pipe(
@@ -79,7 +79,7 @@ export class QueryBuilderService {
           }
 
           throw error;
-        })
+        }),
       );
 
       const dataElement$ = of(dataElement);
@@ -90,7 +90,7 @@ export class QueryBuilderService {
     return forkJoin(dataSpecifications$).pipe(
       map((items) => {
         return this.getQueryFields(items, dataElements, query);
-      })
+      }),
     );
   }
 
@@ -115,7 +115,7 @@ export class QueryBuilderService {
         dataType?.id ?? '',
         'uk.ac.ox.softeng.maurodatamapper.plugins.explorer.querybuilder',
         'QueryBuilderPrimitiveTypeProfileProviderService',
-        requestOptions
+        requestOptions,
       );
     }
     return of({} as Profile);
@@ -184,7 +184,7 @@ export class QueryBuilderService {
   private setupQueryFieldFromMapping(
     dataTypeString: string,
     dataElement: DataElementSearchResult,
-    config: QueryBuilderConfig
+    config: QueryBuilderConfig,
   ) {
     config.fields[dataElement.label] = {
       name: dataElement.label + ' (' + dataTypeString + ')',
@@ -198,11 +198,11 @@ export class QueryBuilderService {
   private setupQueryFieldFromQuery(
     dataElement: DataElementSearchResult,
     config: QueryBuilderConfig,
-    queryCondition: QueryCondition
+    queryCondition: QueryCondition,
   ) {
     if (
-      queryCondition?.rules?.find((x) =>
-        (x as QueryExpression)?.field?.startsWith(dataElement.label)
+      queryCondition?.rules?.find(
+        (x) => (x as QueryExpression)?.field?.startsWith(dataElement.label),
       )
     ) {
       config.fields[dataElement.label] = {
@@ -218,7 +218,7 @@ export class QueryBuilderService {
   private getQueryFields(
     items: [Profile, DataElementSearchResult][],
     dataElements: DataElementSearchResult[],
-    query?: DataSpecificationQueryPayload
+    query?: DataSpecificationQueryPayload,
   ): QueryConfiguration {
     const queryCondition: QueryCondition = this.getQueryCondition(query);
 
@@ -241,7 +241,7 @@ export class QueryBuilderService {
       ...new Set(
         Object.values(config.fields)
           .map((field) => field.entity ?? '')
-          .sort((a, b) => a.localeCompare(b))
+          .sort((a, b) => a.localeCompare(b)),
       ),
     ];
     config.entities = entities.reduce((prev, entity) => {
@@ -253,6 +253,9 @@ export class QueryBuilderService {
         },
       };
     }, {});
+
+    // TODO - we need to find a way to identify the core table in Mauro
+    config.coreEntityName = 'dbo.Patients';
 
     return {
       dataElementSearchResult: dataElements,

@@ -28,7 +28,7 @@ import { MockComponent } from 'ng-mocks';
 import { MeqlOutputComponent } from '../meql-output/meql-output.component';
 import { MatCard } from '@angular/material/card';
 import { QueryCondition } from '../data-explorer.types';
-import { mapModelDataTypeToOptionsArray } from '../query-builder.service';
+import { mapModelDataTypeToOptionsArray } from '../query-builder-wrapper.service';
 import {
   CatalogueItemDomainType,
   MdmResourcesConfiguration,
@@ -133,10 +133,10 @@ describe('QueryBuilderComponent', () => {
       };
 
       expect(harness.component.termSearchResults['testField1']).toStrictEqual(
-        expectedSetup
+        expectedSetup,
       );
       expect(harness.component.termSearchResults['testField2']).toStrictEqual(
-        expectedSetup
+        expectedSetup,
       );
     });
 
@@ -303,7 +303,7 @@ describe('QueryBuilderComponent', () => {
         harness.component.termSearchChanged('search value', rule, options);
 
         expect(harness.component.termSearchResults[rule.field ?? '']).toStrictEqual(
-          expectedResults
+          expectedResults,
         );
       });
     });

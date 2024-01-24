@@ -61,6 +61,25 @@ import { QueryRemoveButtonDirective } from './query-builder/query-remove-button.
 import { QueryEmptyWarningDirective } from './query-builder/query-empty-warning.directive';
 import { QueryArrowIconDirective } from './query-builder/query-arrow-icon.directive';
 import { LetDirective } from '../shared/directives/let.directive';
+import { EntitySelectorDialogComponent } from './query-builder/dialogs/entity-selector-dialog/entity-selector-dialog.component';
+import { HasFieldsPipe } from './query-builder/pipes/has-fields-pipe';
+import { ArrowFormatPipe } from './query-builder/pipes/arrow-format-pipe';
+
+const queryBuilderModules = [
+  QueryBuilderComponent,
+  QueryInputDirective,
+  QueryOperatorDirective,
+  QueryFieldDirective,
+  QueryEntityDirective,
+  QueryButtonGroupDirective,
+  QuerySwitchGroupDirective,
+  QueryRemoveButtonDirective,
+  QueryEmptyWarningDirective,
+  QueryArrowIconDirective,
+  EntitySelectorDialogComponent,
+  HasFieldsPipe,
+  ArrowFormatPipe,
+];
 
 @NgModule({
   declarations: [
@@ -94,17 +113,8 @@ import { LetDirective } from '../shared/directives/let.directive';
     ShareDataSpecificationDialogComponent,
     FilterByComponent,
     VersionSelectorComponent,
-    QueryBuilderComponent,
-    QueryInputDirective,
-    QueryOperatorDirective,
-    QueryFieldDirective,
-    QueryEntityDirective,
-    QueryButtonGroupDirective,
-    QuerySwitchGroupDirective,
-    QueryRemoveButtonDirective,
-    QueryEmptyWarningDirective,
-    QueryArrowIconDirective,
     LetDirective,
+    ...queryBuilderModules,
   ],
   imports: [CoreModule, SharedModule],
   exports: [
@@ -128,17 +138,8 @@ import { LetDirective } from '../shared/directives/let.directive';
     NumberFormatDirective,
     SelectionCompactComponent,
     FilterByComponent,
-    QueryBuilderComponent,
-    QueryInputDirective,
-    QueryOperatorDirective,
-    QueryFieldDirective,
-    QueryEntityDirective,
-    QueryButtonGroupDirective,
-    QuerySwitchGroupDirective,
-    QueryRemoveButtonDirective,
-    QueryEmptyWarningDirective,
-    QueryArrowIconDirective,
     LetDirective,
+    ...queryBuilderModules,
   ],
   providers: [
     {

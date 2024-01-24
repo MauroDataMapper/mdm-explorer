@@ -66,7 +66,16 @@ import {
   TemplateRef,
   ViewChild,
   ElementRef,
+  Output,
+  EventEmitter,
+  AfterViewInit,
 } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import {
+  EntitySelectorDialogComponent,
+  EntitySelectorDialogData,
+  EntitySelectorDialogResponse,
+} from './dialogs/entity-selector-dialog/entity-selector-dialog.component';
 
 export const CONTROL_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
@@ -90,7 +99,7 @@ export const VALIDATOR: any = {
   providers: [CONTROL_VALUE_ACCESSOR, VALIDATOR],
 })
 export class QueryBuilderComponent
-  implements OnInit, OnChanges, ControlValueAccessor, Validator
+  implements AfterViewInit, OnInit, OnChanges, ControlValueAccessor, Validator
 {
   @Input() disabled = false;
   @Input() data: RuleSet = { condition: 'and', rules: [] };
@@ -115,9 +124,10 @@ export class QueryBuilderComponent
   @Input() parentChangeCallback!: () => void;
   @Input() parentTouchedCallback!: () => void;
   @Input() persistValueOnFieldChange = false;
-  @Input() rootComponent = true;
-  @Input() hideAddRuleButtonOnRoot = false;
-  @Input() hideOrRadioButtonOnRoot = false;
+  @Input() ruleSetLevel = 0;
+  @Input() isDataQuery = false;
+
+  @Output() removeRuleSetEvent = new EventEmitter<any>();
 
   @ViewChild('treeContainer', { static: true }) treeContainer!: ElementRef;
 
@@ -135,8 +145,6 @@ export class QueryBuilderComponent
   @ContentChildren(QueryInputDirective) inputTemplates!: QueryList<QueryInputDirective>;
   @ContentChild(QueryArrowIconDirective) arrowIconTemplate!: QueryArrowIconDirective;
 
-  public shouldShowAddRuleButton1 = false;
-
   public fields?: Field[];
   public filterFields?: Field[];
   public entities?: (Entity | undefined)[] | null | undefined;
@@ -152,6 +160,7 @@ export class QueryBuilderComponent
     switchLabel: 'q-switch-label',
     switchRadio: 'q-switch-radio',
     rightAlign: 'q-right-align',
+    centerAlign: 'q-center-align',
     transition: 'q-transition',
     collapsed: 'q-collapsed',
     treeContainer: 'q-tree-container',
@@ -182,6 +191,7 @@ export class QueryBuilderComponent
     // eslint-disable-next-line id-denylist
     boolean: ['='],
   };
+  public isRuleSetAvailable = true;
 
   private defaultTemplateTypes = [
     'string',
@@ -208,7 +218,10 @@ export class QueryBuilderComponent
   private removeButtonContextCache = new Map<Rule, RemoveButtonContext>();
   private buttonGroupContext!: ButtonGroupContext;
 
-  constructor(private changeDetectorRef: ChangeDetectorRef) {}
+  constructor(
+    private changeDetectorRef: ChangeDetectorRef,
+    private matDialog: MatDialog,
+  ) {}
 
   // ----------ControlValueAccessor Implementation----------
   @Input()
@@ -232,6 +245,7 @@ export class QueryBuilderComponent
   // ----------OnChanges Implementation----------
 
   ngOnChanges(_: SimpleChanges) {
+    console.log('onChanges');
     const config = this.config;
     const type = typeof config;
     if (type === 'object') {
@@ -254,6 +268,20 @@ export class QueryBuilderComponent
       this.operatorsCache = {};
     } else {
       throw new Error(`Expected 'config' must be a valid object, got ${type} instead.`);
+    }
+  }
+
+  ngAfterViewInit(): void {
+    if (this.ruleSetLevel === 0 && this.config.coreEntityName) {
+      if (this.data.entity !== this.config.coreEntityName) {
+        // Delay the change until the next change detection cycle
+        setTimeout(() => {
+          this.data.entity = this.config.coreEntityName;
+          console.log(`this.data.entity: ${this.data.entity}`);
+          this.handleDataChange();
+          this.handleTouched();
+        }, 0);
+      }
     }
   }
 
@@ -466,7 +494,8 @@ export class QueryBuilderComponent
     if (this.config.addRule) {
       this.config.addRule(parent);
     } else {
-      const field = this.fields?.[0];
+      const fields: Field[] | undefined = this.getFields(parent?.entity);
+      const field = fields?.[0] ?? undefined;
       parent.rules = parent.rules.concat([
         {
           field: field?.value,
@@ -507,15 +536,47 @@ export class QueryBuilderComponent
       return;
     }
 
-    parent = parent || this.data;
-    if (this.config.addRuleSet) {
-      this.config.addRuleSet(parent);
-    } else {
-      parent.rules = parent.rules.concat([{ condition: 'and', rules: [] }]);
-    }
+    if (this.ruleSetLevel === 0) {
+      const filteredEntities = this.getFilteredEntityList(
+        this.data,
+        this.isDataQuery,
+        this.entities,
+        this.config.coreEntityName,
+      );
 
-    this.handleTouched();
-    this.handleDataChange();
+      if (filteredEntities?.length ?? 0 > 0) {
+        let entity: Entity | undefined;
+        const data: EntitySelectorDialogData = {
+          heading: 'Add Rule Set',
+          entities: filteredEntities ?? [],
+        };
+
+        const dialogRef = this.matDialog.open<
+          EntitySelectorDialogComponent,
+          EntitySelectorDialogData,
+          EntitySelectorDialogResponse
+        >(EntitySelectorDialogComponent, {
+          maxWidth: 700,
+          data,
+        });
+
+        dialogRef.afterClosed().subscribe((result) => {
+          if (result?.result) {
+            const selectedEntity = result.selectedEntity;
+            if (selectedEntity) {
+              entity = selectedEntity;
+            }
+            this.addRuleSetInternal(parent, entity?.name);
+
+            this.isRuleSetAvailable = this.ruleSetAvailable();
+          } else {
+            console.log('Dialog closed without result');
+          }
+        });
+      }
+    } else {
+      this.addRuleSetInternal(parent, parent?.entity);
+    }
   }
 
   removeRuleSet(ruleset?: RuleSet, parent?: RuleSet): void {
@@ -530,9 +591,10 @@ export class QueryBuilderComponent
     } else {
       parent.rules = parent.rules.filter((r) => r !== ruleset);
     }
-
     this.handleTouched();
     this.handleDataChange();
+
+    this.removeRuleSetEvent.emit();
   }
 
   transitionEnd(_: Event): void {
@@ -549,7 +611,9 @@ export class QueryBuilderComponent
   computedTreeContainerHeight(): void {
     const nativeElement: HTMLElement = this.treeContainer.nativeElement;
     if (nativeElement && nativeElement.firstElementChild) {
-      nativeElement.style.maxHeight = `${nativeElement.firstElementChild.clientHeight + 8}px`;
+      nativeElement.style.maxHeight = `${
+        nativeElement.firstElementChild.clientHeight + 8
+      }px`;
     }
   }
 
@@ -776,20 +840,6 @@ export class QueryBuilderComponent
     return this.entityContextCache.get(rule) ?? null;
   }
 
-  /*
-  getEntityContext(rule: Rule): EntityContext | undefined {
-    if (!this.entityContextCache.has(rule)) {
-      this.entityContextCache.set(rule, {
-        onChange: this.changeEntity.bind(this),
-        getDisabledState: this.getDisabledState,
-        entities: this.entities,
-        $implicit: rule
-      });
-    }
-    return this.entityContextCache.get(rule);
-  }
-  */
-
   getSwitchGroupContext(): SwitchGroupContext {
     return {
       onChange: this.changeCondition.bind(this),
@@ -865,15 +915,62 @@ export class QueryBuilderComponent
   }
 
   showAddRuleButton(): boolean {
-    return !(this.hideAddRuleButtonOnRoot && this.rootComponent) || !this.rootComponent;
+    return !(this.isDataQuery && this.ruleSetLevel === 0) || this.ruleSetLevel > 0;
   }
 
   showOrRadioButton(): boolean {
-    return !(this.hideOrRadioButtonOnRoot && this.rootComponent) || !this.rootComponent;
+    return !(this.isDataQuery && this.ruleSetLevel === 0) || this.ruleSetLevel > 0;
   }
 
-  hasFields(): boolean {
-    return Object.keys(this.config.fields).length > 0;
+  onRemoveRulesetEvent() {
+    console.log(`onRemoveRulesetEvent: ${this.ruleSetLevel}`);
+    if (this.ruleSetLevel === 0) {
+      this.isRuleSetAvailable = this.ruleSetAvailable();
+    } else {
+      this.removeRuleSetEvent.emit();
+    }
+  }
+
+  getFilteredEntityList(
+    data: RuleSet,
+    isDataQuery: boolean,
+    entities?: (Entity | undefined)[] | null,
+    coreEntityName?: string,
+  ): (Entity | undefined)[] | null | undefined {
+    console.log('getFilteredEntityList');
+    console.log(data);
+    const usedEntityNames = this.getDistinctEntities(data);
+    // If this is true then we want to hide the core entity from the entity list
+    if (isDataQuery) {
+      if (coreEntityName && !usedEntityNames.includes(coreEntityName)) {
+        usedEntityNames.push(coreEntityName);
+      }
+    }
+
+    console.log(`usedEntityNames.length: ${usedEntityNames.length}`);
+    usedEntityNames.forEach((entityName) => {
+      console.log(`Used Entity: ${entityName}`);
+    });
+
+    // Get the entity here
+    const filteredEntities = entities?.filter(
+      (entity) => !usedEntityNames.includes(this.dotFormatEntityName(entity?.name)),
+    );
+
+    return filteredEntities;
+  }
+
+  dotFormatEntityName(entityName?: string): string {
+    return entityName?.replace(' > ', '.') ?? '';
+  }
+
+  arrowFormatEntityName(entityName?: string): string {
+    console.log('arrowFormatEntityName');
+    return entityName?.replace('.', ' > ') ?? '';
+  }
+
+  isRuleSet(obj: Rule | RuleSet): obj is RuleSet {
+    return (obj as RuleSet).rules !== undefined;
   }
 
   private calculateFieldChangeValue(
@@ -920,7 +1017,7 @@ export class QueryBuilderComponent
           }
         } else {
           // It's a Rule
-          return false; // NIGE - Check
+          return false;
         }
       });
     }
@@ -961,5 +1058,52 @@ export class QueryBuilderComponent
     if (this.parentTouchedCallback) {
       this.parentTouchedCallback();
     }
+  }
+
+  private addRuleSetInternal(parent: RuleSet | undefined, entityName?: string) {
+    parent = parent || this.data;
+    entityName = entityName || parent.entity;
+    if (this.config.addRuleSet) {
+      console.log('addRuleSetInternal config');
+      this.config.addRuleSet(parent);
+    } else {
+      console.log('addRuleSetInternal Parent');
+      parent.rules = parent.rules.concat([
+        {
+          condition: 'and',
+          rules: [],
+          entity: this.dotFormatEntityName(entityName),
+        },
+      ]);
+    }
+
+    this.handleTouched();
+    this.handleDataChange();
+  }
+
+  private ruleSetAvailable(): boolean {
+    console.log('ruleSetAvailable');
+    console.log(`ruleSetAvailable: ${this.parentValue}`);
+    const filteredEntities = this.getFilteredEntityList(
+      this.data,
+      this.isDataQuery,
+      this.entities,
+      this.config.coreEntityName,
+    );
+    return (filteredEntities?.length ?? 0) > 0;
+  }
+
+  private getDistinctEntities(data: RuleSet): string[] {
+    const entityList: string[] = [];
+    const parent: RuleSet = data;
+
+    parent.rules.forEach((ruleOrSet) => {
+      if (this.isRuleSet(ruleOrSet)) {
+        if (ruleOrSet.entity && !entityList.includes(ruleOrSet.entity)) {
+          entityList.push(ruleOrSet.entity);
+        }
+      }
+    });
+    return entityList;
   }
 }

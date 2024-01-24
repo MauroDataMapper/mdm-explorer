@@ -27,11 +27,14 @@ import {
 import { cold } from 'jest-marbles';
 import { setupTestModuleForService } from '../testing/testing.helpers';
 import { ProfileService } from '../mauro/profile.service';
-import { QueryBuilderService, QueryConfiguration } from './query-builder.service';
+import {
+  QueryBuilderWrapperService,
+  QueryConfiguration,
+} from './query-builder-wrapper.service';
 import {
   DataElementSearchResult,
   DataSpecificationQueryPayload,
-} from '../data-explorer/data-explorer.types';
+} from './data-explorer.types';
 import { QueryBuilderConfig } from './query-builder/query-builder.interfaces';
 import { createProfileServiceStub } from '../testing/stubs/profile.stub';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -110,7 +113,7 @@ abstract class testHelper {
     actualCatalogueItemId: string,
     actualProfileNamespace: string,
     actualProfileName: string,
-    expectedCatalogueItemId: string
+    expectedCatalogueItemId: string,
   ) => {
     expect(actualCatalogueItemDomainType).toBe(defaultCatalogueItemDomainType);
     expect(actualCatalogueItemId).toBe(expectedCatalogueItemId);
@@ -121,7 +124,7 @@ abstract class testHelper {
   public static createMappingProfile = (
     dataType: DataType,
     currentValue: string,
-    domainType: CatalogueItemDomainType = CatalogueItemDomainType.PrimitiveType
+    domainType: CatalogueItemDomainType = CatalogueItemDomainType.PrimitiveType,
   ): Profile => {
     return {
       sections: [
@@ -158,11 +161,11 @@ abstract class testHelper {
 }
 
 describe('QueryBuilderService', () => {
-  let service: QueryBuilderService;
+  let service: QueryBuilderWrapperService;
   const profilesStub = createProfileServiceStub();
 
   beforeEach(() => {
-    service = setupTestModuleForService(QueryBuilderService, {
+    service = setupTestModuleForService(QueryBuilderWrapperService, {
       providers: [
         {
           provide: ProfileService,
@@ -435,7 +438,7 @@ describe('QueryBuilderService', () => {
               testHelper.createMappingProfile(
                 dataType,
                 mappedType,
-                CatalogueItemDomainType.ReferenceType
+                CatalogueItemDomainType.ReferenceType,
               ),
             ]
         : [];
@@ -448,7 +451,7 @@ describe('QueryBuilderService', () => {
               catalogueItemId,
               profileNamespace,
               profileName,
-              dataType.id ?? ''
+              dataType.id ?? '',
             );
             return cold(
               dataType.domainType !== CatalogueItemDomainType.PrimitiveType
@@ -456,9 +459,9 @@ describe('QueryBuilderService', () => {
                 : '--a|',
               {
                 a: testHelper.getProfile(profile, dataType.label),
-              }
+              },
             );
-          }
+          },
         );
       };
 
@@ -477,7 +480,7 @@ describe('QueryBuilderService', () => {
           : '---(a|)',
         {
           a: expectedResult,
-        }
+        },
       );
       const actual$ = service.setupConfig(expectedDataElementSearchResult, expectedQuery);
 

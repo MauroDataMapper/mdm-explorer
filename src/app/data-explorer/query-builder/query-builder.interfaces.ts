@@ -21,6 +21,7 @@ export interface RuleSet {
   rules: Array<Rule | RuleSet>;
   collapsed?: boolean;
   isChild?: boolean;
+  entity?: string;
 }
 
 export interface Rule {
@@ -82,6 +83,7 @@ export interface QueryBuilderClassNames {
   switchRadio?: string;
   switchControl?: string;
   rightAlign?: string;
+  centerAlign?: string;
   transition?: string;
   collapsed?: string;
   treeContainer?: string;
@@ -107,16 +109,26 @@ export interface QueryBuilderConfig {
   entities?: EntityMap;
   allowEmptyRulesets?: boolean;
   getOperators?: (fieldName: string, field: Field) => string[];
-  getInputType?: (field: string | null | undefined, operator: string | null | undefined) => string;
+  getInputType?: (
+    field: string | null | undefined,
+    operator: string | null | undefined,
+  ) => string;
   getOptions?: (field: string) => Option[];
   addRuleSet?: (parent: RuleSet) => void;
   addRule?: (parent: RuleSet) => void;
   removeRuleSet?: (ruleset: RuleSet, parent: RuleSet) => void;
   removeRule?: (rule: Rule, parent: RuleSet) => void;
-  coerceValueForOperator?: (operator: string | null | undefined, value: any, rule: Rule) => any;
-  calculateFieldChangeValue?: (currentField: Field | undefined,
-                               nextField: Field,
-                               currentValue: any) => any;
+  coerceValueForOperator?: (
+    operator: string | null | undefined,
+    value: any,
+    rule: Rule,
+  ) => any;
+  calculateFieldChangeValue?: (
+    currentField: Field | undefined,
+    nextField: Field,
+    currentValue: any,
+  ) => any;
+  coreEntityName?: string;
 }
 
 export interface SwitchGroupContext {
@@ -169,7 +181,9 @@ export interface InputContext {
 export interface ButtonGroupContext {
   addRule: () => void;
   addRuleSet?: ((parent?: RuleSet | undefined) => void) | undefined;
-  removeRuleSet?: ((ruleset?: RuleSet | undefined, parent?: RuleSet | undefined) => void) | undefined;
+  removeRuleSet?:
+    | ((ruleset?: RuleSet | undefined, parent?: RuleSet | undefined) => void)
+    | undefined;
   getDisabledState: () => boolean;
   $implicit: RuleSet;
 }

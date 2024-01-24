@@ -71,6 +71,11 @@ SPDX-License-Identifier: Apache-2.0
     float: right;
   }
 
+  .q-center-align {
+    margin: 0 auto;
+    display: table;
+  }
+
   .q-button {
     margin-left: 8px;
     padding: 0 8px;

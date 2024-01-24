@@ -59,7 +59,7 @@ SPDX-License-Identifier: Apache-2.0
         mat-button
         *ngIf="addRuleSet"
         (click)="addRuleSet()"
-        [disabled]="!hasFields"
+        [disabled]="!(config.fields | hasFields) || !isRuleSetAvailable"
       >
         <mat-icon>add_circle_outline</mat-icon>
         Rule Set
@@ -71,7 +71,7 @@ SPDX-License-Identifier: Apache-2.0
           matTooltip="Remove Rule Set"
           *ngIf="removeRuleSet"
           (click)="removeRuleSet()"
-          [disabled]="!hasFields"
+          [disabled]="!(config.fields | hasFields)"
         >
           <mat-icon>remove_circle_outline</mat-icon>
         </button>
@@ -93,6 +93,8 @@ SPDX-License-Identifier: Apache-2.0
       >
     </mat-radio-group>
   </ng-template>
+
+  <div *ngIf="!isDataQuery">{{ data.entity | arrowFormat }}</div>
 </div>
 
 <div
@@ -135,7 +137,10 @@ SPDX-License-Identifier: Apache-2.0
                   </div>
                 </ng-template>
 
-                <div *ngIf="entities?.length ?? 0 > 0" class="q-inline-block-display">
+                <!-- Leaving this code in play to make it easier to restore if ever required. 
+                Condition used to be: entities?.length ?? 0 > 0
+                -->
+                <div *ngIf="false" class="q-inline-block-display">
                   <ng-container
                     *ngIf="getEntityTemplate() as template; else defaultEntity"
                   >
@@ -326,7 +331,8 @@ SPDX-License-Identifier: Apache-2.0
                 [allowCollapse]="allowCollapse"
                 [emptyMessage]="emptyMessage"
                 [operatorMap]="operatorMap"
-                [rootComponent]="true"
+                [ruleSetLevel]="ruleSetLevel + 1"
+                (removeRuleSetEvent)="onRemoveRulesetEvent()"
               >
               </query-builder>
 
