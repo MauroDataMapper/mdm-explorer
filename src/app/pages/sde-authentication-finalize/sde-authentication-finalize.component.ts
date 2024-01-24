@@ -18,7 +18,10 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AuthenticationEndpointsShared } from '@maurodatamapper/sde-resources';
+import {
+  AuthenticationEndpointsShared,
+  ResearchUser,
+} from '@maurodatamapper/sde-resources';
 import { EMPTY, catchError, delay, map, of, switchMap, tap } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { UserDetailsService } from 'src/app/security/user-details.service';
@@ -100,7 +103,7 @@ export class SdeAuthenticationFinalizeComponent implements OnInit {
           return;
         }
 
-        this.userDetails.setSdeResearchUser(user);
+        this.userDetails.setSdeResearchUser(user as ResearchUser);
         this.stateRouter.navigateToKnownPath('/dashboard');
       })
     );

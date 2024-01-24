@@ -16,29 +16,22 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { OauthProvider, ResearchUser } from '@maurodatamapper/sde-resources';
 import { Observable } from 'rxjs';
-import {
-  SdeOpenIdConnectProvider,
-  SdeResearchUser,
-} from 'src/app/secure-data-environment/resources/authentication.resources';
 
 export interface SdeAuthenticationEndpointsStub {
-  listOpenIdConnectProviders: jest.MockedFunction<
-    () => Observable<SdeOpenIdConnectProvider[]>
-  >;
-  getOpenIdConnectAuthorizationUrl: jest.MockedFunction<
-    (provider: SdeOpenIdConnectProvider) => URL
-  >;
-  getSignOutUrl: jest.MockedFunction<() => string>;
-  getUserDetails: jest.MockedFunction<() => Observable<SdeResearchUser>>;
+  listOauthProviders: jest.MockedFunction<() => Observable<OauthProvider[]>>;
+  getOauthAuthorizationUrl: jest.MockedFunction<(providerName: string) => URL>;
+  getLogoutUrl: jest.MockedFunction<() => URL>;
+  getUserDetails: jest.MockedFunction<() => Observable<ResearchUser>>;
 }
 
 export const createSdeAuthenticationEndpointsStub =
   (): SdeAuthenticationEndpointsStub => {
     return {
-      listOpenIdConnectProviders: jest.fn(),
-      getOpenIdConnectAuthorizationUrl: jest.fn(),
-      getSignOutUrl: jest.fn(),
+      listOauthProviders: jest.fn(),
+      getOauthAuthorizationUrl: jest.fn(),
+      getLogoutUrl: jest.fn(),
       getUserDetails: jest.fn(),
     };
   };

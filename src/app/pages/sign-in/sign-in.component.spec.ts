@@ -38,7 +38,7 @@ import { LoginError, SignInErrorType } from 'src/app/security/security.types';
 import { HttpErrorResponse } from '@angular/common/http';
 import { createStateRouterStub } from 'src/app/testing/stubs/state-router.stub';
 import { createSdeAuthenticationEndpointsStub } from 'src/app/testing/stubs/sde/sde-authentication-endpoints.stub';
-import { AuthenticationEndpoints } from 'src/app/secure-data-environment/endpoints/authentication.endpoints';
+import { AuthenticationEndpointsShared } from '@maurodatamapper/sde-resources';
 
 interface BroadcastServiceStub {
   userSignedIn: jest.Mock;
@@ -52,14 +52,13 @@ describe('SignInComponent', () => {
   };
 
   const securityStub = createSecurityServiceStub();
+  const authenticationEndpointsStub = createSdeAuthenticationEndpointsStub();
 
   const broadcastStub: BroadcastServiceStub = {
     userSignedIn: jest.fn(),
   };
 
   const stateRouterStub = createStateRouterStub();
-
-  const sdeAuthenticationStub = createSdeAuthenticationEndpointsStub();
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(SignInComponent, {
@@ -82,8 +81,8 @@ describe('SignInComponent', () => {
           useValue: featuresStub,
         },
         {
-          provide: AuthenticationEndpoints,
-          useValue: sdeAuthenticationStub,
+          provide: AuthenticationEndpointsShared,
+          useValue: authenticationEndpointsStub,
         },
       ],
     });

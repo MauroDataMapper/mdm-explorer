@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
 import { FolderDetail } from '@maurodatamapper/mdm-resources';
-import { SdeResearchUser } from '../secure-data-environment/resources/authentication.resources';
+import { ResearchUser } from '@maurodatamapper/sde-resources';
 
 /**
  * Represents the common details of a signed in user.
@@ -107,13 +107,13 @@ export class UserDetailsService {
     localStorage.removeItem('sdeAuthToken');
   }
 
-  setSdeResearchUser(user: SdeResearchUser) {
+  setSdeResearchUser(user: ResearchUser) {
     localStorage.setItem('sdeUserId', user.id);
     localStorage.setItem('sdeEmail', user.email);
     localStorage.setItem('sdePreferredName', user.preferredName ?? '');
   }
 
-  getSdeResearchUser(): SdeResearchUser | null {
+  getSdeResearchUser(): ResearchUser | null {
     const userEmail = localStorage.getItem('sdeEmail');
     if (!userEmail || userEmail.length === 0) {
       return null;
@@ -124,6 +124,13 @@ export class UserDetailsService {
       email: localStorage.getItem('sdeEmail') ?? '',
       preferredName: localStorage.getItem('sdePreferredName') ?? '',
       isDeleted: false,
+      preferredContactDetails: '',
+      vettingProcessDetails: '',
+      shortBio: '',
+      createdAt: new Date(),
+      mauroCoreUser: '',
+      oidcIssuingAuthority: '',
+      oidcSubject: '',
     };
   }
 

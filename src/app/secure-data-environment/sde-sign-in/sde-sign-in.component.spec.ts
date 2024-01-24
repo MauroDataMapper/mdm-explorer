@@ -22,19 +22,19 @@ import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
-import { AuthenticationEndpoints } from '../endpoints/authentication.endpoints';
+import { AuthenticationEndpointsShared } from '@maurodatamapper/sde-resources';
 
 describe('SdeSignInComponent', () => {
   let harness: ComponentHarness<SdeSignInComponent>;
 
-  const sdeAuthenticationStub = createSdeAuthenticationEndpointsStub();
+  const sdeAuthenticationEndpointsStub = createSdeAuthenticationEndpointsStub();
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(SdeSignInComponent, {
       providers: [
         {
-          provide: AuthenticationEndpoints,
-          useValue: sdeAuthenticationStub,
+          provide: AuthenticationEndpointsShared,
+          useValue: sdeAuthenticationEndpointsStub,
         },
       ],
     });

@@ -30,18 +30,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
-import { Uuid } from '@maurodatamapper/mdm-resources';
+// import { Uuid } from '@maurodatamapper/mdm-resources';
 
-export interface SdeResearchUser {
-  id: Uuid;
-  createdAt?: Date;
-  email: string;
-  mauroCoreUser?: string;
-  isDeleted: boolean;
-  oidcIssuingAuthority?: string;
-  oidcSubject?: string;
-  preferredName?: string;
-  // preferredContactDetails?: string;
-  // shortBio?: string;
-  // vettingProcessDetails?: string;
-}
+// export interface SdeResearchUser {
+//   id: Uuid;
+//   createdAt?: Date;
+//   email: string;
+//   mauroCoreUser?: string;
+//   isDeleted: boolean;
+//   oidcIssuingAuthority?: string;
+//   oidcSubject?: string;
+//   preferredName?: string;
+//   // preferredContactDetails?: string;
+//   // shortBio?: string;
+//   // vettingProcessDetails?: string;
+// }

@@ -27,14 +27,16 @@ import { Params, ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { UserDetailsService } from 'src/app/security/user-details.service';
-import { SdeResearchUser } from 'src/app/secure-data-environment/resources/authentication.resources';
 import { createSdeAuthenticationEndpointsStub } from 'src/app/testing/stubs/sde/sde-authentication-endpoints.stub';
-import { AuthenticationEndpoints } from 'src/app/secure-data-environment/endpoints/authentication.endpoints';
+import {
+  AuthenticationEndpointsShared,
+  ResearchUser,
+} from '@maurodatamapper/sde-resources';
 
 describe('SdeAuthenticationFinalizeComponent', () => {
   let harness: ComponentHarness<SdeAuthenticationFinalizeComponent>;
 
-  const sdeAuthenticationStub = createSdeAuthenticationEndpointsStub();
+  const sdeAuthenticationEndpointsStub = createSdeAuthenticationEndpointsStub();
   const stateRouterStub = createStateRouterStub();
   const userDetailsStub = {
     setSdeResearchUser: jest.fn(),
@@ -53,16 +55,16 @@ describe('SdeAuthenticationFinalizeComponent', () => {
           useValue: route,
         },
         {
-          provide: AuthenticationEndpoints,
-          useValue: sdeAuthenticationStub,
-        },
-        {
           provide: StateRouterService,
           useValue: stateRouterStub,
         },
         {
           provide: UserDetailsService,
           useValue: userDetailsStub,
+        },
+        {
+          provide: AuthenticationEndpointsShared,
+          useValue: sdeAuthenticationEndpointsStub,
         },
       ],
     });
@@ -96,13 +98,13 @@ describe('SdeAuthenticationFinalizeComponent', () => {
       const userDetailsSpy = jest.spyOn(userDetailsStub, 'setSdeResearchUser');
       const stateRouterSpy = jest.spyOn(stateRouterStub, 'navigateToKnownPath');
 
-      const expectedUser: SdeResearchUser = {
+      const expectedUser = {
         id: '1234',
         email: 'user@test.com',
         isDeleted: false,
-      };
+      } as ResearchUser;
 
-      sdeAuthenticationStub.getUserDetails.mockReturnValue(of(expectedUser));
+      sdeAuthenticationEndpointsStub.getUserDetails.mockReturnValue(of(expectedUser));
 
       harness.component.ngOnInit();
 
