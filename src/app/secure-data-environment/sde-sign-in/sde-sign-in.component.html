@@ -16,16 +16,6 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<!-- <mat-card>
-  <mat-card-content>
-    <p>You are not logged in to the Secure Data Environment.</p>
-    <p>
-      Please
-      <a href="https://thamesvalleyandsurreyhealthandcaredata.nhs.uk/">look here</a>
-      for more information about the SDE.
-    </p>
-  </mat-card-content>
-</mat-card> -->
 <p>
   You are not signed in to the Secure Data Environment (SDE). Please select one of the
   options below to access your organisations, projects and requests.
@@ -39,24 +29,6 @@ SPDX-License-Identifier: Apache-2.0
 </p>
 <div class="highlight-box">
   <div class="highlight-box__content--narrow">
-    <div *ngIf="providers && providers.length > 0" class="mdm-sde-sign-in">
-      <div class="mdm-sde-sign-in__providers">
-        <button
-          *ngFor="let provider of providers"
-          type="button"
-          mat-stroked-button
-          color="primary"
-          (click)="authenticateWithOpenIdConnect(provider)"
-        >
-          <img
-            *ngIf="provider.imageUrl"
-            class="mdm-sde-sign-in__provider-icon"
-            [src]="provider.imageUrl"
-            [alt]="provider.label"
-          />
-          Sign in with {{ provider.label }}
-        </button>
-      </div>
-    </div>
+    <sde-oauth-provider-form></sde-oauth-provider-form>
   </div>
 </div>

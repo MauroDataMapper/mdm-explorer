@@ -16,28 +16,17 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { createSdeAuthenticationEndpointsStub } from 'src/app/testing/stubs/sde/sde-authentication-endpoints.stub';
 import { SdeSignInComponent } from './sde-sign-in.component';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
-import { AuthenticationEndpointsShared } from '@maurodatamapper/sde-resources';
 
 describe('SdeSignInComponent', () => {
   let harness: ComponentHarness<SdeSignInComponent>;
 
-  const sdeAuthenticationEndpointsStub = createSdeAuthenticationEndpointsStub();
-
   beforeEach(async () => {
-    harness = await setupTestModuleForComponent(SdeSignInComponent, {
-      providers: [
-        {
-          provide: AuthenticationEndpointsShared,
-          useValue: sdeAuthenticationEndpointsStub,
-        },
-      ],
-    });
+    harness = await setupTestModuleForComponent(SdeSignInComponent);
   });
 
   it('should create', () => {

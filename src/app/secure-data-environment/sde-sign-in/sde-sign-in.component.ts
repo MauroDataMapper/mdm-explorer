@@ -16,32 +16,11 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, OnInit } from '@angular/core';
-import {
-  AuthenticationEndpointsShared,
-  OauthProvider,
-} from '@maurodatamapper/sde-resources';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'mdm-sde-sign-in',
   templateUrl: './sde-sign-in.component.html',
   styleUrls: ['./sde-sign-in.component.scss'],
 })
-export class SdeSignInComponent implements OnInit {
-  providers?: OauthProvider[];
-
-  constructor(private authenticationEndpoints: AuthenticationEndpointsShared) {}
-
-  ngOnInit(): void {
-    this.authenticationEndpoints
-      .listOauthProviders()
-      .subscribe((providers) => (this.providers = providers));
-  }
-
-  authenticateWithOpenIdConnect(provider: OauthProvider) {
-    const redirectUrl = this.authenticationEndpoints.getOauthAuthorizationUrl(
-      provider.name
-    );
-    window.open(redirectUrl.toString(), '_self');
-  }
-}
+export class SdeSignInComponent {}
