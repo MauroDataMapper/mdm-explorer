@@ -59,6 +59,12 @@ export class AppComponent implements OnInit, OnDestroy {
   /**
    * Hidden HTML form element to manually trigger a sign out of the SDE.
    * This is automatically handled in the broadcast 'sign-out-user' event.
+   *
+   * The reason why a hidden form has to be used instead of Angular's HttpClient (XHR)
+   * is because the Micronaut server will return a HTTP 303 (See Other) response on successful
+   * logout with the URL to the next page. A XHR request cannot handle a 303 response natively
+   * so nothing will happen, so we force a POST request/response through the browser which will
+   * handle the correct redirect automatically.
    */
   @ViewChild('sdeSignOutForm') sdeSignOutForm?: ElementRef<HTMLFormElement>;
 
@@ -300,7 +306,12 @@ export class AppComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         if (this.sdeSignOutForm) {
           // If SDE sign out form is available, trigger a form POST request
-          // This will force the app to sign out of the SDE too automatically
+          // This will force the app to sign out of the SDE too automatically.
+          //
+          // A forced POST request has to be done this way through the browser's APIs because
+          // the successful response code will be 303 (See Other). Angular's HttpClient will
+          // not automatically handle this, so this is the workaround solution to get correctly
+          // redirected to the next page.
           this.sdeSignOutForm.nativeElement.submit();
         }
       });
