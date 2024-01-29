@@ -23,37 +23,22 @@ import {
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
 import { createStateRouterStub } from 'src/app/testing/stubs/state-router.stub';
-import { Params, ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { UserDetailsService } from 'src/app/security/user-details.service';
-import { createSdeAuthenticationEndpointsStub } from 'src/app/testing/stubs/sde/sde-authentication-endpoints.stub';
-import {
-  AuthenticationEndpointsShared,
-  ResearchUser,
-} from '@maurodatamapper/sde-resources';
+import { ResearchUser } from '@maurodatamapper/sde-resources';
 
 describe('SdeAuthenticationFinalizeComponent', () => {
   let harness: ComponentHarness<SdeAuthenticationFinalizeComponent>;
 
-  const sdeAuthenticationEndpointsStub = createSdeAuthenticationEndpointsStub();
   const stateRouterStub = createStateRouterStub();
   const userDetailsStub = {
     setSdeResearchUser: jest.fn(),
     clearSdeResearchUser: jest.fn(),
   };
 
-  const setupComponentTest = async (params?: Params) => {
-    const route: ActivatedRoute = {
-      params: of(params),
-    } as ActivatedRoute;
-
+  beforeEach(async () => {
     harness = await setupTestModuleForComponent(SdeAuthenticationFinalizeComponent, {
       providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: route,
-        },
         {
           provide: StateRouterService,
           useValue: stateRouterStub,
@@ -62,13 +47,9 @@ describe('SdeAuthenticationFinalizeComponent', () => {
           provide: UserDetailsService,
           useValue: userDetailsStub,
         },
-        {
-          provide: AuthenticationEndpointsShared,
-          useValue: sdeAuthenticationEndpointsStub,
-        },
       ],
     });
-  };
+  });
 
   beforeEach(() => {
     stateRouterStub.navigateTo.mockClear();
@@ -76,24 +57,7 @@ describe('SdeAuthenticationFinalizeComponent', () => {
     userDetailsStub.setSdeResearchUser.mockClear();
   });
 
-  describe('creation', () => {
-    beforeEach(async () => {
-      await setupComponentTest();
-    });
-
-    it('should create', () => {
-      expect(harness.isComponentCreated).toBeTruthy();
-      expect(harness.component.action).toBe('');
-      expect(harness.component.finalizing).toBe(true);
-      expect(harness.component.errorMessage).toBe('');
-    });
-  });
-
   describe('sign-in-success', () => {
-    beforeEach(async () => {
-      await setupComponentTest({ action: 'sign-in-success' });
-    });
-
     it('should get user details then redirect', () => {
       const userDetailsSpy = jest.spyOn(userDetailsStub, 'setSdeResearchUser');
       const stateRouterSpy = jest.spyOn(stateRouterStub, 'navigateToKnownPath');
@@ -104,42 +68,19 @@ describe('SdeAuthenticationFinalizeComponent', () => {
         isDeleted: false,
       } as ResearchUser;
 
-      sdeAuthenticationEndpointsStub.getUserDetails.mockReturnValue(of(expectedUser));
-
-      harness.component.ngOnInit();
+      harness.component.signInSuccess(expectedUser);
 
       expect(userDetailsSpy).toHaveBeenCalledWith(expectedUser);
       expect(stateRouterSpy).toHaveBeenCalledWith('/dashboard');
     });
   });
 
-  describe('sign-in-failed', () => {
-    beforeEach(async () => {
-      await setupComponentTest({ action: 'sign-in-failed' });
-    });
-
-    it('should display an error message', fakeAsync(() => {
-      const stateRouterSpy = jest.spyOn(stateRouterStub, 'navigateTo');
-
-      harness.component.ngOnInit();
-
-      tick(2000);
-
-      expect(stateRouterSpy).not.toHaveBeenCalled();
-      expect(harness.component.errorMessage).not.toBe('');
-    }));
-  });
-
   describe('sign-out', () => {
-    beforeEach(async () => {
-      await setupComponentTest({ action: 'sign-out' });
-    });
-
     it('should clear user details and redirect', fakeAsync(() => {
       const userDetailsSpy = jest.spyOn(userDetailsStub, 'clearSdeResearchUser');
       const stateRouterSpy = jest.spyOn(stateRouterStub, 'navigateToKnownPath');
 
-      harness.component.ngOnInit();
+      harness.component.signOut();
 
       tick(2000);
 

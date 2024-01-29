@@ -16,19 +16,8 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<div class="container sde-authentication-finalize">
-  <div *ngIf="finalizing" class="sde-authentication-finalize__progress">
-    <h4>{{ heading }}</h4>
-    <mat-spinner></mat-spinner>
-  </div>
-  <div *ngIf="!finalizing && errorMessage">
-    <mdm-alert alertStyle="error">
-      <p>Unfortunately there was a problem.</p>
-      <p>Details: {{ errorMessage }}</p>
-      <p>
-        Please try again by going to the <a routerLink="/sign-in">sign in</a> page, or
-        contact your administrator for further support.
-      </p>
-    </mdm-alert>
-  </div>
-</div>
+<sde-authentication-finalization-form
+  signInRouterLink="/sign-in"
+  (signInSuccessful)="signInSuccess($event)"
+  (signedOut)="signOut()"
+></sde-authentication-finalization-form>
