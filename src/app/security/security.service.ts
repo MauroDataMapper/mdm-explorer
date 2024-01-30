@@ -51,7 +51,7 @@ import {
 } from './security.types';
 import { UserDetails, UserDetailsService } from './user-details.service';
 import { ResearchPluginService } from '../mauro/research-plugin.service';
-import { ResearchUser, SdeUserService } from '@maurodatamapper/sde-resources';
+import { SdeUserService } from '@maurodatamapper/sde-resources';
 
 /**
  * Manages security operations on Mauro user interfaces.
@@ -181,7 +181,7 @@ export class SecurityService {
   }
 
   isSignedInToSde(): boolean {
-    return !!this.userDetails.getSdeResearchUser();
+    return this.userDetails.hasSdeResearchUser();
   }
 
   /**
@@ -191,10 +191,6 @@ export class SecurityService {
    */
   getSignedInUser(): UserDetails | null {
     return this.userDetails.get();
-  }
-
-  getSignedInSdeResearchUser(): ResearchUser | null {
-    return this.userDetails.getSdeResearchUser();
   }
 
   /**

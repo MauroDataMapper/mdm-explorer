@@ -113,25 +113,8 @@ export class UserDetailsService {
     localStorage.setItem('sdePreferredName', user.preferredName ?? '');
   }
 
-  getSdeResearchUser(): ResearchUser | null {
-    const userEmail = localStorage.getItem('sdeEmail');
-    if (!userEmail || userEmail.length === 0) {
-      return null;
-    }
-
-    return {
-      id: localStorage.getItem('sdeUserId') ?? '',
-      email: localStorage.getItem('sdeEmail') ?? '',
-      preferredName: localStorage.getItem('sdePreferredName') ?? '',
-      isDeleted: false,
-      preferredContactDetails: '',
-      vettingProcessDetails: '',
-      shortBio: '',
-      createdAt: new Date(),
-      mauroCoreUser: '',
-      oidcIssuingAuthority: '',
-      oidcSubject: '',
-    };
+  hasSdeResearchUser(): boolean {
+    return !!localStorage.getItem('sdeUserId');
   }
 
   clearSdeResearchUser() {

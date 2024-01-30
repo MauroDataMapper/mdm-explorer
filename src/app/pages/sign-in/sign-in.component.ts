@@ -91,6 +91,12 @@ export class SignInComponent implements OnInit {
           // Big assumption - that Mauro and SDE have OpenID Connect providers are configured
           // with _exactly_ the same labels! If not, the SDE single sign-on won't automatically
           // trigger after Mauro single sign-on
+          //
+          // The reason is because the Oauth providers are referenced in two different systems with different
+          // data stored against them:
+          // - Mauro - id (Uuid from DB), label
+          // - SDE (Micronaut) - name (unique), label
+          // Currently, "label" is the only way to tie to the same Oauth provider from two systems together.
           sdeProviders.find((sdeProvider) => sdeProvider.label === provider.label)
         )
       )
