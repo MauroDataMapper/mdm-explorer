@@ -1,4 +1,4 @@
-<!--
+/*
 Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -15,23 +15,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
--->
-<div class="container sde-main">
-  <div class="main-row hero">
-    <h1>Secure Data Environment</h1>
-    <mdm-sde-sign-in *ngIf="!signedIn"></mdm-sde-sign-in>
-    <mat-tab-group *ngIf="signedIn">
-      <mat-tab label="Requests">
-        <mdm-sde-requests></mdm-sde-requests>
-      </mat-tab>
+*/
+import { SdeSignInComponent } from './sde-sign-in.component';
+import {
+  ComponentHarness,
+  setupTestModuleForComponent,
+} from 'src/app/testing/testing.helpers';
 
-      <mat-tab label="Organisations">
-        <mdm-organisations></mdm-organisations>
-      </mat-tab>
+describe('SdeSignInComponent', () => {
+  let harness: ComponentHarness<SdeSignInComponent>;
 
-      <mat-tab label="Projects">
-        <p>SDE Projects Subpage to go here</p>
-      </mat-tab>
-    </mat-tab-group>
-  </div>
-</div>
+  beforeEach(async () => {
+    harness = await setupTestModuleForComponent(SdeSignInComponent);
+  });
+
+  it('should create', () => {
+    expect(harness.isComponentCreated).toBeTruthy();
+  });
+});

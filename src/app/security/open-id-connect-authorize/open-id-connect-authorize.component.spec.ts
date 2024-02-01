@@ -25,11 +25,14 @@ import {
 import { OpenIdConnectAuthorizeComponent } from './open-id-connect-authorize.component';
 import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { SecurityService } from '../security.service';
+import { createSdeAuthenticationEndpointsStub } from 'src/app/testing/stubs/sde/sde-authentication-endpoints.stub';
+import { AuthenticationEndpointsShared } from '@maurodatamapper/sde-resources';
 
 describe('OpenIdConnectAuthorizeComponent', () => {
   let harness: ComponentHarness<OpenIdConnectAuthorizeComponent>;
   const endpointsStub = createMdmEndpointsStub();
   const sdeSecurityStub = createSecurityServiceStub();
+  const sdeAuthenticationEndpointsStub = createSdeAuthenticationEndpointsStub();
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(OpenIdConnectAuthorizeComponent, {
@@ -41,6 +44,10 @@ describe('OpenIdConnectAuthorizeComponent', () => {
         {
           provide: SecurityService,
           useValue: sdeSecurityStub,
+        },
+        {
+          provide: AuthenticationEndpointsShared,
+          useValue: sdeAuthenticationEndpointsStub,
         },
       ],
     });

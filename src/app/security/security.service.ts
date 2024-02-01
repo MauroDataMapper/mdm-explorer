@@ -135,7 +135,10 @@ export class SecurityService {
         return throwError(() => new MdmHttpError(error));
       }),
       map(() => {}),
-      finalize(() => this.userDetails.clear())
+      finalize(() => {
+        this.userDetails.clear();
+        this.userDetails.clearSdeResearchUser();
+      })
     );
   }
 
@@ -177,6 +180,10 @@ export class SecurityService {
     return !!this.userDetails.get();
   }
 
+  isSignedInToSde(): boolean {
+    return this.userDetails.hasSdeResearchUser();
+  }
+
   /**
    * Gets the details of the current signed in user, or will get null if no user is signed in.
    *
@@ -200,6 +207,7 @@ export class SecurityService {
       catchError((error: AuthenticatedSessionError) => {
         if (error.invalidated) {
           this.userDetails.clear();
+          this.userDetails.clearSdeResearchUser();
           return of(true);
         }
 
@@ -208,6 +216,7 @@ export class SecurityService {
       tap((authenticated) => {
         if (!authenticated) {
           this.userDetails.clear();
+          this.userDetails.clearSdeResearchUser();
         }
       })
     );

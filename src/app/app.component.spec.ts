@@ -37,6 +37,8 @@ import { defaultTheme, ThemeService } from './shared/theme.service';
 import { of } from 'rxjs';
 import { createSecurityServiceStub } from './testing/stubs/security.stub';
 import { SecurityService } from './security/security.service';
+import { createSdeAuthenticationEndpointsStub } from './testing/stubs/sde/sde-authentication-endpoints.stub';
+import { AuthenticationEndpointsShared } from '@maurodatamapper/sde-resources';
 
 describe('AppComponent', () => {
   let harness: ComponentHarness<AppComponent>;
@@ -45,6 +47,7 @@ describe('AppComponent', () => {
   const dataElementSearchStub = createDataElementSearchServiceStub();
   const themesStub = createThemeServiceStub();
   const sdeSecurityStub = createSecurityServiceStub();
+  const sdeAuthenticationEndpointsStub = createSdeAuthenticationEndpointsStub();
 
   themesStub.loadTheme.mockImplementation(() => of(defaultTheme));
 
@@ -79,6 +82,10 @@ describe('AppComponent', () => {
         {
           provide: SecurityService,
           useValue: sdeSecurityStub,
+        },
+        {
+          provide: AuthenticationEndpointsShared,
+          useValue: sdeAuthenticationEndpointsStub,
         },
       ],
     });

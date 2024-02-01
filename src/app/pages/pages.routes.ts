@@ -42,6 +42,7 @@ import { MyDataSpecificationDetailComponent } from './my-data-specification-deta
 import { TemplateDataSpecificationsComponent } from './template-data-specifications/template-data-specifications.component';
 import { TemplateDataSpecificationDetailComponent } from './template-data-specification-detail/template-data-specification-detail.component';
 import { SdeMainComponent } from './sde-main/sde-main.component';
+import { SdeAuthenticationFinalizeComponent } from './sde-authentication-finalize/sde-authentication-finalize.component';
 import { WorkflowResolver } from '@maurodatamapper/sde-resources';
 
 export const buildStaticContentRoute = (path: string, staticAssetPath: string): Route => {
@@ -191,5 +192,9 @@ export const routes: Route[] = [
     resolve: {
       workflow: WorkflowResolver,
     },
+  },
+  {
+    path: 'sde/auth/finalize/:action',
+    component: SdeAuthenticationFinalizeComponent,
   },
 ];

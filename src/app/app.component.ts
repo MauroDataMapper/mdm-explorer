@@ -17,7 +17,14 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import {
   catchError,
@@ -25,7 +32,6 @@ import {
   filter,
   finalize,
   map,
-  Observable,
   Subject,
   switchMap,
   takeUntil,
@@ -42,7 +48,7 @@ import { FooterLink } from './shared/footer/footer.component';
 import { HeaderImageLink, HeaderLink } from './shared/header/header.component';
 import { UserIdleService } from './external/user-idle.service';
 import { ThemeService } from './shared/theme.service';
-import { AuthToken } from './security/security.types';
+import { AuthenticationEndpointsShared } from '@maurodatamapper/sde-resources';
 
 @Component({
   selector: 'mdm-root',
@@ -50,6 +56,18 @@ import { AuthToken } from './security/security.types';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
+  /**
+   * Hidden HTML form element to manually trigger a sign out of the SDE.
+   * This is automatically handled in the broadcast 'sign-out-user' event.
+   *
+   * The reason why a hidden form has to be used instead of Angular's HttpClient (XHR)
+   * is because the Micronaut server will return a HTTP 303 (See Other) response on successful
+   * logout with the URL to the next page. A XHR request cannot handle a 303 response natively
+   * so nothing will happen, so we force a POST request/response through the browser which will
+   * handle the correct redirect automatically.
+   */
+  @ViewChild('sdeSignOutForm') sdeSignOutForm?: ElementRef<HTMLFormElement>;
+
   title = 'mdm-explorer';
 
   isLoading = false;
@@ -170,6 +188,8 @@ export class AppComponent implements OnInit, OnDestroy {
     },
   ];
 
+  sdeSignOutUrl?: string;
+
   /**
    * Signal to attach to subscriptions to trigger when they should be unsubscribed.
    */
@@ -184,7 +204,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private toastr: ToastrService,
     private userIdle: UserIdleService,
     private error: ErrorService,
-    private themes: ThemeService
+    private themes: ThemeService,
+    private authenticationEndpoints: AuthenticationEndpointsShared
   ) {
     // Load the theme into the DOM as the first thing to do
     this.themes.loadTheme().subscribe((theme) => {
@@ -199,6 +220,8 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.sdeSignOutUrl = this.authenticationEndpoints.getLogoutUrl().toString();
+
     this.broadcast
       .on<HttpErrorResponse>('http-application-offline')
       .pipe(takeUntil(this.unsubscribe$))
@@ -212,9 +235,6 @@ export class AppComponent implements OnInit, OnDestroy {
       .onUserSignedIn()
       .pipe(
         takeUntil(this.unsubscribe$),
-        switchMap((signedInUser: UserDetails) => {
-          return this.attemptToSignInAndSetupSdeUser(signedInUser);
-        }),
         switchMap((signedInUser) => {
           this.setupSignedInUser(signedInUser);
           return this.getUnsentDataSpecificationCount();
@@ -224,7 +244,7 @@ export class AppComponent implements OnInit, OnDestroy {
             (this.unsentDataSpecificationsCount = unsentDataSpecificationsCount)
         )
       )
-      .subscribe(() => { });
+      .subscribe(() => {});
 
     this.broadcast
       .on('sign-out-user')
@@ -283,19 +303,18 @@ export class AppComponent implements OnInit, OnDestroy {
           this.stateRouter.navigateToKnownPath('');
         })
       )
-      .subscribe(() => { });
-  }
-
-  private attemptToSignInAndSetupSdeUser(user: UserDetails): Observable<UserDetails> {
-    return this.security.signInToSde(user.email).pipe(
-      map((sdeAuthToken: AuthToken) => {
-        // Save to userDetails. If empty, no token was returned.
-        user.sdeAuthToken = sdeAuthToken.token;
-        this.userDetails.set(user);
-
-        return user;
-      })
-    );
+      .subscribe(() => {
+        if (this.sdeSignOutForm) {
+          // If SDE sign out form is available, trigger a form POST request
+          // This will force the app to sign out of the SDE too automatically.
+          //
+          // A forced POST request has to be done this way through the browser's APIs because
+          // the successful response code will be 303 (See Other). Angular's HttpClient will
+          // not automatically handle this, so this is the workaround solution to get correctly
+          // redirected to the next page.
+          this.sdeSignOutForm.nativeElement.submit();
+        }
+      });
   }
 
   private subscribeHttpErrorEvent(event: BroadcastEvent, state: string) {
@@ -345,7 +364,7 @@ export class AppComponent implements OnInit, OnDestroy {
             (this.unsentDataSpecificationsCount = unsentDataSpecificationsCount)
         )
       )
-      .subscribe(() => { });
+      .subscribe(() => {});
 
     this.broadcast
       .on('data-specification-submitted')
@@ -357,7 +376,7 @@ export class AppComponent implements OnInit, OnDestroy {
             (this.unsentDataSpecificationsCount = unsentDataSpecificationsCount)
         )
       )
-      .subscribe(() => { });
+      .subscribe(() => {});
   }
 
   private setupIdleTimer() {
@@ -365,7 +384,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.userIdle
       .onTimerStart()
       .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(() => { });
+      .subscribe(() => {});
 
     let lastCheck = new Date();
     this.userIdle

@@ -16,22 +16,19 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<div class="container sde-main">
-  <div class="main-row hero">
-    <h1>Secure Data Environment</h1>
-    <mdm-sde-sign-in *ngIf="!signedIn"></mdm-sde-sign-in>
-    <mat-tab-group *ngIf="signedIn">
-      <mat-tab label="Requests">
-        <mdm-sde-requests></mdm-sde-requests>
-      </mat-tab>
-
-      <mat-tab label="Organisations">
-        <mdm-organisations></mdm-organisations>
-      </mat-tab>
-
-      <mat-tab label="Projects">
-        <p>SDE Projects Subpage to go here</p>
-      </mat-tab>
-    </mat-tab-group>
+<p>
+  You are not signed in to the Secure Data Environment (SDE). Please select one of the
+  options below to access your organisations, projects and requests.
+</p>
+<p>
+  You can find more information about the SDE at the
+  <a href="https://thamesvalleyandsurreyhealthandcaredata.nhs.uk/"
+    >Thames Valley &amp; Surrey NHS Healthcare Data</a
+  >
+  website.
+</p>
+<div class="highlight-box">
+  <div class="highlight-box__content--narrow">
+    <sde-oauth-provider-form></sde-oauth-provider-form>
   </div>
 </div>

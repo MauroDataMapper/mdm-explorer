@@ -40,4 +40,8 @@ SPDX-License-Identifier: Apache-2.0
   </div>
 
   <mdm-footer version="0.1.0" [links]="footerLinks"></mdm-footer>
+
+  <form #sdeSignOutForm class="sde-sign-out" method="post" action="{{ sdeSignOutUrl }}">
+    <button type="submit">Sign out</button>
+  </form>
 </div>

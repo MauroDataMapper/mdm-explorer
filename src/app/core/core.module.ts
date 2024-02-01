@@ -45,8 +45,13 @@ import { AppErrorHandlerService } from './app-error-handler.service';
 import { AppErrorDialogComponent } from './app-error-dialog/app-error-dialog.component';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { SDE_RESOURCES_CONFIG, SdeResourcesModule } from '@maurodatamapper/sde-resources';
+import {
+  SDE_RESOURCES_CONFIG,
+  SDE_REST_HANDLER_CONFIG,
+  SdeResourcesModule,
+} from '@maurodatamapper/sde-resources';
 import { ResearcherSdeResourcesConfig } from '../secure-data-environment/configuration/researcher-sde-resources.config';
+import { environment } from 'src/environments/environment';
 
 const angularModules = [CommonModule, FormsModule, ReactiveFormsModule, RouterModule];
 const primeNgModules = [CarouselModule];
@@ -87,6 +92,12 @@ const materialModules = [
     {
       provide: SDE_RESOURCES_CONFIG,
       useExisting: ResearcherSdeResourcesConfig,
+    },
+    {
+      provide: SDE_REST_HANDLER_CONFIG,
+      useValue: {
+        baseUrl: environment.sdeResearcherEndpoint,
+      },
     },
   ],
 })

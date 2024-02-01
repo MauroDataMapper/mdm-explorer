@@ -49,6 +49,7 @@ import { TemplateDataSpecificationsComponent } from './template-data-specificati
 import { TemplateDataSpecificationDetailComponent } from './template-data-specification-detail/template-data-specification-detail.component';
 import { SdeMainComponent } from './sde-main/sde-main.component';
 import { SecureDataEnvironmentModule } from '../secure-data-environment/secure-data-environment.module';
+import { SdeAuthenticationFinalizeComponent } from './sde-authentication-finalize/sde-authentication-finalize.component';
 
 @NgModule({
   declarations: [
@@ -77,6 +78,7 @@ import { SecureDataEnvironmentModule } from '../secure-data-environment/secure-d
     TemplateDataSpecificationsComponent,
     TemplateDataSpecificationDetailComponent,
     SdeMainComponent,
+    SdeAuthenticationFinalizeComponent,
   ],
   imports: [
     CoreModule,
@@ -84,6 +86,7 @@ import { SecureDataEnvironmentModule } from '../secure-data-environment/secure-d
     SecureDataEnvironmentModule,
     SecurityModule,
     DataExplorerModule,
+    SecureDataEnvironmentModule,
     NgxJsonViewerModule,
     MatTooltipModule,
   ],
