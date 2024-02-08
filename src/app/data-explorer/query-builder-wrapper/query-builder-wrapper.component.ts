@@ -51,6 +51,7 @@ export class QueryBuilderWrapperComponent implements OnInit {
   @Input() queryType?: DataSpecificationQueryType;
   @Input() query: QueryCondition = {
     condition: 'and',
+    entity: '',
     rules: [],
   };
   @Input() config: QueryBuilderConfig = {
@@ -102,6 +103,7 @@ export class QueryBuilderWrapperComponent implements OnInit {
     if (this.query.rules.length === 0) {
       this.query = {
         condition: 'and',
+        entity: '',
         rules: [],
       };
     }

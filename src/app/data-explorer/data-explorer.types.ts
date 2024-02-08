@@ -39,7 +39,7 @@ export interface DataExplorerConfiguration {
 }
 
 export const DATA_EXPLORER_CONFIGURATION = new InjectionToken<DataExplorerConfiguration>(
-  'CatalogueConfiguration'
+  'CatalogueConfiguration',
 );
 
 export type SortOrder = 'asc' | 'desc';
@@ -100,7 +100,7 @@ export interface DataElementSearchParameters {
  * a route navigation.
  */
 export const mapSearchParametersToParams = (
-  parameters: DataElementSearchParameters
+  parameters: DataElementSearchParameters,
 ): Params => {
   return {
     ...(parameters.dataClass && {
@@ -121,7 +121,7 @@ export const mapSearchParametersToParams = (
 
 export const mapParamMapToFilters = (
   query: ParamMap,
-  profileFields?: ProfileField[]
+  profileFields?: ProfileField[],
 ): DataElementSearchFilters => {
   if (!profileFields) {
     return {};
@@ -142,7 +142,7 @@ export const mapParamMapToFilters = (
  */
 export const mapParamMapToSearchParameters = (
   query: ParamMap,
-  profileFields?: ProfileField[]
+  profileFields?: ProfileField[],
 ): DataElementSearchParameters => {
   return {
     dataClass: {
@@ -175,7 +175,7 @@ export interface PaginationConfiguration {
 }
 
 export const PAGINATION_CONFIG = new InjectionToken<PaginationConfiguration>(
-  'PaginationConfiguration'
+  'PaginationConfiguration',
 );
 
 export interface DataElementSearchResult extends DataElementInstance {
@@ -203,7 +203,7 @@ export interface DataElementMultipleOperationResult {
 }
 
 export const mapProfileSearchResult = (
-  item: ProfileSearchResult
+  item: ProfileSearchResult,
 ): DataElementSearchResult => {
   // Note: Assumption that the the last breadcrumb is the data class containing the data element
   const dataClassId =
@@ -213,7 +213,8 @@ export const mapProfileSearchResult = (
 
   // Map profile fields directly to the returned object for ease of access
   const idenfifableDataField = item.profileFields.find(
-    (field: ProfileSearchResultField) => field.metadataPropertyName === 'identifiableData'
+    (field: ProfileSearchResultField) =>
+      field.metadataPropertyName === 'identifiableData',
   );
 
   return {
@@ -392,6 +393,7 @@ export interface QueryExpression {
 
 export interface QueryCondition {
   condition: 'and' | 'or';
+  entity: string;
   rules: QueryRule[];
 }
 

@@ -277,7 +277,6 @@ export class QueryBuilderComponent
         // Delay the change until the next change detection cycle
         setTimeout(() => {
           this.data.entity = this.config.coreEntityName;
-          console.log(`this.data.entity: ${this.data.entity}`);
           this.handleDataChange();
           this.handleTouched();
         }, 0);
@@ -498,10 +497,10 @@ export class QueryBuilderComponent
       const field = fields?.[0] ?? undefined;
       parent.rules = parent.rules.concat([
         {
+          entity: field?.entity,
           field: field?.value,
           operator: this.getDefaultOperator(field),
           value: this.getDefaultValue(field?.defaultValue),
-          entity: field?.entity,
         },
       ]);
     }
@@ -1071,8 +1070,8 @@ export class QueryBuilderComponent
       parent.rules = parent.rules.concat([
         {
           condition: 'and',
-          rules: [],
           entity: this.dotFormatEntityName(entityName),
+          rules: [],
         },
       ]);
     }

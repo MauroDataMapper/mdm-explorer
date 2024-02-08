@@ -38,6 +38,7 @@ import { IModelPage } from '../../shared/types/shared.types';
 
 const defaultQueryCondition: QueryCondition = {
   condition: 'and',
+  entity: '',
   rules: [],
 };
 

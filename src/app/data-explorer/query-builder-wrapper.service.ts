@@ -177,6 +177,7 @@ export class QueryBuilderWrapperService {
       ? query.condition
       : {
           condition: 'and',
+          entity: '',
           rules: [],
         };
   }

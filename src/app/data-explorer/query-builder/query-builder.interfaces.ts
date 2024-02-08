@@ -18,17 +18,17 @@ SPDX-License-Identifier: Apache-2.0
 */
 export interface RuleSet {
   condition: string;
+  entity?: string;
   rules: Array<Rule | RuleSet>;
   collapsed?: boolean;
   isChild?: boolean;
-  entity?: string;
 }
 
 export interface Rule {
+  entity?: string;
   field: string | undefined;
   value?: any;
   operator?: string | null;
-  entity?: string;
 }
 
 export interface Option {
