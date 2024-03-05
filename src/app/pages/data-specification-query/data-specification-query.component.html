@@ -35,8 +35,9 @@ SPDX-License-Identifier: Apache-2.0
       *ngIf="status === 'error'"
       class="highlight-box mdm-data-specification-query__error"
     >
-      Unfortunately there was a problem with your data specification or query. Please try
-      again.
+      There was a problem loading the query builder configuration. Please contact a Mauro
+      Administrator and report the following error(s):
+      {{ errorMessage }}
     </div>
 
     <div class="col">

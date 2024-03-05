@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { DataElement, Uuid } from '@maurodatamapper/mdm-resources';
+import { DataElement, DataModel, Uuid } from '@maurodatamapper/mdm-resources';
 import { QueryBuilderConfig } from '../../data-explorer/query-builder/query-builder.interfaces';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY, finalize, forkJoin, switchMap } from 'rxjs';
@@ -62,13 +62,14 @@ export class DataSpecificationQueryComponent implements OnInit, IModelPage {
   backRouterLink = '';
   backLabel = '';
   backRouterDataSpecificationId = '';
+  errorMessage = '';
   constructor(
     private route: ActivatedRoute,
     private dataSpecifications: DataSpecificationService,
     private toastr: ToastrService,
     private broadcast: BroadcastService,
     private queryBuilderWrapperService: QueryBuilderWrapperService,
-    private stateRouter: StateRouterService,
+    private stateRouter: StateRouterService
   ) {}
 
   ngOnInit(): void {
@@ -83,7 +84,7 @@ export class DataSpecificationQueryComponent implements OnInit, IModelPage {
         }),
         catchError(() => {
           return this.errorResponse(
-            'There was a problem finding your data specification.',
+            'There was a problem finding your data specification.'
           );
         }),
         switchMap((dataSpecification) => {
@@ -100,7 +101,7 @@ export class DataSpecificationQueryComponent implements OnInit, IModelPage {
         }),
         catchError(() => {
           return this.errorResponse(
-            'There was a problem finding your data specification queries.',
+            'There was a problem finding your data specification queries.'
           );
         }),
         switchMap(([dataElements, query]) => {
@@ -113,15 +114,18 @@ export class DataSpecificationQueryComponent implements OnInit, IModelPage {
           }
 
           return this.queryBuilderWrapperService.setupConfig(
+            this.dataSpecification as DataModel,
             this.mapDataElements(dataElements),
-            query,
+            query
           );
         }),
-        catchError(() => {
+        catchError((error) => {
+          this.errorMessage = `\r\n${error.message}`;
+
           return this.errorResponse(
-            'There was a problem configuring your data specification queries.',
+            'There was a problem configuring your data specification queries'
           );
-        }),
+        })
       )
       .subscribe((queryConfiguration) => {
         this.dataElements = queryConfiguration.dataElementSearchResult;
@@ -162,7 +166,7 @@ export class DataSpecificationQueryComponent implements OnInit, IModelPage {
           this.toastr.error('There was a problem saving your query.');
           return EMPTY;
         }),
-        finalize(() => this.broadcast.loading({ isLoading: false })),
+        finalize(() => this.broadcast.loading({ isLoading: false }))
       )
       .subscribe((submitted) => {
         this.toastr.success(`Your ${this.queryType} query was saved successfully.`);
