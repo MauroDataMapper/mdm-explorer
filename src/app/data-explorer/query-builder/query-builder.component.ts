@@ -16,6 +16,29 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+/* Original source: https://github.com/zebzhao/Angular-QueryBuilder
+MIT License
+
+Copyright (c) 2018 Zeb Zhao
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
 import {
   AbstractControl,
   ControlValueAccessor,
@@ -220,7 +243,7 @@ export class QueryBuilderComponent
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
-    private matDialog: MatDialog,
+    private matDialog: MatDialog
   ) {}
 
   // ----------ControlValueAccessor Implementation----------
@@ -372,7 +395,7 @@ export class QueryBuilderComponent
         console.warn(
           `No operators found for field '${field}' with type ${fieldObject.type}. ` +
             // eslint-disable-next-line @typescript-eslint/quotes
-            "Please define an 'operators' property on the field or use the 'operatorMap' binding to fix this.",
+            "Please define an 'operators' property on the field or use the 'operatorMap' binding to fix this."
         );
       }
       if (fieldObject.nullable) {
@@ -399,7 +422,7 @@ export class QueryBuilderComponent
 
   getInputType(
     field: string | null | undefined,
-    operator: string | null | undefined,
+    operator: string | null | undefined
   ): string | null {
     if (this.config.getInputType) {
       return this.config.getInputType(field, operator);
@@ -407,7 +430,7 @@ export class QueryBuilderComponent
 
     if (!this.config.fields[field ?? '']) {
       throw new Error(
-        `No configuration for field '${field}' could be found! Please add it to config.fields.`,
+        `No configuration for field '${field}' could be found! Please add it to config.fields.`
       );
     }
 
@@ -437,7 +460,7 @@ export class QueryBuilderComponent
       .map(
         (id) =>
           clsLookup[id as keyof QueryBuilderClassNames] ??
-          this.defaultClassNames[id as keyof QueryBuilderClassNames],
+          this.defaultClassNames[id as keyof QueryBuilderClassNames]
       )
       .filter((c) => !!c);
     return classNames.length ? classNames.join(' ') : null;
@@ -460,7 +483,7 @@ export class QueryBuilderComponent
       console.warn(
         `No fields found for entity '${entity.name}'. ` +
           // eslint-disable-next-line @typescript-eslint/quotes
-          "A 'defaultOperator' is also not specified on the field config. Operator value will default to null.",
+          "A 'defaultOperator' is also not specified on the field config. Operator value will default to null."
       );
       return null;
     }
@@ -477,7 +500,7 @@ export class QueryBuilderComponent
         console.warn(
           `No operators found for field '${field?.value ?? '<undefined>'}'. ` +
             // eslint-disable-next-line @typescript-eslint/quotes
-            "A 'defaultOperator' is also not specified on the field config. Operator value will default to null.",
+            "A 'defaultOperator' is also not specified on the field config. Operator value will default to null."
         );
         return null;
       }
@@ -540,7 +563,7 @@ export class QueryBuilderComponent
         this.data,
         this.isDataQuery,
         this.entities,
-        this.config.coreEntityName,
+        this.config.coreEntityName
       );
 
       if (filteredEntities?.length ?? 0 > 0) {
@@ -644,7 +667,7 @@ export class QueryBuilderComponent
   coerceValueForOperator(
     operator: string | null | undefined,
     value: any,
-    rule: Rule,
+    rule: Rule
   ): any {
     const inputType: string | null = this.getInputType(rule.field, operator);
     if (inputType === 'multiselect' && !Array.isArray(value)) {
@@ -700,7 +723,7 @@ export class QueryBuilderComponent
     entityValue: string,
     rule: Rule,
     index: number | undefined,
-    data: RuleSet | undefined,
+    data: RuleSet | undefined
   ): void {
     if (this.disabled) {
       return;
@@ -708,7 +731,7 @@ export class QueryBuilderComponent
     let i = index;
     let rs = data;
     const entity: Entity | undefined = this.entities?.find(
-      (e) => e?.value === entityValue,
+      (e) => e?.value === entityValue
     );
     const defaultField: Field | null = this.getDefaultField(entity);
     if (!rs) {
@@ -934,7 +957,7 @@ export class QueryBuilderComponent
     data: RuleSet,
     isDataQuery: boolean,
     entities?: (Entity | undefined)[] | null,
-    coreEntityName?: string,
+    coreEntityName?: string
   ): (Entity | undefined)[] | null | undefined {
     console.log('getFilteredEntityList');
     console.log(data);
@@ -953,7 +976,7 @@ export class QueryBuilderComponent
 
     // Get the entity here
     const filteredEntities = entities?.filter(
-      (entity) => !usedEntityNames.includes(this.dotFormatEntityName(entity?.name)),
+      (entity) => !usedEntityNames.includes(this.dotFormatEntityName(entity?.name))
     );
 
     return filteredEntities;
@@ -975,7 +998,7 @@ export class QueryBuilderComponent
   private calculateFieldChangeValue(
     currentField: Field | undefined,
     nextField: Field,
-    currentValue: any,
+    currentValue: any
   ): any {
     if (this.config.calculateFieldChangeValue != null) {
       return this.config.calculateFieldChangeValue(currentField, nextField, currentValue);
@@ -1087,7 +1110,7 @@ export class QueryBuilderComponent
       this.data,
       this.isDataQuery,
       this.entities,
-      this.config.coreEntityName,
+      this.config.coreEntityName
     );
     return (filteredEntities?.length ?? 0) > 0;
   }
