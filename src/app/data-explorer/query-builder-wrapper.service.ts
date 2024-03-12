@@ -90,6 +90,8 @@ export class QueryBuilderWrapperService {
       return forkJoin([profile$, dataElement$]);
     });
 
+    const dataElementTypeProfile$ = forkJoin(dataElementTypeProfileObservables);
+
     const coreTableProfile$ = this.getQueryBuilderCoreTableProfile(dataModel).pipe(
       switchMap((coreTableProfile: Profile) => {
         return this.validateQueryBuilderCoreTableProfile(
@@ -108,7 +110,6 @@ export class QueryBuilderWrapperService {
         throw error;
       })
     );
-    const dataElementTypeProfile$ = forkJoin(dataElementTypeProfileObservables);
 
     return forkJoin([dataElementTypeProfile$, coreTableProfile$]).pipe(
       map(([items, coreTableProfile]) => {

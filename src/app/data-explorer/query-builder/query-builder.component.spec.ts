@@ -16,30 +16,30 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { CommonModule } from '@angular/common';
-import { FormsModule, } from '@angular/forms';
 import { QueryBuilderComponent } from './query-builder.component';
+import {
+  ComponentHarness,
+  setupTestModuleForComponent,
+} from 'src/app/testing/testing.helpers';
+import { MatDialog } from '@angular/material/dialog';
+import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
 
 describe('QueryBuilderComponent', () => {
-  let component: QueryBuilderComponent;
-  let fixture: ComponentFixture<QueryBuilderComponent>;
+  let harness: ComponentHarness<QueryBuilderComponent>;
+  const matDialogStub = createMatDialogStub();
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [ CommonModule, FormsModule ],
-      declarations: [ QueryBuilderComponent ]
-    })
-    .compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(QueryBuilderComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  beforeEach(async () => {
+    harness = await setupTestModuleForComponent(QueryBuilderComponent, {
+      providers: [
+        {
+          provide: MatDialog,
+          useValue: matDialogStub,
+        },
+      ],
+    });
   });
 
-  it('should be created', () => {
-    expect(component).toBeTruthy();
+  it('should create', () => {
+    expect(harness.isComponentCreated).toBeTruthy();
   });
 });

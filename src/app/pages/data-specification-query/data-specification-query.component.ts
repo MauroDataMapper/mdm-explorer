@@ -120,8 +120,10 @@ export class DataSpecificationQueryComponent implements OnInit, IModelPage {
           );
         }),
         catchError((error) => {
+          // This will display the error message on the page
           this.errorMessage = `\r\n${error.message}`;
 
+          // This will display a toast error
           return this.errorResponse(
             'There was a problem configuring your data specification queries'
           );

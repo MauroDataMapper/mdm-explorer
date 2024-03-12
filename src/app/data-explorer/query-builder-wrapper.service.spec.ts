@@ -21,6 +21,7 @@ SPDX-License-Identifier: Apache-2.0
 
 import {
   CatalogueItemDomainType,
+  DataModel,
   DataType,
   Profile,
 } from '@maurodatamapper/mdm-resources';
@@ -33,133 +34,12 @@ import {
 } from './query-builder-wrapper.service';
 import {
   DataElementSearchResult,
+  DataSpecification,
   DataSpecificationQueryPayload,
 } from './data-explorer.types';
 import { QueryBuilderConfig } from './query-builder/query-builder.interfaces';
 import { createProfileServiceStub } from '../testing/stubs/profile.stub';
-import { HttpErrorResponse } from '@angular/common/http';
-import { of } from 'rxjs';
-
-const defaultCatalogueItemDomainType = CatalogueItemDomainType.PrimitiveType;
-const defaultProfileNamespace =
-  'uk.ac.ox.softeng.maurodatamapper.plugins.explorer.querybuilder';
-const defaultProfileServiceName = 'QueryBuilderPrimitiveTypeProfileProviderService';
-
-abstract class testHelper {
-  public static dataType_varchar: DataType = {
-    id: 'dt-varchar',
-    domainType: defaultCatalogueItemDomainType,
-    label: 'varchar',
-  };
-
-  public static dataType_int: DataType = {
-    id: 'dt-int',
-    domainType: defaultCatalogueItemDomainType,
-    label: 'int',
-  };
-
-  public static dataType_bool: DataType = {
-    id: 'dt-bool',
-    domainType: defaultCatalogueItemDomainType,
-    label: 'bool',
-  };
-
-  public static dataType_date: DataType = {
-    id: 'dt-date',
-    domainType: defaultCatalogueItemDomainType,
-    label: 'date',
-  };
-
-  public static dataType_time: DataType = {
-    id: 'dt-time',
-    domainType: defaultCatalogueItemDomainType,
-    label: 'time',
-  };
-
-  public static dataType_enumeration: DataType = {
-    id: 'dt-enum',
-    domainType: defaultCatalogueItemDomainType,
-    label: 'enum_type',
-    enumerationValues: [
-      { index: 0, key: 'Option 1', value: 'Option 1' },
-      { index: 1, key: 'Option 2', value: 'Option 2' },
-    ],
-  };
-
-  public static dataType_nonPrimitive: DataType = {
-    id: 'dt-time',
-    domainType: CatalogueItemDomainType.ReferenceType,
-    label: 'time',
-  };
-
-  public static dataType_modelDataTypeTerminology: DataType = {
-    id: 'dt-model-terminology',
-    domainType: CatalogueItemDomainType.ModelDataType,
-    label: 'terminology-dt',
-    modelResourceDomainType: CatalogueItemDomainType.Terminology,
-    modelResourceId: 'tm-123',
-  };
-
-  public static dataType_modelDataTypeCodeset: DataType = {
-    id: 'dt-model-codeset',
-    domainType: CatalogueItemDomainType.ModelDataType,
-    label: 'codeset-dt',
-    modelResourceDomainType: CatalogueItemDomainType.CodeSet,
-    modelResourceId: 'cs-123',
-  };
-
-  public static expectedProfilesStubGet = (
-    actualCatalogueItemDomainType: CatalogueItemDomainType,
-    actualCatalogueItemId: string,
-    actualProfileNamespace: string,
-    actualProfileName: string,
-    expectedCatalogueItemId: string,
-  ) => {
-    expect(actualCatalogueItemDomainType).toBe(defaultCatalogueItemDomainType);
-    expect(actualCatalogueItemId).toBe(expectedCatalogueItemId);
-    expect(actualProfileNamespace).toBe(defaultProfileNamespace);
-    expect(actualProfileName).toBe(defaultProfileServiceName);
-  };
-
-  public static createMappingProfile = (
-    dataType: DataType,
-    currentValue: string,
-    domainType: CatalogueItemDomainType = CatalogueItemDomainType.PrimitiveType,
-  ): Profile => {
-    return {
-      sections: [
-        {
-          name: 'section1',
-          fields: [
-            {
-              fieldName: 'QueryBuilderType',
-              metadataPropertyName: 'querybuildertype',
-              dataType: 'enumeration',
-              currentValue,
-            },
-          ],
-        },
-      ],
-      id: dataType.id ?? '',
-      label: dataType.label,
-      domainType,
-    };
-  };
-
-  public static getProfile(profiles: Profile[], dataTypeLabel: string): DataType {
-    const result = profiles.find((i) => i.label === dataTypeLabel) ?? ({} as DataType);
-
-    if (Object.keys(result).length === 0) {
-      const error = new HttpErrorResponse({
-        error: new Error('404 Not Found'),
-        status: 404,
-      });
-      return of(error) as any;
-    }
-    return result;
-  }
-}
-
+import { QueryBuilderTestingHelper } from '../testing/querybuilder.testing.helpers';
 describe('QueryBuilderService', () => {
   let service: QueryBuilderWrapperService;
   const profilesStub = createProfileServiceStub();
@@ -187,161 +67,161 @@ describe('QueryBuilderService', () => {
     it.each<[string, DataType, string | undefined, boolean, string | undefined]>([
       [
         'finds string when varchar mapped to string',
-        testHelper.dataType_varchar,
+        QueryBuilderTestingHelper.dataType_varchar,
         'string',
         false,
         'string',
       ],
       [
         'finds nothing when varchar unmapped',
-        testHelper.dataType_varchar,
+        QueryBuilderTestingHelper.dataType_varchar,
         undefined,
         false,
         undefined,
       ],
       [
         'finds string when varchar unmapped but referenced in query',
-        testHelper.dataType_varchar,
+        QueryBuilderTestingHelper.dataType_varchar,
         undefined,
         true,
         'string',
       ],
       [
         'finds number when int mapped to number',
-        testHelper.dataType_int,
+        QueryBuilderTestingHelper.dataType_int,
         'number',
         false,
         'number',
       ],
       [
         'finds string when int unmapped',
-        testHelper.dataType_int,
+        QueryBuilderTestingHelper.dataType_int,
         undefined,
         false,
         undefined,
       ],
       [
         'finds string when int unmapped but referenced in query',
-        testHelper.dataType_int,
+        QueryBuilderTestingHelper.dataType_int,
         undefined,
         true,
         'string',
       ],
       [
         'finds category when enumeration mapped to something',
-        testHelper.dataType_enumeration,
+        QueryBuilderTestingHelper.dataType_enumeration,
         'string',
         false,
         'category',
       ],
       [
         'finds category when enumeration unmapped',
-        testHelper.dataType_enumeration,
+        QueryBuilderTestingHelper.dataType_enumeration,
         undefined,
         false,
         'category',
       ],
       [
         'finds category when enumeration unmapped but referenced in query',
-        testHelper.dataType_enumeration,
+        QueryBuilderTestingHelper.dataType_enumeration,
         undefined,
         true,
         'category',
       ],
       [
         'finds boolean when bool mapped to boolean',
-        testHelper.dataType_bool,
+        QueryBuilderTestingHelper.dataType_bool,
         'boolean',
         false,
         'boolean',
       ],
       [
         'finds nothing when bool unmapped',
-        testHelper.dataType_bool,
+        QueryBuilderTestingHelper.dataType_bool,
         undefined,
         false,
         undefined,
       ],
       [
         'finds string when bool unmapped but referenced in query',
-        testHelper.dataType_bool,
+        QueryBuilderTestingHelper.dataType_bool,
         undefined,
         true,
         'string',
       ],
       [
         'finds date when date mapped to date',
-        testHelper.dataType_date,
+        QueryBuilderTestingHelper.dataType_date,
         'date',
         false,
         'date',
       ],
       [
         'finds nothing when date unmapped',
-        testHelper.dataType_date,
+        QueryBuilderTestingHelper.dataType_date,
         undefined,
         false,
         undefined,
       ],
       [
         'finds string when date unmapped but referenced in query',
-        testHelper.dataType_date,
+        QueryBuilderTestingHelper.dataType_date,
         undefined,
         true,
         'string',
       ],
       [
         'finds time when varchar mapped to string',
-        testHelper.dataType_time,
+        QueryBuilderTestingHelper.dataType_time,
         'time',
         false,
         'time',
       ],
       [
         'finds nothing when varchar unmapped',
-        testHelper.dataType_time,
+        QueryBuilderTestingHelper.dataType_time,
         undefined,
         false,
         undefined,
       ],
       [
         'finds string when varchar unmapped but referenced in query',
-        testHelper.dataType_time,
+        QueryBuilderTestingHelper.dataType_time,
         undefined,
         true,
         'string',
       ],
       [
         'finds nothing when non primitive type mapped to string',
-        testHelper.dataType_nonPrimitive,
+        QueryBuilderTestingHelper.dataType_nonPrimitive,
         'string',
         false,
         undefined,
       ],
       [
         'finds nothing when non primitive type unmapped',
-        testHelper.dataType_nonPrimitive,
+        QueryBuilderTestingHelper.dataType_nonPrimitive,
         undefined,
         false,
         undefined,
       ],
       [
         'finds string when non primitive type unmapped but referenced in query',
-        testHelper.dataType_nonPrimitive,
+        QueryBuilderTestingHelper.dataType_nonPrimitive,
         undefined,
         true,
         'string',
       ],
       [
         'finds terminology when data type is model data type',
-        testHelper.dataType_modelDataTypeTerminology,
+        QueryBuilderTestingHelper.dataType_modelDataTypeTerminology,
         undefined,
         false,
         'terminology',
       ],
       [
         'finds codeset when data type is model data type',
-        testHelper.dataType_modelDataTypeCodeset,
+        QueryBuilderTestingHelper.dataType_modelDataTypeCodeset,
         undefined,
         false,
         'terminology',
@@ -349,6 +229,7 @@ describe('QueryBuilderService', () => {
     ])('%s', (_, dataType, mappedType, isReferencedInQuery, expectedMappedType) => {
       const isMapped = mappedType !== undefined;
 
+      const coreTable = 'core_table';
       const schemaName = 'schema';
       const className = 'class';
       const entityName = `${schemaName}.${className}`;
@@ -429,39 +310,41 @@ describe('QueryBuilderService', () => {
                 },
               }
             : ({} as any),
+        coreEntityName: coreTable,
+      };
+
+      const dataSpecification: DataSpecification = {
+        id: '1',
+        label: 'data specification',
+        domainType: CatalogueItemDomainType.DataModel,
+        status: 'unsent',
       };
 
       const profiles: Profile[] = isMapped
         ? dataType.domainType !== CatalogueItemDomainType.PrimitiveType
-          ? [testHelper.createMappingProfile(dataType, mappedType)]
+          ? [QueryBuilderTestingHelper.createMappingProfile(dataType, mappedType)]
           : [
-              testHelper.createMappingProfile(
+              QueryBuilderTestingHelper.createMappingProfile(
                 dataType,
                 mappedType,
-                CatalogueItemDomainType.ReferenceType,
+                CatalogueItemDomainType.ReferenceType
               ),
             ]
         : [];
 
+      profiles.push(
+        QueryBuilderTestingHelper.createCoreTableProfile(
+          dataSpecification as DataModel,
+          coreTable
+        )
+      );
+
       const mockProfile = (profile: Profile[]) => {
-        profilesStub.get.mockImplementationOnce(
-          (catalogueItemDomainType, catalogueItemId, profileNamespace, profileName) => {
-            testHelper.expectedProfilesStubGet(
-              catalogueItemDomainType,
-              catalogueItemId,
-              profileNamespace,
-              profileName,
-              dataType.id ?? '',
-            );
-            return cold(
-              dataType.domainType !== CatalogueItemDomainType.PrimitiveType
-                ? 'a|'
-                : '--a|',
-              {
-                a: testHelper.getProfile(profile, dataType.label),
-              },
-            );
-          },
+        QueryBuilderTestingHelper.mockProfile(
+          profilesStub,
+          profile,
+          dataType,
+          dataSpecification as DataModel
         );
       };
 
@@ -474,15 +357,15 @@ describe('QueryBuilderService', () => {
 
       mockProfile(profiles);
 
-      const expected$ = cold(
-        dataType.domainType !== CatalogueItemDomainType.PrimitiveType
-          ? '(a|)'
-          : '---(a|)',
-        {
-          a: expectedResult,
-        },
+      const expected$ = cold('---(a|)', {
+        a: expectedResult,
+      });
+
+      const actual$ = service.setupConfig(
+        dataSpecification as DataModel,
+        expectedDataElementSearchResult,
+        expectedQuery
       );
-      const actual$ = service.setupConfig(expectedDataElementSearchResult, expectedQuery);
 
       expect(actual$).toBeObservable(expected$);
     });

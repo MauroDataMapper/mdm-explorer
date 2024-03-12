@@ -47,6 +47,9 @@ import {
 } from '../../testing/testing.helpers';
 
 import { DataSpecificationQueryComponent } from './data-specification-query.component';
+import { createQueryBuilderWrapperServiceStub } from 'src/app/testing/stubs/query-builder-wrapper.stub';
+import { QueryBuilderConfig } from 'src/app/data-explorer/query-builder/query-builder.interfaces';
+import { QueryBuilderWrapperService } from 'src/app/data-explorer/query-builder-wrapper.service';
 
 describe('DataSpecificationQueryComponent', () => {
   let harness: ComponentHarness<DataSpecificationQueryComponent>;
@@ -56,6 +59,7 @@ describe('DataSpecificationQueryComponent', () => {
   const broadcastStub = createBroadcastServiceStub();
   const mdmResourcesConfiguration = new MdmResourcesConfiguration();
   const stateRouterStub = createStateRouterStub();
+  const queryBuilderWrapperServiceStub = createQueryBuilderWrapperServiceStub();
 
   const dataSpecificationId: Uuid = '1234';
 
@@ -93,6 +97,10 @@ describe('DataSpecificationQueryComponent', () => {
           provide: StateRouterService,
           useValue: stateRouterStub,
         },
+        {
+          provide: QueryBuilderWrapperService,
+          useValue: queryBuilderWrapperServiceStub,
+        },
       ],
     });
   };
@@ -126,7 +134,10 @@ describe('DataSpecificationQueryComponent', () => {
       },
     ];
 
+    const coreTable = 'coretable';
+
     const condition: QueryCondition = {
+      entity: coreTable,
       condition: 'or',
       rules: [
         {
@@ -149,6 +160,12 @@ describe('DataSpecificationQueryComponent', () => {
       condition,
     };
 
+    const expectedQueryBuilderConfig: QueryBuilderConfig = {
+      fields: {} as any,
+      entities: {} as any,
+      coreEntityName: coreTable,
+    };
+
     beforeEach(async () => {
       harness = await setupComponentTest(type);
     });
@@ -168,17 +185,30 @@ describe('DataSpecificationQueryComponent', () => {
     }));
 
     it('should load data specification which has no existing query', fakeAsync(() => {
-      dataSpecificationStub.get.mockImplementationOnce((id) => {
+      dataSpecificationStub.get.mockImplementation((id) => {
         expect(id).toBe(dataSpecificationId);
         return of(dataSpecification);
       });
 
-      dataSpecificationStub.listDataElements.mockImplementationOnce((specification) => {
+      dataSpecificationStub.listDataElements.mockImplementation((specification) => {
         expect(specification).toStrictEqual(dataSpecification);
         return of(dataElements);
       });
 
-      dataSpecificationStub.getQuery.mockImplementationOnce((id, t) => {
+      queryBuilderWrapperServiceStub.setupConfig.mockImplementation(
+        (dataModelInput, dataElementsInput, queryInput) => {
+          expect(dataModelInput).toBe(dataSpecification);
+          expect(dataElementsInput).toBeDefined();
+          expect(queryInput).toBeUndefined();
+          return of({
+            dataElementSearchResult: dataElements as DataElementSearchResult[],
+            dataSpecificationQueryPayload: undefined,
+            config: expectedQueryBuilderConfig,
+          });
+        }
+      );
+
+      dataSpecificationStub.getQuery.mockImplementation((id, t) => {
         expect(id).toBe(dataSpecificationId);
         expect(t).toBe(type);
         return of(undefined);
@@ -240,6 +270,19 @@ describe('DataSpecificationQueryComponent', () => {
         return of(query);
       });
 
+      queryBuilderWrapperServiceStub.setupConfig.mockImplementation(
+        (dataModelInput, dataElementsInput, queryInput) => {
+          expect(dataModelInput).toBe(dataSpecification);
+          expect(dataElementsInput).toBeDefined();
+          expect(queryInput).toBe(query);
+          return of({
+            dataElementSearchResult: dataElements as DataElementSearchResult[],
+            dataSpecificationQueryPayload: query,
+            config: expectedQueryBuilderConfig,
+          });
+        }
+      );
+
       harness.component.ngOnInit();
       tick();
 
@@ -259,6 +302,7 @@ describe('DataSpecificationQueryComponent', () => {
 
     it('should record data is dirty when it has changed', () => {
       harness.component.original = JSON.stringify({
+        entity: 'coretable',
         condition: 'and',
         rules: [
           {
@@ -270,6 +314,7 @@ describe('DataSpecificationQueryComponent', () => {
       });
 
       harness.component.onQueryChange({
+        entity: 'coretable',
         condition: 'and',
         rules: [
           {
@@ -285,6 +330,7 @@ describe('DataSpecificationQueryComponent', () => {
 
     it('should record data is clean when there is no difference', () => {
       const query: QueryCondition = {
+        entity: 'coretable',
         condition: 'and',
         rules: [
           {
@@ -317,6 +363,7 @@ describe('DataSpecificationQueryComponent', () => {
       representationId: '789',
       type,
       condition: {
+        entity: 'coretable',
         condition: 'and',
         rules: [
           {

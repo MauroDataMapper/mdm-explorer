@@ -987,7 +987,7 @@ describe('MyDataSpecificationDetailComponent', () => {
   });
 
   describe('Should Check for Queries', () => {
-    const condition: QueryCondition = { condition: 'or', rules: [] };
+    const condition: QueryCondition = { entity: 'coretable', condition: 'or', rules: [] };
 
     const representation: RuleRepresentation = {
       id: '789',

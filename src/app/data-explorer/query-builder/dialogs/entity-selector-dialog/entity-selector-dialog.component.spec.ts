@@ -17,16 +17,15 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  OkCancelDialogComponent,
+  OkCancelDialogResponse,
+} from 'src/app/data-explorer/ok-cancel-dialog/ok-cancel-dialog.component';
 import { createMatDialogRefStub } from 'src/app/testing/stubs/mat-dialog.stub';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
 } from 'src/app/testing/testing.helpers';
-
-import {
-  OkCancelDialogComponent,
-  OkCancelDialogResponse,
-} from './ok-cancel-dialog.component';
 
 describe('OkCancelDialogComponent', () => {
   let harness: ComponentHarness<OkCancelDialogComponent>;

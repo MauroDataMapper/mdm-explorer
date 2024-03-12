@@ -68,6 +68,7 @@ describe('QueryBuilderComponent', () => {
     expect(harness.component.dataElements).toStrictEqual([]);
     expect(harness.component.color).toBe('primary');
     expect(harness.component.query).toStrictEqual({
+      entity: '',
       condition: 'and',
       rules: [],
     });
@@ -133,15 +134,16 @@ describe('QueryBuilderComponent', () => {
       };
 
       expect(harness.component.termSearchResults['testField1']).toStrictEqual(
-        expectedSetup,
+        expectedSetup
       );
       expect(harness.component.termSearchResults['testField2']).toStrictEqual(
-        expectedSetup,
+        expectedSetup
       );
     });
 
     it('should reset the query when empty', () => {
       harness.component.query = {
+        entity: 'coretable',
         condition: 'or',
         rules: [],
       };
@@ -149,6 +151,7 @@ describe('QueryBuilderComponent', () => {
       harness.component.ngOnInit();
 
       expect(harness.component.query).toStrictEqual({
+        entity: '',
         condition: 'and',
         rules: [],
       });
@@ -156,6 +159,7 @@ describe('QueryBuilderComponent', () => {
 
     it('should not reset the query when it has a value', () => {
       const query: QueryCondition = {
+        entity: 'coretable',
         condition: 'or',
         rules: [
           {
@@ -248,6 +252,7 @@ describe('QueryBuilderComponent', () => {
         const spy = jest.spyOn(harness.component.queryChange, 'emit');
 
         const query: QueryCondition = {
+          entity: 'coretable',
           condition: 'or',
           rules: [
             {
@@ -303,7 +308,7 @@ describe('QueryBuilderComponent', () => {
         harness.component.termSearchChanged('search value', rule, options);
 
         expect(harness.component.termSearchResults[rule.field ?? '']).toStrictEqual(
-          expectedResults,
+          expectedResults
         );
       });
     });
