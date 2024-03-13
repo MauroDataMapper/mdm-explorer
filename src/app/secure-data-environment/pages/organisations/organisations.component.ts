@@ -35,13 +35,14 @@ import { switchMap, EMPTY, of, forkJoin } from 'rxjs';
 })
 export class OrganisationsComponent implements OnInit {
   selectedOrganisation: Organisation | undefined = undefined;
+  selectedOrganisationId = this.selectedOrganisation?.id;
   displayColumnsForOrganisationMemberList: ListColumn[] = [];
   myOrganisations: UserOrganisationDTO[] = [];
   userHasOrganisations = true;
   userIsApproverForSelectedOrganisation = false;
 
-  requestsNeedApprovalListConfig: RequestsListMode = RequestsListMode.CanAuthorise;
-  // myRequestsListConfig: RequestsListMode = RequestsListMode.
+  requestsNeedingApprovalListConfig: RequestsListMode = RequestsListMode.CanAuthorise;
+  myRequestsListConfig: RequestsListMode = RequestsListMode.MyOrganisationRequests;
 
   constructor(
     private sdeOrganisationService: SdeOrganisationService,
