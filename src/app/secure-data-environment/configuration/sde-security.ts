@@ -17,25 +17,14 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { ISdeSecurity, SignedInUserDetails } from '@maurodatamapper/sde-resources';
+import { ISdeSecurity, SdeUserDetails } from '@maurodatamapper/sde-resources';
 import { UserDetailsService } from 'src/app/security/user-details.service';
 
 @Injectable({ providedIn: 'root' })
 export class SdeSecurity implements ISdeSecurity {
-  constructor(private userDetails: UserDetailsService) {}
+  constructor(private userDetails: UserDetailsService) { }
 
-  getSignedInUser() {
-    const securityDetails = this.userDetails.get();
-    if (securityDetails) {
-      return {
-        id: securityDetails.id,
-        firstName: securityDetails.firstName,
-        lastName: securityDetails.lastName,
-        email: securityDetails.email,
-        role: securityDetails.role,
-        token: securityDetails.sdeAuthToken,
-      } as SignedInUserDetails;
-    }
-    return null;
+  getSignedInUser(): SdeUserDetails | null {
+    return this.userDetails.getSdeResearchUser();
   }
 }

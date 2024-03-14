@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
 import { FolderDetail } from '@maurodatamapper/mdm-resources';
-import { ResearchUser } from '@maurodatamapper/sde-resources';
+import { ResearchUser, SdeUserDetails } from '@maurodatamapper/sde-resources';
 
 /**
  * Represents the common details of a signed in user.
@@ -44,7 +44,7 @@ export interface UserDetails {
   providedIn: 'root',
 })
 export class UserDetailsService {
-  constructor() {}
+  constructor() { }
 
   /**
    * Gets the current user in use, or null if there is no current user.
@@ -105,6 +105,20 @@ export class UserDetailsService {
     localStorage.removeItem('needsToResetPassword');
     localStorage.removeItem('dataSpecificationFolder');
     localStorage.removeItem('sdeAuthToken');
+  }
+
+  getSdeResearchUser(): SdeUserDetails | null {
+    if (!this.hasSdeResearchUser()) {
+      return null;
+    }
+
+    return {
+      id: localStorage.getItem('sdeUserId') ?? '',
+      email: localStorage.getItem('sdeEmail') ?? '',
+      firstName: localStorage.getItem('firstName') ?? '',
+      lastName: localStorage.getItem('lastName') ?? '',
+      role: localStorage.getItem('role') ?? '',
+    } as SdeUserDetails;
   }
 
   setSdeResearchUser(user: ResearchUser) {
