@@ -23,6 +23,7 @@ import {
   Profile,
   ProfileDefinition,
   ProfileSearchResult,
+  ProfileValidationErrorList,
   SearchQueryParameters,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
@@ -54,11 +55,19 @@ export type ProfileSearchCatalogueItemFn = (
   query: SearchQueryParameters
 ) => Observable<MdmIndexBody<ProfileSearchResult>>;
 
+export type ProfileValidateFn = (
+  catalogueItemDomainType: CatalogueItemDomainType,
+  catalogueItemId: Uuid,
+  profileNamespace: string,
+  profileName: string
+) => Observable<ProfileValidationErrorList>;
+
 export interface ProfileServiceStub {
   get: jest.MockedFunction<ProfileGetFn>;
   definition: jest.MockedFunction<ProfileDefinitionFn>;
   search: jest.MockedFunction<ProfileSearchFn>;
   searchCatalogueItem: jest.MockedFunction<ProfileSearchCatalogueItemFn>;
+  validate: jest.MockedFunction<ProfileValidateFn>;
 }
 
 export const createProfileServiceStub = (): ProfileServiceStub => {
@@ -67,5 +76,6 @@ export const createProfileServiceStub = (): ProfileServiceStub => {
     definition: jest.fn() as jest.MockedFunction<ProfileDefinitionFn>,
     search: jest.fn() as jest.MockedFunction<ProfileSearchFn>,
     searchCatalogueItem: jest.fn() as jest.MockedFunction<ProfileSearchCatalogueItemFn>,
+    validate: jest.fn() as jest.MockedFunction<ProfileValidateFn>,
   };
 };

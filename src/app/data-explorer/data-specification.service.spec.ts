@@ -1054,7 +1054,11 @@ describe('DataSpecificationService', () => {
   describe('createOrUpdateQuery', () => {
     const dataSpecificationId: Uuid = '1234';
     const queryTypes: DataSpecificationQueryType[] = ['cohort', 'data'];
-    const condition: QueryCondition = { condition: 'and', rules: [] };
+    const condition: QueryCondition = {
+      entity: 'coretable',
+      condition: 'and',
+      rules: [],
+    };
 
     const representation: RuleRepresentation = {
       id: '789',
@@ -1182,7 +1186,11 @@ describe('DataSpecificationService', () => {
       { field: 'field2', operator: '=', value: 'value_field2' },
       { field: 'field3', operator: '<=', value: 'value_field3' },
     ];
-    const condition: QueryCondition = { condition: 'and', rules: expressions };
+    const condition: QueryCondition = {
+      entity: 'coretable',
+      condition: 'and',
+      rules: expressions,
+    };
 
     it.each(queryTypes)('Should remove 1 data element correctly', (type) => {
       const queryPayload: DataSpecificationQueryPayload = {
@@ -1197,6 +1205,7 @@ describe('DataSpecificationService', () => {
         { field: 'field3', operator: '<=', value: 'value_field3' },
       ];
       const expectedCondition: QueryCondition = {
+        entity: 'coretable',
         condition: 'and',
         rules: expectedExpressions,
       };
@@ -1248,6 +1257,7 @@ describe('DataSpecificationService', () => {
         { field: 'field2', operator: '=', value: 'value_field2' },
       ];
       const expectedCondition: QueryCondition = {
+        entity: 'coretable',
         condition: 'and',
         rules: expectedExpressions,
       };

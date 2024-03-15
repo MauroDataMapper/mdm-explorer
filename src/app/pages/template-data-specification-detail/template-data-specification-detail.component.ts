@@ -38,10 +38,12 @@ export class TemplateDataSpecificationDetailComponent implements OnInit {
   dataSchemas: DataSchema[] = [];
   cohortQuery: QueryCondition = {
     condition: 'and',
+    entity: '',
     rules: [],
   };
   dataQuery: QueryCondition = {
     condition: 'and',
+    entity: '',
     rules: [],
   };
   state: 'idle' | 'loading' = 'idle';
@@ -50,7 +52,7 @@ export class TemplateDataSpecificationDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private dataSpecifications: DataSpecificationService,
     private toastr: ToastrService,
-    private dataSchemaService: DataSchemaService
+    private dataSchemaService: DataSchemaService,
   ) {}
 
   ngOnInit(): void {
@@ -81,11 +83,11 @@ export class TemplateDataSpecificationDetailComponent implements OnInit {
         }),
         catchError((error) => {
           this.toastr.error(
-            `There was a problem locating the template details. ${error}`
+            `There was a problem locating the template details. ${error}`,
           );
           this.state = 'idle';
           return EMPTY;
-        })
+        }),
       )
       .subscribe(([dataSchemas, cohortQuery, dataQuery]) => {
         this.state = 'idle';
@@ -113,7 +115,7 @@ export class TemplateDataSpecificationDetailComponent implements OnInit {
           return this.dataSpecifications.forkWithDialogs(this.dataSpecification, {
             targetFolder: dataSpecificationFolder,
           });
-        })
+        }),
       )
       .subscribe();
   }

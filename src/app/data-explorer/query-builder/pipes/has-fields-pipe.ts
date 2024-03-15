@@ -16,39 +16,14 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { Pipe, PipeTransform } from '@angular/core';
+import { FieldMap } from '../query-builder.interfaces';
 
-/*
-  Note: Css for setting the height of controls in the query builder
-        can be found in _querybuilder.scss.
-*/
-
-/* Set the query builder controls lengths. */
-@import "../../../styles/base/all";
-
-$content-color: $color-accent-light;
-.query-builder {
-  &-entity {
-    // Style is tied to .q-inline-block-display class override in global styles/_querybuilder.scss
-    width: 100%;
-    padding-right: 12px;
-  }
-
-  &-field {
-    width: 20%;
-  }
-
-  &-operator {
-    width: 10%;
-    min-width: 120px;
-  }
-
-  &-input,
-  &-number {
-    width: 25%;
-  }
-
-  &-autocomplete {
-    width: 30%;
-    vertical-align: top;
+@Pipe({
+  name: 'hasFields',
+})
+export class HasFieldsPipe implements PipeTransform {
+  transform(fields: FieldMap): boolean {
+    return Object.keys(fields).length > 0;
   }
 }

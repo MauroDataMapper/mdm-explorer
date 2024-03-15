@@ -20,18 +20,19 @@ import { Injectable } from '@angular/core';
 import {
   CatalogueItem,
   CatalogueItemDomainType,
+  DataModel,
   DataType,
   Profile,
+  ProfileValidationErrorList,
 } from '@maurodatamapper/mdm-resources';
-import { QueryBuilderConfig } from 'angular2-query-builder';
-import { catchError, forkJoin, map, Observable, of } from 'rxjs';
+import { QueryBuilderConfig, Option } from './query-builder/query-builder.interfaces';
+import { catchError, forkJoin, map, Observable, of, switchMap } from 'rxjs';
 import {
   DataElementSearchResult,
   DataSpecificationQueryPayload,
   QueryCondition,
   QueryExpression,
-} from '../data-explorer/data-explorer.types';
-import { Option } from 'angular2-query-builder';
+} from './data-explorer.types';
 import { ProfileService } from '../mauro/profile.service';
 
 export interface QueryConfiguration {
@@ -65,18 +66,19 @@ export const mapOptionsArrayToModelDataType = (
 @Injectable({
   providedIn: 'root',
 })
-export class QueryBuilderService {
+export class QueryBuilderWrapperService {
   constructor(private profileService: ProfileService) {}
 
   public setupConfig(
+    dataModel: DataModel,
     dataElements: DataElementSearchResult[],
     query?: DataSpecificationQueryPayload
   ): Observable<QueryConfiguration> {
-    const dataSpecifications$ = dataElements.map((dataElement) => {
-      const profile$ = this.getQueryBuilderDatatype(dataElement.dataType).pipe(
+    const dataElementTypeProfileObservables = dataElements.map((dataElement) => {
+      const profile$ = this.getQueryBuilderDatatypeProfile(dataElement.dataType).pipe(
         catchError((error) => {
           if (error.status === 404) {
-            return of({} as Profile);
+            return of(null);
           }
 
           throw error;
@@ -88,9 +90,79 @@ export class QueryBuilderService {
       return forkJoin([profile$, dataElement$]);
     });
 
-    return forkJoin(dataSpecifications$).pipe(
-      map((items) => {
-        return this.getQueryFields(items, dataElements, query);
+    const dataElementTypeProfile$ = forkJoin(dataElementTypeProfileObservables);
+
+    const coreTableProfile$ = this.getQueryBuilderCoreTableProfile(dataModel).pipe(
+      switchMap((coreTableProfile: Profile) => {
+        return this.validateQueryBuilderCoreTableProfile(
+          coreTableProfile,
+          dataModel
+        ).pipe(
+          switchMap((validationErrors: ProfileValidationErrorList) => {
+            return forkJoin([of(coreTableProfile), of(validationErrors)]);
+          })
+        );
+      }),
+      catchError((error) => {
+        if (error.status === 404) {
+          return of(null); // Return an empty observable
+        }
+        throw error;
+      })
+    );
+
+    return forkJoin([dataElementTypeProfile$, coreTableProfile$]).pipe(
+      map(([items, coreTableProfile]) => {
+        const dataTypeProfileLabel =
+          '"Mauro Data Explorer - Query Builder Data Type" (primitive type profile)';
+        const dataModelProfileLabel =
+          '"Mauro Data Explorer - Query Builder Core Table" (data model profile)';
+        let errorMessage = '';
+
+        items.forEach(([profile, dataElement]) => {
+          profile?.sections?.forEach((section) => {
+            section.fields.forEach((field) => {
+              if (field.currentValue === '') {
+                if (errorMessage === '') {
+                  errorMessage += `\r\n${dataTypeProfileLabel} is missing definitions for the following types:\r\n`;
+                }
+                errorMessage += `- ${dataElement.dataType?.label}\r\n`;
+              }
+            });
+          });
+        });
+
+        // Check core table
+        if (coreTableProfile) {
+          const coreTableValidationErrors = coreTableProfile[1];
+          if (coreTableValidationErrors.errors?.length ?? 0 > 0) {
+            errorMessage += `\r\n${dataModelProfileLabel} for DataModel validation errors:`;
+          }
+          coreTableValidationErrors?.errors?.forEach((error) => {
+            errorMessage += `\r\n - ${error.message}`;
+          });
+        } else {
+          errorMessage += `\r\n${dataModelProfileLabel} not found for DataModel`;
+        }
+
+        if (
+          errorMessage === '' &&
+          coreTableProfile &&
+          (coreTableProfile[0]?.sections?.length ?? 0 > 0)
+        ) {
+          const coreTable = coreTableProfile[0].sections[0].fields[0].currentValue;
+          if (coreTable) {
+            return this.getQueryFields(items, dataElements, coreTable, query);
+          }
+        }
+
+        if (errorMessage !== '') {
+          throw new Error(errorMessage);
+        } else {
+          throw new Error(
+            `\r\nUnknown error occurred when retrieving ${dataTypeProfileLabel} and ${dataModelProfileLabel}`
+          );
+        }
       })
     );
   }
@@ -105,7 +177,7 @@ export class QueryBuilderService {
       .join('.');
   }
 
-  private getQueryBuilderDatatype(dataType?: DataType): Observable<Profile> {
+  private getQueryBuilderDatatypeProfile(dataType?: DataType): Observable<Profile> {
     if (dataType?.domainType === CatalogueItemDomainType.PrimitiveType) {
       const requestOptions = {
         handleGetErrors: false,
@@ -120,6 +192,36 @@ export class QueryBuilderService {
       );
     }
     return of({} as Profile);
+  }
+
+  private getQueryBuilderCoreTableProfile(dataModel: DataModel): Observable<Profile> {
+    const requestOptions = {
+      handleGetErrors: false,
+    };
+
+    if (dataModel.id) {
+      return this.profileService.get(
+        CatalogueItemDomainType.DataModel,
+        dataModel.id,
+        'uk.ac.ox.softeng.maurodatamapper.plugins.explorer.querybuilder',
+        'QueryBuilderCoreTableProfileProviderService',
+        requestOptions
+      );
+    }
+    return of({} as Profile);
+  }
+
+  private validateQueryBuilderCoreTableProfile(
+    profile: Profile,
+    dataModel: DataModel
+  ): Observable<ProfileValidationErrorList> {
+    return this.profileService.validate(
+      CatalogueItemDomainType.DataModel,
+      dataModel.id ?? '',
+      'uk.ac.ox.softeng.maurodatamapper.plugins.explorer.querybuilder',
+      'QueryBuilderCoreTableProfileProviderService',
+      profile
+    );
   }
 
   private getDataTypeString(data: Profile, dataElement: DataElementSearchResult) {
@@ -178,6 +280,7 @@ export class QueryBuilderService {
       ? query.condition
       : {
           condition: 'and',
+          entity: '',
           rules: [],
         };
   }
@@ -217,8 +320,9 @@ export class QueryBuilderService {
   }
 
   private getQueryFields(
-    items: [Profile, DataElementSearchResult][],
+    items: [Profile | null, DataElementSearchResult][],
     dataElements: DataElementSearchResult[],
+    coreTable: string,
     query?: DataSpecificationQueryPayload
   ): QueryConfiguration {
     const queryCondition: QueryCondition = this.getQueryCondition(query);
@@ -228,7 +332,12 @@ export class QueryBuilderService {
     };
 
     items.forEach(([data, dataElement]) => {
-      const dataTypeString = this.getDataTypeString(data, dataElement);
+      let dataTypeString: string | undefined;
+
+      if (data) {
+        dataTypeString = this.getDataTypeString(data, dataElement);
+      }
+
       if (dataTypeString) {
         this.setupQueryFieldFromMapping(dataTypeString, dataElement, config);
       } else {
@@ -254,6 +363,8 @@ export class QueryBuilderService {
         },
       };
     }, {});
+
+    config.coreEntityName = coreTable;
 
     return {
       dataElementSearchResult: dataElements,

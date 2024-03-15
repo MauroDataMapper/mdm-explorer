@@ -93,4 +93,11 @@ $back-link-color: $color-primary;
       padding-bottom: 28px;
     }
   }
+
+  &__error {
+    white-space: pre-line;
+    background-color: #bd362f;
+    color: #ffffff;
+    padding: 0.5em 0.75em;
+  }
 }

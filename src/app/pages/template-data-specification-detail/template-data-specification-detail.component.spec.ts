@@ -176,14 +176,14 @@ describe('TemplateDataSpecificationDetailComponent', () => {
         ruleId: '1',
         representationId: '2',
         type: 'cohort',
-        condition: { rules: [], condition: 'and' },
+        condition: { entity: 'coretable', rules: [], condition: 'and' },
       };
 
       const dataQueryPayload: Required<DataSpecificationQueryPayload> = {
         ruleId: '1',
         representationId: '3',
         type: 'data',
-        condition: { rules: [], condition: 'and' },
+        condition: { entity: 'coretable', rules: [], condition: 'and' },
       };
 
       dataSpecificationStub.get.mockImplementationOnce(() => of(template));

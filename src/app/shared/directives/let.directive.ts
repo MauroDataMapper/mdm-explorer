@@ -16,24 +16,28 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-@import "./base/all";
+import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
 
-.query-builder-wrapper {
-  .mat-form-field {
-    margin: 0 5px; /* Add a space before the next control*/
-  }
-
-  .mat-form-field-wrapper {
-    padding-bottom: 0;
-  }
-
-  /* Set the space between radio buttons */
-  .mat-radio-button {
-    padding: 10px;
-  }
+interface LetContext<T> {
+  ngLet: T;
 }
 
-.q-inline-block-display {
-  /* Override width of rule entity selector which uses this class in an encapsulating div */
-  width: 25%;
+@Directive({
+  // eslint-disable-next-line @angular-eslint/directive-selector
+  selector: '[ngLet]',
+})
+export class LetDirective<T> {
+  private _context: LetContext<T> = { ngLet: null as T };
+
+  constructor(
+    _viewContainer: ViewContainerRef,
+    _templateRef: TemplateRef<LetContext<T>>,
+  ) {
+    _viewContainer.createEmbeddedView(_templateRef, this._context);
+  }
+
+  @Input()
+  set ngLet(value: T) {
+    this._context.ngLet = value;
+  }
 }

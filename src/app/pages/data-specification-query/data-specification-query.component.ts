@@ -18,8 +18,8 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { DataElement, Uuid } from '@maurodatamapper/mdm-resources';
-import { QueryBuilderConfig } from 'angular2-query-builder';
+import { DataElement, DataModel, Uuid } from '@maurodatamapper/mdm-resources';
+import { QueryBuilderConfig } from '../../data-explorer/query-builder/query-builder.interfaces';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY, finalize, forkJoin, switchMap } from 'rxjs';
 import { BroadcastService } from '../../core/broadcast.service';
@@ -33,11 +33,12 @@ import {
   QueryCondition,
 } from '../../data-explorer/data-explorer.types';
 import { DataSpecificationService } from '../../data-explorer/data-specification.service';
-import { QueryBuilderService } from '../../data-explorer/query-builder.service';
+import { QueryBuilderWrapperService } from '../../data-explorer/query-builder-wrapper.service';
 import { IModelPage } from '../../shared/types/shared.types';
 
 const defaultQueryCondition: QueryCondition = {
   condition: 'and',
+  entity: '',
   rules: [],
 };
 
@@ -61,12 +62,13 @@ export class DataSpecificationQueryComponent implements OnInit, IModelPage {
   backRouterLink = '';
   backLabel = '';
   backRouterDataSpecificationId = '';
+  errorMessage = '';
   constructor(
     private route: ActivatedRoute,
     private dataSpecifications: DataSpecificationService,
     private toastr: ToastrService,
     private broadcast: BroadcastService,
-    private queryBuilderService: QueryBuilderService,
+    private queryBuilderWrapperService: QueryBuilderWrapperService,
     private stateRouter: StateRouterService
   ) {}
 
@@ -111,14 +113,19 @@ export class DataSpecificationQueryComponent implements OnInit, IModelPage {
             return EMPTY;
           }
 
-          return this.queryBuilderService.setupConfig(
+          return this.queryBuilderWrapperService.setupConfig(
+            this.dataSpecification as DataModel,
             this.mapDataElements(dataElements),
             query
           );
         }),
-        catchError(() => {
+        catchError((error) => {
+          // This will display the error message on the page
+          this.errorMessage = `\r\n${error.message}`;
+
+          // This will display a toast error
           return this.errorResponse(
-            'There was a problem configuring your data specification queries.'
+            'There was a problem configuring your data specification queries'
           );
         })
       )

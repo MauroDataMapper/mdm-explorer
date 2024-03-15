@@ -29,9 +29,11 @@ import {
   ProfileDefinition,
   ProfileDefinitionResponse,
   RequestSettings,
+  ProfileValidationErrorList,
 } from '@maurodatamapper/mdm-resources';
-import { map, Observable } from 'rxjs';
+import { catchError, map, Observable, of } from 'rxjs';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 /**
  * Service to get profile information for catalogue items.
@@ -56,10 +58,18 @@ export class ProfileService {
     catalogueItemId: Uuid,
     profileNamespace: string,
     profileName: string,
-    options?: RequestSettings,
+    options?: RequestSettings
   ): Observable<Profile> {
     return this.endpoints.profile
-      .profile(catalogueItemDomainType, catalogueItemId, profileNamespace, profileName, undefined, undefined, options)
+      .profile(
+        catalogueItemDomainType,
+        catalogueItemId,
+        profileNamespace,
+        profileName,
+        undefined,
+        undefined,
+        options
+      )
       .pipe(map((response: Profile) => response.body));
   }
 
@@ -119,5 +129,44 @@ export class ProfileService {
     return this.endpoints.profile
       .searchCatalogueItem(domainType, id, profileNamespace, profileName, query)
       .pipe(map((response: ProfileSearchResponse) => response.body));
+  }
+
+  /**
+   * Validate a named profile
+   *
+   * @param catalogueItemdomainType For example 'DataElement'
+   * @param catalogueItemId For example the data element ID
+   * @param profileNamespace The namespace of the profile to validate.
+   * @param profileName The name of the profile to validate.
+   * @param profileData The profile to validate.
+   * @returns An observable which returns a {@link <ProfileValidationErrorList>}.
+   */
+  validate(
+    catalogueItemDomainType: CatalogueItemDomainType,
+    catalogueItemId: Uuid,
+    profileNamespace: string,
+    profileName: string,
+    profileData: Profile
+  ): Observable<ProfileValidationErrorList> {
+    return this.endpoints.profile
+      .validateProfile(
+        profileNamespace,
+        profileName,
+        catalogueItemDomainType,
+        catalogueItemId,
+        profileData
+      )
+      .pipe(
+        map<unknown, ProfileValidationErrorList>(() => {
+          return {
+            total: 0,
+            fieldTotal: 0,
+            errors: [],
+          };
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(error.error as ProfileValidationErrorList);
+        })
+      );
   }
 }

@@ -1,0 +1,274 @@
+/*
+Copyright 2022-2023 University of Oxford
+and Health and Social Care Information Centre, also known as NHS Digital
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+SPDX-License-Identifier: Apache-2.0
+*/
+/* Original source: https://github.com/zebzhao/Angular-QueryBuilder
+MIT License
+
+Copyright (c) 2018 Zeb Zhao
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+:host {
+  display: block;
+  width: 100%;
+
+  .q-icon {
+    font-style: normal;
+    font-size: 12px;
+  }
+
+  .q-remove-icon {
+    &::before {
+      content: "❌";
+    }
+  }
+
+  .q-arrow-icon-button {
+    float: left;
+    margin: 4px 6px 4px 0;
+    transform: rotate(90deg);
+    transition: linear 0.25s transform;
+    cursor: pointer;
+
+    &.q-collapsed {
+      transform: rotate(0);
+    }
+  }
+
+  .q-arrow-icon {
+    &::before {
+      content: "▶";
+    }
+  }
+
+  .q-add-icon {
+    color: #555;
+    &::before {
+      content: "➕";
+    }
+  }
+
+  .q-remove-button {
+    color: #b3415d;
+    width: 31px;
+  }
+
+  .q-switch-group,
+  .q-button-group {
+    font-family: "Lucida Grande", Tahoma, Verdana, sans-serif;
+    overflow: hidden;
+  }
+
+  .q-right-align {
+    float: right;
+  }
+
+  .q-center-align {
+    margin: 0 auto;
+    display: table;
+  }
+
+  .q-button {
+    margin-left: 8px;
+    padding: 0 8px;
+    background-color: white;
+
+    &:disabled {
+      display: none;
+    }
+  }
+
+  .q-control-size {
+    display: inline-block;
+    vertical-align: top;
+    padding-right: 10px;
+  }
+
+  .q-input-control,
+  .q-operator-control,
+  .q-field-control,
+  .q-entity-control {
+    display: inline-block;
+    padding: 5px 8px;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    width: auto;
+
+    &:disabled {
+      border-color: transparent;
+    }
+  }
+
+  .q-operator-control,
+  .q-field-control,
+  .q-entity-control,
+  .q-input-control:not([type="checkbox"]) {
+    min-height: 32px;
+    -webkit-appearance: none;
+  }
+
+  .q-switch-label,
+  .q-button {
+    float: left;
+    margin-bottom: 0;
+    font-size: 14px;
+    line-height: 30px;
+    font-weight: normal;
+    text-align: center;
+    text-shadow: none;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+
+    &:hover {
+      cursor: pointer;
+      background-color: #f0f0f0;
+    }
+  }
+
+  .q-switch-label {
+    background-color: #e4e4e4;
+    padding: 0 8px;
+  }
+
+  .q-switch-radio {
+    position: absolute;
+    clip: rect(0, 0, 0, 0);
+    height: 1px;
+    width: 1px;
+    border: 0;
+    overflow: hidden;
+
+    &:checked + .q-switch-label {
+      border: 1px solid rgb(97, 158, 215);
+      background: white;
+      color: rgb(49, 118, 179);
+    }
+
+    &:disabled + .q-switch-label {
+      display: none;
+    }
+
+    &:checked:disabled + .q-switch-label {
+      display: initial;
+      color: initial;
+      cursor: default;
+      border-color: transparent;
+    }
+  }
+
+  .q-invalid-ruleset {
+    border: 1px solid rgba(179, 65, 93, 0.5) !important;
+    background: rgba(179, 65, 93, 0.1) !important;
+  }
+
+  .q-empty-warning {
+    color: rgb(141, 37, 46);
+    text-align: center;
+  }
+
+  .q-ruleset {
+    border: 1px solid #ccc;
+  }
+
+  .q-rule {
+    border: 1px solid #ccc;
+    background: white;
+  }
+
+  .q-transition {
+    -webkit-transition: all 0.1s ease-in-out;
+    -moz-transition: all 0.1s ease-in-out;
+    -ms-transition: all 0.1s ease-in-out;
+    -o-transition: all 0.1s ease-in-out;
+    transition: all 0.1s ease-in-out;
+  }
+
+  .q-tree-container {
+    width: 100%;
+    overflow: hidden;
+    transition: ease-in 0.25s max-height;
+
+    &.q-collapsed {
+      max-height: 0 !important;
+    }
+  }
+
+  .q-tree {
+    list-style: none;
+    margin: 4px 0 2px;
+  }
+
+  .q-row {
+    padding: 6px 8px;
+    margin-top: 6px;
+  }
+
+  .q-connector {
+    position: relative;
+
+    &::before {
+      top: -5px;
+      border-width: 0 0 2px 2px;
+    }
+
+    &::after {
+      border-width: 0 0 0 2px;
+      top: 50%;
+    }
+
+    &::before,
+    &::after {
+      content: "";
+      left: -12px;
+      border-color: #ccc;
+      border-style: solid;
+      width: 9px;
+      height: calc(50% + 6px);
+      position: absolute;
+    }
+
+    &:last-child::after {
+      content: none;
+    }
+  }
+
+  .q-inline-block-display {
+    display: inline-block;
+    vertical-align: top;
+  }
+}
