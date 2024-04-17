@@ -86,7 +86,11 @@ SPDX-License-Identifier: Apache-2.0
   </ng-container>
 
   <ng-template #defaultSwitchGroup>
-    <mat-radio-group *ngIf="data" [(ngModel)]="data.condition">
+    <mat-radio-group
+      *ngIf="data"
+      [(ngModel)]="data.condition"
+      (ngModelChange)="changeConnective()"
+    >
       <mat-radio-button color="primary" value="and">AND</mat-radio-button>
       <mat-radio-button *ngIf="showOrRadioButton()" color="primary" value="or"
         >OR</mat-radio-button

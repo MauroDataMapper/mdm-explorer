@@ -559,12 +559,7 @@ export class QueryBuilderComponent
     }
 
     if (this.ruleSetLevel === 0) {
-      const filteredEntities = this.getFilteredEntityList(
-        this.data,
-        this.isDataQuery,
-        this.entities,
-        this.config.coreEntityName
-      );
+      const filteredEntities = this.getFilteredEntityList(this.data, this.entities);
 
       if (filteredEntities?.length ?? 0 > 0) {
         let entity: Entity | undefined;
@@ -748,6 +743,11 @@ export class QueryBuilderComponent
       this.handleTouched();
       this.handleDataChange();
     }
+  }
+
+  changeConnective(): void {
+    this.handleTouched();
+    this.handleDataChange();
   }
 
   getDefaultValue(defaultValue: any): any {
@@ -945,7 +945,6 @@ export class QueryBuilderComponent
   }
 
   onRemoveRulesetEvent() {
-    console.log(`onRemoveRulesetEvent: ${this.ruleSetLevel}`);
     if (this.ruleSetLevel === 0) {
       this.isRuleSetAvailable = this.ruleSetAvailable();
     } else {
@@ -955,24 +954,9 @@ export class QueryBuilderComponent
 
   getFilteredEntityList(
     data: RuleSet,
-    isDataQuery: boolean,
-    entities?: (Entity | undefined)[] | null,
-    coreEntityName?: string
+    entities?: (Entity | undefined)[] | null
   ): (Entity | undefined)[] | null | undefined {
-    console.log('getFilteredEntityList');
-    console.log(data);
     const usedEntityNames = this.getDistinctEntities(data);
-    // If this is true then we want to hide the core entity from the entity list
-    if (isDataQuery) {
-      if (coreEntityName && !usedEntityNames.includes(coreEntityName)) {
-        usedEntityNames.push(coreEntityName);
-      }
-    }
-
-    console.log(`usedEntityNames.length: ${usedEntityNames.length}`);
-    usedEntityNames.forEach((entityName) => {
-      console.log(`Used Entity: ${entityName}`);
-    });
 
     // Get the entity here
     const filteredEntities = entities?.filter(
@@ -1106,12 +1090,7 @@ export class QueryBuilderComponent
   private ruleSetAvailable(): boolean {
     console.log('ruleSetAvailable');
     console.log(`ruleSetAvailable: ${this.parentValue}`);
-    const filteredEntities = this.getFilteredEntityList(
-      this.data,
-      this.isDataQuery,
-      this.entities,
-      this.config.coreEntityName
-    );
+    const filteredEntities = this.getFilteredEntityList(this.data, this.entities);
     return (filteredEntities?.length ?? 0) > 0;
   }
 

@@ -62,12 +62,21 @@ export type ProfileValidateFn = (
   profileName: string
 ) => Observable<ProfileValidationErrorList>;
 
+export type ProfileSaveFn = (
+  domainType: MultiFacetAwareDomainType | CatalogueItemDomainType,
+  catalogueItemId: Uuid,
+  profileNamespace: string,
+  profileName: string,
+  data: Profile
+) => Observable<ProfileValidationErrorList>;
+
 export interface ProfileServiceStub {
   get: jest.MockedFunction<ProfileGetFn>;
   definition: jest.MockedFunction<ProfileDefinitionFn>;
   search: jest.MockedFunction<ProfileSearchFn>;
   searchCatalogueItem: jest.MockedFunction<ProfileSearchCatalogueItemFn>;
   validate: jest.MockedFunction<ProfileValidateFn>;
+  save: jest.MockedFunction<ProfileSaveFn>;
 }
 
 export const createProfileServiceStub = (): ProfileServiceStub => {
@@ -77,5 +86,6 @@ export const createProfileServiceStub = (): ProfileServiceStub => {
     search: jest.fn() as jest.MockedFunction<ProfileSearchFn>,
     searchCatalogueItem: jest.fn() as jest.MockedFunction<ProfileSearchCatalogueItemFn>,
     validate: jest.fn() as jest.MockedFunction<ProfileValidateFn>,
+    save: jest.fn() as jest.MockedFunction<ProfileSaveFn>,
   };
 };

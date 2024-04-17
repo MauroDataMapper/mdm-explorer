@@ -30,6 +30,8 @@ import {
   ProfileDefinitionResponse,
   RequestSettings,
   ProfileValidationErrorList,
+  Version,
+  ProfileResponse,
 } from '@maurodatamapper/mdm-resources';
 import { catchError, map, Observable, of } from 'rxjs';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
@@ -168,5 +170,39 @@ export class ProfileService {
           return of(error.error as ProfileValidationErrorList);
         })
       );
+  }
+
+  /**
+   * Save a named profile
+   *
+   * @param domainType
+   * @param catalogueItemId
+   * @param profileNamespace
+   * @param profileName
+   * @param data
+   * @param profileVersion
+   * @param options
+   * @returns
+   */
+  save(
+    domainType: MultiFacetAwareDomainType | CatalogueItemDomainType,
+    catalogueItemId: Uuid,
+    profileNamespace: string,
+    profileName: string,
+    data: Profile,
+    profileVersion?: Version,
+    options?: RequestSettings
+  ): Observable<Profile> {
+    return this.endpoints.profile
+      .saveProfile(
+        domainType,
+        catalogueItemId,
+        profileNamespace,
+        profileName,
+        data,
+        profileVersion,
+        options
+      )
+      .pipe(map((response: ProfileResponse) => response.body));
   }
 }

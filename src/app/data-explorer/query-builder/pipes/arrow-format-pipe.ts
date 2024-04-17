@@ -23,7 +23,6 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class ArrowFormatPipe implements PipeTransform {
   transform(entityName?: string): string {
-    console.log(`arrowFormat: ${entityName}`);
     return entityName?.replace('.', ' > ') ?? '';
   }
 }

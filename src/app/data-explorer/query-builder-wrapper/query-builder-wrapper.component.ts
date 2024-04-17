@@ -73,6 +73,7 @@ export class QueryBuilderWrapperComponent implements OnInit {
   };
 
   allowRuleset = true;
+  isDataQuery = false;
 
   /**
    * Track zero or more term searches linked to the automcomplete controls.
@@ -86,7 +87,7 @@ export class QueryBuilderWrapperComponent implements OnInit {
 
   constructor(
     private terminology: TerminologyService,
-    private queryBuilderWrapperService: QueryBuilderWrapperService,
+    private queryBuilderWrapperService: QueryBuilderWrapperService
   ) {}
 
   get hasFields(): boolean {
@@ -109,6 +110,7 @@ export class QueryBuilderWrapperComponent implements OnInit {
     }
 
     this.setupDescriptions();
+    this.isDataQuery = this.queryType === 'data';
   }
 
   modelChanged(value: RuleSet) {
@@ -139,19 +141,11 @@ export class QueryBuilderWrapperComponent implements OnInit {
               };
             }),
           };
-        }),
+        })
       )
       .subscribe((results: AutocompleteSelectOptionSet) => {
         this.termSearchResults[rule.field ?? ''] = results;
       });
-  }
-
-  isCohortQuery(): boolean {
-    return this.queryType === 'cohort';
-  }
-
-  isDataQuery(): boolean {
-    return this.queryType === 'data';
   }
 
   private setupDescriptions() {

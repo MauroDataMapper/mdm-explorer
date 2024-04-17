@@ -99,6 +99,14 @@ export abstract class QueryBuilderTestingHelper {
     modelResourceId: 'cs-123',
   };
 
+  public static dataType_dataModel: DataType = {
+    id: 'dt-data-model',
+    domainType: CatalogueItemDomainType.DataModel,
+    label: 'datamodel-dt',
+    modelResourceDomainType: CatalogueItemDomainType.DataModel,
+    modelResourceId: 'dm-123',
+  };
+
   public static expectedPrimitiveTypeProfilesStubGet = (
     actualCatalogueItemDomainType: CatalogueItemDomainType,
     actualCatalogueItemId: string,
@@ -234,6 +242,16 @@ export abstract class QueryBuilderTestingHelper {
             fieldTotal: 0,
             errors: [],
           },
+        }
+      );
+    });
+
+    profilesStub.save.mockImplementation((...args) => {
+      const [data] = args.slice(-1); // Get the last argument (data)
+      return cold(
+        dataType.domainType !== CatalogueItemDomainType.DataModel ? 'a|' : '--a|',
+        {
+          a: data,
         }
       );
     });

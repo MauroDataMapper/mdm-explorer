@@ -34,6 +34,7 @@ import {
   QueryExpression,
 } from './data-explorer.types';
 import { ProfileService } from '../mauro/profile.service';
+import { CoreTableProfileService } from './core-table-profile.service';
 
 export interface QueryConfiguration {
   dataElementSearchResult: DataElementSearchResult[];
@@ -67,102 +68,52 @@ export const mapOptionsArrayToModelDataType = (
   providedIn: 'root',
 })
 export class QueryBuilderWrapperService {
-  constructor(private profileService: ProfileService) {}
+  private readonly dataTypeProfileLabel =
+    '"Mauro Data Explorer - Query Builder Data Type" (primitive type profile)';
+  private readonly dataModelProfileLabel =
+    '"Mauro Data Explorer - Query Builder Core Table" (data model profile)';
+
+  constructor(
+    private profileService: ProfileService,
+    private coreTableProfileService: CoreTableProfileService
+  ) {}
 
   public setupConfig(
     dataModel: DataModel,
     dataElements: DataElementSearchResult[],
     query?: DataSpecificationQueryPayload
   ): Observable<QueryConfiguration> {
-    const dataElementTypeProfileObservables = dataElements.map((dataElement) => {
-      const profile$ = this.getQueryBuilderDatatypeProfile(dataElement.dataType).pipe(
-        catchError((error) => {
-          if (error.status === 404) {
-            return of(null);
-          }
-
-          throw error;
-        })
-      );
-
-      const dataElement$ = of(dataElement);
-
-      return forkJoin([profile$, dataElement$]);
-    });
-
-    const dataElementTypeProfile$ = forkJoin(dataElementTypeProfileObservables);
-
-    const coreTableProfile$ = this.getQueryBuilderCoreTableProfile(dataModel).pipe(
-      switchMap((coreTableProfile: Profile) => {
-        return this.validateQueryBuilderCoreTableProfile(
-          coreTableProfile,
-          dataModel
-        ).pipe(
-          switchMap((validationErrors: ProfileValidationErrorList) => {
-            return forkJoin([of(coreTableProfile), of(validationErrors)]);
-          })
-        );
-      }),
-      catchError((error) => {
-        if (error.status === 404) {
-          return of(null); // Return an empty observable
-        }
-        throw error;
-      })
-    );
-
-    return forkJoin([dataElementTypeProfile$, coreTableProfile$]).pipe(
+    return forkJoin([
+      this.getDataElementTypeProfile(dataElements),
+      this.getCoreTableProfile(dataModel),
+    ]).pipe(
       map(([items, coreTableProfile]) => {
-        const dataTypeProfileLabel =
-          '"Mauro Data Explorer - Query Builder Data Type" (primitive type profile)';
-        const dataModelProfileLabel =
-          '"Mauro Data Explorer - Query Builder Core Table" (data model profile)';
         let errorMessage = '';
 
-        items.forEach(([profile, dataElement]) => {
-          profile?.sections?.forEach((section) => {
-            section.fields.forEach((field) => {
-              if (field.currentValue === '') {
-                if (errorMessage === '') {
-                  errorMessage += `\r\n${dataTypeProfileLabel} is missing definitions for the following types:\r\n`;
-                }
-                errorMessage += `- ${dataElement.dataType?.label}\r\n`;
-              }
-            });
-          });
-        });
+        errorMessage = this.appendErrorMessages(
+          errorMessage,
+          this.getDataTypeProfileErrors(items)
+        );
 
-        // Check core table
-        if (coreTableProfile) {
-          const coreTableValidationErrors = coreTableProfile[1];
-          if (coreTableValidationErrors.errors?.length ?? 0 > 0) {
-            errorMessage += `\r\n${dataModelProfileLabel} for DataModel validation errors:`;
-          }
-          coreTableValidationErrors?.errors?.forEach((error) => {
-            errorMessage += `\r\n - ${error.message}`;
-          });
-        } else {
-          errorMessage += `\r\n${dataModelProfileLabel} not found for DataModel`;
+        errorMessage = this.appendErrorMessages(
+          errorMessage,
+          this.getCoreTableProfileErrors(coreTableProfile)
+        );
+
+        if (errorMessage !== '') {
+          throw new Error(errorMessage);
         }
 
-        if (
-          errorMessage === '' &&
-          coreTableProfile &&
-          (coreTableProfile[0]?.sections?.length ?? 0 > 0)
-        ) {
+        if (coreTableProfile && (coreTableProfile[0]?.sections?.length ?? 0 > 0)) {
           const coreTable = coreTableProfile[0].sections[0].fields[0].currentValue;
           if (coreTable) {
             return this.getQueryFields(items, dataElements, coreTable, query);
           }
         }
 
-        if (errorMessage !== '') {
-          throw new Error(errorMessage);
-        } else {
-          throw new Error(
-            `\r\nUnknown error occurred when retrieving ${dataTypeProfileLabel} and ${dataModelProfileLabel}`
-          );
-        }
+        throw new Error(
+          `\r\nUnknown error occurred when retrieving ${this.dataTypeProfileLabel} and ${this.dataModelProfileLabel}`
+        );
       })
     );
   }
@@ -192,36 +143,6 @@ export class QueryBuilderWrapperService {
       );
     }
     return of({} as Profile);
-  }
-
-  private getQueryBuilderCoreTableProfile(dataModel: DataModel): Observable<Profile> {
-    const requestOptions = {
-      handleGetErrors: false,
-    };
-
-    if (dataModel.id) {
-      return this.profileService.get(
-        CatalogueItemDomainType.DataModel,
-        dataModel.id,
-        'uk.ac.ox.softeng.maurodatamapper.plugins.explorer.querybuilder',
-        'QueryBuilderCoreTableProfileProviderService',
-        requestOptions
-      );
-    }
-    return of({} as Profile);
-  }
-
-  private validateQueryBuilderCoreTableProfile(
-    profile: Profile,
-    dataModel: DataModel
-  ): Observable<ProfileValidationErrorList> {
-    return this.profileService.validate(
-      CatalogueItemDomainType.DataModel,
-      dataModel.id ?? '',
-      'uk.ac.ox.softeng.maurodatamapper.plugins.explorer.querybuilder',
-      'QueryBuilderCoreTableProfileProviderService',
-      profile
-    );
   }
 
   private getDataTypeString(data: Profile, dataElement: DataElementSearchResult) {
@@ -371,5 +292,101 @@ export class QueryBuilderWrapperService {
       dataSpecificationQueryPayload: query as Required<DataSpecificationQueryPayload>,
       config,
     };
+  }
+
+  private getDataElementTypeProfile(dataElements: DataElementSearchResult[]) {
+    const dataElementTypeProfileObservables = dataElements.map((dataElement) => {
+      const profile$ = this.getQueryBuilderDatatypeProfile(dataElement.dataType).pipe(
+        catchError((error) => {
+          if (error.status === 404) {
+            return of(null);
+          }
+
+          throw error;
+        })
+      );
+
+      const dataElement$ = of(dataElement);
+
+      return forkJoin([profile$, dataElement$]);
+    });
+
+    return forkJoin(dataElementTypeProfileObservables);
+  }
+
+  private getCoreTableProfile(
+    dataModel: DataModel
+  ): Observable<[Profile, ProfileValidationErrorList] | undefined> {
+    return this.coreTableProfileService.getQueryBuilderCoreTableProfile(dataModel).pipe(
+      switchMap((coreTableProfile: Profile | undefined) => {
+        if (!coreTableProfile) {
+          return of(undefined);
+        }
+        return this.coreTableProfileService
+          .validateQueryBuilderCoreTableProfile(coreTableProfile, dataModel)
+          .pipe(
+            switchMap((validationErrors: ProfileValidationErrorList) => {
+              return forkJoin([of(coreTableProfile), of(validationErrors)]);
+            })
+          );
+      }),
+      catchError((error) => {
+        if (error.status === 404) {
+          return of(undefined); // Return an empty observable
+        }
+        throw error;
+      })
+    );
+  }
+
+  private getDataTypeProfileErrors(items: [Profile | null, DataElementSearchResult][]) {
+    let errorMessage = '';
+
+    items.forEach(([profile, dataElement]) => {
+      profile?.sections?.forEach((section) => {
+        section.fields.forEach((field) => {
+          if (field.currentValue === '') {
+            if (errorMessage === '') {
+              errorMessage += `\r\n${this.dataTypeProfileLabel} is missing definitions for the following types:\r\n`;
+            }
+            if (!errorMessage.includes(dataElement.dataType?.label ?? '')) {
+              errorMessage += `- ${dataElement.dataType?.label}\r\n`;
+            }
+          }
+        });
+      });
+    });
+
+    return errorMessage;
+  }
+
+  private getCoreTableProfileErrors(
+    coreTableProfile: [Profile, ProfileValidationErrorList] | undefined
+  ) {
+    // Check core table
+    let errorMessage = '';
+    if (coreTableProfile) {
+      const coreTableValidationErrors = coreTableProfile[1];
+      if (coreTableValidationErrors.errors?.length ?? 0 > 0) {
+        errorMessage += `\r\n${this.dataModelProfileLabel} for DataModel validation errors:`;
+      }
+      coreTableValidationErrors?.errors?.forEach((error) => {
+        if (!errorMessage.includes(error.message)) {
+          errorMessage += `\r\n - ${error.message}`;
+        }
+      });
+    } else {
+      errorMessage += `\r\n${this.dataModelProfileLabel} not found for DataModel`;
+    }
+    return errorMessage;
+  }
+
+  private appendErrorMessages(errorMessage: string, newErrorMessages: string) {
+    if (errorMessage === '') {
+      errorMessage += newErrorMessages;
+    } else {
+      errorMessage += `\r\n${newErrorMessages}`;
+    }
+    return errorMessage;
   }
 }
