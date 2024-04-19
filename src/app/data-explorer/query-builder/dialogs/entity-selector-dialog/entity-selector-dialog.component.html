@@ -1,4 +1,4 @@
-/*
+<!--
 Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -15,40 +15,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
-*/
-
-/*
-  Note: Css for setting the height of controls in the query builder
-        can be found in _querybuilder.scss.
-*/
-
-/* Set the query builder controls lengths. */
-@import "../../../styles/base/all";
-
-$content-color: $color-accent-light;
-.query-builder {
-  &-entity {
-    // Style is tied to .q-inline-block-display class override in global styles/_querybuilder.scss
-    width: 100%;
-    padding-right: 12px;
-  }
-
-  &-field {
-    width: 20%;
-  }
-
-  &-operator {
-    width: 10%;
-    min-width: 120px;
-  }
-
-  &-input,
-  &-number {
-    width: 25%;
-  }
-
-  &-autocomplete {
-    width: 30%;
-    vertical-align: top;
-  }
-}
+-->
+<h1 mat-dialog-title>{{ heading }}</h1>
+<mat-dialog-content>
+  <mat-form-field>
+    <mat-label>Select Data Class</mat-label>
+    <mat-select [(value)]="selectedEntity" (selectionChange)="onSelectionChange($event)">
+      <mat-option *ngFor="let entity of entities" [value]="entity">
+        {{ entity?.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</mat-dialog-content>

@@ -155,6 +155,7 @@ describe('MeqlPipe', () => {
       [
         'transforms and uses "and" and "or" conditions',
         {
+          entity: 'coretable',
           condition: 'and',
           rules: [
             {
@@ -168,6 +169,7 @@ describe('MeqlPipe', () => {
               value: 'String 2',
             },
             {
+              entity: 'coretable',
               condition: 'or',
               rules: [
                 {
@@ -188,6 +190,7 @@ describe('MeqlPipe', () => {
       [
         'transforms and uses "or" and "and" conditions',
         {
+          entity: 'coretable',
           condition: 'or',
           rules: [
             {
@@ -201,6 +204,7 @@ describe('MeqlPipe', () => {
               value: 'String 2',
             },
             {
+              entity: 'coretable',
               condition: 'and',
               rules: [
                 {
@@ -221,6 +225,7 @@ describe('MeqlPipe', () => {
       [
         'transforms and uses "or" and "or" conditions',
         {
+          entity: 'coretable',
           condition: 'or',
           rules: [
             {
@@ -234,6 +239,7 @@ describe('MeqlPipe', () => {
               value: 'String 2',
             },
             {
+              entity: 'coretable',
               condition: 'or',
               rules: [
                 {
@@ -254,6 +260,7 @@ describe('MeqlPipe', () => {
       [
         'transforms and uses "and" and "and" conditions',
         {
+          entity: 'coretable',
           condition: 'and',
           rules: [
             {
@@ -267,6 +274,7 @@ describe('MeqlPipe', () => {
               value: 'String 2',
             },
             {
+              entity: 'coretable',
               condition: 'and',
               rules: [
                 {
@@ -366,6 +374,7 @@ describe('MeqlPipe', () => {
       'formats single autocomplete select option %p with operator %p correctly',
       (field, operator, name) => {
         const query: QueryCondition = {
+          entity: 'coretable',
           condition: 'and',
           rules: [
             {
@@ -398,6 +407,7 @@ describe('MeqlPipe', () => {
       'formats multiple autocomplete select options %p with operator %p correctly',
       (field, operator, names) => {
         const query: QueryCondition = {
+          entity: 'coretable',
           condition: 'and',
           rules: [
             {

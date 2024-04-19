@@ -20,9 +20,15 @@ SPDX-License-Identifier: Apache-2.0
 Query builder source: https://github.com/zebzhao/Angular-QueryBuilder
 */
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { QueryBuilderConfig, Rule, RuleSet, Option } from 'angular2-query-builder';
+import {
+  QueryBuilderConfig,
+  Rule,
+  RuleSet,
+  Option,
+} from '../query-builder/query-builder.interfaces';
 import {
   DataElementSearchResult,
+  DataSpecificationQueryType,
   QueryCondition,
 } from 'src/app/data-explorer/data-explorer.types';
 import { ThemePalette } from '@angular/material/core';
@@ -31,19 +37,21 @@ import { AutocompleteSelectOptionSet } from 'src/app/shared/autocomplete-select/
 import { TerminologyService } from 'src/app/mauro/terminology.service';
 import {
   mapOptionsArrayToModelDataType,
-  QueryBuilderService,
-} from 'src/app/data-explorer/query-builder.service';
+  QueryBuilderWrapperService,
+} from 'src/app/data-explorer/query-builder-wrapper.service';
 
 @Component({
-  selector: 'mdm-querybuilder',
-  templateUrl: './querybuilder.component.html',
-  styleUrls: ['./querybuilder.component.scss'],
+  selector: 'mdm-query-builder-wrapper',
+  templateUrl: './query-builder-wrapper.component.html',
+  styleUrls: ['./query-builder-wrapper.component.scss'],
 })
-export class QueryBuilderComponent implements OnInit {
+export class QueryBuilderWrapperComponent implements OnInit {
   @Input() dataElements: DataElementSearchResult[] = [];
   @Input() color: ThemePalette = 'primary';
+  @Input() queryType?: DataSpecificationQueryType;
   @Input() query: QueryCondition = {
     condition: 'and',
+    entity: '',
     rules: [],
   };
   @Input() config: QueryBuilderConfig = {
@@ -65,6 +73,7 @@ export class QueryBuilderComponent implements OnInit {
   };
 
   allowRuleset = true;
+  isDataQuery = false;
 
   /**
    * Track zero or more term searches linked to the automcomplete controls.
@@ -78,7 +87,7 @@ export class QueryBuilderComponent implements OnInit {
 
   constructor(
     private terminology: TerminologyService,
-    private queryBuilderService: QueryBuilderService
+    private queryBuilderWrapperService: QueryBuilderWrapperService
   ) {}
 
   get hasFields(): boolean {
@@ -95,11 +104,13 @@ export class QueryBuilderComponent implements OnInit {
     if (this.query.rules.length === 0) {
       this.query = {
         condition: 'and',
+        entity: '',
         rules: [],
       };
     }
 
     this.setupDescriptions();
+    this.isDataQuery = this.queryType === 'data';
   }
 
   modelChanged(value: RuleSet) {
@@ -133,13 +144,13 @@ export class QueryBuilderComponent implements OnInit {
         })
       )
       .subscribe((results: AutocompleteSelectOptionSet) => {
-        this.termSearchResults[rule.field] = results;
+        this.termSearchResults[rule.field ?? ''] = results;
       });
   }
 
   private setupDescriptions() {
     this.dataElements.forEach((element) => {
-      const entity = this.queryBuilderService.getEntity(element);
+      const entity = this.queryBuilderWrapperService.getEntity(element);
       const fullName = `${entity}.${element.label}`;
 
       const description = element.description

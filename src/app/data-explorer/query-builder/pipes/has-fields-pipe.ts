@@ -16,24 +16,14 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-@import "./base/all";
+import { Pipe, PipeTransform } from '@angular/core';
+import { FieldMap } from '../query-builder.interfaces';
 
-.query-builder-wrapper {
-  .mat-form-field {
-    margin: 0 5px; /* Add a space before the next control*/
+@Pipe({
+  name: 'hasFields',
+})
+export class HasFieldsPipe implements PipeTransform {
+  transform(fields: FieldMap): boolean {
+    return Object.keys(fields).length > 0;
   }
-
-  .mat-form-field-wrapper {
-    padding-bottom: 0;
-  }
-
-  /* Set the space between radio buttons */
-  .mat-radio-button {
-    padding: 10px;
-  }
-}
-
-.q-inline-block-display {
-  /* Override width of rule entity selector which uses this class in an encapsulating div */
-  width: 25%;
 }

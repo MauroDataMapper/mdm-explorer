@@ -16,11 +16,8 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { QueryBuilderComponent } from './querybuilder.component';
-import {
-  QueryBuilderComponent as LibQueryBuilderComponent,
-  Rule,
-} from 'angular2-query-builder';
+import { QueryBuilderWrapperComponent } from './query-builder-wrapper.component';
+
 import {
   ComponentHarness,
   setupTestModuleForComponent,
@@ -31,21 +28,23 @@ import { MockComponent } from 'ng-mocks';
 import { MeqlOutputComponent } from '../meql-output/meql-output.component';
 import { MatCard } from '@angular/material/card';
 import { QueryCondition } from '../data-explorer.types';
-import { mapModelDataTypeToOptionsArray } from '../query-builder.service';
+import { mapModelDataTypeToOptionsArray } from '../query-builder-wrapper.service';
 import {
   CatalogueItemDomainType,
   MdmResourcesConfiguration,
 } from '@maurodatamapper/mdm-resources';
 import { of } from 'rxjs';
 import { AutocompleteSelectOptionSet } from 'src/app/shared/autocomplete-select/autocomplete-select.component';
+import { QueryBuilderComponent } from '../query-builder/query-builder.component';
+import { Rule } from '../query-builder/query-builder.interfaces';
 
 describe('QueryBuilderComponent', () => {
-  let harness: ComponentHarness<QueryBuilderComponent>;
+  let harness: ComponentHarness<QueryBuilderWrapperComponent>;
   const terminologyStub = createTerminologyServiceStub();
   const mdmResourcesConfiguration = new MdmResourcesConfiguration();
 
   beforeEach(async () => {
-    harness = await setupTestModuleForComponent(QueryBuilderComponent, {
+    harness = await setupTestModuleForComponent(QueryBuilderWrapperComponent, {
       providers: [
         {
           provide: TerminologyService,
@@ -59,7 +58,7 @@ describe('QueryBuilderComponent', () => {
       declarations: [
         MockComponent(MeqlOutputComponent),
         MockComponent(MatCard),
-        MockComponent(LibQueryBuilderComponent),
+        MockComponent(QueryBuilderComponent),
       ],
     });
   });
@@ -69,6 +68,7 @@ describe('QueryBuilderComponent', () => {
     expect(harness.component.dataElements).toStrictEqual([]);
     expect(harness.component.color).toBe('primary');
     expect(harness.component.query).toStrictEqual({
+      entity: '',
       condition: 'and',
       rules: [],
     });
@@ -143,6 +143,7 @@ describe('QueryBuilderComponent', () => {
 
     it('should reset the query when empty', () => {
       harness.component.query = {
+        entity: 'coretable',
         condition: 'or',
         rules: [],
       };
@@ -150,6 +151,7 @@ describe('QueryBuilderComponent', () => {
       harness.component.ngOnInit();
 
       expect(harness.component.query).toStrictEqual({
+        entity: '',
         condition: 'and',
         rules: [],
       });
@@ -157,6 +159,7 @@ describe('QueryBuilderComponent', () => {
 
     it('should not reset the query when it has a value', () => {
       const query: QueryCondition = {
+        entity: 'coretable',
         condition: 'or',
         rules: [
           {
@@ -249,6 +252,7 @@ describe('QueryBuilderComponent', () => {
         const spy = jest.spyOn(harness.component.queryChange, 'emit');
 
         const query: QueryCondition = {
+          entity: 'coretable',
           condition: 'or',
           rules: [
             {
@@ -292,7 +296,7 @@ describe('QueryBuilderComponent', () => {
           ],
         };
 
-        expect(harness.component.termSearchResults[rule.field]).toBeUndefined();
+        expect(harness.component.termSearchResults[rule.field ?? '']).toBeUndefined();
 
         terminologyStub.listTerms.mockImplementationOnce(() => {
           return of({
@@ -303,7 +307,7 @@ describe('QueryBuilderComponent', () => {
 
         harness.component.termSearchChanged('search value', rule, options);
 
-        expect(harness.component.termSearchResults[rule.field]).toStrictEqual(
+        expect(harness.component.termSearchResults[rule.field ?? '']).toStrictEqual(
           expectedResults
         );
       });

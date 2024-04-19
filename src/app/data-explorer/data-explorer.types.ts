@@ -392,6 +392,7 @@ export interface QueryExpression {
 
 export interface QueryCondition {
   condition: 'and' | 'or';
+  entity: string;
   rules: QueryRule[];
 }
 

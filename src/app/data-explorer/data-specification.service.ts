@@ -24,6 +24,7 @@ import {
   DataModelCreatePayload,
   DataModelDetail,
   ModelUpdatePayload,
+  Profile,
   RuleRepresentationPayload,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
@@ -76,6 +77,7 @@ import { RulesService } from '../mauro/rules.service';
 import { ResearchPluginService } from '../mauro/research-plugin.service';
 import { EditDataSpecificationDialogOptions as EditDataSpecificationDialogOptions } from './edit-data-specification-dialog/edit-data-specification-dialog.component';
 import { ShareDataSpecificationDialogInputOutput } from './share-data-specification-dialog/share-data-specification-dialog.component';
+import { CoreTableProfileService } from './core-table-profile.service';
 
 /**
  * A collection of data specifications and their intersections with target models.
@@ -98,7 +100,8 @@ export class DataSpecificationService {
     private broadcast: BroadcastService,
     private dialogs: DialogService,
     private rules: RulesService,
-    private researchPlugin: ResearchPluginService
+    private researchPlugin: ResearchPluginService,
+    private coreTableProfileService: CoreTableProfileService
   ) {}
 
   /**
@@ -553,12 +556,20 @@ export class DataSpecificationService {
           return throwError(() => new Error('No data specification'));
         }
 
-        return this.dataModels.copySubset(rootDataModel.id, dataSpecification.id, {
-          additions: elements.map((de) => de.id),
-          deletions: [],
-        });
+        return this.copyDataElementsToDataModel(
+          rootDataModel,
+          rootDataModel.id,
+          elements,
+          dataSpecification.id
+        );
       }),
-      map((targetDataModel) => mapToDataSpecification(targetDataModel))
+      switchMap(([rootDataModel, dataSpecification]) => {
+        return this.getCoreTableProfile(rootDataModel, dataSpecification);
+      }),
+      switchMap(([dataSpecification, coreTableProfile]) => {
+        return this.saveCoreTableProfile(dataSpecification, coreTableProfile);
+      }),
+      map(([_, targetDataModel]) => mapToDataSpecification(targetDataModel))
     );
   }
 
@@ -849,5 +860,43 @@ export class DataSpecificationService {
         return of(!dataSpecifications.some((element) => element.label === name));
       })
     );
+  }
+
+  private copyDataElementsToDataModel(
+    rootDataModel: DataModel,
+    rootDataModelId: Uuid,
+    elements: DataElementInstance[],
+    dataSpecificationId: Uuid
+  ): Observable<[DataModel, DataModelDetail]> {
+    return forkJoin([
+      of(rootDataModel),
+      this.dataModels.copySubset(rootDataModelId, dataSpecificationId, {
+        additions: elements.map((de) => de.id),
+        deletions: [],
+      }),
+    ]);
+  }
+
+  private getCoreTableProfile(
+    rootDataModel: DataModel,
+    dataModelDetail: DataModelDetail
+  ): Observable<[DataModelDetail, Profile | undefined]> {
+    return forkJoin([
+      of(dataModelDetail),
+      this.coreTableProfileService.getQueryBuilderCoreTableProfile(rootDataModel),
+    ]);
+  }
+
+  private saveCoreTableProfile(
+    dataModelDetail: DataModelDetail,
+    coreTableProfile: Profile | undefined
+  ): Observable<[Profile | undefined, DataModelDetail]> {
+    const $profile = coreTableProfile
+      ? this.coreTableProfileService.saveQueryBuilderCoreTableProfile(
+          dataModelDetail,
+          coreTableProfile
+        )
+      : of(undefined);
+    return forkJoin([$profile, of(dataModelDetail)]);
   }
 }

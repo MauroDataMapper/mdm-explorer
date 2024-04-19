@@ -71,6 +71,8 @@ import { createToastrServiceStub } from '../testing/stubs/toastr.stub';
 import { createRulesServiceStub } from '../testing/stubs/rules.stub';
 import { RulesService } from '../mauro/rules.service';
 import { EditDataSpecificationDialogResponse } from './edit-data-specification-dialog/edit-data-specification-dialog.component';
+import { CoreTableProfileService } from './core-table-profile.service';
+import { createCoreTableProfileStub } from '../testing/stubs/core-table-profile.stub';
 
 describe('DataSpecificationService', () => {
   let service: DataSpecificationService;
@@ -83,6 +85,7 @@ describe('DataSpecificationService', () => {
   const broadcastStub = createBroadcastServiceStub();
   const toastrStub = createToastrServiceStub();
   const rulesStub = createRulesServiceStub();
+  const coreTableProfileStub = createCoreTableProfileStub();
 
   beforeEach(() => {
     service = setupTestModuleForService(DataSpecificationService, {
@@ -122,6 +125,10 @@ describe('DataSpecificationService', () => {
         {
           provide: RulesService,
           useValue: rulesStub,
+        },
+        {
+          provide: CoreTableProfileService,
+          useValue: coreTableProfileStub,
         },
       ],
     });
@@ -434,7 +441,15 @@ describe('DataSpecificationService', () => {
         return cold('-a|', { a: dataSpecification });
       });
 
-      const expected$ = cold('-----a|', {
+      coreTableProfileStub.getQueryBuilderCoreTableProfile.mockImplementation((_) => {
+        return cold('-a|', { a: undefined });
+      });
+
+      coreTableProfileStub.saveQueryBuilderCoreTableProfile.mockImplementation((_) => {
+        return cold('-a|', { a: undefined });
+      });
+
+      const expected$ = cold('--------(a|)', {
         a: dataSpecification,
       });
       const actual$ = service.createFromDataElements(elements, user, name, description);
@@ -1054,7 +1069,11 @@ describe('DataSpecificationService', () => {
   describe('createOrUpdateQuery', () => {
     const dataSpecificationId: Uuid = '1234';
     const queryTypes: DataSpecificationQueryType[] = ['cohort', 'data'];
-    const condition: QueryCondition = { condition: 'and', rules: [] };
+    const condition: QueryCondition = {
+      entity: 'coretable',
+      condition: 'and',
+      rules: [],
+    };
 
     const representation: RuleRepresentation = {
       id: '789',
@@ -1182,7 +1201,11 @@ describe('DataSpecificationService', () => {
       { field: 'field2', operator: '=', value: 'value_field2' },
       { field: 'field3', operator: '<=', value: 'value_field3' },
     ];
-    const condition: QueryCondition = { condition: 'and', rules: expressions };
+    const condition: QueryCondition = {
+      entity: 'coretable',
+      condition: 'and',
+      rules: expressions,
+    };
 
     it.each(queryTypes)('Should remove 1 data element correctly', (type) => {
       const queryPayload: DataSpecificationQueryPayload = {
@@ -1197,6 +1220,7 @@ describe('DataSpecificationService', () => {
         { field: 'field3', operator: '<=', value: 'value_field3' },
       ];
       const expectedCondition: QueryCondition = {
+        entity: 'coretable',
         condition: 'and',
         rules: expectedExpressions,
       };
@@ -1248,6 +1272,7 @@ describe('DataSpecificationService', () => {
         { field: 'field2', operator: '=', value: 'value_field2' },
       ];
       const expectedCondition: QueryCondition = {
+        entity: 'coretable',
         condition: 'and',
         rules: expectedExpressions,
       };

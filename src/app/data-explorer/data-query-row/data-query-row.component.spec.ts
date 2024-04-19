@@ -56,6 +56,7 @@ describe('DataQueryRowComponent', () => {
 
   it('should allow create button when a query has no rules', () => {
     harness.component.condition = {
+      entity: 'coretable',
       condition: 'and',
       rules: [],
     };
@@ -65,6 +66,7 @@ describe('DataQueryRowComponent', () => {
 
   it('should not allow create button when a query has at least one rule', () => {
     harness.component.condition = {
+      entity: 'coretable',
       condition: 'and',
       rules: [
         {
@@ -80,6 +82,7 @@ describe('DataQueryRowComponent', () => {
 
   it('should allow edit button when a query has at least one rule', () => {
     harness.component.condition = {
+      entity: 'coretable',
       condition: 'and',
       rules: [
         {
@@ -99,6 +102,7 @@ describe('DataQueryRowComponent', () => {
 
   it('should not allow edit button when a query has no rules', () => {
     harness.component.condition = {
+      entity: 'coretable',
       condition: 'and',
       rules: [],
     };

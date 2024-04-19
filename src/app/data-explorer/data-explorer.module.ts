@@ -38,19 +38,48 @@ import { IdentifiableDataIconComponent } from './identifiable-data-icon/identifi
 import { SearchFiltersComponent } from './search-filters/search-filters.component';
 import { CatalogueSearchFormComponent } from './catalogue-search-form/catalogue-search-form.component';
 import { OkCancelDialogComponent } from './ok-cancel-dialog/ok-cancel-dialog.component';
-import { QueryBuilderComponent } from '../data-explorer/querybuilder/querybuilder.component';
-import { QueryBuilderModule } from 'angular2-query-builder';
+import { QueryBuilderWrapperComponent } from './query-builder-wrapper/query-builder-wrapper.component';
 import { MeqlPipe } from './pipes/meql.pipe';
 import { MeqlOutputComponent } from './meql-output/meql-output.component';
 import { DataSpecificationRowComponent } from './data-specification-row/data-specification-row.component';
 import { DataQueryRowComponent } from './data-query-row/data-query-row.component';
-import { NumberFormatDirective } from './querybuilder/directives/number-format.directive';
+import { NumberFormatDirective } from './query-builder-wrapper/directives/number-format.directive';
 import { EditDataSpecificationDialogComponent } from './edit-data-specification-dialog/edit-data-specification-dialog.component';
 import { SelectionExpandedDialogComponent } from './selection-expanded-dialog/selection-expanded-dialog.component';
 import { SelectionCompactComponent } from './selection-compact/selection-compact.component';
 import { ShareDataSpecificationDialogComponent } from './share-data-specification-dialog/share-data-specification-dialog.component';
 import { FilterByComponent } from './filter-by/filter-by.component';
 import { VersionSelectorComponent } from './version-selector/version-selector.component';
+import { QueryBuilderComponent } from './query-builder/query-builder.component';
+import { QueryInputDirective } from './query-builder/query-input.directive';
+import { QueryOperatorDirective } from './query-builder/query-operator.directive';
+import { QueryFieldDirective } from './query-builder/query-field.directive';
+import { QueryEntityDirective } from './query-builder/query-entity.directive';
+import { QueryButtonGroupDirective } from './query-builder/query-button-group.directive';
+import { QuerySwitchGroupDirective } from './query-builder/query-switch-group.directive';
+import { QueryRemoveButtonDirective } from './query-builder/query-remove-button.directive';
+import { QueryEmptyWarningDirective } from './query-builder/query-empty-warning.directive';
+import { QueryArrowIconDirective } from './query-builder/query-arrow-icon.directive';
+import { LetDirective } from '../shared/directives/let.directive';
+import { EntitySelectorDialogComponent } from './query-builder/dialogs/entity-selector-dialog/entity-selector-dialog.component';
+import { HasFieldsPipe } from './query-builder/pipes/has-fields-pipe';
+import { ArrowFormatPipe } from './query-builder/pipes/arrow-format-pipe';
+
+const queryBuilderModules = [
+  QueryBuilderComponent,
+  QueryInputDirective,
+  QueryOperatorDirective,
+  QueryFieldDirective,
+  QueryEntityDirective,
+  QueryButtonGroupDirective,
+  QuerySwitchGroupDirective,
+  QueryRemoveButtonDirective,
+  QueryEmptyWarningDirective,
+  QueryArrowIconDirective,
+  EntitySelectorDialogComponent,
+  HasFieldsPipe,
+  ArrowFormatPipe,
+];
 
 @NgModule({
   declarations: [
@@ -72,7 +101,7 @@ import { VersionSelectorComponent } from './version-selector/version-selector.co
     SearchFiltersComponent,
     CatalogueSearchFormComponent,
     OkCancelDialogComponent,
-    QueryBuilderComponent,
+    QueryBuilderWrapperComponent,
     MeqlPipe,
     MeqlOutputComponent,
     DataSpecificationRowComponent,
@@ -84,8 +113,10 @@ import { VersionSelectorComponent } from './version-selector/version-selector.co
     ShareDataSpecificationDialogComponent,
     FilterByComponent,
     VersionSelectorComponent,
+    LetDirective,
+    ...queryBuilderModules,
   ],
-  imports: [CoreModule, SharedModule, QueryBuilderModule],
+  imports: [CoreModule, SharedModule],
   exports: [
     DataElementSearchResultComponent,
     DataElementRowComponent,
@@ -100,13 +131,15 @@ import { VersionSelectorComponent } from './version-selector/version-selector.co
     IdentifiableDataIconComponent,
     SearchFiltersComponent,
     CatalogueSearchFormComponent,
-    QueryBuilderComponent,
+    QueryBuilderWrapperComponent,
     MeqlOutputComponent,
     DataSpecificationRowComponent,
     DataQueryRowComponent,
     NumberFormatDirective,
     SelectionCompactComponent,
     FilterByComponent,
+    LetDirective,
+    ...queryBuilderModules,
   ],
   providers: [
     {
