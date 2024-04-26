@@ -42,7 +42,7 @@ SPDX-License-Identifier: Apache-2.0
         [dataSpecification]="dataSpecification"
         [showLabel]="false"
         [showStatus]="true"
-        [showSubmitButton]="
+        [showFinaliseAndSubmitButton]="
           dataSpecification.status === 'unsent' && currentUserOwnsDataSpec
         "
         [showCopyButton]="dataSpecification.status === 'finalised'"
