@@ -73,7 +73,7 @@ export class MyDataSpecificationsComponent implements OnInit {
   }
 
   filterByStatus(event: MatSelectChange) {
-    const filters = event.value === 'all' ? ['submitted', 'unsent'] : [event.value];
+    const filters = event.value === 'all' ? ['finalised', 'unsent'] : [event.value];
     this.filterAndSortDataSpecifications(filters, this.sortBy);
   }
 

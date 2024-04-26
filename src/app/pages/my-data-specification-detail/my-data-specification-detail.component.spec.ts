@@ -308,7 +308,7 @@ describe('MyDataSpecificationDetailComponent', () => {
 
       // Assert
       expect(researchPluginStub.submitDataSpecification).toHaveBeenCalled();
-      expect(harness.component.dataSpecification.status).toBe('submitted');
+      expect(harness.component.dataSpecification.status).toBe('finalised');
       expect(broadcastStub.dispatch).toHaveBeenCalledWith('data-specification-submitted');
       expect(broadcastStub.loading).toHaveBeenCalledTimes(2);
       expect(broadcastStub.loading.mock.calls).toEqual([

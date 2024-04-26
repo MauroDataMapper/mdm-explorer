@@ -214,7 +214,7 @@ describe('MyDataSpecificationsComponent', () => {
 
       harness.component.filterByStatus(event);
 
-      expect(harness.component.statusFilters).toStrictEqual(['submitted', 'unsent']);
+      expect(harness.component.statusFilters).toStrictEqual(['finalised', 'unsent']);
       expect(harness.component.filteredDataSpecifications).toStrictEqual(
         dataSpecifications
       );
