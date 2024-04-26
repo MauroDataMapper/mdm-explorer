@@ -98,7 +98,7 @@ describe('DashboardComponent', () => {
       const openDataSpecifications = [
         { label: 'dataModel-1', status: 'unsent' },
         { label: 'dataModel-2', status: 'unsent' },
-        { label: 'dataModel-3', status: 'submitted' },
+        { label: 'dataModel-3', status: 'finalised' },
       ] as DataSpecification[];
 
       dataSpecificationStub.list.mockImplementationOnce(() => {

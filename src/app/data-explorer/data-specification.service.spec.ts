@@ -849,7 +849,7 @@ describe('DataSpecificationService', () => {
       domainType: CatalogueItemDomainType.DataModel,
       label: 'original data specification',
       modelVersion: '1',
-      status: 'submitted',
+      status: 'finalised',
     };
 
     const forkedDataSpecification: DataSpecification = {
@@ -1331,7 +1331,7 @@ describe('DataSpecificationService', () => {
       {
         label: 'label3',
         id: 'id3',
-        status: 'submitted',
+        status: 'finalised',
         domainType: CatalogueItemDomainType.DataModel,
       },
       {

@@ -107,7 +107,7 @@ describe('TemplateDataSpecificationDetailComponent', () => {
       id: templateId,
       label: 'template',
       domainType: CatalogueItemDomainType.DataModel,
-      status: 'submitted',
+      status: 'finalised',
     };
 
     it('should load a template', () => {
@@ -209,7 +209,7 @@ describe('TemplateDataSpecificationDetailComponent', () => {
       id: '1',
       domainType: CatalogueItemDomainType.DataModel,
       label: 'template 1',
-      status: 'submitted',
+      status: 'finalised',
     };
 
     const dataSpecificationFolder: FolderDetail = {

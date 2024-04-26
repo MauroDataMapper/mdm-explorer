@@ -660,7 +660,7 @@ export class DataSpecificationService {
       !dataSpecification ||
       !dataSpecification.id ||
       !dataSpecification.modelVersion ||
-      dataSpecification.status !== 'submitted'
+      dataSpecification.status !== 'finalised'
     ) {
       return EMPTY;
     }

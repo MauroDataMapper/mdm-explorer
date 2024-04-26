@@ -109,7 +109,7 @@ export class MyDataSpecificationsComponent implements OnInit {
     filters?: DataSpecificationStatus[],
     sortBy?: SortByOption
   ) {
-    this.statusFilters = filters ?? ['submitted', 'unsent'];
+    this.statusFilters = filters ?? ['finalised', 'unsent'];
     const filtered =
       this.statusFilters.length === 0
         ? this.allDataSpecifications

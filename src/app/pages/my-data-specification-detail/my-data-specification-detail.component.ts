@@ -400,7 +400,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
       !this.dataSpecification ||
       !this.dataSpecification.id ||
       !this.dataSpecification.modelVersion ||
-      this.dataSpecification.status !== 'submitted'
+      this.dataSpecification.status !== 'finalised'
     ) {
       return;
     }

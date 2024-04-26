@@ -45,16 +45,16 @@ SPDX-License-Identifier: Apache-2.0
         [showSubmitButton]="
           dataSpecification.status === 'unsent' && currentUserOwnsDataSpec
         "
-        [showCopyButton]="dataSpecification.status === 'submitted'"
+        [showCopyButton]="dataSpecification.status === 'finalised'"
         [showEditButton]="
           dataSpecification.status === 'unsent' && currentUserOwnsDataSpec
         "
         [showShareButton]="
-          currentUserOwnsDataSpec && dataSpecification.status === 'submitted'
+          currentUserOwnsDataSpec && dataSpecification.status === 'finalised'
         "
         [showNewVersionButton]="
           currentUserOwnsDataSpec &&
-          dataSpecification.status === 'submitted' &&
+          dataSpecification.status === 'finalised' &&
           !newerVersionExists &&
           currentVersionIsLatest
         "
@@ -73,7 +73,7 @@ SPDX-License-Identifier: Apache-2.0
       queryType="cohort"
       [condition]="cohortQuery"
       [readOnly]="
-        dataSpecification.status === 'submitted' || isEmpty || !currentUserOwnsDataSpec
+        dataSpecification.status === 'finalised' || isEmpty || !currentUserOwnsDataSpec
       "
       createRouterLink="queries/cohort"
       editRouterLink="queries/cohort"
@@ -82,7 +82,7 @@ SPDX-License-Identifier: Apache-2.0
       queryType="data"
       [condition]="dataQuery"
       [readOnly]="
-        dataSpecification.status === 'submitted' || isEmpty || !currentUserOwnsDataSpec
+        dataSpecification.status === 'finalised' || isEmpty || !currentUserOwnsDataSpec
       "
       createRouterLink="queries/data"
       editRouterLink="queries/data"

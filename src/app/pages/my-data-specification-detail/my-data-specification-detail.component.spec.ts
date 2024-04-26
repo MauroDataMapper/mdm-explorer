@@ -250,7 +250,7 @@ describe('MyDataSpecificationDetailComponent', () => {
     it('should do nothing if current data specification is not in unsent state', () => {
       harness.component.dataSpecification = {
         ...dataSpecification,
-        status: 'submitted',
+        status: 'finalised',
       };
 
       harness.component.finaliseAndSubmitDataSpecification();
