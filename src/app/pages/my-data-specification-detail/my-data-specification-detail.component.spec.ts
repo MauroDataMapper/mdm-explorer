@@ -42,6 +42,7 @@ import {
   DataSpecificationQueryType,
   DataSchema,
   QueryCondition,
+  DataSpecificationStatus,
 } from '../../data-explorer/data-explorer.types';
 import {
   DataSpecificationSourceTargetIntersections,
@@ -236,7 +237,7 @@ describe('MyDataSpecificationDetailComponent', () => {
 
   describe('submit data specification', () => {
     beforeEach(() => {
-      researchPluginStub.submitDataSpecification.mockClear();
+      researchPluginStub.finaliseDataSpecification.mockClear();
       toastrStub.error.mockClear();
       broadcastStub.dispatch.mockClear();
       broadcastStub.loading.mockClear();
@@ -244,7 +245,7 @@ describe('MyDataSpecificationDetailComponent', () => {
 
     it('should do nothing if there is no data specification', () => {
       harness.component.finaliseAndSubmitDataSpecification();
-      expect(researchPluginStub.submitDataSpecification).not.toHaveBeenCalled();
+      expect(researchPluginStub.finaliseDataSpecification).not.toHaveBeenCalled();
     });
 
     it('should do nothing if current data specification is not in unsent state', () => {
@@ -254,12 +255,12 @@ describe('MyDataSpecificationDetailComponent', () => {
       };
 
       harness.component.finaliseAndSubmitDataSpecification();
-      expect(researchPluginStub.submitDataSpecification).not.toHaveBeenCalled();
+      expect(researchPluginStub.finaliseDataSpecification).not.toHaveBeenCalled();
     });
 
     it('should raise error if failed to submit', () => {
       // Arrange
-      researchPluginStub.submitDataSpecification.mockImplementationOnce((id) => {
+      researchPluginStub.finaliseDataSpecification.mockImplementationOnce((id) => {
         expect(id).toBe(dataSpecification.id);
         return throwError(() => new Error());
       });
@@ -275,7 +276,7 @@ describe('MyDataSpecificationDetailComponent', () => {
       harness.component.finaliseAndSubmitDataSpecification();
 
       // Assert
-      expect(researchPluginStub.submitDataSpecification).toHaveBeenCalled();
+      expect(researchPluginStub.finaliseDataSpecification).toHaveBeenCalled();
       expect(broadcastStub.loading).toHaveBeenCalledTimes(2);
       expect(toastrStub.error).toHaveBeenCalled();
     });
@@ -291,7 +292,7 @@ describe('MyDataSpecificationDetailComponent', () => {
         modelVersion: '1.0.0',
       };
 
-      researchPluginStub.submitDataSpecification.mockImplementationOnce((id) => {
+      researchPluginStub.finaliseDataSpecification.mockImplementationOnce((id) => {
         expect(id).toBe(dataSpecification.id);
         return of(submittedDataModel);
       });
@@ -307,7 +308,7 @@ describe('MyDataSpecificationDetailComponent', () => {
       harness.component.finaliseAndSubmitDataSpecification();
 
       // Assert
-      expect(researchPluginStub.submitDataSpecification).toHaveBeenCalled();
+      expect(researchPluginStub.finaliseDataSpecification).toHaveBeenCalled();
       expect(harness.component.dataSpecification.status).toBe('finalised');
       expect(broadcastStub.dispatch).toHaveBeenCalledWith('data-specification-submitted');
       expect(broadcastStub.loading).toHaveBeenCalledTimes(2);
@@ -315,7 +316,7 @@ describe('MyDataSpecificationDetailComponent', () => {
         [
           {
             isLoading: true,
-            caption: 'Submitting your data specification...',
+            caption: 'Finalising and Submitting your data specification...',
           },
         ],
         [{ isLoading: false }],
@@ -335,7 +336,7 @@ describe('MyDataSpecificationDetailComponent', () => {
       harness.component.finaliseAndSubmitDataSpecification();
 
       // Assert
-      expect(researchPluginStub.submitDataSpecification).toHaveBeenCalledTimes(0);
+      expect(researchPluginStub.finaliseDataSpecification).toHaveBeenCalledTimes(0);
       expect(harness.component.dataSpecification.status).toBe('unsent');
       expect(broadcastStub.dispatch).toHaveBeenCalledTimes(0);
       expect(broadcastStub.loading).toHaveBeenCalledWith({ isLoading: false });

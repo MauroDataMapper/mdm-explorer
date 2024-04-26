@@ -36,7 +36,7 @@ export type ResearchPluginUserFolderFn = (id: Uuid) => Observable<FolderDetail>;
 
 export interface ResearchPluginServiceStub {
   contact: jest.MockedFunction<ResearchPluginContactFn>;
-  submitDataSpecification: jest.MockedFunction<ResearchPluginSubmitDataSpecificationFn>;
+  finaliseDataSpecification: jest.MockedFunction<ResearchPluginSubmitDataSpecificationFn>;
   userFolder: jest.MockedFunction<ResearchPluginUserFolderFn>;
   templateFolder: jest.MockedFunction<() => Observable<FolderDetail>>;
   rootDataModel: jest.MockedFunction<() => Observable<DataModelDetail>>;
@@ -47,7 +47,7 @@ export interface ResearchPluginServiceStub {
 export const createResearchPluginServiceStub = (): ResearchPluginServiceStub => {
   return {
     contact: jest.fn() as jest.MockedFunction<ResearchPluginContactFn>,
-    submitDataSpecification:
+    finaliseDataSpecification:
       jest.fn() as jest.MockedFunction<ResearchPluginSubmitDataSpecificationFn>,
     userFolder: jest.fn() as jest.MockedFunction<ResearchPluginUserFolderFn>,
     templateFolder: jest.fn(),
