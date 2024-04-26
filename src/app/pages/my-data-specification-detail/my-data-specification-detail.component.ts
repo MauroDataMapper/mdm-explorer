@@ -147,7 +147,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     private dataModels: DataModelService,
     private securityService: SecurityService,
     private folderService: FolderService,
-    private versionSorter: VersionTreeSortingService,
+    private versionSorter: VersionTreeSortingService
   ) {
     this.sourceTargetIntersections = {
       dataSpecifications: [],
@@ -208,7 +208,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
             this.setDataSchemasIntersectionsAndVersionTree(
               dataSchemas,
               intersections,
-              versionTree,
+              versionTree
             );
           }
 
@@ -219,11 +219,11 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
         catchError(() => {
           this.toastr.error(
             'There was a problem submitting your data specification. Please try again or contact us for support.',
-            'Submission error',
+            'Submission error'
           );
           return EMPTY;
         }),
-        finalize(() => this.broadcastService.loading({ isLoading: false })),
+        finalize(() => this.broadcastService.loading({ isLoading: false }))
       )
       .subscribe(() => {
         this.broadcastService.dispatch('data-specification-submitted');
@@ -255,7 +255,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
           this.broadcastService.loading({
             isLoading: true,
             caption: userFacingText?.loadingMessage,
-          }),
+          })
         ),
         switchMap(() => {
           return this.deleteItem(event);
@@ -263,7 +263,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
         switchMap((result: DataElementOperationResult) => {
           return this.deleteElementsFromQueries(event, result);
         }),
-        finalize(() => this.broadcastService.loading({ isLoading: false })),
+        finalize(() => this.broadcastService.loading({ isLoading: false }))
       )
       .subscribe(({ dataQuery, cohortQuery, result }) => {
         this.refreshQueries(dataQuery, cohortQuery);
@@ -284,10 +284,10 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
             this.setDataSchemasIntersectionsAndVersionTree(
               dataSchemas,
               intersections,
-              versionTree,
+              versionTree
             );
           }
-        },
+        }
       );
     } else {
       this.loadIntersections(this.dataSchemas).subscribe((intersections) => {
@@ -312,7 +312,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
           return this.removeSelectedClasses(
             okCancelDialogResponse,
             deletedElements,
-            classList,
+            classList
           );
         }),
         switchMap(([okCancelDialogResponse, deletedElements, deletedClasses]) => {
@@ -320,7 +320,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
             okCancelDialogResponse,
             deletedElements,
             deletedClasses,
-            schemaList,
+            schemaList
           );
         }),
         switchMap(([deletedElements, deletedClasses, deletedSchemas]) => {
@@ -352,7 +352,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
                 deletedElements.failures.length === 1 ? '' : 's'
               } caused an error.`;
               deletedElements.failures.forEach((item: DataElementOperationResult) =>
-                console.log(item.message),
+                console.log(item.message)
               );
             }
 
@@ -362,7 +362,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
                 deletedClasses.failures.length === 1 ? '' : 'es'
               } caused an error.`;
               deletedClasses.failures.forEach((item: DataElementOperationResult) =>
-                console.log(item.message),
+                console.log(item.message)
               );
             }
 
@@ -372,22 +372,22 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
                 deletedSchemas.failures.length === 1 ? '' : 's'
               } caused an error.`;
               deletedSchemas.failures.forEach((item: DataElementOperationResult) =>
-                console.log(item.message),
+                console.log(item.message)
               );
             }
 
             this.processRemoveDataElementResponse(success, message);
 
             return this.setDataSpecification(this.dataSpecification);
-          },
-        ),
+          }
+        )
       )
       .subscribe(([dataSchemas, intersections, versionTree]) => {
         if (dataSchemas && intersections && versionTree) {
           this.setDataSchemasIntersectionsAndVersionTree(
             dataSchemas,
             intersections,
-            versionTree,
+            versionTree
           );
         }
 
@@ -416,7 +416,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
           return this.dataSpecificationService.forkWithDialogs(this.dataSpecification, {
             targetFolder: dataSpecificationFolder,
           });
-        }),
+        })
       )
       .subscribe();
   }
@@ -436,7 +436,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
       .updateWithDialog(
         this.dataSpecification.id,
         this.dataSpecification.label,
-        this.dataSpecification.description,
+        this.dataSpecification.description
       )
       .subscribe((response: DataModelDetail) => {
         if (!response || !this.dataSpecification) {
@@ -461,19 +461,19 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
           (dialogResponse) =>
             dialogResponse &&
             this.dataSpecification?.readableByAuthenticatedUsers !==
-              dialogResponse.sharedWithCommunity,
+              dialogResponse.sharedWithCommunity
         ),
         switchMap(
           (
-            response: ShareDataSpecificationDialogInputOutput,
+            response: ShareDataSpecificationDialogInputOutput
           ): Observable<DataModelDetail> => {
             if (response.sharedWithCommunity) {
               return this.dataModels.updateReadByAuthenticated(id);
             } else {
               return this.dataModels.removeReadByAuthenticated(id);
             }
-          },
-        ),
+          }
+        )
       )
       .subscribe((updatedDataSpec) => {
         if (!updatedDataSpec || !this.dataSpecification || !this.dataSpecification.id) {
@@ -511,13 +511,13 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
   handleNewVersionClick() {
     this.okCancel(
       'Create New Version',
-      'Do you want to create a new version of this data Specification? You will be redirected to the new version details page',
+      'Do you want to create a new version of this data Specification? You will be redirected to the new version details page'
     )
       .afterClosed()
       .pipe(
         switchMap(
           (
-            okCancelDialogResponse?: OkCancelDialogResponse,
+            okCancelDialogResponse?: OkCancelDialogResponse
           ): Observable<DataModelDetail> => {
             if (!okCancelDialogResponse || !this.dataSpecification) {
               return EMPTY;
@@ -529,17 +529,17 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
             });
 
             return this.dataModels.createNextVersion(this.dataSpecification);
-          },
+          }
         ),
         catchError(() => {
           this.toastr.error(
             'There was a problem creating a new version of your data specification.' +
               ' Please try again or contact us for support.',
-            'New version error',
+            'New version error'
           );
           return EMPTY;
         }),
-        finalize(() => this.broadcastService.loading({ isLoading: false })),
+        finalize(() => this.broadcastService.loading({ isLoading: false }))
       )
       .subscribe((newVersion?) => {
         this.stateRouter.navigateTo(['/dataSpecifications', newVersion.id]);
@@ -576,14 +576,14 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
           this.state = 'idle';
           return EMPTY;
         }),
-        finalize(() => (this.state = 'idle')),
+        finalize(() => (this.state = 'idle'))
       )
       .subscribe(([dataSchemas, intersections, versionTree]) => {
         if (dataSchemas && intersections && versionTree) {
           this.setDataSchemasIntersectionsAndVersionTree(
             dataSchemas,
             intersections,
-            versionTree,
+            versionTree
           );
         }
       });
@@ -592,24 +592,24 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
   private updateAllElementsSelected() {
     if (!this.allElements) {
       this.allElements = this.dataSchemaService.reduceDataElementsFromSchemas(
-        this.dataSchemas,
+        this.dataSchemas
       );
     }
 
     this.allElementsSelected = this.allElements.every(
-      (dataElement) => dataElement.isSelected,
+      (dataElement) => dataElement.isSelected
     );
   }
 
   private updateAnyElementsSelected() {
     if (!this.allElements) {
       this.allElements = this.dataSchemaService.reduceDataElementsFromSchemas(
-        this.dataSchemas,
+        this.dataSchemas
       );
     }
 
     this.anyElementSelected = this.allElements.some(
-      (dataElement) => dataElement.isSelected,
+      (dataElement) => dataElement.isSelected
     );
   }
 
@@ -625,12 +625,12 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
    * Methods for loading/reloading data specification data.
    */
   private setDataSpecification(
-    dataSpecification?: DataSpecification,
+    dataSpecification?: DataSpecification
   ): Observable<
     [
       DataSchema[]?,
       DataSpecificationSourceTargetIntersections?,
-      SimpleModelVersionTree[]?,
+      SimpleModelVersionTree[]?
     ]
   > {
     this.dataSpecification = dataSpecification;
@@ -691,14 +691,14 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
           [
             DataSchema[],
             DataSpecificationSourceTargetIntersections,
-            SimpleModelVersionTree[],
+            SimpleModelVersionTree[]
           ]
         >;
       }),
       catchError(() => {
         return this.loadError();
       }),
-      finalize(() => (this.state = 'idle')),
+      finalize(() => (this.state = 'idle'))
     );
     //
   }
@@ -706,7 +706,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
   private setDataSchemasIntersectionsAndVersionTree(
     dataSchemas: DataSchema[],
     intersections: DataSpecificationSourceTargetIntersections,
-    versionTree: SimpleModelVersionTree[],
+    versionTree: SimpleModelVersionTree[]
   ) {
     this.dataSchemas = dataSchemas;
     this.isEmpty =
@@ -730,7 +730,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
 
   // intersections are data elements that are part of the data specification
   private loadIntersections(
-    dataSchemas: DataSchema[],
+    dataSchemas: DataSchema[]
   ): Observable<DataSpecificationSourceTargetIntersections> {
     const dataElementIds: Uuid[] = this.dataSchemaService
       .reduceDataElementsFromSchemas(dataSchemas)
@@ -741,12 +741,12 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
         if (dataSpecification?.id) {
           return this.dataSpecificationService.getDataSpecificationIntersections(
             dataSpecification.id,
-            dataElementIds,
+            dataElementIds
           );
         } else {
           return EMPTY;
         }
-      }),
+      })
     );
   }
 
@@ -763,10 +763,10 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
           this.setDataSchemasIntersectionsAndVersionTree(
             dataSchemas,
             intersections,
-            versionTree,
+            versionTree
           );
         }
-      },
+      }
     );
   }
 
@@ -775,7 +775,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
       .on('data-specification-added')
       .pipe(
         takeUntil(this.unsubscribe$),
-        switchMap(() => this.loadIntersections(this.dataSchemas)),
+        switchMap(() => this.loadIntersections(this.dataSchemas))
       )
       .subscribe((intersections) => {
         this.sourceTargetIntersections = intersections;
@@ -789,23 +789,23 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
   private confirmSubmitDataSpecification(): MatDialogRef<OkCancelDialogData> {
     return this.okCancel(
       'Submit data specification',
-      `You are about to submit your data specification "${this.dataSpecification?.label}" for review. You will not be able to change it further from this point. Do you want to continue?`,
+      `You are about to submit your data specification "${this.dataSpecification?.label}" for review. You will not be able to change it further from this point. Do you want to continue?`
     );
   }
 
   private okCancelItem(userFacingText: UserFacingText): MatDialogRef<OkCancelDialogData> {
     return this.okCancel(
       userFacingText.confirmationHeading,
-      userFacingText.confirmationMessage,
+      userFacingText.confirmationMessage
     );
   }
 
   private okCancelItemList(
-    itemList: DataElementSearchResult[],
+    itemList: DataElementSearchResult[]
   ): MatDialogRef<OkCancelDialogData> {
     return this.okCancel(
       'Remove selected data elements',
-      `Are you sure you want to remove these ${itemList.length} selected data elements from data specification ${this.dataSpecification?.label}?`,
+      `Are you sure you want to remove these ${itemList.length} selected data elements from data specification ${this.dataSpecification?.label}?`
     );
   }
 
@@ -833,8 +833,8 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
       .filter(
         (dataClassWithElements) =>
           dataClassWithElements.dataElements.filter(
-            (dataElement) => dataElement.isSelected,
-          ).length === dataClassWithElements.dataElements.length,
+            (dataElement) => dataElement.isSelected
+          ).length === dataClassWithElements.dataElements.length
       )
       .map((dataClassWithElements) => dataClassWithElements.dataClass);
   }
@@ -845,13 +845,13 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
         this.dataSchemaService
           .reduceDataElementsFromSchema(dataSchema)
           .filter((dataElement) => dataElement.isSelected).length ===
-        this.dataSchemaService.reduceDataElementsFromSchema(dataSchema).length,
+        this.dataSchemaService.reduceDataElementsFromSchema(dataSchema).length
     );
   }
 
   private removeSelectedItems(
     okCancelDialogResponse: OkCancelDialogResponse,
-    itemList: DataElementSearchResult[],
+    itemList: DataElementSearchResult[]
   ): Observable<[OkCancelDialogResponse, DataElementMultipleOperationResult]> {
     if (okCancelDialogResponse.result) {
       this.broadcastService.loading({
@@ -881,12 +881,12 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
   private removeSelectedClasses(
     okCancelDialogResponse: OkCancelDialogResponse,
     deletedElements: DataElementMultipleOperationResult,
-    classList: DataClass[],
+    classList: DataClass[]
   ): Observable<
     [
       OkCancelDialogResponse,
       DataElementMultipleOperationResult,
-      DataElementMultipleOperationResult,
+      DataElementMultipleOperationResult
     ]
   > {
     if (okCancelDialogResponse.result) {
@@ -898,7 +898,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
         [
           OkCancelDialogResponse,
           DataElementMultipleOperationResult,
-          DataElementMultipleOperationResult,
+          DataElementMultipleOperationResult
         ]
       >;
     } else {
@@ -906,7 +906,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
         [
           OkCancelDialogResponse,
           DataElementMultipleOperationResult,
-          DataElementMultipleOperationResult,
+          DataElementMultipleOperationResult
         ]
       >;
     }
@@ -916,12 +916,12 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     okCancelDialogResponse: OkCancelDialogResponse,
     deletedElements: DataElementMultipleOperationResult,
     deletedClasses: DataElementMultipleOperationResult,
-    schemaList: DataSchema[],
+    schemaList: DataSchema[]
   ): Observable<
     [
       DataElementMultipleOperationResult,
       DataElementMultipleOperationResult,
-      DataElementMultipleOperationResult,
+      DataElementMultipleOperationResult
     ]
   > {
     if (okCancelDialogResponse.result) {
@@ -933,7 +933,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
         [
           DataElementMultipleOperationResult,
           DataElementMultipleOperationResult,
-          DataElementMultipleOperationResult,
+          DataElementMultipleOperationResult
         ]
       >;
     } else {
@@ -941,7 +941,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
         [
           DataElementMultipleOperationResult,
           DataElementMultipleOperationResult,
-          DataElementMultipleOperationResult,
+          DataElementMultipleOperationResult
         ]
       >;
     }
@@ -952,7 +952,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
    */
   private removeDataElementFromQuery(
     dataElementLabels: string[],
-    queryType: DataSpecificationQueryType,
+    queryType: DataSpecificationQueryType
   ): Observable<DataSpecificationQueryPayload | undefined> {
     if (!this.dataSpecification?.id) {
       return EMPTY;
@@ -961,13 +961,13 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     return this.dataSpecificationService.deleteDataElementsFromQuery(
       this.dataSpecification.id,
       queryType,
-      dataElementLabels,
+      dataElementLabels
     );
   }
 
   private refreshQueries(
     dataQuery?: DataSpecificationQueryPayload,
-    cohortQuery?: DataSpecificationQueryPayload,
+    cohortQuery?: DataSpecificationQueryPayload
   ) {
     if (dataQuery && this.dataQuery !== dataQuery.condition) {
       this.dataQuery = dataQuery.condition;
@@ -1062,7 +1062,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
 
   private deleteDataClass(
     dataClass: DataClass | undefined,
-    dataSchema: DataSchema | undefined,
+    dataSchema: DataSchema | undefined
   ) {
     if (dataSchema?.schema && dataSchema?.dataClasses.length === 1) {
       return this.dataSpecificationService.deleteDataSchema(dataSchema.schema);
@@ -1076,7 +1076,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
   private deleteDataElement(
     dataElement: DataElementSearchResult | undefined,
     dataClassWithElements: DataClassWithElements | undefined,
-    dataSchema: DataSchema | undefined,
+    dataSchema: DataSchema | undefined
   ): Observable<DataElementOperationResult> {
     if (
       dataClassWithElements?.dataElements &&
@@ -1099,7 +1099,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
               const singleResult =
                 result.failures.length === 0 ? result.successes[0] : result.failures[0];
               return of(singleResult);
-            }),
+            })
           );
       } else {
         return EMPTY;
@@ -1118,7 +1118,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     if (itemType === 'dataClass') {
       return this.deleteDataClass(
         event.dataClassWithElements?.dataClass,
-        event.dataSchema,
+        event.dataSchema
       );
     }
 
@@ -1126,7 +1126,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
       return this.deleteDataElement(
         event.dataElement,
         event.dataClassWithElements,
-        event.dataSchema,
+        event.dataSchema
       );
     }
 
@@ -1135,7 +1135,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
 
   private deleteElementsFromQueries(
     event: DataItemDeleteEvent,
-    result: DataElementOperationResult,
+    result: DataElementOperationResult
   ) {
     const labels = this.getLabels(event);
 
