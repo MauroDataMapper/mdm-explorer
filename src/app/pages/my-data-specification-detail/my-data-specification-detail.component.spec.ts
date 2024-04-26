@@ -243,7 +243,7 @@ describe('MyDataSpecificationDetailComponent', () => {
     });
 
     it('should do nothing if there is no data specification', () => {
-      harness.component.submitDataSpecification();
+      harness.component.finaliseAndSubmitDataSpecification();
       expect(researchPluginStub.submitDataSpecification).not.toHaveBeenCalled();
     });
 
@@ -253,7 +253,7 @@ describe('MyDataSpecificationDetailComponent', () => {
         status: 'submitted',
       };
 
-      harness.component.submitDataSpecification();
+      harness.component.finaliseAndSubmitDataSpecification();
       expect(researchPluginStub.submitDataSpecification).not.toHaveBeenCalled();
     });
 
@@ -272,7 +272,7 @@ describe('MyDataSpecificationDetailComponent', () => {
       harness.component.dataSpecification = dataSpecification;
 
       // Act
-      harness.component.submitDataSpecification();
+      harness.component.finaliseAndSubmitDataSpecification();
 
       // Assert
       expect(researchPluginStub.submitDataSpecification).toHaveBeenCalled();
@@ -304,7 +304,7 @@ describe('MyDataSpecificationDetailComponent', () => {
       harness.component.dataSpecification = dataSpecification;
 
       // Act
-      harness.component.submitDataSpecification();
+      harness.component.finaliseAndSubmitDataSpecification();
 
       // Assert
       expect(researchPluginStub.submitDataSpecification).toHaveBeenCalled();
@@ -332,7 +332,7 @@ describe('MyDataSpecificationDetailComponent', () => {
       harness.component.dataSpecification = dataSpecification;
 
       // Act
-      harness.component.submitDataSpecification();
+      harness.component.finaliseAndSubmitDataSpecification();
 
       // Assert
       expect(researchPluginStub.submitDataSpecification).toHaveBeenCalledTimes(0);
