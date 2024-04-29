@@ -31,7 +31,7 @@ export class DataSpecificationRowComponent {
   @Input() detailsRouterLink?: RouterLinkRef;
   @Input() showStatus = true;
   @Input() showLabel = true;
-  @Input() showSubmitButton = false;
+  @Input() showFinaliseAndSubmitButton = false;
   @Input() showCopyButton = false;
   @Input() showEditButton = false;
   @Input() showVersionOnly = false;

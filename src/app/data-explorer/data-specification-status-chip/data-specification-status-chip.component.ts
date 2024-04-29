@@ -34,7 +34,7 @@ export class DataSpecificationStatusChipComponent {
   get statusCssClassMap() {
     return {
       'mdm-data-specification-status-chip--unsent': this.status === 'unsent',
-      'mdm-data-specification-status-chip--submitted': this.status === 'submitted',
+      'mdm-data-specification-status-chip--submitted': this.status === 'finalised',
     };
   }
 }

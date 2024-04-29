@@ -201,7 +201,7 @@ describe('MyDataSpecificationsComponent', () => {
         id: '3',
         label: 'data specification 3',
         domainType: CatalogueItemDomainType.DataModel,
-        status: 'submitted',
+        status: 'finalised',
       },
     ];
 
@@ -214,13 +214,13 @@ describe('MyDataSpecificationsComponent', () => {
 
       harness.component.filterByStatus(event);
 
-      expect(harness.component.statusFilters).toStrictEqual(['submitted', 'unsent']);
+      expect(harness.component.statusFilters).toStrictEqual(['finalised', 'unsent']);
       expect(harness.component.filteredDataSpecifications).toStrictEqual(
         dataSpecifications
       );
     });
 
-    it.each<DataSpecificationStatus>(['unsent', 'submitted'])(
+    it.each<DataSpecificationStatus>(['unsent', 'finalised'])(
       'should display only data specifications of status %p',
       (status) => {
         const event = { value: status } as MatSelectChange;

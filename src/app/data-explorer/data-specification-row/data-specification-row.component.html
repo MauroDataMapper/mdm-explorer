@@ -30,14 +30,14 @@ SPDX-License-Identifier: Apache-2.0
       [showVersionOnly]="showVersionOnly"
     ></mdm-version-selector>
     <button
-      *ngIf="showSubmitButton"
+      *ngIf="showFinaliseAndSubmitButton"
       mat-raised-button
       color="primary"
       aria-label="Submit data specification"
       (click)="onSubmitClick()"
     >
       <span class="fa-solid fa-paper-plane"></span>
-      Submit
+      Finalise and Submit
     </button>
     <button
       *ngIf="showCopyButton"

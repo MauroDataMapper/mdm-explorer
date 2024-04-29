@@ -87,7 +87,7 @@ describe('ResearchPluginService', () => {
     });
 
     const expected$ = cold('----a|', { a: dataModel });
-    const actual$ = service.submitDataSpecification(id);
+    const actual$ = service.finaliseDataSpecification(id);
     expect(actual$).toBeObservable(expected$);
   });
 });

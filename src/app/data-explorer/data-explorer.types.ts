@@ -229,7 +229,7 @@ export const mapProfileSearchResult = (
   };
 };
 
-export type DataSpecificationStatus = 'unsent' | 'submitted';
+export type DataSpecificationStatus = 'unsent' | 'finalised';
 
 /* .*
  * Determine the status of a data specification made by a user for data access.
@@ -237,7 +237,7 @@ export type DataSpecificationStatus = 'unsent' | 'submitted';
 export const getDataSpecificationStatus = (model: DataModel): DataSpecificationStatus => {
   if (model.modelVersion) {
     // Model was finalised, so is now locked
-    return 'submitted';
+    return 'finalised';
   }
 
   return 'unsent';

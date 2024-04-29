@@ -36,7 +36,7 @@ describe('DataSpecificationRowComponent', () => {
     expect(harness.component.detailsRouterLink).toBeUndefined();
     expect(harness.component.showStatus).toBe(true);
     expect(harness.component.showLabel).toBe(true);
-    expect(harness.component.showSubmitButton).toBe(false);
+    expect(harness.component.showFinaliseAndSubmitButton).toBe(false);
     expect(harness.component.showCopyButton).toBe(false);
   });
 
