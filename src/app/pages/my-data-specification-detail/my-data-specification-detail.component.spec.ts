@@ -42,7 +42,6 @@ import {
   DataSpecificationQueryType,
   DataSchema,
   QueryCondition,
-  DataSpecificationStatus,
 } from '../../data-explorer/data-explorer.types';
 import {
   DataSpecificationSourceTargetIntersections,
