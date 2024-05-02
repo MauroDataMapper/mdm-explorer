@@ -21,6 +21,7 @@ import {
   ListColumn,
   Organisation,
   OrganisationMemberService,
+  RequestsListMode,
   UserOrganisationDTO,
   Uuid,
 } from '@maurodatamapper/sde-resources';
@@ -34,14 +35,19 @@ import { switchMap, EMPTY, of, forkJoin } from 'rxjs';
 })
 export class OrganisationsComponent implements OnInit {
   selectedOrganisation: Organisation | undefined = undefined;
+  selectedOrganisationId = this.selectedOrganisation?.id;
   displayColumnsForOrganisationMemberList: ListColumn[] = [];
   myOrganisations: UserOrganisationDTO[] = [];
   userHasOrganisations = true;
+  userIsApproverForSelectedOrganisation = false;
+
+  requestsNeedingApprovalListConfig: RequestsListMode = RequestsListMode.CanAuthorise;
+  myRequestsListConfig: RequestsListMode = RequestsListMode.MyOrganisationRequests;
 
   constructor(
     private sdeOrganisationService: SdeOrganisationService,
     private organisationMemberService: OrganisationMemberService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.sdeOrganisationService
@@ -99,6 +105,8 @@ export class OrganisationsComponent implements OnInit {
     }
 
     this.selectedOrganisation = selectedOrg;
+    this.userIsApproverForSelectedOrganisation = userRoleAtSelectedOrg === 'APPROVER';
+
     this.displayColumnsForOrganisationMemberList =
       this.organisationMemberService.getDisplayColumnsForResearcher(
         userRoleAtSelectedOrg
