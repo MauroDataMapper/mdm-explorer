@@ -175,6 +175,10 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     this.updateAllOrSomeChildrenSelectedHandler();
   }
 
+  submitDataSpecification(): void {
+    console.warn('Not implemented');
+  }
+
   finaliseDataSpecification() {
     if (
       !this.dataSpecification ||
@@ -333,62 +337,46 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
             cohortQuery: this.removeDataElementFromQuery(labels, this.cohortQueryType),
           });
         }),
-        switchMap(
-          ({
-            deletedElements,
-            deletedClasses,
-            deletedSchemas,
-            dataQuery,
-            cohortQuery,
-          }) => {
-            this.refreshQueries(dataQuery, cohortQuery);
+        switchMap(({ deletedElements, deletedClasses, deletedSchemas, dataQuery, cohortQuery }) => {
+          this.refreshQueries(dataQuery, cohortQuery);
 
-            const success = deletedElements.failures.length === 0;
-            let message = `${deletedElements.successes.length} Data element${
-              deletedElements.successes.length === 1 ? '' : 's'
+          const success = deletedElements.failures.length === 0;
+          let message = `${deletedElements.successes.length} Data element${deletedElements.successes.length === 1 ? '' : 's'
             } removed from data specification "${this.dataSpecification?.label}".`;
-            if (!success) {
-              message += `\r\n${deletedElements.failures.length} Data element${
-                deletedElements.failures.length === 1 ? '' : 's'
+          if (!success) {
+            message += `\r\n${deletedElements.failures.length} Data element${deletedElements.failures.length === 1 ? '' : 's'
               } caused an error.`;
-              deletedElements.failures.forEach((item: DataElementOperationResult) =>
-                console.log(item.message)
-              );
-            }
-
-            const classSuccess = deletedClasses.failures.length === 0;
-            if (!classSuccess) {
-              message += `\r\n${deletedClasses.failures.length} Data class${
-                deletedClasses.failures.length === 1 ? '' : 'es'
-              } caused an error.`;
-              deletedClasses.failures.forEach((item: DataElementOperationResult) =>
-                console.log(item.message)
-              );
-            }
-
-            const schemaSuccess = deletedSchemas.failures.length === 0;
-            if (!schemaSuccess) {
-              message += `\r\n${deletedSchemas.failures.length} Data schema${
-                deletedSchemas.failures.length === 1 ? '' : 's'
-              } caused an error.`;
-              deletedSchemas.failures.forEach((item: DataElementOperationResult) =>
-                console.log(item.message)
-              );
-            }
-
-            this.processRemoveDataElementResponse(success, message);
-
-            return this.setDataSpecification(this.dataSpecification);
+            deletedElements.failures.forEach((item: DataElementOperationResult) =>
+              console.log(item.message)
+            );
           }
-        )
+
+          const classSuccess = deletedClasses.failures.length === 0;
+          if (!classSuccess) {
+            message += `\r\n${deletedClasses.failures.length} Data class${deletedClasses.failures.length === 1 ? '' : 'es'
+              } caused an error.`;
+            deletedClasses.failures.forEach((item: DataElementOperationResult) =>
+              console.log(item.message)
+            );
+          }
+
+          const schemaSuccess = deletedSchemas.failures.length === 0;
+          if (!schemaSuccess) {
+            message += `\r\n${deletedSchemas.failures.length} Data schema${deletedSchemas.failures.length === 1 ? '' : 's'
+              } caused an error.`;
+            deletedSchemas.failures.forEach((item: DataElementOperationResult) =>
+              console.log(item.message)
+            );
+          }
+
+          this.processRemoveDataElementResponse(success, message);
+
+          return this.setDataSpecification(this.dataSpecification);
+        })
       )
       .subscribe(([dataSchemas, intersections, versionTree]) => {
         if (dataSchemas && intersections && versionTree) {
-          this.setDataSchemasIntersectionsAndVersionTree(
-            dataSchemas,
-            intersections,
-            versionTree
-          );
+          this.setDataSchemasIntersectionsAndVersionTree(dataSchemas, intersections, versionTree);
         }
 
         this.broadcastService.loading({ isLoading: false });

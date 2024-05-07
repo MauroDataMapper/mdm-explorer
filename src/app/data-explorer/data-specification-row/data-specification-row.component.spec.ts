@@ -38,6 +38,12 @@ describe('DataSpecificationRowComponent', () => {
     expect(harness.component.showCopyButton).toBe(false);
   });
 
+  it('should raise the finalise click event', () => {
+    const spy = jest.spyOn(harness.component.finaliseClick, 'emit');
+    harness.component.onFinaliseClick();
+    expect(spy).toHaveBeenCalled();
+  });
+
   it('should raise the submit click event', () => {
     const spy = jest.spyOn(harness.component.submitClick, 'emit');
     harness.component.onSubmitClick();

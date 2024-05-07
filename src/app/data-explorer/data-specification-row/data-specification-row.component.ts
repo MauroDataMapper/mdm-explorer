@@ -38,6 +38,7 @@ export class DataSpecificationRowComponent implements OnChanges {
   @Input() showEditButton = false;
 
   @Output() submitClick = new EventEmitter<void>();
+  @Output() finaliseClick = new EventEmitter<void>();
   @Output() copyClick = new EventEmitter<void>();
   @Output() editClick = new EventEmitter<void>();
   @Output() shareClick = new EventEmitter<void>();
@@ -46,19 +47,25 @@ export class DataSpecificationRowComponent implements OnChanges {
 
   showFinaliseButton = false;
   showShareButton = false;
+  showSubmitButton = false;
 
   ngOnChanges(): void {
     const status = this.dataSpecification?.status;
 
-    // Can only edit/finalise if not already finalised and user owns the data spec.
+    // Can only finalise if not already finalised and user owns the data spec.
     this.showFinaliseButton = this.currentUserOwnsDataSpec && status === 'unsent';
 
-    // Can only share if finalised and user owns the data spec.
+    // Can only submit/share if finalised and user owns the data spec.
+    this.showSubmitButton = this.currentUserOwnsDataSpec && status === 'finalised';
     this.showShareButton = this.currentUserOwnsDataSpec && status === 'finalised';
   }
 
   onSubmitClick() {
     this.submitClick.emit();
+  }
+
+  onFinaliseClick() {
+    this.finaliseClick.emit();
   }
 
   onCopyClick() {

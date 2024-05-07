@@ -51,7 +51,8 @@ SPDX-License-Identifier: Apache-2.0
           !newerVersionExists &&
           currentVersionIsLatest
         "
-        (submitClick)="finaliseDataSpecification()"
+        (finaliseClick)="finaliseDataSpecification()"
+        (submitClick)="submitDataSpecification()"
         (copyClick)="copyDataSpecification()"
         (editClick)="editDataSpecification()"
         (shareClick)="shareDataSpecification()"

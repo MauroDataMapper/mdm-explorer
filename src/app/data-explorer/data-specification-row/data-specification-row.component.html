@@ -29,15 +29,27 @@ SPDX-License-Identifier: Apache-2.0
       (valueChange)="onViewDifferentVersionClick($event)"
       [showVersionOnly]="showVersionOnly"
     ></mdm-version-selector>
+
     <button
       *ngIf="showFinaliseButton"
       mat-raised-button
       color="primary"
       aria-label="Finalise data specification"
-      (click)="onSubmitClick()"
+      (click)="onFinaliseClick()"
     >
       <span class="fa-solid fa-paper-plane"></span>
       Finalise
+    </button>
+
+    <button
+      *ngIf="showSubmitButton"
+      mat-raised-button
+      color="primary"
+      aria-label="Submit data specification"
+      (click)="onSubmitClick()"
+    >
+      <span class="fa-solid fa-paper-plane"></span>
+      Submit
     </button>
     <button
       *ngIf="showCopyButton"
