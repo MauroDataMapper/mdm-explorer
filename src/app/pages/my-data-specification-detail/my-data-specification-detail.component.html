@@ -42,23 +42,16 @@ SPDX-License-Identifier: Apache-2.0
         [dataSpecification]="dataSpecification"
         [showLabel]="false"
         [showStatus]="true"
-        [showFinaliseAndSubmitButton]="
-          dataSpecification.status === 'unsent' && currentUserOwnsDataSpec
-        "
+        [currentUserOwnsDataSpec]="currentUserOwnsDataSpec"
+        [showEditButton]="dataSpecification.status === 'unsent' && currentUserOwnsDataSpec"
         [showCopyButton]="dataSpecification.status === 'finalised'"
-        [showEditButton]="
-          dataSpecification.status === 'unsent' && currentUserOwnsDataSpec
-        "
-        [showShareButton]="
-          currentUserOwnsDataSpec && dataSpecification.status === 'finalised'
-        "
         [showNewVersionButton]="
           currentUserOwnsDataSpec &&
           dataSpecification.status === 'finalised' &&
           !newerVersionExists &&
           currentVersionIsLatest
         "
-        (submitClick)="finaliseAndSubmitDataSpecification()"
+        (submitClick)="finaliseDataSpecification()"
         (copyClick)="copyDataSpecification()"
         (editClick)="editDataSpecification()"
         (shareClick)="shareDataSpecification()"
@@ -72,18 +65,14 @@ SPDX-License-Identifier: Apache-2.0
     <mdm-data-query-row
       queryType="cohort"
       [condition]="cohortQuery"
-      [readOnly]="
-        dataSpecification.status === 'finalised' || isEmpty || !currentUserOwnsDataSpec
-      "
+      [readOnly]="dataSpecification.status === 'finalised' || isEmpty || !currentUserOwnsDataSpec"
       createRouterLink="queries/cohort"
       editRouterLink="queries/cohort"
     ></mdm-data-query-row>
     <mdm-data-query-row
       queryType="data"
       [condition]="dataQuery"
-      [readOnly]="
-        dataSpecification.status === 'finalised' || isEmpty || !currentUserOwnsDataSpec
-      "
+      [readOnly]="dataSpecification.status === 'finalised' || isEmpty || !currentUserOwnsDataSpec"
       createRouterLink="queries/data"
       editRouterLink="queries/data"
     ></mdm-data-query-row>
@@ -91,8 +80,7 @@ SPDX-License-Identifier: Apache-2.0
     <h2>Data elements</h2>
     <p *ngIf="dataSpecification.status === 'unsent'">
       You can add more data elements to this data specification by
-      <a routerLink="/browse">browsing</a> or <a routerLink="/search">searching</a> our
-      catalogue.
+      <a routerLink="/browse">browsing</a> or <a routerLink="/search">searching</a> our catalogue.
     </p>
 
     <div
@@ -115,10 +103,7 @@ SPDX-License-Identifier: Apache-2.0
 
     <div
       class="mdm-my-data-specification__specification-elements"
-      *ngIf="
-        sourceTargetIntersections.dataSpecifications.length > 0 ||
-        !currentUserOwnsDataSpec
-      "
+      *ngIf="sourceTargetIntersections.dataSpecifications.length > 0 || !currentUserOwnsDataSpec"
     >
       <mdm-data-schema-row
         *ngFor="let dataSchema of dataSchemas"

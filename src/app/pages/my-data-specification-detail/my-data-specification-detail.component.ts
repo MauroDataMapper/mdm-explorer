@@ -175,7 +175,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     this.updateAllOrSomeChildrenSelectedHandler();
   }
 
-  finaliseAndSubmitDataSpecification() {
+  finaliseDataSpecification() {
     if (
       !this.dataSpecification ||
       !this.dataSpecification.id ||
@@ -184,7 +184,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.confirmFinaliseAndSubmitDataSpecification()
+    this.confirmFinaliseDataSpecification()
       .afterClosed()
       .pipe(
         filter((response) => response?.result ?? false),
@@ -195,7 +195,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
 
           this.broadcastService.loading({
             isLoading: true,
-            caption: 'Finalising and Submitting your data specification...',
+            caption: 'Finalising your data specification...',
           });
           return this.researchPlugin.finaliseDataSpecification(this.dataSpecification.id);
         }),
@@ -219,18 +219,18 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
         catchError(() => {
           this.toastr.error(
             'There was a problem finalising your data specification. Please try again or contact us for support.',
-            'Finalising error'
+            'Finalising error',
           );
           return EMPTY;
         }),
-        finalize(() => this.broadcastService.loading({ isLoading: false }))
+        finalize(() => this.broadcastService.loading({ isLoading: false })),
       )
       .subscribe(() => {
-        this.broadcastService.dispatch('data-specification-submitted');
+        this.broadcastService.dispatch('data-specification-finalised');
 
         this.dialogs.openSuccess({
-          heading: 'Data specification submitted',
-          message: `Your data specification "${this.dataSpecification?.label}" has been successfully submitted. It will now be reviewed and you will be contacted shortly to discuss further steps.`,
+          heading: 'Data specification finalised.',
+          message: `Your data specification "${this.dataSpecification?.label}" has been successfully finalised.`,
         });
       });
   }
@@ -786,10 +786,10 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
   /**
    * Methods for managing the okCancel dialogs.
    */
-  private confirmFinaliseAndSubmitDataSpecification(): MatDialogRef<OkCancelDialogData> {
+  private confirmFinaliseDataSpecification(): MatDialogRef<OkCancelDialogData> {
     return this.okCancel(
-      'Finalise and Submit data specification',
-      `You are about to finalise and submit your data specification "${this.dataSpecification?.label}" for review. You will not be able to change it further from this point. Do you want to continue?`
+      'Finalise data specification',
+      `You are about to finalise your data specification "${this.dataSpecification?.label}" for review. You will not be able to change it further from this point. Do you want to continue?`
     );
   }
 

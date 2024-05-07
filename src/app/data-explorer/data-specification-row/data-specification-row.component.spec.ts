@@ -6,7 +6,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,12 +16,10 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import {
-  ComponentHarness,
-  setupTestModuleForComponent,
-} from '../../testing/testing.helpers';
+import { ComponentHarness, setupTestModuleForComponent } from '../../testing/testing.helpers';
 
 import { DataSpecificationRowComponent } from './data-specification-row.component';
+import { DataSpecification } from '../data-explorer.types';
 
 describe('DataSpecificationRowComponent', () => {
   let harness: ComponentHarness<DataSpecificationRowComponent>;
@@ -36,7 +34,7 @@ describe('DataSpecificationRowComponent', () => {
     expect(harness.component.detailsRouterLink).toBeUndefined();
     expect(harness.component.showStatus).toBe(true);
     expect(harness.component.showLabel).toBe(true);
-    expect(harness.component.showFinaliseAndSubmitButton).toBe(false);
+    expect(harness.component.showFinaliseButton).toBe(false);
     expect(harness.component.showCopyButton).toBe(false);
   });
 
@@ -51,4 +49,27 @@ describe('DataSpecificationRowComponent', () => {
     harness.component.onCopyClick();
     expect(spy).toHaveBeenCalled();
   });
+
+  it.each`
+    dataSpecStatus | currentUserOwnsDataSpec | showFinaliseButton | showShareButton
+    ${'finalised'} | ${true}                 | ${false}           | ${true}
+    ${'finalised'} | ${false}                | ${false}           | ${false}
+    ${'unsent'}    | ${true}                 | ${true}            | ${false}
+    ${'unsent'}    | ${false}                | ${false}           | ${false}
+  `(
+    'should set properties correctly when isFinalised=$isFinalised and currentUserOwnsDataSpec=$currentUserOwnsDataSpec',
+    ({ dataSpecStatus, currentUserOwnsDataSpec, showFinaliseButton, showShareButton }) => {
+      // Set input values
+      harness.component.dataSpecification = {
+        status: dataSpecStatus,
+      } as DataSpecification;
+      harness.component.currentUserOwnsDataSpec = currentUserOwnsDataSpec;
+
+      harness.component.ngOnChanges();
+
+      // Assert component properties are set correctly
+      expect(harness.component.showFinaliseButton).toBe(showFinaliseButton);
+      expect(harness.component.showShareButton).toBe(showShareButton);
+    }
+  );
 });

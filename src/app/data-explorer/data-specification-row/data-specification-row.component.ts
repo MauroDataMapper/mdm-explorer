@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { RouterLinkRef } from '../../shared/types/shared.types';
 import { DataSpecification } from '../data-explorer.types';
 import { VersionOption } from '../version-selector/version-selector.component';
@@ -26,17 +26,16 @@ import { VersionOption } from '../version-selector/version-selector.component';
   templateUrl: './data-specification-row.component.html',
   styleUrls: ['./data-specification-row.component.scss'],
 })
-export class DataSpecificationRowComponent {
+export class DataSpecificationRowComponent implements OnChanges {
   @Input() dataSpecification?: DataSpecification;
   @Input() detailsRouterLink?: RouterLinkRef;
   @Input() showStatus = true;
   @Input() showLabel = true;
-  @Input() showFinaliseAndSubmitButton = false;
-  @Input() showCopyButton = false;
-  @Input() showEditButton = false;
+  @Input() currentUserOwnsDataSpec = false;
   @Input() showVersionOnly = false;
   @Input() showNewVersionButton = false;
-  @Input() showShareButton = false;
+  @Input() showCopyButton = false;
+  @Input() showEditButton = false;
 
   @Output() submitClick = new EventEmitter<void>();
   @Output() copyClick = new EventEmitter<void>();
@@ -44,6 +43,19 @@ export class DataSpecificationRowComponent {
   @Output() shareClick = new EventEmitter<void>();
   @Output() newVersionClick = new EventEmitter<void>();
   @Output() ViewDifferentVersionClick = new EventEmitter<string>();
+
+  showFinaliseButton = false;
+  showShareButton = false;
+
+  ngOnChanges(): void {
+    const status = this.dataSpecification?.status;
+
+    // Can only edit/finalise if not already finalised and user owns the data spec.
+    this.showFinaliseButton = this.currentUserOwnsDataSpec && status === 'unsent';
+
+    // Can only share if finalised and user owns the data spec.
+    this.showShareButton = this.currentUserOwnsDataSpec && status === 'finalised';
+  }
 
   onSubmitClick() {
     this.submitClick.emit();
