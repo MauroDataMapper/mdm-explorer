@@ -6,7 +6,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0
+    http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -57,14 +57,20 @@ describe('DataSpecificationRowComponent', () => {
   });
 
   it.each`
-    dataSpecStatus | currentUserOwnsDataSpec | showFinaliseButton | showShareButton
-    ${'finalised'} | ${true}                 | ${false}           | ${true}
-    ${'finalised'} | ${false}                | ${false}           | ${false}
-    ${'unsent'}    | ${true}                 | ${true}            | ${false}
-    ${'unsent'}    | ${false}                | ${false}           | ${false}
+    dataSpecStatus | currentUserOwnsDataSpec | showFinaliseButton | showShareButton | showSubmitButton
+    ${'finalised'} | ${true}                 | ${false}           | ${true}         | ${true}
+    ${'finalised'} | ${false}                | ${false}           | ${false}        | ${false}
+    ${'unsent'}    | ${true}                 | ${true}            | ${false}        | ${false}
+    ${'unsent'}    | ${false}                | ${false}           | ${false}        | ${false}
   `(
     'should set properties correctly when isFinalised=$isFinalised and currentUserOwnsDataSpec=$currentUserOwnsDataSpec',
-    ({ dataSpecStatus, currentUserOwnsDataSpec, showFinaliseButton, showShareButton }) => {
+    ({
+      dataSpecStatus,
+      currentUserOwnsDataSpec,
+      showFinaliseButton,
+      showShareButton,
+      showSubmitButton,
+    }) => {
       // Set input values
       harness.component.dataSpecification = {
         status: dataSpecStatus,
@@ -76,6 +82,7 @@ describe('DataSpecificationRowComponent', () => {
       // Assert component properties are set correctly
       expect(harness.component.showFinaliseButton).toBe(showFinaliseButton);
       expect(harness.component.showShareButton).toBe(showShareButton);
+      expect(harness.component.showSubmitButton).toBe(showSubmitButton);
     }
   );
 });
