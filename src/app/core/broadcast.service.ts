@@ -32,7 +32,7 @@ export type BroadcastEvent =
   | 'user-signed-out'
   | 'sign-out-user'
   | 'data-specification-added'
-  | 'data-specification-submitted'
+  | 'data-specification-finalised'
   | 'data-intersections-refreshed'
   | 'data-bookmarks-refreshed'
   | 'loading';

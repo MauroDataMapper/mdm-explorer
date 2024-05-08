@@ -364,10 +364,10 @@ export class AppComponent implements OnInit, OnDestroy {
             (this.unsentDataSpecificationsCount = unsentDataSpecificationsCount)
         )
       )
-      .subscribe(() => {});
+      .subscribe(() => { });
 
     this.broadcast
-      .on('data-specification-submitted')
+      .on('data-specification-finalised')
       .pipe(
         takeUntil(this.unsubscribe$),
         switchMap(() => this.getUnsentDataSpecificationCount()),

@@ -175,7 +175,11 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     this.updateAllOrSomeChildrenSelectedHandler();
   }
 
-  finaliseAndSubmitDataSpecification() {
+  submitDataSpecification(): void {
+    console.warn('Not implemented');
+  }
+
+  finaliseDataSpecification() {
     if (
       !this.dataSpecification ||
       !this.dataSpecification.id ||
@@ -184,7 +188,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.confirmFinaliseAndSubmitDataSpecification()
+    this.confirmFinaliseDataSpecification()
       .afterClosed()
       .pipe(
         filter((response) => response?.result ?? false),
@@ -195,7 +199,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
 
           this.broadcastService.loading({
             isLoading: true,
-            caption: 'Finalising and Submitting your data specification...',
+            caption: 'Finalising your data specification...',
           });
           return this.researchPlugin.finaliseDataSpecification(this.dataSpecification.id);
         }),
@@ -219,18 +223,18 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
         catchError(() => {
           this.toastr.error(
             'There was a problem finalising your data specification. Please try again or contact us for support.',
-            'Finalising error'
+            'Finalising error',
           );
           return EMPTY;
         }),
-        finalize(() => this.broadcastService.loading({ isLoading: false }))
+        finalize(() => this.broadcastService.loading({ isLoading: false })),
       )
       .subscribe(() => {
-        this.broadcastService.dispatch('data-specification-submitted');
+        this.broadcastService.dispatch('data-specification-finalised');
 
         this.dialogs.openSuccess({
-          heading: 'Data specification submitted',
-          message: `Your data specification "${this.dataSpecification?.label}" has been successfully submitted. It will now be reviewed and you will be contacted shortly to discuss further steps.`,
+          heading: 'Data specification finalised.',
+          message: `Your data specification "${this.dataSpecification?.label}" has been successfully finalised.`,
         });
       });
   }
@@ -333,62 +337,46 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
             cohortQuery: this.removeDataElementFromQuery(labels, this.cohortQueryType),
           });
         }),
-        switchMap(
-          ({
-            deletedElements,
-            deletedClasses,
-            deletedSchemas,
-            dataQuery,
-            cohortQuery,
-          }) => {
-            this.refreshQueries(dataQuery, cohortQuery);
+        switchMap(({ deletedElements, deletedClasses, deletedSchemas, dataQuery, cohortQuery }) => {
+          this.refreshQueries(dataQuery, cohortQuery);
 
-            const success = deletedElements.failures.length === 0;
-            let message = `${deletedElements.successes.length} Data element${
-              deletedElements.successes.length === 1 ? '' : 's'
+          const success = deletedElements.failures.length === 0;
+          let message = `${deletedElements.successes.length} Data element${deletedElements.successes.length === 1 ? '' : 's'
             } removed from data specification "${this.dataSpecification?.label}".`;
-            if (!success) {
-              message += `\r\n${deletedElements.failures.length} Data element${
-                deletedElements.failures.length === 1 ? '' : 's'
+          if (!success) {
+            message += `\r\n${deletedElements.failures.length} Data element${deletedElements.failures.length === 1 ? '' : 's'
               } caused an error.`;
-              deletedElements.failures.forEach((item: DataElementOperationResult) =>
-                console.log(item.message)
-              );
-            }
-
-            const classSuccess = deletedClasses.failures.length === 0;
-            if (!classSuccess) {
-              message += `\r\n${deletedClasses.failures.length} Data class${
-                deletedClasses.failures.length === 1 ? '' : 'es'
-              } caused an error.`;
-              deletedClasses.failures.forEach((item: DataElementOperationResult) =>
-                console.log(item.message)
-              );
-            }
-
-            const schemaSuccess = deletedSchemas.failures.length === 0;
-            if (!schemaSuccess) {
-              message += `\r\n${deletedSchemas.failures.length} Data schema${
-                deletedSchemas.failures.length === 1 ? '' : 's'
-              } caused an error.`;
-              deletedSchemas.failures.forEach((item: DataElementOperationResult) =>
-                console.log(item.message)
-              );
-            }
-
-            this.processRemoveDataElementResponse(success, message);
-
-            return this.setDataSpecification(this.dataSpecification);
+            deletedElements.failures.forEach((item: DataElementOperationResult) =>
+              console.log(item.message)
+            );
           }
-        )
+
+          const classSuccess = deletedClasses.failures.length === 0;
+          if (!classSuccess) {
+            message += `\r\n${deletedClasses.failures.length} Data class${deletedClasses.failures.length === 1 ? '' : 'es'
+              } caused an error.`;
+            deletedClasses.failures.forEach((item: DataElementOperationResult) =>
+              console.log(item.message)
+            );
+          }
+
+          const schemaSuccess = deletedSchemas.failures.length === 0;
+          if (!schemaSuccess) {
+            message += `\r\n${deletedSchemas.failures.length} Data schema${deletedSchemas.failures.length === 1 ? '' : 's'
+              } caused an error.`;
+            deletedSchemas.failures.forEach((item: DataElementOperationResult) =>
+              console.log(item.message)
+            );
+          }
+
+          this.processRemoveDataElementResponse(success, message);
+
+          return this.setDataSpecification(this.dataSpecification);
+        })
       )
       .subscribe(([dataSchemas, intersections, versionTree]) => {
         if (dataSchemas && intersections && versionTree) {
-          this.setDataSchemasIntersectionsAndVersionTree(
-            dataSchemas,
-            intersections,
-            versionTree
-          );
+          this.setDataSchemasIntersectionsAndVersionTree(dataSchemas, intersections, versionTree);
         }
 
         this.broadcastService.loading({ isLoading: false });
@@ -786,10 +774,10 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
   /**
    * Methods for managing the okCancel dialogs.
    */
-  private confirmFinaliseAndSubmitDataSpecification(): MatDialogRef<OkCancelDialogData> {
+  private confirmFinaliseDataSpecification(): MatDialogRef<OkCancelDialogData> {
     return this.okCancel(
-      'Finalise and Submit data specification',
-      `You are about to finalise and submit your data specification "${this.dataSpecification?.label}" for review. You will not be able to change it further from this point. Do you want to continue?`
+      'Finalise data specification',
+      `You are about to finalise your data specification "${this.dataSpecification?.label}" for review. You will not be able to change it further from this point. Do you want to continue?`
     );
   }
 

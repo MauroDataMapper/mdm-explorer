@@ -16,12 +16,10 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import {
-  ComponentHarness,
-  setupTestModuleForComponent,
-} from '../../testing/testing.helpers';
+import { ComponentHarness, setupTestModuleForComponent } from '../../testing/testing.helpers';
 
 import { DataSpecificationRowComponent } from './data-specification-row.component';
+import { DataSpecification } from '../data-explorer.types';
 
 describe('DataSpecificationRowComponent', () => {
   let harness: ComponentHarness<DataSpecificationRowComponent>;
@@ -36,8 +34,14 @@ describe('DataSpecificationRowComponent', () => {
     expect(harness.component.detailsRouterLink).toBeUndefined();
     expect(harness.component.showStatus).toBe(true);
     expect(harness.component.showLabel).toBe(true);
-    expect(harness.component.showFinaliseAndSubmitButton).toBe(false);
+    expect(harness.component.showFinaliseButton).toBe(false);
     expect(harness.component.showCopyButton).toBe(false);
+  });
+
+  it('should raise the finalise click event', () => {
+    const spy = jest.spyOn(harness.component.finaliseClick, 'emit');
+    harness.component.onFinaliseClick();
+    expect(spy).toHaveBeenCalled();
   });
 
   it('should raise the submit click event', () => {
@@ -51,4 +55,34 @@ describe('DataSpecificationRowComponent', () => {
     harness.component.onCopyClick();
     expect(spy).toHaveBeenCalled();
   });
+
+  it.each`
+    dataSpecStatus | currentUserOwnsDataSpec | showFinaliseButton | showShareButton | showSubmitButton
+    ${'finalised'} | ${true}                 | ${false}           | ${true}         | ${true}
+    ${'finalised'} | ${false}                | ${false}           | ${false}        | ${false}
+    ${'unsent'}    | ${true}                 | ${true}            | ${false}        | ${false}
+    ${'unsent'}    | ${false}                | ${false}           | ${false}        | ${false}
+  `(
+    'should set properties correctly when isFinalised=$isFinalised and currentUserOwnsDataSpec=$currentUserOwnsDataSpec',
+    ({
+      dataSpecStatus,
+      currentUserOwnsDataSpec,
+      showFinaliseButton,
+      showShareButton,
+      showSubmitButton,
+    }) => {
+      // Set input values
+      harness.component.dataSpecification = {
+        status: dataSpecStatus,
+      } as DataSpecification;
+      harness.component.currentUserOwnsDataSpec = currentUserOwnsDataSpec;
+
+      harness.component.ngOnChanges();
+
+      // Assert component properties are set correctly
+      expect(harness.component.showFinaliseButton).toBe(showFinaliseButton);
+      expect(harness.component.showShareButton).toBe(showShareButton);
+      expect(harness.component.showSubmitButton).toBe(showSubmitButton);
+    }
+  );
 });

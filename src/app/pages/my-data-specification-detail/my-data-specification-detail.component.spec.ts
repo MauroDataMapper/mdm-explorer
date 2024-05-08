@@ -243,7 +243,7 @@ describe('MyDataSpecificationDetailComponent', () => {
     });
 
     it('should do nothing if there is no data specification', () => {
-      harness.component.finaliseAndSubmitDataSpecification();
+      harness.component.finaliseDataSpecification();
       expect(researchPluginStub.finaliseDataSpecification).not.toHaveBeenCalled();
     });
 
@@ -253,7 +253,7 @@ describe('MyDataSpecificationDetailComponent', () => {
         status: 'finalised',
       };
 
-      harness.component.finaliseAndSubmitDataSpecification();
+      harness.component.finaliseDataSpecification();
       expect(researchPluginStub.finaliseDataSpecification).not.toHaveBeenCalled();
     });
 
@@ -272,7 +272,7 @@ describe('MyDataSpecificationDetailComponent', () => {
       harness.component.dataSpecification = dataSpecification;
 
       // Act
-      harness.component.finaliseAndSubmitDataSpecification();
+      harness.component.finaliseDataSpecification();
 
       // Assert
       expect(researchPluginStub.finaliseDataSpecification).toHaveBeenCalled();
@@ -304,18 +304,18 @@ describe('MyDataSpecificationDetailComponent', () => {
       harness.component.dataSpecification = dataSpecification;
 
       // Act
-      harness.component.finaliseAndSubmitDataSpecification();
+      harness.component.finaliseDataSpecification();
 
       // Assert
       expect(researchPluginStub.finaliseDataSpecification).toHaveBeenCalled();
       expect(harness.component.dataSpecification.status).toBe('finalised');
-      expect(broadcastStub.dispatch).toHaveBeenCalledWith('data-specification-submitted');
+      expect(broadcastStub.dispatch).toHaveBeenCalledWith('data-specification-finalised');
       expect(broadcastStub.loading).toHaveBeenCalledTimes(2);
       expect(broadcastStub.loading.mock.calls).toEqual([
         [
           {
             isLoading: true,
-            caption: 'Finalising and Submitting your data specification...',
+            caption: 'Finalising your data specification...',
           },
         ],
         [{ isLoading: false }],
@@ -332,7 +332,7 @@ describe('MyDataSpecificationDetailComponent', () => {
       harness.component.dataSpecification = dataSpecification;
 
       // Act
-      harness.component.finaliseAndSubmitDataSpecification();
+      harness.component.finaliseDataSpecification();
 
       // Assert
       expect(researchPluginStub.finaliseDataSpecification).toHaveBeenCalledTimes(0);
