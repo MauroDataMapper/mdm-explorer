@@ -3,7 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Uuid } from '@maurodatamapper/sde-resources';
 
 export interface SelectProjectDialogData {
-  dataSpecificationId: Uuid;
+  specificationId: Uuid;
 }
 
 @Component({
@@ -14,7 +14,7 @@ export interface SelectProjectDialogData {
 export class SelectProjectDialogComponent implements OnInit {
   constructor(
     private dialogRef: MatDialogRef<SelectProjectDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) private data: SelectProjectDialogData,
+    @Inject(MAT_DIALOG_DATA) private data: SelectProjectDialogData
   ) {}
 
   ngOnInit(): void {}

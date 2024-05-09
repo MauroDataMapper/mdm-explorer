@@ -60,6 +60,10 @@ import {
   ShareDataSpecificationDialogComponent,
   ShareDataSpecificationDialogInputOutput,
 } from './share-data-specification-dialog/share-data-specification-dialog.component';
+import {
+  SelectProjectDialogComponent,
+  SelectProjectDialogData,
+} from './specification-submission/select-project-dialog/select-project-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -149,5 +153,14 @@ export class DialogService {
       ShareDataSpecificationDialogInputOutput,
       ShareDataSpecificationDialogInputOutput
     >(ShareDataSpecificationDialogComponent, { minWidth: 500, data });
+  }
+
+  openSelectProject(data: SelectProjectDialogData) {
+    return this.matDialog.open<SelectProjectDialogComponent, SelectProjectDialogData>(
+      SelectProjectDialogComponent,
+      {
+        data,
+      }
+    );
   }
 }

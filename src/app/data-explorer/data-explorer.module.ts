@@ -64,7 +64,7 @@ import { LetDirective } from '../shared/directives/let.directive';
 import { EntitySelectorDialogComponent } from './query-builder/dialogs/entity-selector-dialog/entity-selector-dialog.component';
 import { HasFieldsPipe } from './query-builder/pipes/has-fields-pipe';
 import { ArrowFormatPipe } from './query-builder/pipes/arrow-format-pipe';
-import { SelectProjectDialogComponent } from './specification-submission-service/select-project-dialog/select-project-dialog.component';
+import { SelectProjectDialogComponent } from './specification-submission/select-project-dialog/select-project-dialog.component';
 
 const queryBuilderModules = [
   QueryBuilderComponent,

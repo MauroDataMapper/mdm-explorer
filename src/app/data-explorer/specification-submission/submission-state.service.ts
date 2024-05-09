@@ -23,17 +23,34 @@ import { ISubmissionState } from './submission.resource';
   providedIn: 'root',
 })
 export class SubmissionStateService {
-  private submissionState: ISubmissionState;
+  private _state: ISubmissionState;
 
   constructor() {
-    this.submissionState = {} as ISubmissionState;
+    this._state = {} as ISubmissionState;
   }
 
-  getSubmissionState(): ISubmissionState {
-    return this.submissionState;
+  get(): ISubmissionState {
+    return { ...this._state };
   }
 
-  setSubmissionState(submissionState: ISubmissionState): void {
-    this.submissionState = submissionState;
+  /**
+   * @description Set the fields in the state object that match the properties in newState. For example,
+   * if the state object is { a: 1, b: 2 } and newState is { b: 3 }, the state object will
+   * be updated to { a: 1, b: 3 }.
+   * @param newState - The new state to set
+   */
+  set(newState: Partial<ISubmissionState>): void {
+    this._state = { ...this._state, ...newState };
+  }
+
+  getStepInputFromShape(
+    inputShape: (keyof Partial<ISubmissionState>)[]
+  ): Partial<ISubmissionState> {
+    return inputShape.reduce((acc, key) => {
+      if (this._state[key] !== undefined) {
+        acc[key] = this._state[key];
+      }
+      return acc;
+    }, {} as Partial<ISubmissionState>);
   }
 }
