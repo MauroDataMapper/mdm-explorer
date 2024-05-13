@@ -17,11 +17,16 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, Inject, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Uuid } from '@maurodatamapper/sde-resources';
 
 export interface SelectProjectDialogData {
   specificationId: Uuid;
+}
+
+export interface SelectProjectDialogResponse {
+  stepDescription: string;
 }
 
 @Component({
@@ -30,14 +35,31 @@ export interface SelectProjectDialogData {
   styleUrls: ['./select-project-dialog.component.scss'],
 })
 export class SelectProjectDialogComponent implements OnInit {
+  selectProjectForm = new FormGroup({
+    stepDescription: new FormControl('', [
+      Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
+    ]),
+  });
+
   constructor(
     private dialogRef: MatDialogRef<SelectProjectDialogComponent>,
     @Inject(MAT_DIALOG_DATA) private data: SelectProjectDialogData
   ) {}
 
+  get stepDescription() {
+    return this.selectProjectForm.controls.stepDescription;
+  }
+
   ngOnInit(): void {}
 
   close() {
     this.dialogRef.close();
+  }
+
+  submit() {
+    const response: SelectProjectDialogResponse = {
+      stepDescription: this.selectProjectForm.value.stepDescription ?? '',
+    };
+    this.dialogRef.close({ ...response });
   }
 }

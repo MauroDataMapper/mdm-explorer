@@ -17,10 +17,13 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { Observable, map, of } from 'rxjs';
+import { Observable, map, of, tap } from 'rxjs';
 import { ISubmissionState, ISubmissionStep, StepName, StepResult } from '../submission.resource';
 import { DialogService } from 'src/app/data-explorer/dialog.service';
-import { SelectProjectDialogData } from '../select-project-dialog/select-project-dialog.component';
+import {
+  SelectProjectDialogData,
+  SelectProjectDialogResponse,
+} from '../select-project-dialog/select-project-dialog.component';
 import { Uuid } from '@maurodatamapper/sde-resources';
 
 export interface SelectProjectStepResult {
@@ -36,24 +39,46 @@ export class SelectProjectStep implements ISubmissionStep {
   constructor(private dialog: DialogService) {}
 
   isRequired(): Observable<StepResult> {
+    const description: string = localStorage.getItem('description') ?? '';
+    const isRequired = !description.includes('Submission step 1 complete.');
+
     const stepResult: StepResult = {
-      result: {} as SelectProjectStepResult,
-      isRequired: true,
+      result: {
+        whatStep1Did: isRequired
+          ? 'SelectProjectStep is required.'
+          : 'Step 1 was not required to be run.',
+      },
+      isRequired,
     };
 
+    console.log('SelectProjectStep is required:', stepResult.isRequired);
     return of(stepResult);
   }
 
   run(input: Partial<ISubmissionState>): Observable<StepResult> {
     const dialogData = input as SelectProjectDialogData;
+    const specificationId = input.specificationId;
+    console.log('SelectProjectStep running with data:', dialogData);
 
-    if (!input.specificationId) {
+    if (!specificationId) {
       throw new Error('Specification ID is required to select a project');
     }
+
     return this.dialog
       .openSelectProject(dialogData)
       .afterClosed()
-      .pipe(map((result) => ({ result, isRequired: false }) as StepResult));
+      .pipe(
+        tap((result: SelectProjectDialogResponse) => {
+          localStorage.setItem('description', result.stepDescription);
+        }),
+        map(
+          () =>
+            ({
+              result: { whatStep1Did: 'Step 1 ran this time.' },
+              isRequired: false,
+            }) as StepResult
+        )
+      );
   }
 
   getInputShape(): (keyof ISubmissionState)[] {

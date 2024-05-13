@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { SpecificationSubmissionService } from './specification-submission.service';
-import { ComponentHarness, setupTestModuleForService } from 'src/app/testing/testing.helpers';
+import { setupTestModuleForService } from 'src/app/testing/testing.helpers';
 import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
 import { MatDialog } from '@angular/material/dialog';
 import { createStateServiceStub } from './testing/submission-state.stub';

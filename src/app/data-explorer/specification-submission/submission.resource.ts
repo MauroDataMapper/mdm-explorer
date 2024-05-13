@@ -51,6 +51,7 @@ export interface ISubmissionState {
   projectId: Uuid;
   specificationTitle: string;
   specificationDescription: string;
+  whatStep1Did: string;
 }
 
 export type StepName =
