@@ -34,7 +34,7 @@ export interface SelectProjectStepResult {
   providedIn: 'root',
 })
 export class SelectProjectStep implements ISubmissionStep {
-  name: StepName = 'SelectProject';
+  name: StepName = 'Select project';
 
   constructor(private dialog: DialogService) {}
 
@@ -75,7 +75,6 @@ export class SelectProjectStep implements ISubmissionStep {
           () =>
             ({
               result: { whatStep1Did: 'Step 1 ran this time.' },
-              isRequired: false,
             }) as StepResult
         )
       );

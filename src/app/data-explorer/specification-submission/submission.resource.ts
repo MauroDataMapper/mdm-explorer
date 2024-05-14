@@ -55,10 +55,10 @@ export interface ISubmissionState {
 }
 
 export type StepName =
-  | 'SelectProject'
-  | 'GetDataRequest'
-  | 'GenerateSqlFile'
-  | 'AttachSqlFileToDataRequest'
-  | 'GeneratePdfOfDataRequest'
-  | 'AttachPdfToDataRequest'
-  | 'SaveDataRequest';
+  | 'Select project'
+  | 'Get data request'
+  | 'Generate sql file'
+  | 'Attach sql file to data request'
+  | 'Generate pdf of data request'
+  | 'Attach pdf to data request'
+  | 'Save data request';

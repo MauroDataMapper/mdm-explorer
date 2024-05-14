@@ -26,7 +26,7 @@ import { ISubmissionState, ISubmissionStep, StepName, StepResult } from '../subm
   providedIn: 'root',
 })
 export class GetDataRequestStep implements ISubmissionStep {
-  name: StepName = 'GetDataRequest';
+  name: StepName = 'Get data request';
 
   constructor(private dialogs: DialogService) {}
 

@@ -31,7 +31,7 @@ describe('SpecificationSubmissionService', () => {
   let service: SpecificationSubmissionService;
   const matDialogStub = createMatDialogStub();
   const stateServiceStub = createStateServiceStub();
-  const selectProjectStepStub = createStepStub('SelectProject');
+  const selectProjectStepStub = createStepStub('Select project');
 
   beforeEach(() => {
     service = setupTestModuleForService(SpecificationSubmissionService, {
