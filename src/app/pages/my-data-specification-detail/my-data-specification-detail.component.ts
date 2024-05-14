@@ -73,6 +73,7 @@ import { SecurityService } from '../../security/security.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { FolderService } from 'src/app/mauro/folder.service';
 import { VersionTreeSortingService } from 'src/app/data-explorer/version-tree-sorting.service';
+import { SpecificationSubmissionService } from 'src/app/data-explorer/specification-submission/specification-submission.service';
 export interface RemoveSelectedResponse {
   okCancelDialogResponse: Observable<OkCancelDialogResponse>;
   deletedItems: Observable<DataElementMultipleOperationResult>;
@@ -147,7 +148,8 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     private dataModels: DataModelService,
     private securityService: SecurityService,
     private folderService: FolderService,
-    private versionSorter: VersionTreeSortingService
+    private versionSorter: VersionTreeSortingService,
+    private specificationSubmissionService: SpecificationSubmissionService
   ) {
     this.sourceTargetIntersections = {
       dataSpecifications: [],
@@ -176,7 +178,14 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
   }
 
   submitDataSpecification(): void {
-    console.warn('Not implemented');
+    const specificationId = this.dataSpecification?.id;
+
+    if (!specificationId) {
+      return;
+    }
+    this.specificationSubmissionService.submit(specificationId).subscribe((result: boolean) => {
+      console.log('Specification submission: ', result);
+    });
   }
 
   finaliseDataSpecification() {
