@@ -23,7 +23,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { createStateServiceStub } from './testing/submission-state.stub';
 import { SubmissionStateService } from './submission-state.service';
 import { createStepStub } from './testing/step.stub';
-import { SelectProjectStep } from './submission-steps/select-project.step';
+import { CreateDataRequestStep } from './submission-steps/create-data-request.step';
 import { of } from 'rxjs';
 import { ISubmissionState, StepResult } from './submission.resource';
 
@@ -31,7 +31,7 @@ describe('SpecificationSubmissionService', () => {
   let service: SpecificationSubmissionService;
   const matDialogStub = createMatDialogStub();
   const stateServiceStub = createStateServiceStub();
-  const selectProjectStepStub = createStepStub('Select project');
+  const createDataRequestStub = createStepStub('Create data request');
 
   beforeEach(() => {
     service = setupTestModuleForService(SpecificationSubmissionService, {
@@ -45,8 +45,8 @@ describe('SpecificationSubmissionService', () => {
           useValue: stateServiceStub,
         },
         {
-          provide: SelectProjectStep,
-          useValue: selectProjectStepStub,
+          provide: CreateDataRequestStep,
+          useValue: createDataRequestStub,
         },
       ],
     });
@@ -60,7 +60,7 @@ describe('SpecificationSubmissionService', () => {
     const setSpy = jest.spyOn(stateServiceStub, 'set');
     const specificationId = 'test-id';
     jest
-      .spyOn(selectProjectStepStub, 'isRequired')
+      .spyOn(createDataRequestStub, 'isRequired')
       .mockReturnValue(of({ result: {}, isRequired: false }));
 
     service.submit(specificationId).subscribe();
@@ -69,7 +69,7 @@ describe('SpecificationSubmissionService', () => {
 
   it('should run the selectProject step and return a stepResult', (done) => {
     // Set the steps
-    service.submissionSteps = [selectProjectStepStub];
+    service.submissionSteps = [createDataRequestStub];
 
     // Mock the returns
     const expectedInputShape: (keyof Partial<ISubmissionState>)[] = ['specificationId'];
@@ -80,12 +80,12 @@ describe('SpecificationSubmissionService', () => {
       isRequired: false,
     };
 
-    selectProjectStepStub.getInputShape.mockReturnValueOnce(expectedInputShape);
+    createDataRequestStub.getInputShape.mockReturnValueOnce(expectedInputShape);
     stateServiceStub.getStepInputFromShape.mockReturnValueOnce({ specificationId: 'test-id' });
 
     // Set the spys
-    const isRequiredSpy = jest.spyOn(selectProjectStepStub, 'isRequired');
-    const runSpy = jest.spyOn(selectProjectStepStub, 'run');
+    const isRequiredSpy = jest.spyOn(createDataRequestStub, 'isRequired');
+    const runSpy = jest.spyOn(createDataRequestStub, 'run');
 
     isRequiredSpy.mockReturnValue(of({ result: {}, isRequired: true } as StepResult));
     runSpy.mockReturnValue(
@@ -105,7 +105,7 @@ describe('SpecificationSubmissionService', () => {
     const setSpy = jest.spyOn(stateServiceStub, 'set');
     const stepResult = { isRequired: false, result: { projectId: 'project-id' } };
 
-    jest.spyOn(selectProjectStepStub, 'isRequired').mockReturnValue(of(stepResult));
+    jest.spyOn(createDataRequestStub, 'isRequired').mockReturnValue(of(stepResult));
 
     service.submit('test-id').subscribe();
 

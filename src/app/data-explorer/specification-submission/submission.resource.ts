@@ -31,13 +31,20 @@ export interface StepResult {
 
 export interface ISubmissionStep {
   name: StepName;
+
+  /**
+   * @param input the subset of the ISubmissionState object required to run this step
+   * @returns a step result object with any new data that needs to be saved to the ISubmissionState object
+   * for later steps.
+   */
   run: (input: Partial<ISubmissionState>) => Observable<StepResult>;
 
   /**
+   * @param input the subset of the ISubmissionState object required to run any steps needed to determine if this step isRequired.
    * @returns A step result object indicating whether this steps needs to be run along with any data
    * necessary for further steps if this step does not need to be run.
    */
-  isRequired: () => Observable<StepResult>;
+  isRequired: (input: Partial<ISubmissionState>) => Observable<StepResult>;
 
   /**
    * @returns The 'shape' of the input required for this step. That is, the subset of keys needed
@@ -48,15 +55,13 @@ export interface ISubmissionStep {
 
 export interface ISubmissionState {
   specificationId: Uuid;
-  projectId: Uuid;
+  dataRequestId: Uuid;
   specificationTitle: string;
   specificationDescription: string;
-  whatStep1Did: string;
 }
 
 export type StepName =
-  | 'Select project'
-  | 'Get data request'
+  | 'Create data request'
   | 'Generate sql file'
   | 'Attach sql file to data request'
   | 'Generate pdf of data request'

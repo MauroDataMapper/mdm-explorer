@@ -21,16 +21,23 @@ SPDX-License-Identifier: Apache-2.0
   <form [formGroup]="selectProjectForm" role="form" name="selectProjectForm">
     <div class="form-input">
       <mat-form-field appearance="outline">
-        <mat-label>Step description</mat-label>
-        <input matInput formControlName="stepDescription" placeholder="Enter some text" required />
-        <mat-error *ngIf="stepDescription?.errors?.required"> Please enter some text </mat-error>
+        <mat-label>Create a data request for submission</mat-label>
+        <mat-hint> Select the project you'd like to submit the request for</mat-hint>
+        <mat-select formControlName="project" required>
+          <mat-option *ngFor="let project of projects" [value]="project">{{
+            project.name
+          }}</mat-option>
+        </mat-select>
       </mat-form-field>
+      <mat-error *ngIf="selectProjectForm.controls.project.errors?.['required']">
+        Please select a project
+      </mat-error>
     </div>
   </form>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-stroked-button color="primary" (click)="close()">Cancel</button>
   <button mat-flat-button color="primary" [disabled]="selectProjectForm.invalid" (click)="submit()">
-    Complete step 1
+    Submit
   </button>
 </mat-dialog-actions>

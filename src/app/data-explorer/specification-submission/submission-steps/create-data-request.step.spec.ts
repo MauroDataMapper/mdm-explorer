@@ -17,17 +17,17 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
-import { SelectProjectStep } from './select-project.step';
+import { CreateDataRequestStep } from './create-data-request.step';
 import { setupTestModuleForService } from 'src/app/testing/testing.helpers';
 import { MatDialog } from '@angular/material/dialog';
 
 describe('SelectProjectStep', () => {
-  let step: SelectProjectStep;
+  let step: CreateDataRequestStep;
   const matDialogStub = createMatDialogStub();
 
   beforeEach(() => {
     // Default endpoint call
-    step = setupTestModuleForService(SelectProjectStep, {
+    step = setupTestModuleForService(CreateDataRequestStep, {
       providers: [
         {
           provide: MatDialog,

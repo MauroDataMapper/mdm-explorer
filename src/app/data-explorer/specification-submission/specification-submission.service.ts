@@ -24,8 +24,7 @@ import { of } from 'rxjs/internal/observable/of';
 import { throwError } from 'rxjs/internal/observable/throwError';
 import { switchMap } from 'rxjs/internal/operators/switchMap';
 import { SubmissionStateService } from './submission-state.service';
-import { GetDataRequestStep as GetDataRequestStep } from './submission-steps/get-data-request.step';
-import { SelectProjectStep } from './submission-steps/select-project.step';
+import { CreateDataRequestStep } from './submission-steps/create-data-request.step';
 import { ISubmissionStep, StepResult } from './submission.resource';
 
 @Injectable({
@@ -36,10 +35,9 @@ export class SpecificationSubmissionService {
 
   constructor(
     private stateService: SubmissionStateService,
-    private selectProjectStep: SelectProjectStep,
-    private getDataRequestStep: GetDataRequestStep
+    private createDataRequestStep: CreateDataRequestStep
   ) {
-    this.submissionSteps = [this.selectProjectStep, this.getDataRequestStep];
+    this.submissionSteps = [this.createDataRequestStep];
   }
 
   /**

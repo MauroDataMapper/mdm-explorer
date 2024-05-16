@@ -111,9 +111,7 @@ export class DataSpecificationService {
    */
   getDataSpecificationFolder(): Observable<FolderDetail> {
     const user = this.security.getSignedInUser();
-    return user && user.dataSpecificationFolder
-      ? of(user.dataSpecificationFolder)
-      : EMPTY;
+    return user && user.dataSpecificationFolder ? of(user.dataSpecificationFolder) : EMPTY;
   }
 
   /**
@@ -138,11 +136,7 @@ export class DataSpecificationService {
    * @returns an observable containing a {@link DataModelDetail} instance
    * with the updated data.
    */
-  updateWithDialog(
-    id: Uuid,
-    name: string,
-    description?: string
-  ): Observable<DataModelDetail> {
+  updateWithDialog(id: Uuid, name: string, description?: string): Observable<DataModelDetail> {
     const user = this.security.getSignedInUser();
     if (!user) return EMPTY;
 
@@ -342,15 +336,8 @@ export class DataSpecificationService {
    * @param description Optional description for the new data specification.
    * @returns An observable containing the new {@link DataSpecification}.
    */
-  create(
-    user: UserDetails,
-    name: string,
-    description?: string
-  ): Observable<DataSpecification> {
-    return forkJoin([
-      this.getDataSpecificationFolder(),
-      this.catalogueUser.get(user.id),
-    ]).pipe(
+  create(user: UserDetails, name: string, description?: string): Observable<DataSpecification> {
+    return forkJoin([this.getDataSpecificationFolder(), this.catalogueUser.get(user.id)]).pipe(
       switchMap(([folder, catalogueUser]) => {
         if (!folder || !folder.id) {
           return throwError(() => new Error('No data specification folder available'));
@@ -609,12 +596,7 @@ export class DataSpecificationService {
         // Attempt to create the dataSpecification using the gathered data.
         switchMap(([response, dataElements]) => {
           return forkJoin([
-            this.createFromDataElements(
-              dataElements,
-              user,
-              response.name,
-              response.description
-            ),
+            this.createFromDataElements(dataElements, user, response.name, response.description),
             of(dataElements),
           ]);
         }),
@@ -652,10 +634,7 @@ export class DataSpecificationService {
    * @param options Options that may be passed to control the process.
    * @returns An observable returning the new forked {@link DataSpecification}. If the user cancelled the operation, then nothing further would happen.
    */
-  forkWithDialogs(
-    dataSpecification: DataSpecification,
-    options?: ForkDataSpecificationOptions
-  ) {
+  forkWithDialogs(dataSpecification: DataSpecification, options?: ForkDataSpecificationOptions) {
     if (
       !dataSpecification ||
       !dataSpecification.id ||
@@ -691,10 +670,7 @@ export class DataSpecificationService {
         }),
         switchMap((nextDraftModel) => {
           if (options?.targetFolder?.id && nextDraftModel.id) {
-            return this.dataModels.moveToFolder(
-              nextDraftModel.id,
-              options.targetFolder.id
-            );
+            return this.dataModels.moveToFolder(nextDraftModel.id, options.targetFolder.id);
           }
 
           return of(nextDraftModel);
@@ -795,9 +771,7 @@ export class DataSpecificationService {
         return forkJoin([of(rule), representation$]);
       }),
       catchError(() => {
-        this.toastr.error(
-          'There was a problem getting the representation for your query.'
-        );
+        this.toastr.error('There was a problem getting the representation for your query.');
         return EMPTY;
       }),
       map(([rule, representation]) => {
