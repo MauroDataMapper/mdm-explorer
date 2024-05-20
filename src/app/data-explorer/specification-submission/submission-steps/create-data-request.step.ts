@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { Observable, map, of, switchMap } from 'rxjs';
+import { Observable, filter, forkJoin, map, of, switchMap } from 'rxjs';
 import { ISubmissionState, ISubmissionStep, StepName, StepResult } from '../submission.resource';
 import { DialogService } from 'src/app/data-explorer/dialog.service';
 import {
@@ -27,11 +27,14 @@ import {
 import {
   IdNamePair,
   MembershipEndpointsResearcher,
+  RequestCreate,
+  RequestDefinition,
   RequestEndpointsResearcher,
-  ResearcherEndpoints,
+  RequestType,
   UserProjectDTO,
   Uuid,
 } from '@maurodatamapper/sde-resources';
+import { DataSpecificationService } from '../../data-specification.service';
 
 export interface SelectProjectStepResult {
   specificationId: Uuid;
@@ -46,13 +49,30 @@ export class CreateDataRequestStep implements ISubmissionStep {
   constructor(
     private dialog: DialogService,
     private memberships: MembershipEndpointsResearcher,
-    private researcherRequestEndpoints: RequestEndpointsResearcher
+    private researcherRequestEndpoints: RequestEndpointsResearcher,
+    private dataSpecificationService: DataSpecificationService
   ) {}
 
   isRequired(input: Partial<ISubmissionState>): Observable<StepResult> {
-    //this.researcherRequestEndpoints.getRequestForDataSpecification(input.specificationId);
-    const result = { isRequired: true } as StepResult;
-    return of(result);
+    if (!input.specificationId) {
+      // Probably should throw an error here
+      return of({ isRequired: true } as StepResult);
+    }
+
+    return this.researcherRequestEndpoints
+      .getRequestForDataSpecification(input.specificationId)
+      .pipe(
+        map((request) => {
+          const isRequired = !request;
+          const stepResult: StepResult = {
+            result: {
+              dataRequestId: request?.id,
+            },
+            isRequired,
+          };
+          return stepResult;
+        })
+      );
   }
 
   run(input: Partial<ISubmissionState>): Observable<StepResult> {
@@ -87,8 +107,29 @@ export class CreateDataRequestStep implements ISubmissionStep {
           .openSelectProject(dialogData)
           .afterClosed()
           .pipe(
-            map((result: SelectProjectDialogResponse) => {
-              return { result: { dataRequestId: result.dataRequestId } } as StepResult;
+            filter((response) => !!response && !response.isCancelled),
+            switchMap((response: SelectProjectDialogResponse) => {
+              return forkJoin([of(response), this.dataSpecificationService.get(specificationId)]);
+            }),
+            switchMap(([response, dataSpecification]) => {
+              // Save a request here
+              const requestCreate: RequestCreate = {
+                type: RequestType.Data,
+                projectId: response.projectId,
+                mauroDataSpecificationId: specificationId,
+                definition: {
+                  title: `${dataSpecification.label} (${dataSpecification.modelVersion})`,
+                  content: dataSpecification.description ?? 'No description provided',
+                } as RequestDefinition,
+              };
+
+              return this.researcherRequestEndpoints.createRequest(requestCreate);
+            }),
+            map((requestResponse) => {
+              if (!requestResponse) {
+                throw new Error('Failed to create data request');
+              }
+              return { result: { dataRequestId: requestResponse.id } } as StepResult;
             })
           );
       })

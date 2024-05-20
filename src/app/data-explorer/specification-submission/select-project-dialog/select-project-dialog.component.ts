@@ -26,8 +26,8 @@ export interface SelectProjectDialogData {
 }
 
 export interface SelectProjectDialogResponse {
-  dataRequestId: Uuid;
-  isCacnelled: boolean;
+  projectId: Uuid;
+  isCancelled: boolean;
 }
 
 @Component({
@@ -59,7 +59,10 @@ export class SelectProjectDialogComponent implements OnInit {
       return;
     }
 
-    const response = { dataRequestId: this.selectProjectForm.controls.project.value?.id };
+    const response: SelectProjectDialogResponse = {
+      projectId: this.selectProjectForm.controls.project.value?.id,
+      isCancelled: false,
+    };
     this.dialogRef.close({ ...response });
   }
 }
