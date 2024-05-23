@@ -30,11 +30,13 @@ import {
   RequestCreate,
   RequestDefinition,
   RequestEndpointsResearcher,
+  RequestResponse,
   RequestType,
   UserProjectDTO,
   Uuid,
 } from '@maurodatamapper/sde-resources';
 import { DataSpecificationService } from '../../data-specification.service';
+import { NoProjectsFoundError } from '../submission.custom-errors';
 
 export interface SelectProjectStepResult {
   specificationId: Uuid;
@@ -62,7 +64,7 @@ export class CreateDataRequestStep implements ISubmissionStep {
     return this.researcherRequestEndpoints
       .getRequestForDataSpecification(input.specificationId)
       .pipe(
-        map((request) => {
+        map((request: RequestResponse | undefined) => {
           const isRequired = !request;
           const stepResult: StepResult = {
             result: {
@@ -96,7 +98,7 @@ export class CreateDataRequestStep implements ISubmissionStep {
     return projects$.pipe(
       map((projects: IdNamePair[]) => {
         if (projects.length === 0) {
-          throw new Error('No projects found');
+          throw new NoProjectsFoundError();
         }
 
         const data = { projects } as SelectProjectDialogData;
