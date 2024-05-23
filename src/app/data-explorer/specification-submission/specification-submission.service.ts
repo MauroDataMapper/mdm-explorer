@@ -18,14 +18,15 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
 import { Uuid } from '@maurodatamapper/sde-resources';
-import { catchError, concatMap, from, map, tap } from 'rxjs';
+import { EMPTY, catchError, concatMap, from, tap } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
 import { of } from 'rxjs/internal/observable/of';
-import { throwError } from 'rxjs/internal/observable/throwError';
 import { switchMap } from 'rxjs/internal/operators/switchMap';
 import { SubmissionStateService } from './submission-state.service';
 import { CreateDataRequestStep } from './submission-steps/create-data-request.step';
 import { ISubmissionStep, StepResult } from './submission.resource';
+import { ToastrService } from 'ngx-toastr';
+import { NoProjectsFoundError } from './submission.custom-errors';
 
 @Injectable({
   providedIn: 'root',
@@ -35,6 +36,7 @@ export class SpecificationSubmissionService {
 
   constructor(
     private stateService: SubmissionStateService,
+    private toast: ToastrService,
     private createDataRequestStep: CreateDataRequestStep
   ) {
     this.submissionSteps = [this.createDataRequestStep];
@@ -51,12 +53,11 @@ export class SpecificationSubmissionService {
 
     // Run each step, once at a time, ensuring it completes before running the next.
     return from(this.submissionSteps).pipe(
-      map((step: ISubmissionStep) => {
+      concatMap((step: ISubmissionStep) => {
+        // Retrieve the step input from the state.
         const stepInput = this.stateService.getStepInputFromShape(step.getInputShape());
-        return { step, stepInput };
-      }),
-      concatMap(({ step, stepInput }) =>
-        step.isRequired(stepInput).pipe(
+
+        return step.isRequired(stepInput).pipe(
           // Get a step result, either from checking or running the step.
           switchMap((stepResult: StepResult) => {
             if (!stepResult.isRequired) {
@@ -68,12 +69,20 @@ export class SpecificationSubmissionService {
             // Save the relevant stepResult information.
             this.stateService.set({ ...stepResult.result });
           }),
-          catchError((error) => {
+          catchError((error: Error) => {
             console.error('Error running step', step.name, error);
-            return throwError(() => error);
+            this.handleSubmissionError(error);
+            return EMPTY;
           })
-        )
-      )
+        );
+      })
     );
+  }
+
+  // Toast is probably not the way we want to deal with errors. But having a generic error handler is a good idea.
+  private handleSubmissionError(error: Error) {
+    if (error instanceof NoProjectsFoundError) {
+      this.toast.error(error.message);
+    }
   }
 }

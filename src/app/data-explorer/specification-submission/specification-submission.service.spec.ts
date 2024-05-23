@@ -67,18 +67,15 @@ describe('SpecificationSubmissionService', () => {
     expect(setSpy).toHaveBeenCalledWith({ specificationId });
   });
 
-  it('should run the selectProject step and return a stepResult', (done) => {
+  it('should run the createDataRequest step and return a stepResult', (done) => {
     // Set the steps
     service.submissionSteps = [createDataRequestStub];
 
     // Mock the returns
     const expectedInputShape: (keyof Partial<ISubmissionState>)[] = ['specificationId'];
     const expectedRunInput = { specificationId: 'test-id' };
-    const expectedProjectId = 'project-id';
-    const expectedRunResult: StepResult = {
-      result: { projectId: expectedProjectId },
-      isRequired: false,
-    };
+    const dataRequestId = 'dataRequestId';
+    const expectedRunResult: StepResult = { result: { dataRequestId }, isRequired: false };
 
     createDataRequestStub.getInputShape.mockReturnValueOnce(expectedInputShape);
     stateServiceStub.getStepInputFromShape.mockReturnValueOnce({ specificationId: 'test-id' });
@@ -88,9 +85,7 @@ describe('SpecificationSubmissionService', () => {
     const runSpy = jest.spyOn(createDataRequestStub, 'run');
 
     isRequiredSpy.mockReturnValue(of({ result: {}, isRequired: true } as StepResult));
-    runSpy.mockReturnValue(
-      of({ result: { projectId: expectedProjectId }, isRequired: false } as StepResult)
-    );
+    runSpy.mockReturnValue(of({ result: { dataRequestId }, isRequired: false } as StepResult));
 
     service.submit('test-id').subscribe((result: StepResult) => {
       expect(result).toEqual(expectedRunResult);
@@ -103,7 +98,7 @@ describe('SpecificationSubmissionService', () => {
 
   it('should save the step result to the state', () => {
     const setSpy = jest.spyOn(stateServiceStub, 'set');
-    const stepResult = { isRequired: false, result: { projectId: 'project-id' } };
+    const stepResult = { isRequired: false, result: { dataRequestId: 'dataRequestId' } };
 
     jest.spyOn(createDataRequestStub, 'isRequired').mockReturnValue(of(stepResult));
 
