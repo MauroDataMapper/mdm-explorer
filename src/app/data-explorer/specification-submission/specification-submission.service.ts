@@ -63,6 +63,7 @@ export class SpecificationSubmissionService {
           // Get a step result, either from checking or running the step.
           switchMap((stepResult: StepResult) => {
             if (!stepResult.isRequired) {
+              this.stateService.set({ ...stepResult.result });
               return of(stepResult);
             }
             return step.run(stepInput);
