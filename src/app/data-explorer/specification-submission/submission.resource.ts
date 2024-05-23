@@ -58,6 +58,7 @@ export interface ISubmissionState {
   dataRequestId: Uuid;
   specificationTitle: string;
   specificationDescription: string;
+  pathToExportFile: string;
 }
 
 export type StepName =
@@ -67,3 +68,8 @@ export type StepName =
   | 'Generate pdf of data request'
   | 'Attach pdf to data request'
   | 'Save data request';
+
+export enum ExporterName {
+  DataModelSqlExporterService = 'DataModelSqlExporterService',
+  DataModelPdfExporterService = 'DataModelPdfExporterService',
+}

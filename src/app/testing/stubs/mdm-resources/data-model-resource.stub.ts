@@ -25,12 +25,15 @@ import {
   DataModelFullResponse,
   DataModelIndexResponse,
   DataModelSubsetPayload,
+  ExportQueryParameters,
   ForkModelPayload,
   ModelUpdatePayload,
   Payload,
+  QueryParameters,
   RequestSettings,
   SearchQueryParameters,
   Uuid,
+  Version,
 } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
 
@@ -74,6 +77,20 @@ export type UpdateDataModelFn<Payload extends ModelUpdatePayload> = (
   options?: RequestSettings
 ) => Observable<DataModelDetailResponse>;
 
+export type DataModelExportersFn = (
+  query?: QueryParameters,
+  options?: RequestSettings
+) => Observable<any>;
+
+export type DataModelExportModelFn = (
+  id: Uuid,
+  namespace: string,
+  name: string,
+  version: Version,
+  query?: ExportQueryParameters,
+  options?: RequestSettings
+) => Observable<any>;
+
 export interface MdmDataModelResourcesStub {
   get: jest.MockedFunction<DataModelGetFn>;
   search: jest.MockedFunction<DataModelSearchFn>;
@@ -87,6 +104,8 @@ export interface MdmDataModelResourcesStub {
     (modelId: Uuid, folderId: Uuid) => Observable<DataModelDetail>
   >;
   update: jest.MockedFunction<UpdateDataModelFn<ModelUpdatePayload>>;
+  exporters: jest.MockedFunction<DataModelExportersFn>;
+  exportModel: jest.MockedFunction<DataModelExportModelFn>;
 }
 
 export const createDataModelStub = (): MdmDataModelResourcesStub => {
@@ -101,5 +120,7 @@ export const createDataModelStub = (): MdmDataModelResourcesStub => {
     newForkModel: jest.fn() as jest.MockedFunction<DataModelForkVersionFn>,
     moveDataModelToFolder: jest.fn(),
     update: jest.fn() as jest.MockedFunction<UpdateDataModelFn<ModelUpdatePayload>>,
+    exporters: jest.fn() as jest.MockedFunction<DataModelExportersFn>,
+    exportModel: jest.fn() as jest.MockedFunction<DataModelExportModelFn>,
   };
 };
