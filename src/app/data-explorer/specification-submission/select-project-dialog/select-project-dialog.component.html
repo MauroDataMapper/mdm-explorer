@@ -16,13 +16,15 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<h1 mat-dialog-title>Select Project</h1>
+<h1 mat-dialog-title>Select project</h1>
 <mat-dialog-content>
   <form [formGroup]="selectProjectForm" role="form" name="selectProjectForm">
     <div class="form-input">
+      <p>
+        Please select the project you would like to submit this data specification on behalf of.
+      </p>
       <mat-form-field appearance="outline">
-        <mat-label>Create a data request for submission</mat-label>
-        <mat-hint> Select the project you'd like to submit the request for</mat-hint>
+        <mat-label>Project</mat-label>
         <mat-select formControlName="project" required>
           <mat-option *ngFor="let project of projects" [value]="project">{{
             project.name
