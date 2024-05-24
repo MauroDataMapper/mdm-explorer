@@ -28,6 +28,7 @@ import { ISubmissionStep, StepResult } from './submission.resource';
 import { ToastrService } from 'ngx-toastr';
 import { NoProjectsFoundError } from './submission.custom-errors';
 import { GenerateSqlStep } from './submission-steps/generate-sql.step';
+import { AttachSqlStep } from './submission-steps/attach-sql.step';
 
 @Injectable({
   providedIn: 'root',
@@ -39,9 +40,10 @@ export class SpecificationSubmissionService {
     private stateService: SubmissionStateService,
     private toast: ToastrService,
     private createDataRequestStep: CreateDataRequestStep,
-    private generateSqlStep: GenerateSqlStep
+    private generateSqlStep: GenerateSqlStep,
+    private attachSqlStep: AttachSqlStep
   ) {
-    this.submissionSteps = [this.createDataRequestStep, this.generateSqlStep];
+    this.submissionSteps = [this.createDataRequestStep, this.generateSqlStep, this.attachSqlStep];
   }
 
   /**
