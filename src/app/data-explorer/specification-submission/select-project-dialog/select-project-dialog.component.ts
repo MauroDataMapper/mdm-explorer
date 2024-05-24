@@ -38,6 +38,7 @@ export interface SelectProjectDialogResponse {
 export class SelectProjectDialogComponent implements OnInit {
   projects: IdNamePair[];
   selectProjectForm = new FormGroup({
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     project: new FormControl<IdNamePair | null>(null, Validators.required),
   });
 
