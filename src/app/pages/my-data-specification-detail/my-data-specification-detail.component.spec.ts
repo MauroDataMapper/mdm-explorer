@@ -62,14 +62,13 @@ import { createMatDialogStub } from '../../testing/stubs/mat-dialog.stub';
 import { createResearchPluginServiceStub } from '../../testing/stubs/research-plugin.stub';
 import { createSecurityServiceStub } from '../../testing/stubs/security.stub';
 import { createToastrServiceStub } from '../../testing/stubs/toastr.stub';
-import {
-  ComponentHarness,
-  setupTestModuleForComponent,
-} from '../../testing/testing.helpers';
+import { ComponentHarness, setupTestModuleForComponent } from '../../testing/testing.helpers';
 import { MyDataSpecificationDetailComponent } from './my-data-specification-detail.component';
 import { SecurityService } from 'src/app/security/security.service';
 import { createFolderServiceStub } from 'src/app/testing/stubs/folder.stub';
 import { FolderService } from 'src/app/mauro/folder.service';
+import { createSpecificationSubmissionServiceStub } from 'src/app/data-explorer/specification-submission/testing/specification-submission-service.stub';
+import { SpecificationSubmissionService } from 'src/app/data-explorer/specification-submission/specification-submission.service';
 
 describe('MyDataSpecificationDetailComponent', () => {
   let harness: ComponentHarness<MyDataSpecificationDetailComponent>;
@@ -83,6 +82,7 @@ describe('MyDataSpecificationDetailComponent', () => {
   const explorerStub = createDataExplorerServiceStub();
   const securityStub = createSecurityServiceStub();
   const folderServiceStub = createFolderServiceStub();
+  const specificationSubmissionServiceStub = createSpecificationSubmissionServiceStub();
   const dataSpecificationId = '1';
   const activatedRoute: ActivatedRoute = {
     params: of({
@@ -136,6 +136,10 @@ describe('MyDataSpecificationDetailComponent', () => {
         {
           provide: FolderService,
           useValue: folderServiceStub,
+        },
+        {
+          provide: SpecificationSubmissionService,
+          useValue: specificationSubmissionServiceStub,
         },
       ],
     });
@@ -205,9 +209,7 @@ describe('MyDataSpecificationDetailComponent', () => {
 
     it('should display an error if failed to get data specifications', () => {
       // Arrange
-      dataSpecificationStub.get.mockImplementationOnce(() =>
-        throwError(() => new Error())
-      );
+      dataSpecificationStub.get.mockImplementationOnce(() => throwError(() => new Error()));
 
       // Act
       harness.component.ngOnInit();
@@ -472,10 +474,7 @@ describe('MyDataSpecificationDetailComponent', () => {
       harness.component.removeItem(eventDeleteUndefinedDataSchema);
 
       // Assert
-      expect(toastrStub.error).toBeCalledWith(
-        'Data schema undefined',
-        'Unable to delete items'
-      );
+      expect(toastrStub.error).toBeCalledWith('Data schema undefined', 'Unable to delete items');
       expect(dialogSpy).toHaveBeenCalledTimes(0);
     });
 
@@ -487,10 +486,7 @@ describe('MyDataSpecificationDetailComponent', () => {
       };
       dialogsStub.usage.afterClosed.mockReturnValue(of(noToOkCancelResponse));
 
-      const dataSpecificationServiceSpy = jest.spyOn(
-        dataSpecificationStub,
-        'deleteDataSchema'
-      );
+      const dataSpecificationServiceSpy = jest.spyOn(dataSpecificationStub, 'deleteDataSchema');
 
       // Act
       harness.component.removeItem(eventDeleteDataSchema);
@@ -506,10 +502,7 @@ describe('MyDataSpecificationDetailComponent', () => {
       dataSchemaStub.reduceDataElementsFromSchemas.mockReturnValueOnce(dataElements);
       dialogsStub.usage.afterClosed.mockReturnValue(of(okCancelResponse));
 
-      const dataSpecificationServiceSpy = jest.spyOn(
-        dataSpecificationStub,
-        'deleteDataSchema'
-      );
+      const dataSpecificationServiceSpy = jest.spyOn(dataSpecificationStub, 'deleteDataSchema');
 
       dataSpecificationStub.deleteDataSchema.mockReturnValueOnce(of(deleteElementResult));
       const dataSpecificationServiceDeleteFromQuerySpy = jest.spyOn(
@@ -554,10 +547,7 @@ describe('MyDataSpecificationDetailComponent', () => {
 
       dialogsStub.usage.afterClosed.mockReturnValue(of(okCancelResponse));
 
-      const dataSpecificationServiceSpy = jest.spyOn(
-        dataSpecificationStub,
-        'deleteDataSchema'
-      );
+      const dataSpecificationServiceSpy = jest.spyOn(dataSpecificationStub, 'deleteDataSchema');
       const dataSpecificationDeleteDataClassSpy = jest.spyOn(
         dataSpecificationStub,
         'deleteDataClass'
@@ -607,10 +597,7 @@ describe('MyDataSpecificationDetailComponent', () => {
 
       dialogsStub.usage.afterClosed.mockReturnValue(of(okCancelResponse));
 
-      const dataSpecificationServiceSpy = jest.spyOn(
-        dataSpecificationStub,
-        'deleteDataSchema'
-      );
+      const dataSpecificationServiceSpy = jest.spyOn(dataSpecificationStub, 'deleteDataSchema');
       const dataSpecificationDeleteDataClassSpy = jest.spyOn(
         dataSpecificationStub,
         'deleteDataClass'
@@ -921,9 +908,7 @@ describe('MyDataSpecificationDetailComponent', () => {
         },
       ];
 
-      dataSchemaStub.reduceDataElementsFromSchemas.mockReturnValue(
-        dataElementsNotSelected
-      );
+      dataSchemaStub.reduceDataElementsFromSchemas.mockReturnValue(dataElementsNotSelected);
 
       dataSpecificationStub.get.mockImplementationOnce(() => {
         return of(dataSpecification);

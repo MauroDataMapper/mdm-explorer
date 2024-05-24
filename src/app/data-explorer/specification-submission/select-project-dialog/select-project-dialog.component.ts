@@ -19,14 +19,15 @@ SPDX-License-Identifier: Apache-2.0
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Uuid } from '@maurodatamapper/sde-resources';
+import { IdNamePair, Uuid } from '@maurodatamapper/sde-resources';
 
 export interface SelectProjectDialogData {
-  specificationId: Uuid;
+  projects: IdNamePair[];
 }
 
 export interface SelectProjectDialogResponse {
-  stepDescription: string;
+  projectId: Uuid;
+  isCancelled: boolean;
 }
 
 @Component({
@@ -35,30 +36,33 @@ export interface SelectProjectDialogResponse {
   styleUrls: ['./select-project-dialog.component.scss'],
 })
 export class SelectProjectDialogComponent implements OnInit {
+  projects: IdNamePair[];
   selectProjectForm = new FormGroup({
-    stepDescription: new FormControl('', [
-      Validators.required, // eslint-disable-line @typescript-eslint/unbound-method
-    ]),
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    project: new FormControl<IdNamePair | null>(null, Validators.required),
   });
 
   constructor(
     private dialogRef: MatDialogRef<SelectProjectDialogComponent>,
     @Inject(MAT_DIALOG_DATA) private data: SelectProjectDialogData
-  ) {}
-
-  get stepDescription() {
-    return this.selectProjectForm.controls.stepDescription;
+  ) {
+    this.projects = this.data.projects ?? [];
   }
 
   ngOnInit(): void {}
 
   close() {
-    this.dialogRef.close();
+    this.dialogRef.close({ isCancelled: true });
   }
 
   submit() {
+    if (this.selectProjectForm.invalid || !this.selectProjectForm.controls.project.value) {
+      return;
+    }
+
     const response: SelectProjectDialogResponse = {
-      stepDescription: this.selectProjectForm.value.stepDescription ?? '',
+      projectId: this.selectProjectForm.controls.project.value?.id,
+      isCancelled: false,
     };
     this.dialogRef.close({ ...response });
   }

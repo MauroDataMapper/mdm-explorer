@@ -23,7 +23,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { createStateServiceStub } from './testing/submission-state.stub';
 import { SubmissionStateService } from './submission-state.service';
 import { createStepStub } from './testing/step.stub';
-import { SelectProjectStep } from './submission-steps/select-project.step';
+import { CreateDataRequestStep } from './submission-steps/create-data-request.step';
 import { of } from 'rxjs';
 import { ISubmissionState, StepResult } from './submission.resource';
 
@@ -31,7 +31,7 @@ describe('SpecificationSubmissionService', () => {
   let service: SpecificationSubmissionService;
   const matDialogStub = createMatDialogStub();
   const stateServiceStub = createStateServiceStub();
-  const selectProjectStepStub = createStepStub('Select project');
+  const createDataRequestStub = createStepStub('Create data request');
 
   beforeEach(() => {
     service = setupTestModuleForService(SpecificationSubmissionService, {
@@ -45,8 +45,8 @@ describe('SpecificationSubmissionService', () => {
           useValue: stateServiceStub,
         },
         {
-          provide: SelectProjectStep,
-          useValue: selectProjectStepStub,
+          provide: CreateDataRequestStep,
+          useValue: createDataRequestStub,
         },
       ],
     });
@@ -60,37 +60,32 @@ describe('SpecificationSubmissionService', () => {
     const setSpy = jest.spyOn(stateServiceStub, 'set');
     const specificationId = 'test-id';
     jest
-      .spyOn(selectProjectStepStub, 'isRequired')
+      .spyOn(createDataRequestStub, 'isRequired')
       .mockReturnValue(of({ result: {}, isRequired: false }));
 
     service.submit(specificationId).subscribe();
     expect(setSpy).toHaveBeenCalledWith({ specificationId });
   });
 
-  it('should run the selectProject step and return a stepResult', (done) => {
+  it('should run the createDataRequest step and return a stepResult', (done) => {
     // Set the steps
-    service.submissionSteps = [selectProjectStepStub];
+    service.submissionSteps = [createDataRequestStub];
 
     // Mock the returns
     const expectedInputShape: (keyof Partial<ISubmissionState>)[] = ['specificationId'];
     const expectedRunInput = { specificationId: 'test-id' };
-    const expectedProjectId = 'project-id';
-    const expectedRunResult: StepResult = {
-      result: { projectId: expectedProjectId },
-      isRequired: false,
-    };
+    const dataRequestId = 'dataRequestId';
+    const expectedRunResult: StepResult = { result: { dataRequestId }, isRequired: false };
 
-    selectProjectStepStub.getInputShape.mockReturnValueOnce(expectedInputShape);
+    createDataRequestStub.getInputShape.mockReturnValueOnce(expectedInputShape);
     stateServiceStub.getStepInputFromShape.mockReturnValueOnce({ specificationId: 'test-id' });
 
     // Set the spys
-    const isRequiredSpy = jest.spyOn(selectProjectStepStub, 'isRequired');
-    const runSpy = jest.spyOn(selectProjectStepStub, 'run');
+    const isRequiredSpy = jest.spyOn(createDataRequestStub, 'isRequired');
+    const runSpy = jest.spyOn(createDataRequestStub, 'run');
 
     isRequiredSpy.mockReturnValue(of({ result: {}, isRequired: true } as StepResult));
-    runSpy.mockReturnValue(
-      of({ result: { projectId: expectedProjectId }, isRequired: false } as StepResult)
-    );
+    runSpy.mockReturnValue(of({ result: { dataRequestId }, isRequired: false } as StepResult));
 
     service.submit('test-id').subscribe((result: StepResult) => {
       expect(result).toEqual(expectedRunResult);
@@ -103,9 +98,9 @@ describe('SpecificationSubmissionService', () => {
 
   it('should save the step result to the state', () => {
     const setSpy = jest.spyOn(stateServiceStub, 'set');
-    const stepResult = { isRequired: false, result: { projectId: 'project-id' } };
+    const stepResult = { isRequired: false, result: { dataRequestId: 'dataRequestId' } };
 
-    jest.spyOn(selectProjectStepStub, 'isRequired').mockReturnValue(of(stepResult));
+    jest.spyOn(createDataRequestStub, 'isRequired').mockReturnValue(of(stepResult));
 
     service.submit('test-id').subscribe();
 
