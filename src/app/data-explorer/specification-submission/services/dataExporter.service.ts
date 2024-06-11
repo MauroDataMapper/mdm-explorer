@@ -21,24 +21,36 @@ import { Injectable } from '@angular/core';
 import { Exporter, ExporterIndexResponse, Uuid } from '@maurodatamapper/mdm-resources';
 import { Observable, forkJoin, map, of, switchMap } from 'rxjs';
 import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
-import { ExporterName } from '../submission.resource';
+import { ExporterName, FileProperties } from '../type-declarations/submission.resource';
+import { DataSpecificationService } from '../../data-specification.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DataExporterService {
-  constructor(private endpoints: MdmEndpointsService) {}
+  constructor(
+    private endpoints: MdmEndpointsService,
+    private dataSpecificationService: DataSpecificationService
+  ) {}
 
   public exportDataSpecification(
     specificationId: Uuid,
     exporterName: ExporterName
-  ): Observable<string> {
+  ): Observable<FileProperties> {
     return this.getExporter(exporterName).pipe(
       switchMap((exporter) => {
-        return forkJoin([of(exporter), this.doExport(specificationId, exporter)]);
+        return forkJoin([
+          of(exporter),
+          this.doExport(specificationId, exporter),
+          this.dataSpecificationService.get(specificationId),
+        ]);
       }),
-      map(([exporter, response]) => {
-        return this.handleStandardExporterResponse(exporter as Exporter, response);
+      map(([exporter, response, dataSpecification]) => {
+        return this.handleStandardExporterResponse(
+          exporter as Exporter,
+          response,
+          dataSpecification.label
+        );
       })
     );
   }
@@ -69,20 +81,32 @@ export class DataExporterService {
 
   private handleStandardExporterResponse(
     exporter: Exporter,
-    response: HttpResponse<ArrayBuffer>
-  ): string {
+    response: HttpResponse<ArrayBuffer>,
+    label: string
+  ): FileProperties {
     if (response.body) {
       const file = new Blob([response.body], {
         type: exporter.fileType,
       });
-      const link = this.createBlobLink(file);
-      return link;
+      const fileProperties = {
+        url: this.createBlobLink(file),
+        filename: this.createFileName(label, exporter),
+      };
+      return fileProperties;
     }
-    return 'no_link';
+    return { url: '', filename: '' };
   }
 
   private createBlobLink(blob: Blob) {
     const url = (window.URL || window.webkitURL).createObjectURL(blob);
     return url;
+  }
+
+  private createFileName(label: string, exporter: Exporter) {
+    const extension = exporter.fileExtension ? exporter.fileExtension : 'json';
+    const rightNow = new Date();
+    const res = rightNow.toISOString().slice(0, 19).replace(/-/g, '').replace(/:/g, '');
+    // remove space from dataModelLabel and replace all spaces with _ and also add date/time and extension
+    return `${label.trim().toLowerCase().split(' ').join('_')}_${res}.${extension}`;
   }
 }

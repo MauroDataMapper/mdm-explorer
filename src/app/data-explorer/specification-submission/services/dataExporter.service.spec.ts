@@ -22,14 +22,18 @@ import { DataExporterService } from './dataExporter.service';
 import { createMdmEndpointsStub } from 'src/app/testing/stubs/mdm-endpoints.stub';
 import { MdmEndpointsService } from 'src/app/mauro/mdm-endpoints.service';
 import { cold } from 'jest-marbles';
-import { ExporterName } from '../submission.resource';
+import { ExporterName } from '../type-declarations/submission.resource';
 import { HttpEventType, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { createDataSpecificationServiceStub } from 'src/app/testing/stubs/data-specifications.stub';
+import { DataSpecificationService } from '../../data-specification.service';
+import { CatalogueItemDomainType } from '@maurodatamapper/mdm-resources';
 
 describe('DataExporterService', () => {
   const exporterNamespace = 'uk.ac.ox.softeng.maurodatamapper.plugins.explorer.provider.exporter';
 
   let service: DataExporterService;
   const endpointsStub = createMdmEndpointsStub();
+  const dataSpecificationServiceStub = createDataSpecificationServiceStub();
 
   beforeAll(() => {
     global.URL.createObjectURL = jest.fn(() => 'mockedObjectURL');
@@ -41,6 +45,10 @@ describe('DataExporterService', () => {
         {
           provide: MdmEndpointsService,
           useValue: endpointsStub,
+        },
+        {
+          provide: DataSpecificationService,
+          useValue: dataSpecificationServiceStub,
         },
       ],
     });
@@ -117,8 +125,23 @@ describe('DataExporterService', () => {
       return cold('a|', { a: response });
     });
 
+    dataSpecificationServiceStub.get.mockReturnValueOnce(
+      cold('(a|)', {
+        a: {
+          label: 'label',
+          modelVersion: 'version',
+          description: 'description',
+          status: 'finalised',
+          domainType: 'DataModel' as CatalogueItemDomainType,
+        },
+      })
+    );
+
     const expected$ = cold('-(a|)', {
-      a: 'mockedObjectURL',
+      a: expect.objectContaining({
+        filename: expect.stringMatching(/^label_\d{8}T\d{6}\.sql$/),
+        url: 'mockedObjectURL',
+      }),
     });
 
     const actual$ = service.exportDataSpecification(dataId, exporterName);

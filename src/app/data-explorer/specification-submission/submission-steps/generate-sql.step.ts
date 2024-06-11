@@ -17,78 +17,42 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import {
   ExporterName,
   ISubmissionState,
   ISubmissionStep,
   StepName,
   StepResult,
-} from '../submission.resource';
-import { AttachmentType, RequestEndpoints } from '@maurodatamapper/sde-resources';
-import { DataExporterService } from '../services/dataExporter.service';
+} from '../type-declarations/submission.resource';
+import { AttachmentType } from '@maurodatamapper/sde-resources';
+import { FileGenerationStepService } from '../services/fileGenerationStep.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GenerateSqlStep implements ISubmissionStep {
-  name: StepName = 'Generate sql file';
+  name: StepName = StepName.GeneratePdfFile;
 
-  constructor(
-    private requestEndpoints: RequestEndpoints,
-    private dataExporterService: DataExporterService
-  ) {}
+  constructor(private fileGenerationStepService: FileGenerationStepService) {}
 
   isRequired(input: Partial<ISubmissionState>): Observable<StepResult> {
-    if (!input.specificationId) {
-      return this.observableError(
-        'Generate Meql Step (isRequired) expects Specification Id, which was not provided.'
-      );
-    }
-
-    if (!input.dataRequestId) {
-      return this.observableError(
-        'Generate Meql Step (isRequired) expects Data Request Id, which was not provided.'
-      );
-    }
-
-    return this.requestEndpoints.listAttachments(input.dataRequestId).pipe(
-      map((attachmentsList) => {
-        const isRequired = !attachmentsList.some(
-          (attachment) => attachment.attachmentType === AttachmentType.DataSpecificationSQL
-        );
-        const stepResult: StepResult = {
-          result: {},
-          isRequired,
-        };
-        return stepResult;
-      })
+    return this.fileGenerationStepService.isRequired(
+      input,
+      this.name,
+      AttachmentType.DataSpecificationSQL
     );
   }
 
   run(input: Partial<ISubmissionState>): Observable<StepResult> {
-    if (!input.specificationId) {
-      return this.observableError(
-        'Generate Meql Step (run) expects Specification Id, which was not provided.'
-      );
-    }
-
-    return this.dataExporterService
-      .exportDataSpecification(input.specificationId, ExporterName.DataModelSqlExporterService)
-      .pipe(
-        map((url) => {
-          return { result: { pathToExportFile: url } } as StepResult;
-        })
-      );
+    return this.fileGenerationStepService.run(
+      input,
+      this.name,
+      ExporterName.DataModelSqlExporterService
+    );
   }
 
   getInputShape(): (keyof ISubmissionState)[] {
-    return ['specificationId', 'dataRequestId'];
-  }
-
-  private observableError(errorMessage: string): Observable<StepResult> {
-    return new Observable((observer) => {
-      observer.error(new Error(errorMessage));
-    });
+    return this.fileGenerationStepService.getInputShape();
   }
 }

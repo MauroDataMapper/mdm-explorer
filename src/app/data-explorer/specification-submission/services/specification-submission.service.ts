@@ -23,27 +23,40 @@ import { Observable } from 'rxjs/internal/Observable';
 import { of } from 'rxjs/internal/observable/of';
 import { switchMap } from 'rxjs/internal/operators/switchMap';
 import { SubmissionStateService } from './submission-state.service';
-import { CreateDataRequestStep } from './submission-steps/create-data-request.step';
-import { ISubmissionStep, StepResult } from './submission.resource';
+import { CreateDataRequestStep } from '../submission-steps/create-data-request.step';
+import { ISubmissionStep, StepResult } from '../type-declarations/submission.resource';
 import { ToastrService } from 'ngx-toastr';
-import { NoProjectsFoundError } from './submission.custom-errors';
-import { GenerateSqlStep } from './submission-steps/generate-sql.step';
-import { AttachSqlStep } from './submission-steps/attach-sql.step';
+import { NoProjectsFoundError } from '../type-declarations/submission.custom-errors';
+import { GenerateSqlStep } from '../submission-steps/generate-sql.step';
+import { AttachSqlStep } from '../submission-steps/attach-sql.step';
+import { GeneratePdfStep } from '../submission-steps/generate-pdf.step';
+import { AttachPdfStep } from '../submission-steps/attach-pdf.step';
+import { SubmitRequestStep } from '../submission-steps/submit-request.step';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SpecificationSubmissionService {
-  submissionSteps: ISubmissionStep[] = [];
+  private submissionSteps: ISubmissionStep[] = [];
 
   constructor(
     private stateService: SubmissionStateService,
     private toast: ToastrService,
     private createDataRequestStep: CreateDataRequestStep,
     private generateSqlStep: GenerateSqlStep,
-    private attachSqlStep: AttachSqlStep
+    private attachSqlStep: AttachSqlStep,
+    private generatePdfStep: GeneratePdfStep,
+    private attachPdfStep: AttachPdfStep,
+    private submitRequestStep: SubmitRequestStep
   ) {
-    this.submissionSteps = [this.createDataRequestStep, this.generateSqlStep, this.attachSqlStep];
+    this.submissionSteps = [
+      this.createDataRequestStep,
+      this.generateSqlStep,
+      this.attachSqlStep,
+      this.generatePdfStep,
+      this.attachPdfStep,
+      this.submitRequestStep,
+    ];
   }
 
   /**
@@ -76,8 +89,11 @@ export class SpecificationSubmissionService {
           }),
           catchError((error: Error) => {
             console.error('Error running step', step.name, error);
-            this.handleSubmissionError(error);
-            return EMPTY;
+            const errorHandled = this.handleSubmissionError(error);
+            if (errorHandled) {
+              return EMPTY;
+            }
+            throw error;
           })
         );
       })
@@ -88,6 +104,8 @@ export class SpecificationSubmissionService {
   private handleSubmissionError(error: Error) {
     if (error instanceof NoProjectsFoundError) {
       this.toast.error(error.message);
+      return true;
     }
+    return false;
   }
 }

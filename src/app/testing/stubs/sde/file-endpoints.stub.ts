@@ -16,24 +16,20 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { UploadProgress, Uuid } from '@maurodatamapper/sde-resources';
 import { Observable } from 'rxjs';
-import { Uuid } from '@maurodatamapper/mdm-resources';
-import {
-  ExporterName,
-  FileProperties,
-} from 'src/app/data-explorer/specification-submission/type-declarations/submission.resource';
 
-export type ExportDataSpecificationFn = (
-  specificationId: Uuid,
-  exporterName: ExporterName
-) => Observable<FileProperties>;
+export type UploadFileFn = (file: File) => Observable<UploadProgress>;
+export type DownloadFileFn = (fileId: Uuid) => Observable<Blob | undefined>;
 
-export interface DataExporterServiceStub {
-  exportDataSpecification: jest.MockedFunction<ExportDataSpecificationFn>;
+export interface FileEndpointStub {
+  uploadFile: jest.MockedFunction<UploadFileFn>;
+  downloadFile: jest.MockedFunction<DownloadFileFn>;
 }
 
-export const createDataExporterServiceStub = (): DataExporterServiceStub => {
+export const createFileEndpointStub = (): FileEndpointStub => {
   return {
-    exportDataSpecification: jest.fn() as jest.MockedFunction<ExportDataSpecificationFn>,
+    uploadFile: jest.fn() as jest.MockedFunction<UploadFileFn>,
+    downloadFile: jest.fn() as jest.MockedFunction<DownloadFileFn>,
   };
 };

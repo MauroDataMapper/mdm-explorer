@@ -18,16 +18,30 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Observable } from 'rxjs';
 import { Uuid } from '@maurodatamapper/mdm-resources';
-import { RequestAttachmentData } from '@maurodatamapper/sde-resources';
+import {
+  RequestActionPayload,
+  RequestAttachmentData,
+  RequestResponse,
+  SubmittedRequestResponse,
+} from '@maurodatamapper/sde-resources';
 
 export type ListAttachmentsFn = (requestId: Uuid) => Observable<RequestAttachmentData[]>;
+export type GetRequestFn = (requestId: Uuid) => Observable<RequestResponse>;
+export type ChangeStatusFn = (
+  requestId: Uuid,
+  action: RequestActionPayload
+) => Observable<RequestResponse | SubmittedRequestResponse>;
 
 export interface SdeRequestEndpointsSharedStub {
   listAttachments: jest.MockedFunction<ListAttachmentsFn>;
+  getRequest: jest.MockedFunction<GetRequestFn>;
+  changeStatus: jest.MockedFunction<ChangeStatusFn>;
 }
 
 export const createSdeRequestEndpointsSharedStub = (): SdeRequestEndpointsSharedStub => {
   return {
     listAttachments: jest.fn() as jest.MockedFunction<ListAttachmentsFn>,
+    getRequest: jest.fn() as jest.MockedFunction<GetRequestFn>,
+    changeStatus: jest.fn() as jest.MockedFunction<ChangeStatusFn>,
   };
 };

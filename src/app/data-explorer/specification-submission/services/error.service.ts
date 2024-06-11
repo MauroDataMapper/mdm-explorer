@@ -16,23 +16,25 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { setupTestModuleForService } from '../../testing/testing.helpers';
-import { ErrorService } from './error.service';
+import { Observable } from 'rxjs';
+import { StepFunction, StepName, StepResult } from '../type-declarations/submission.resource';
 
-describe('ErrorService', () => {
-  let service: ErrorService;
+export class ErrorService {
+  constructor() {}
 
-  beforeEach(() => {
-    service = setupTestModuleForService(ErrorService);
-  });
+  static observableError(errorMessage: string): Observable<StepResult> {
+    return new Observable((observer) => {
+      observer.error(new Error(errorMessage));
+    });
+  }
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
-  it('should set the last error', () => {
-    const error = new Error('test');
-    service.lastError = error;
-    expect(service.lastError).toBe(error);
-  });
-});
+  static missingInputError(
+    stepName: StepName,
+    action: StepFunction,
+    fieldName: string
+  ): Observable<StepResult> {
+    return ErrorService.observableError(
+      `${stepName} (${action}) expects ${fieldName}, which was not provided.`
+    );
+  }
+}

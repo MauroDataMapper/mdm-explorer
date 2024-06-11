@@ -19,23 +19,23 @@ SPDX-License-Identifier: Apache-2.0
 
 import { setupTestModuleForService } from 'src/app/testing/testing.helpers';
 import { cold } from 'jest-marbles';
-import { GenerateSqlStep } from './generate-sql.step';
 import { of } from 'rxjs';
-import { FileGenerationStepService } from '../services/fileGenerationStep.service';
-import { createFileGenerationStepServiceStub } from 'src/app/testing/stubs/data-specification-submission/file-generation-step.service.stub';
 import { ISubmissionState, StepResult } from '../type-declarations/submission.resource';
+import { AttachSqlStep } from './attach-sql.step';
+import { FileAttachmentStepService } from '../services/fileAttachmentStep.service';
+import { createFileAttachmentStepServiceStub } from 'src/app/testing/stubs/data-specification-submission/file-attachment-step.service.stub';
 
-describe('GenerateSqlStep', () => {
-  let step: GenerateSqlStep;
-  const fileGenerationStepServiceStub = createFileGenerationStepServiceStub();
+describe('AttachSqlStep', () => {
+  let step: AttachSqlStep;
+  const fileAttachmentStepServiceStub = createFileAttachmentStepServiceStub();
 
   beforeEach(() => {
     // Default endpoint call
-    step = setupTestModuleForService(GenerateSqlStep, {
+    step = setupTestModuleForService(AttachSqlStep, {
       providers: [
         {
-          provide: FileGenerationStepService,
-          useValue: fileGenerationStepServiceStub,
+          provide: FileAttachmentStepService,
+          useValue: fileAttachmentStepServiceStub,
         },
       ],
     });
@@ -54,7 +54,7 @@ describe('GenerateSqlStep', () => {
       'specificationId' as keyof ISubmissionState,
       'dataRequestId' as keyof ISubmissionState,
     ];
-    fileGenerationStepServiceStub.getInputShape.mockReturnValueOnce(expectedInputStep);
+    fileAttachmentStepServiceStub.getInputShape.mockReturnValueOnce(expectedInputStep);
 
     const inputStep = step.getInputShape();
     expect(inputStep).toEqual(expectedInputStep);
@@ -64,7 +64,7 @@ describe('GenerateSqlStep', () => {
     const stepResult = { isRequired: true } as StepResult;
     const expected$ = cold('(a|)', { a: stepResult });
 
-    fileGenerationStepServiceStub.isRequired.mockReturnValueOnce(of(stepResult));
+    fileAttachmentStepServiceStub.isRequired.mockReturnValueOnce(of(stepResult));
     const input = {} as Partial<ISubmissionState>;
     const actual$ = step.isRequired(input);
 
@@ -75,7 +75,7 @@ describe('GenerateSqlStep', () => {
     const stepResult = { isRequired: true } as StepResult;
     const expected$ = cold('(a|)', { a: stepResult });
 
-    fileGenerationStepServiceStub.run.mockReturnValueOnce(of(stepResult));
+    fileAttachmentStepServiceStub.run.mockReturnValueOnce(of(stepResult));
     const input = {} as Partial<ISubmissionState>;
     const actual$ = step.run(input);
 

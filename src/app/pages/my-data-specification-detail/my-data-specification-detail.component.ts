@@ -73,7 +73,7 @@ import { SecurityService } from '../../security/security.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { FolderService } from 'src/app/mauro/folder.service';
 import { VersionTreeSortingService } from 'src/app/data-explorer/version-tree-sorting.service';
-import { SpecificationSubmissionService } from 'src/app/data-explorer/specification-submission/specification-submission.service';
+import { SpecificationSubmissionService } from 'src/app/data-explorer/specification-submission/services/specification-submission.service';
 export interface RemoveSelectedResponse {
   okCancelDialogResponse: Observable<OkCancelDialogResponse>;
   deletedItems: Observable<DataElementMultipleOperationResult>;
@@ -218,11 +218,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
         }),
         switchMap(([dataSchemas, intersections, versionTree]) => {
           if (dataSchemas && intersections && versionTree) {
-            this.setDataSchemasIntersectionsAndVersionTree(
-              dataSchemas,
-              intersections,
-              versionTree
-            );
+            this.setDataSchemasIntersectionsAndVersionTree(dataSchemas, intersections, versionTree);
           }
 
           // Refresh finalised state in the backend (equivalent to click the refresh)
@@ -232,11 +228,11 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
         catchError(() => {
           this.toastr.error(
             'There was a problem finalising your data specification. Please try again or contact us for support.',
-            'Finalising error',
+            'Finalising error'
           );
           return EMPTY;
         }),
-        finalize(() => this.broadcastService.loading({ isLoading: false })),
+        finalize(() => this.broadcastService.loading({ isLoading: false }))
       )
       .subscribe(() => {
         this.broadcastService.dispatch('data-specification-finalised');
@@ -294,11 +290,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
       this.setDataSpecification(this.dataSpecification).subscribe(
         ([dataSchemas, intersections, versionTree]) => {
           if (dataSchemas && intersections && versionTree) {
-            this.setDataSchemasIntersectionsAndVersionTree(
-              dataSchemas,
-              intersections,
-              versionTree
-            );
+            this.setDataSchemasIntersectionsAndVersionTree(dataSchemas, intersections, versionTree);
           }
         }
       );
@@ -322,11 +314,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
           return this.removeSelectedItems(okCancelDialogResponse, itemList);
         }),
         switchMap(([okCancelDialogResponse, deletedElements]) => {
-          return this.removeSelectedClasses(
-            okCancelDialogResponse,
-            deletedElements,
-            classList
-          );
+          return this.removeSelectedClasses(okCancelDialogResponse, deletedElements, classList);
         }),
         switchMap(([okCancelDialogResponse, deletedElements, deletedClasses]) => {
           return this.removeSelectedSchemas(
@@ -350,11 +338,13 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
           this.refreshQueries(dataQuery, cohortQuery);
 
           const success = deletedElements.failures.length === 0;
-          let message = `${deletedElements.successes.length} Data element${deletedElements.successes.length === 1 ? '' : 's'
-            } removed from data specification "${this.dataSpecification?.label}".`;
+          let message = `${deletedElements.successes.length} Data element${
+            deletedElements.successes.length === 1 ? '' : 's'
+          } removed from data specification "${this.dataSpecification?.label}".`;
           if (!success) {
-            message += `\r\n${deletedElements.failures.length} Data element${deletedElements.failures.length === 1 ? '' : 's'
-              } caused an error.`;
+            message += `\r\n${deletedElements.failures.length} Data element${
+              deletedElements.failures.length === 1 ? '' : 's'
+            } caused an error.`;
             deletedElements.failures.forEach((item: DataElementOperationResult) =>
               console.log(item.message)
             );
@@ -362,8 +352,9 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
 
           const classSuccess = deletedClasses.failures.length === 0;
           if (!classSuccess) {
-            message += `\r\n${deletedClasses.failures.length} Data class${deletedClasses.failures.length === 1 ? '' : 'es'
-              } caused an error.`;
+            message += `\r\n${deletedClasses.failures.length} Data class${
+              deletedClasses.failures.length === 1 ? '' : 'es'
+            } caused an error.`;
             deletedClasses.failures.forEach((item: DataElementOperationResult) =>
               console.log(item.message)
             );
@@ -371,8 +362,9 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
 
           const schemaSuccess = deletedSchemas.failures.length === 0;
           if (!schemaSuccess) {
-            message += `\r\n${deletedSchemas.failures.length} Data schema${deletedSchemas.failures.length === 1 ? '' : 's'
-              } caused an error.`;
+            message += `\r\n${deletedSchemas.failures.length} Data schema${
+              deletedSchemas.failures.length === 1 ? '' : 's'
+            } caused an error.`;
             deletedSchemas.failures.forEach((item: DataElementOperationResult) =>
               console.log(item.message)
             );
@@ -461,9 +453,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
               dialogResponse.sharedWithCommunity
         ),
         switchMap(
-          (
-            response: ShareDataSpecificationDialogInputOutput
-          ): Observable<DataModelDetail> => {
+          (response: ShareDataSpecificationDialogInputOutput): Observable<DataModelDetail> => {
             if (response.sharedWithCommunity) {
               return this.dataModels.updateReadByAuthenticated(id);
             } else {
@@ -513,9 +503,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
       .afterClosed()
       .pipe(
         switchMap(
-          (
-            okCancelDialogResponse?: OkCancelDialogResponse
-          ): Observable<DataModelDetail> => {
+          (okCancelDialogResponse?: OkCancelDialogResponse): Observable<DataModelDetail> => {
             if (!okCancelDialogResponse || !this.dataSpecification) {
               return EMPTY;
             }
@@ -577,37 +565,25 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
       )
       .subscribe(([dataSchemas, intersections, versionTree]) => {
         if (dataSchemas && intersections && versionTree) {
-          this.setDataSchemasIntersectionsAndVersionTree(
-            dataSchemas,
-            intersections,
-            versionTree
-          );
+          this.setDataSchemasIntersectionsAndVersionTree(dataSchemas, intersections, versionTree);
         }
       });
   }
 
   private updateAllElementsSelected() {
     if (!this.allElements) {
-      this.allElements = this.dataSchemaService.reduceDataElementsFromSchemas(
-        this.dataSchemas
-      );
+      this.allElements = this.dataSchemaService.reduceDataElementsFromSchemas(this.dataSchemas);
     }
 
-    this.allElementsSelected = this.allElements.every(
-      (dataElement) => dataElement.isSelected
-    );
+    this.allElementsSelected = this.allElements.every((dataElement) => dataElement.isSelected);
   }
 
   private updateAnyElementsSelected() {
     if (!this.allElements) {
-      this.allElements = this.dataSchemaService.reduceDataElementsFromSchemas(
-        this.dataSchemas
-      );
+      this.allElements = this.dataSchemaService.reduceDataElementsFromSchemas(this.dataSchemas);
     }
 
-    this.anyElementSelected = this.allElements.some(
-      (dataElement) => dataElement.isSelected
-    );
+    this.anyElementSelected = this.allElements.some((dataElement) => dataElement.isSelected);
   }
 
   /**
@@ -624,11 +600,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
   private setDataSpecification(
     dataSpecification?: DataSpecification
   ): Observable<
-    [
-      DataSchema[]?,
-      DataSpecificationSourceTargetIntersections?,
-      SimpleModelVersionTree[]?
-    ]
+    [DataSchema[]?, DataSpecificationSourceTargetIntersections?, SimpleModelVersionTree[]?]
   > {
     this.dataSpecification = dataSpecification;
     if (!this.dataSpecification || !this.dataSpecification.id) {
@@ -649,8 +621,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     // author property is not the same as here in code
     // so we have to remove the spaces and then compare
     this.currentUserOwnsDataSpec =
-      this.dataSpecification.author.replace('\\s', '') ===
-      currentUserFullName.replace('\\s', '');
+      this.dataSpecification.author.replace('\\s', '') === currentUserFullName.replace('\\s', '');
 
     // Set queries
     if (!this.dataSpecification?.id) {
@@ -685,11 +656,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
           this.loadIntersections(dataSchemas ?? []),
           this.dataModels.simpleModelVersionTree(dataSpecId, false),
         ]) as Observable<
-          [
-            DataSchema[],
-            DataSpecificationSourceTargetIntersections,
-            SimpleModelVersionTree[]
-          ]
+          [DataSchema[], DataSpecificationSourceTargetIntersections, SimpleModelVersionTree[]]
         >;
       }),
       catchError(() => {
@@ -711,8 +678,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     this.sourceTargetIntersections = intersections;
 
     // A newer draft version already exists
-    this.newerVersionExists =
-      versionTree.findIndex((node) => node.branch === 'main') >= 0;
+    this.newerVersionExists = versionTree.findIndex((node) => node.branch === 'main') >= 0;
 
     // When all versions are submitted, there will be no main version, in that case
     // If the current version is not the latest version, disable the new version button.
@@ -721,8 +687,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     // When a data specification is not submitted the model version is undefined and the sorting
     // will ignore it. That is ok, since when data spec is not submitted the button will be hidden
     const orderedTree = versionTree.sort(this.versionSorter.compareModelVersion());
-    this.currentVersionIsLatest =
-      orderedTree.slice(-1)[0]?.id === this.dataSpecification?.id;
+    this.currentVersionIsLatest = orderedTree.slice(-1)[0]?.id === this.dataSpecification?.id;
   }
 
   // intersections are data elements that are part of the data specification
@@ -757,11 +722,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     this.setDataSpecification(this.dataSpecification).subscribe(
       ([dataSchemas, intersections, versionTree]) => {
         if (dataSchemas && intersections && versionTree) {
-          this.setDataSchemasIntersectionsAndVersionTree(
-            dataSchemas,
-            intersections,
-            versionTree
-          );
+          this.setDataSchemasIntersectionsAndVersionTree(dataSchemas, intersections, versionTree);
         }
       }
     );
@@ -791,15 +752,10 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
   }
 
   private okCancelItem(userFacingText: UserFacingText): MatDialogRef<OkCancelDialogData> {
-    return this.okCancel(
-      userFacingText.confirmationHeading,
-      userFacingText.confirmationMessage
-    );
+    return this.okCancel(userFacingText.confirmationHeading, userFacingText.confirmationMessage);
   }
 
-  private okCancelItemList(
-    itemList: DataElementSearchResult[]
-  ): MatDialogRef<OkCancelDialogData> {
+  private okCancelItemList(itemList: DataElementSearchResult[]): MatDialogRef<OkCancelDialogData> {
     return this.okCancel(
       'Remove selected data elements',
       `Are you sure you want to remove these ${itemList.length} selected data elements from data specification ${this.dataSpecification?.label}?`
@@ -829,9 +785,8 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
       .reduceDataClassesFromSchemas(this.dataSchemas)
       .filter(
         (dataClassWithElements) =>
-          dataClassWithElements.dataElements.filter(
-            (dataElement) => dataElement.isSelected
-          ).length === dataClassWithElements.dataElements.length
+          dataClassWithElements.dataElements.filter((dataElement) => dataElement.isSelected)
+            .length === dataClassWithElements.dataElements.length
       )
       .map((dataClassWithElements) => dataClassWithElements.dataClass);
   }
@@ -880,11 +835,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     deletedElements: DataElementMultipleOperationResult,
     classList: DataClass[]
   ): Observable<
-    [
-      OkCancelDialogResponse,
-      DataElementMultipleOperationResult,
-      DataElementMultipleOperationResult
-    ]
+    [OkCancelDialogResponse, DataElementMultipleOperationResult, DataElementMultipleOperationResult]
   > {
     if (okCancelDialogResponse.result) {
       return forkJoin([
@@ -1057,10 +1008,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     }
   }
 
-  private deleteDataClass(
-    dataClass: DataClass | undefined,
-    dataSchema: DataSchema | undefined
-  ) {
+  private deleteDataClass(dataClass: DataClass | undefined, dataSchema: DataSchema | undefined) {
     if (dataSchema?.schema && dataSchema?.dataClasses.length === 1) {
       return this.dataSpecificationService.deleteDataSchema(dataSchema.schema);
     } else if (dataClass) {
@@ -1075,10 +1023,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     dataClassWithElements: DataClassWithElements | undefined,
     dataSchema: DataSchema | undefined
   ): Observable<DataElementOperationResult> {
-    if (
-      dataClassWithElements?.dataElements &&
-      dataClassWithElements?.dataElements.length === 1
-    ) {
+    if (dataClassWithElements?.dataElements && dataClassWithElements?.dataElements.length === 1) {
       return this.deleteDataClass(dataClassWithElements.dataClass, dataSchema);
     } else if (dataElement) {
       if (this.dataSpecification) {
@@ -1113,10 +1058,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     }
 
     if (itemType === 'dataClass') {
-      return this.deleteDataClass(
-        event.dataClassWithElements?.dataClass,
-        event.dataSchema
-      );
+      return this.deleteDataClass(event.dataClassWithElements?.dataClass, event.dataSchema);
     }
 
     if (itemType === 'dataElement') {

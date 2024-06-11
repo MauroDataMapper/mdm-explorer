@@ -19,21 +19,30 @@ SPDX-License-Identifier: Apache-2.0
 import { Observable } from 'rxjs';
 import { Uuid } from '@maurodatamapper/mdm-resources';
 import {
-  ExporterName,
   FileProperties,
+  StepResult,
 } from 'src/app/data-explorer/specification-submission/type-declarations/submission.resource';
+import { AttachmentType } from '@maurodatamapper/sde-resources';
 
-export type ExportDataSpecificationFn = (
-  specificationId: Uuid,
-  exporterName: ExporterName
-) => Observable<FileProperties>;
+export type AttachmentsAreRequiredStubFn = (
+  dataRequestId: Uuid,
+  attachmentType: AttachmentType
+) => Observable<StepResult>;
 
-export interface DataExporterServiceStub {
-  exportDataSpecification: jest.MockedFunction<ExportDataSpecificationFn>;
+export type AttachFileStubFn = (
+  dataRequestId: Uuid,
+  fileProperties: FileProperties,
+  attachmentType: AttachmentType
+) => Observable<StepResult>;
+
+export interface AttachmentsServiceStub {
+  attachmentsAreRequired: jest.MockedFunction<AttachmentsAreRequiredStubFn>;
+  attachFile: jest.MockedFunction<AttachFileStubFn>;
 }
 
-export const createDataExporterServiceStub = (): DataExporterServiceStub => {
+export const createAttachmentsServiceStub = (): AttachmentsServiceStub => {
   return {
-    exportDataSpecification: jest.fn() as jest.MockedFunction<ExportDataSpecificationFn>,
+    attachmentsAreRequired: jest.fn() as jest.MockedFunction<AttachmentsAreRequiredStubFn>,
+    attachFile: jest.fn() as jest.MockedFunction<AttachFileStubFn>,
   };
 };

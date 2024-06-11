@@ -20,18 +20,28 @@ import { SpecificationSubmissionService } from './specification-submission.servi
 import { setupTestModuleForService } from 'src/app/testing/testing.helpers';
 import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
 import { MatDialog } from '@angular/material/dialog';
-import { createStateServiceStub } from './testing/submission-state.stub';
+import { createStateServiceStub } from '../../../testing/stubs/data-specification-submission/submission-state.stub';
 import { SubmissionStateService } from './submission-state.service';
-import { createStepStub } from './testing/step.stub';
-import { CreateDataRequestStep } from './submission-steps/create-data-request.step';
+import { createStepStub } from '../../../testing/stubs/data-specification-submission/step.stub';
+import { CreateDataRequestStep } from '../submission-steps/create-data-request.step';
 import { of } from 'rxjs';
-import { ISubmissionState, StepResult } from './submission.resource';
+import { ISubmissionState, StepName, StepResult } from '../type-declarations/submission.resource';
+import { GenerateSqlStep } from '../submission-steps/generate-sql.step';
+import { AttachSqlStep } from '../submission-steps/attach-sql.step';
+import { GeneratePdfStep } from '../submission-steps/generate-pdf.step';
+import { AttachPdfStep } from '../submission-steps/attach-pdf.step';
+import { SubmitRequestStep } from '../submission-steps/submit-request.step';
 
 describe('SpecificationSubmissionService', () => {
   let service: SpecificationSubmissionService;
   const matDialogStub = createMatDialogStub();
   const stateServiceStub = createStateServiceStub();
-  const createDataRequestStub = createStepStub('Create data request');
+  const createDataRequestStepStub = createStepStub(StepName.CreateDataRequest);
+  const generateSqlStepStub = createStepStub(StepName.GenerateSqlFile);
+  const attachSqlStepStub = createStepStub(StepName.AttachSqlFile);
+  const generatePdfStepStub = createStepStub(StepName.GeneratePdfFile);
+  const attachPdfStepStub = createStepStub(StepName.AttachPdfFile);
+  const submitDataRequestStepStub = createStepStub(StepName.SubmitDataRequest);
 
   beforeEach(() => {
     service = setupTestModuleForService(SpecificationSubmissionService, {
@@ -46,7 +56,27 @@ describe('SpecificationSubmissionService', () => {
         },
         {
           provide: CreateDataRequestStep,
-          useValue: createDataRequestStub,
+          useValue: createDataRequestStepStub,
+        },
+        {
+          provide: GenerateSqlStep,
+          useValue: generateSqlStepStub,
+        },
+        {
+          provide: AttachSqlStep,
+          useValue: attachSqlStepStub,
+        },
+        {
+          provide: GeneratePdfStep,
+          useValue: generatePdfStepStub,
+        },
+        {
+          provide: AttachPdfStep,
+          useValue: attachPdfStepStub,
+        },
+        {
+          provide: SubmitRequestStep,
+          useValue: submitDataRequestStepStub,
         },
       ],
     });
@@ -60,7 +90,7 @@ describe('SpecificationSubmissionService', () => {
     const setSpy = jest.spyOn(stateServiceStub, 'set');
     const specificationId = 'test-id';
     jest
-      .spyOn(createDataRequestStub, 'isRequired')
+      .spyOn(createDataRequestStepStub, 'isRequired')
       .mockReturnValue(of({ result: {}, isRequired: false }));
 
     service.submit(specificationId).subscribe();
@@ -68,21 +98,18 @@ describe('SpecificationSubmissionService', () => {
   });
 
   it('should run the createDataRequest step and return a stepResult', (done) => {
-    // Set the steps
-    service.submissionSteps = [createDataRequestStub];
-
     // Mock the returns
     const expectedInputShape: (keyof Partial<ISubmissionState>)[] = ['specificationId'];
     const expectedRunInput = { specificationId: 'test-id' };
     const dataRequestId = 'dataRequestId';
     const expectedRunResult: StepResult = { result: { dataRequestId }, isRequired: false };
 
-    createDataRequestStub.getInputShape.mockReturnValueOnce(expectedInputShape);
+    createDataRequestStepStub.getInputShape.mockReturnValueOnce(expectedInputShape);
     stateServiceStub.getStepInputFromShape.mockReturnValueOnce({ specificationId: 'test-id' });
 
     // Set the spys
-    const isRequiredSpy = jest.spyOn(createDataRequestStub, 'isRequired');
-    const runSpy = jest.spyOn(createDataRequestStub, 'run');
+    const isRequiredSpy = jest.spyOn(createDataRequestStepStub, 'isRequired');
+    const runSpy = jest.spyOn(createDataRequestStepStub, 'run');
 
     isRequiredSpy.mockReturnValue(of({ result: {}, isRequired: true } as StepResult));
     runSpy.mockReturnValue(of({ result: { dataRequestId }, isRequired: false } as StepResult));
@@ -100,10 +127,35 @@ describe('SpecificationSubmissionService', () => {
     const setSpy = jest.spyOn(stateServiceStub, 'set');
     const stepResult = { isRequired: false, result: { dataRequestId: 'dataRequestId' } };
 
-    jest.spyOn(createDataRequestStub, 'isRequired').mockReturnValue(of(stepResult));
+    jest.spyOn(createDataRequestStepStub, 'isRequired').mockReturnValue(of(stepResult));
 
     service.submit('test-id').subscribe();
 
     expect(setSpy).toHaveBeenCalledWith(stepResult.result);
+  });
+
+  it('run all submission steps', () => {
+    /*
+    // Mock the returns
+    const expectedInputShape: (keyof Partial<ISubmissionState>)[] = ['specificationId'];
+    const expectedRunInput = { specificationId: 'test-id' };
+    const dataRequestId = 'dataRequestId';
+    const expectedRunResult: StepResult = { result: { dataRequestId }, isRequired: false };
+
+    createDataRequestStepStub.getInputShape.mockReturnValueOnce(expectedInputShape);
+    stateServiceStub.getStepInputFromShape.mockReturnValueOnce({ specificationId: 'test-id' });
+
+    // Set the spys
+    const isRequiredSpy = jest.spyOn(createDataRequestStepStub, 'isRequired');
+    const runSpy = jest.spyOn(createDataRequestStepStub, 'run');
+
+    isRequiredSpy.mockReturnValue(of({ result: {}, isRequired: true } as StepResult));
+    runSpy.mockReturnValue(of({ result: { dataRequestId }, isRequired: false } as StepResult));
+
+    service.submit('test-id').subscribe();
+
+    expect(isRequiredSpy).toHaveBeenCalled();
+    expect(runSpy).toHaveBeenCalledWith(expectedRunInput);
+    */
   });
 });

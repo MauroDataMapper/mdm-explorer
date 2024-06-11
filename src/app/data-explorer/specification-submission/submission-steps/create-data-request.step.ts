@@ -18,7 +18,12 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
 import { Observable, filter, forkJoin, map, of, switchMap } from 'rxjs';
-import { ISubmissionState, ISubmissionStep, StepName, StepResult } from '../submission.resource';
+import {
+  ISubmissionState,
+  ISubmissionStep,
+  StepName,
+  StepResult,
+} from '../type-declarations/submission.resource';
 import { DialogService } from 'src/app/data-explorer/dialog.service';
 import {
   SelectProjectDialogData,
@@ -36,7 +41,7 @@ import {
   Uuid,
 } from '@maurodatamapper/sde-resources';
 import { DataSpecificationService } from '../../data-specification.service';
-import { NoProjectsFoundError } from '../submission.custom-errors';
+import { NoProjectsFoundError } from '../type-declarations/submission.custom-errors';
 
 export interface SelectProjectStepResult {
   specificationId: Uuid;
@@ -46,7 +51,7 @@ export interface SelectProjectStepResult {
   providedIn: 'root',
 })
 export class CreateDataRequestStep implements ISubmissionStep {
-  name: StepName = 'Create data request';
+  name: StepName = StepName.CreateDataRequest;
 
   constructor(
     private dialog: DialogService,

@@ -53,21 +53,41 @@ export interface ISubmissionStep {
   getInputShape: () => (keyof Partial<ISubmissionState>)[];
 }
 
+export type FileProperties = {
+  url: string;
+  filename: string;
+};
+
 export interface ISubmissionState {
   specificationId: Uuid;
   dataRequestId: Uuid;
   specificationTitle: string;
   specificationDescription: string;
-  pathToExportFile: string;
+  fileProperties: FileProperties;
 }
 
+/*
 export type StepName =
   | 'Create data request'
   | 'Generate sql file'
   | 'Attach sql file to data request'
   | 'Generate pdf of data request'
   | 'Attach pdf to data request'
-  | 'Save data request';
+  | 'Submit data request';
+  */
+export enum StepName {
+  CreateDataRequest = 'Create data request',
+  GenerateSqlFile = 'Generate sql file',
+  AttachSqlFile = 'Attach sql file to data request',
+  GeneratePdfFile = 'Generate pdf of data request',
+  AttachPdfFile = 'Attach pdf to data request',
+  SubmitDataRequest = 'Submit data request',
+}
+
+export enum StepFunction {
+  Run = 'run',
+  IsRequired = 'isRequired',
+}
 
 export enum ExporterName {
   DataModelSqlExporterService = 'DataModelSqlExporterService',

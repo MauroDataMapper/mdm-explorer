@@ -19,19 +19,19 @@ SPDX-License-Identifier: Apache-2.0
 
 import { setupTestModuleForService } from 'src/app/testing/testing.helpers';
 import { cold } from 'jest-marbles';
-import { GenerateSqlStep } from './generate-sql.step';
 import { of } from 'rxjs';
 import { FileGenerationStepService } from '../services/fileGenerationStep.service';
 import { createFileGenerationStepServiceStub } from 'src/app/testing/stubs/data-specification-submission/file-generation-step.service.stub';
 import { ISubmissionState, StepResult } from '../type-declarations/submission.resource';
+import { GeneratePdfStep } from './generate-pdf.step';
 
-describe('GenerateSqlStep', () => {
-  let step: GenerateSqlStep;
+describe('GeneratePdfStep', () => {
+  let step: GeneratePdfStep;
   const fileGenerationStepServiceStub = createFileGenerationStepServiceStub();
 
   beforeEach(() => {
     // Default endpoint call
-    step = setupTestModuleForService(GenerateSqlStep, {
+    step = setupTestModuleForService(GeneratePdfStep, {
       providers: [
         {
           provide: FileGenerationStepService,

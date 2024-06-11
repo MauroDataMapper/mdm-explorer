@@ -112,3 +112,8 @@ export const setupTestModuleForComponent = async <T>(
 
   return new ComponentHarness(component, fixture);
 };
+
+export type ErrorResponse = {
+  hasError: boolean;
+  errorMessage: string;
+};

@@ -30,8 +30,8 @@ import { FileAttachmentStepService } from '../services/fileAttachmentStep.servic
 @Injectable({
   providedIn: 'root',
 })
-export class AttachSqlStep implements ISubmissionStep {
-  name: StepName = StepName.AttachSqlFile;
+export class AttachPdfStep implements ISubmissionStep {
+  name: StepName = StepName.AttachPdfFile;
 
   constructor(private fileAttachmentStepService: FileAttachmentStepService) {}
 
@@ -39,7 +39,7 @@ export class AttachSqlStep implements ISubmissionStep {
     return this.fileAttachmentStepService.isRequired(
       input,
       this.name,
-      AttachmentType.DataSpecificationSQL
+      AttachmentType.DataSpecificationPDF
     );
   }
 
@@ -47,7 +47,7 @@ export class AttachSqlStep implements ISubmissionStep {
     return this.fileAttachmentStepService.run(
       input,
       this.name,
-      AttachmentType.DataSpecificationSQL
+      AttachmentType.DataSpecificationPDF
     );
   }
 

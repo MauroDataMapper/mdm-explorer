@@ -67,8 +67,8 @@ import { MyDataSpecificationDetailComponent } from './my-data-specification-deta
 import { SecurityService } from 'src/app/security/security.service';
 import { createFolderServiceStub } from 'src/app/testing/stubs/folder.stub';
 import { FolderService } from 'src/app/mauro/folder.service';
-import { createSpecificationSubmissionServiceStub } from 'src/app/data-explorer/specification-submission/testing/specification-submission-service.stub';
-import { SpecificationSubmissionService } from 'src/app/data-explorer/specification-submission/specification-submission.service';
+import { createSpecificationSubmissionServiceStub } from 'src/app/testing/stubs/data-specification-submission/specification-submission-service.stub';
+import { SpecificationSubmissionService } from 'src/app/data-explorer/specification-submission/services/specification-submission.service';
 
 describe('MyDataSpecificationDetailComponent', () => {
   let harness: ComponentHarness<MyDataSpecificationDetailComponent>;

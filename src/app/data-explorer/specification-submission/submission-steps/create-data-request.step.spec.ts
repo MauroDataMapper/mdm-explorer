@@ -31,7 +31,10 @@ import { DataSpecificationService } from '../../data-specification.service';
 import { Observable } from 'rxjs';
 import { DataSpecification } from '../../data-explorer.types';
 import { cold } from 'jest-marbles';
-import { DEFAULT_NO_PROJECTS_MESSAGE, NoProjectsFoundError } from '../submission.custom-errors';
+import {
+  DEFAULT_NO_PROJECTS_MESSAGE,
+  NoProjectsFoundError,
+} from '../type-declarations/submission.custom-errors';
 import {
   SelectProjectDialogData,
   SelectProjectDialogResponse,

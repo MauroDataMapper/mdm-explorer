@@ -19,39 +19,40 @@ SPDX-License-Identifier: Apache-2.0
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
+  ExporterName,
   ISubmissionState,
   ISubmissionStep,
   StepName,
   StepResult,
 } from '../type-declarations/submission.resource';
 import { AttachmentType } from '@maurodatamapper/sde-resources';
-import { FileAttachmentStepService } from '../services/fileAttachmentStep.service';
+import { FileGenerationStepService } from '../services/fileGenerationStep.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class AttachSqlStep implements ISubmissionStep {
-  name: StepName = StepName.AttachSqlFile;
+export class GeneratePdfStep implements ISubmissionStep {
+  name: StepName = StepName.GeneratePdfFile;
 
-  constructor(private fileAttachmentStepService: FileAttachmentStepService) {}
+  constructor(private fileGenerationStepService: FileGenerationStepService) {}
 
   isRequired(input: Partial<ISubmissionState>): Observable<StepResult> {
-    return this.fileAttachmentStepService.isRequired(
+    return this.fileGenerationStepService.isRequired(
       input,
       this.name,
-      AttachmentType.DataSpecificationSQL
+      AttachmentType.DataSpecificationPDF
     );
   }
 
   run(input: Partial<ISubmissionState>): Observable<StepResult> {
-    return this.fileAttachmentStepService.run(
+    return this.fileGenerationStepService.run(
       input,
       this.name,
-      AttachmentType.DataSpecificationSQL
+      ExporterName.DataModelPdfExporterService
     );
   }
 
   getInputShape(): (keyof ISubmissionState)[] {
-    return this.fileAttachmentStepService.getInputShape();
+    return ['specificationId', 'dataRequestId'];
   }
 }
