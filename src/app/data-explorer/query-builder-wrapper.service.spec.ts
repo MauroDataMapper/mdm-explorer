@@ -28,10 +28,7 @@ import {
 import { cold } from 'jest-marbles';
 import { setupTestModuleForService } from '../testing/testing.helpers';
 import { ProfileService } from '../mauro/profile.service';
-import {
-  QueryBuilderWrapperService,
-  QueryConfiguration,
-} from './query-builder-wrapper.service';
+import { QueryBuilderWrapperService, QueryConfiguration } from './query-builder-wrapper.service';
 import {
   DataElementSearchResult,
   DataSpecification,
@@ -317,7 +314,7 @@ describe('QueryBuilderService', () => {
         id: '1',
         label: 'data specification',
         domainType: CatalogueItemDomainType.DataModel,
-        status: 'unsent',
+        status: 'draft',
       };
 
       const profiles: Profile[] = isMapped
@@ -333,10 +330,7 @@ describe('QueryBuilderService', () => {
         : [];
 
       profiles.push(
-        QueryBuilderTestingHelper.createCoreTableProfile(
-          dataSpecification as DataModel,
-          coreTable
-        )
+        QueryBuilderTestingHelper.createCoreTableProfile(dataSpecification as DataModel, coreTable)
       );
 
       const mockProfile = (profile: Profile[]) => {
@@ -350,8 +344,7 @@ describe('QueryBuilderService', () => {
 
       const expectedResult: QueryConfiguration = {
         dataElementSearchResult: expectedDataElementSearchResult,
-        dataSpecificationQueryPayload:
-          expectedQuery as Required<DataSpecificationQueryPayload>,
+        dataSpecificationQueryPayload: expectedQuery as Required<DataSpecificationQueryPayload>,
         config: expectedQueryBuilderConfig,
       };
 

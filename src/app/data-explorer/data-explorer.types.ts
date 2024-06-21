@@ -99,9 +99,7 @@ export interface DataElementSearchParameters {
  * Map {@link DataElementSearchParameters} to a {@link Params} map to be used for query parameters in
  * a route navigation.
  */
-export const mapSearchParametersToParams = (
-  parameters: DataElementSearchParameters
-): Params => {
+export const mapSearchParametersToParams = (parameters: DataElementSearchParameters): Params => {
   return {
     ...(parameters.dataClass && {
       ...(parameters.dataClass.dataModelId && { dm: parameters.dataClass.dataModelId }),
@@ -202,9 +200,7 @@ export interface DataElementMultipleOperationResult {
   failures: DataElementOperationResult[];
 }
 
-export const mapProfileSearchResult = (
-  item: ProfileSearchResult
-): DataElementSearchResult => {
+export const mapProfileSearchResult = (item: ProfileSearchResult): DataElementSearchResult => {
   // Note: Assumption that the the last breadcrumb is the data class containing the data element
   const dataClassId =
     item.breadcrumbs && item.breadcrumbs.length > 0
@@ -229,19 +225,7 @@ export const mapProfileSearchResult = (
   };
 };
 
-export type DataSpecificationStatus = 'unsent' | 'finalised';
-
-/* .*
- * Determine the status of a data specification made by a user for data access.
- */
-export const getDataSpecificationStatus = (model: DataModel): DataSpecificationStatus => {
-  if (model.modelVersion) {
-    // Model was finalised, so is now locked
-    return 'finalised';
-  }
-
-  return 'unsent';
-};
+export type DataSpecificationStatus = 'draft' | 'finalised' | 'submitted';
 
 /**
  * Define a data specification, which is an extension of a {@link DataModel}.
@@ -252,13 +236,6 @@ export interface DataSpecification extends DataModel {
    */
   status: DataSpecificationStatus;
 }
-
-export const mapToDataSpecification = (dataModel: DataModel): DataSpecification => {
-  return {
-    ...dataModel,
-    status: getDataSpecificationStatus(dataModel),
-  };
-};
 
 export type DataElementDto = DataElement;
 

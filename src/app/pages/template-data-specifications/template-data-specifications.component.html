@@ -21,12 +21,11 @@ SPDX-License-Identifier: Apache-2.0
     <h1>Templates</h1>
     <div *ngIf="templateDataSpecifications && templateDataSpecifications.length > 0">
       <p>
-        Searching our large catalogue for all the data you require can be daunting.
-        Fortunately, we have collected together some typical types of research data
-        specifications so they can be reused. Browse our selection of predefined data
-        specifications templates as a starting point for collating your research data
-        specifications. Any specifications that you copy from here can be modified to suit
-        your needs as you go before formal submission.
+        Searching our large catalogue for all the data you require can be daunting. Fortunately, we
+        have collected together some typical types of research data specifications so they can be
+        reused. Browse our selection of predefined data specifications templates as a starting point
+        for collating your research data specifications. Any specifications that you copy from here
+        can be modified to suit your needs as you go before formal submission.
       </p>
     </div>
   </div>
@@ -53,21 +52,15 @@ SPDX-License-Identifier: Apache-2.0
   </div>
 
   <div *ngIf="contentToDisplay.value === 'Templates'">
-    <div
-      *ngIf="!templateDataSpecifications || templateDataSpecifications.length === 0"
-      class="row"
-    >
+    <div *ngIf="!templateDataSpecifications || templateDataSpecifications.length === 0" class="row">
       <p class="text-center">
-        We currently have no data specification templates but are working on adding some
-        soon. In the meantime, you are able to
-        <a routerLink="/search">search</a> or <a routerLink="/browse">browse</a> our
-        catalogue and start creating your own research data specifications from scratch.
+        We currently have no data specification templates but are working on adding some soon. In
+        the meantime, you are able to
+        <a routerLink="/search">search</a> or <a routerLink="/browse">browse</a> our catalogue and
+        start creating your own research data specifications from scratch.
       </p>
     </div>
-    <div
-      *ngIf="templateDataSpecifications && templateDataSpecifications.length > 0"
-      class="row"
-    >
+    <div *ngIf="templateDataSpecifications && templateDataSpecifications.length > 0" class="row">
       <div *ngFor="let dataSpecification of templateDataSpecifications">
         <div class="col">
           <mdm-data-specification-row
@@ -83,22 +76,16 @@ SPDX-License-Identifier: Apache-2.0
   </div>
 
   <div *ngIf="contentToDisplay.value === 'Community'">
-    <div
-      *ngIf="!sharedDataSpecifications || sharedDataSpecifications.length === 0"
-      class="row"
-    >
+    <div *ngIf="!sharedDataSpecifications || sharedDataSpecifications.length === 0" class="row">
       <p class="text-center">
         Currently there are no shared specifications. You are able to
-        <a routerLink="/search">search</a> or <a routerLink="/browse">browse</a> our
-        catalogue and start creating your own research data specifications from scratch.
-        Then, you can share them with the community.
+        <a routerLink="/search">search</a> or <a routerLink="/browse">browse</a> our catalogue and
+        start creating your own research data specifications from scratch. Then, you can share them
+        with the community.
       </p>
     </div>
 
-    <div
-      *ngIf="sharedDataSpecifications && sharedDataSpecifications.length > 0"
-      class="row"
-    >
+    <div *ngIf="sharedDataSpecifications && sharedDataSpecifications.length > 0" class="row">
       <div *ngFor="let dataSpecification of sharedDataSpecifications">
         <div class="col">
           <mdm-data-specification-row

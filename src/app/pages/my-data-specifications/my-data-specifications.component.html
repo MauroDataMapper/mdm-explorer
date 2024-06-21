@@ -28,8 +28,9 @@ SPDX-License-Identifier: Apache-2.0
       <mat-label>Filter by status</mat-label>
       <mat-select value="all" (selectionChange)="filterByStatus($event)">
         <mat-option value="all">All</mat-option>
+        <mat-option value="finalised">Finalised</mat-option>
         <mat-option value="submitted">Submitted</mat-option>
-        <mat-option value="unsent">Unsent</mat-option>
+        <mat-option value="draft">Draft</mat-option>
       </mat-select>
     </mat-form-field>
     <mdm-sort-by
@@ -44,10 +45,10 @@ SPDX-License-Identifier: Apache-2.0
   <div *ngIf="!allDataSpecifications || allDataSpecifications.length === 0" class="row">
     <p class="text-center">
       You currently have no data specifications. Try
-      <a routerLink="/search">searching</a> or <a routerLink="/browse">browsing</a> our
-      catalogue and start creating some. If you are still unsure what to look for, try
-      viewing our <a routerLink="/templates">data specifications templates</a> to base
-      your own data specifications on.
+      <a routerLink="/search">searching</a> or <a routerLink="/browse">browsing</a> our catalogue
+      and start creating some. If you are still unsure what to look for, try viewing our
+      <a routerLink="/templates">data specifications templates</a> to base your own data
+      specifications on.
     </p>
   </div>
   <div *ngIf="allDataSpecifications && allDataSpecifications.length > 0" class="row">

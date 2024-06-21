@@ -27,7 +27,7 @@ import {
 import { SortByOption } from '../../data-explorer/sort-by/sort-by.component';
 import { Sort } from '../../mauro/sort.type';
 import { SecurityService } from '../../security/security.service';
-import { ResearchPluginService } from 'src/app/mauro/research-plugin.service';
+import { DataSpecificationResearchPluginService } from 'src/app/mauro/data-specification-research-plugin.service';
 
 /**
  * These options must be of the form '{propertyToSortBy}-{order}' where propertyToSortBy
@@ -57,13 +57,11 @@ export class MyDataSpecificationsComponent implements OnInit {
   constructor(
     private security: SecurityService,
     private toastr: ToastrService,
-    private researcherPlugin: ResearchPluginService
+    private dataSpecificationResearchPlugin: DataSpecificationResearchPluginService
   ) {}
 
   get hasMultipleStatuses() {
-    const statuses = this.allDataSpecifications.map(
-      (specification) => specification.status
-    );
+    const statuses = this.allDataSpecifications.map((specification) => specification.status);
     const distinct = new Set(statuses);
     return distinct.size > 1;
   }
@@ -73,7 +71,7 @@ export class MyDataSpecificationsComponent implements OnInit {
   }
 
   filterByStatus(event: MatSelectChange) {
-    const filters = event.value === 'all' ? ['finalised', 'unsent'] : [event.value];
+    const filters = event.value === 'all' ? ['finalised', 'submitted', 'draft'] : [event.value];
     this.filterAndSortDataSpecifications(filters, this.sortBy);
   }
 
@@ -97,8 +95,9 @@ export class MyDataSpecificationsComponent implements OnInit {
       return throwError(() => new Error('Cannot find user'));
     }
 
-    return this.researcherPlugin.getLatestModelDataSpecifications().pipe(
-      catchError(() => {
+    return this.dataSpecificationResearchPlugin.getLatestModelDataSpecifications().pipe(
+      catchError((e) => {
+        console.log(e.message);
         this.toastr.error('There was a problem finding your data specifications.');
         return EMPTY;
       })
@@ -109,7 +108,7 @@ export class MyDataSpecificationsComponent implements OnInit {
     filters?: DataSpecificationStatus[],
     sortBy?: SortByOption
   ) {
-    this.statusFilters = filters ?? ['finalised', 'unsent'];
+    this.statusFilters = filters ?? ['finalised', 'submitted', 'draft'];
     const filtered =
       this.statusFilters.length === 0
         ? this.allDataSpecifications

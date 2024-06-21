@@ -65,13 +65,11 @@ export class DashboardComponent implements OnInit {
       .list()
       .pipe(
         catchError((error) => {
-          this.toastr.error(
-            'Unable to retrieve your current data specifications from the server.'
-          );
+          this.toastr.error('Unable to retrieve your current data specifications from the server.');
           return throwError(() => error);
         }),
         map((dataSpecifications) =>
-          dataSpecifications.filter((specification) => specification.status === 'unsent')
+          dataSpecifications.filter((specification) => specification.status === 'draft')
         )
       )
       .subscribe((dataSpecifications: DataSpecification[]) => {
@@ -140,8 +138,6 @@ export class DashboardComponent implements OnInit {
     // Base height is just enough to hold the title with
     // some padding.
     const baseHeightNeeded = 4;
-    this.currentCardsHeight = Math.ceil(
-      this.itemCardNumerOfLinesToShow * 2 + baseHeightNeeded
-    );
+    this.currentCardsHeight = Math.ceil(this.itemCardNumerOfLinesToShow * 2 + baseHeightNeeded);
   }
 }

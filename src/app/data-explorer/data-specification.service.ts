@@ -249,15 +249,7 @@ export class DataSpecificationService {
       switchMap((folder: FolderDetail): Observable<DataModel[]> => {
         return this.dataModels.listInFolder(folder.id!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
       }),
-      switchMap((dataModels) => {
-        if (dataModels.length === 0) {
-          return of([]);
-        }
-        const dataSpecification$ = dataModels.map((dataModel) => {
-          return of(this.submissionSDEService.mapToDataSpecification(dataModel));
-        });
-        return forkJoin(dataSpecification$);
-      })
+      map((dataModels) => dataModels.map(this.submissionSDEService.mapToDataSpecification))
     );
   }
 
@@ -373,8 +365,8 @@ export class DataSpecificationService {
 
         return this.dataModels.addToFolder(folder.id, payload);
       }),
-      switchMap((dataModel) => {
-        return of(this.submissionSDEService.mapToDataSpecification(dataModel));
+      map((dataModel) => {
+        return this.submissionSDEService.mapToDataSpecification(dataModel);
       })
     );
   }
@@ -503,7 +495,6 @@ export class DataSpecificationService {
 
     return this.list().pipe(
       map((dataSpecifications: DataSpecification[]) => {
-        dataSpecifications.forEach((ds) => console.log(ds));
         return dataSpecifications.filter((dr) => dr.status === 'draft');
       }),
       switchMap((dataSpecifications: DataSpecification[]) => {
@@ -576,8 +567,8 @@ export class DataSpecificationService {
       switchMap(([dataSpecification, coreTableProfile]) => {
         return this.saveCoreTableProfile(dataSpecification, coreTableProfile);
       }),
-      switchMap(([_, targetDataModel]) =>
-        of(this.submissionSDEService.mapToDataSpecification(targetDataModel))
+      map(([_, targetDataModel]) =>
+        this.submissionSDEService.mapToDataSpecification(targetDataModel)
       )
     );
   }
@@ -697,9 +688,7 @@ export class DataSpecificationService {
 
           return of(nextDraftModel);
         }),
-        switchMap((nextDraftModel) =>
-          of(this.submissionSDEService.mapToDataSpecification(nextDraftModel))
-        ),
+        map((nextDraftModel) => this.submissionSDEService.mapToDataSpecification(nextDraftModel)),
         map((nextDataSpecification) => {
           this.broadcast.dispatch('data-specification-added');
           this.dialogs.openSuccess({

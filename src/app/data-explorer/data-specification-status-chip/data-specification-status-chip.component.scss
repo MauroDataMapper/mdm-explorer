@@ -24,9 +24,14 @@ SPDX-License-Identifier: Apache-2.0
   border-radius: 23px;
   margin: 5px 0 5px;
 
-  &--unsent {
-    color: $color-unsentDataSpecification-contrast;
-    background-color: $color-unsentDataSpecification;
+  &--draft {
+    color: $color-draftDataSpecification-contrast;
+    background-color: $color-draftDataSpecification;
+  }
+
+  &--finalised {
+    color: $color-finalisedDataSpecification-contrast;
+    background-color: $color-finalisedDataSpecification;
   }
 
   &--submitted {

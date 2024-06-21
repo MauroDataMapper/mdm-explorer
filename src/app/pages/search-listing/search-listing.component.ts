@@ -148,8 +148,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
       .pipe(
         switchMap(([query, profileFields]) => {
           this.parameters = mapParamMapToSearchParameters(query, profileFields);
-          this.pageSize =
-            this.parameters.pageSize ?? this.paginationConfig?.defaultPageSize;
+          this.pageSize = this.parameters.pageSize ?? this.paginationConfig?.defaultPageSize;
           this.searchTerms = this.parameters.search;
 
           this.filters = this.createSearchFiltersFromProfileFields(
@@ -171,11 +170,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
           this.setBackButtonProperties(this.source, this.searchTerms);
           this.status = 'loading';
 
-          return forkJoin([
-            this.loadDataClass(),
-            this.loadSearchResults(),
-            this.bookmarks.index(),
-          ]);
+          return forkJoin([this.loadDataClass(), this.loadSearchResults(), this.bookmarks.index()]);
         }),
         switchMap(([dataClass, resultSet, userBookmarks]) => {
           this.root = dataClass;
@@ -451,9 +446,7 @@ export class SearchListingComponent implements OnInit, OnDestroy {
       (item: SortByOption) => item.value === valueString
     );
 
-    return filteredOptionsList.length === 0
-      ? this.sortByDefaultOption
-      : filteredOptionsList[0];
+    return filteredOptionsList.length === 0 ? this.sortByDefaultOption : filteredOptionsList[0];
   }
 
   private getSortFromSortByOptionString(sortBy: string) {

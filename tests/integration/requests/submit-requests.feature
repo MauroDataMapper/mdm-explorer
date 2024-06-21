@@ -21,11 +21,11 @@ Feature: Submitting data specifications
   Background:
     Given I am signed in
     And I go to the data specifications page
-    And I have at least one unsent data specification
+    And I have at least one draft data specification
     And I have at least one submitted data specification
 
   Scenario: Submit a data specification
-    When I click on an unsent data specification
+    When I click on an draft data specification
     And I click on the "Submit data specification" button
     Then I see a confirmation that the data specification was submitted
     And The status of the data specification changes to "submitted"

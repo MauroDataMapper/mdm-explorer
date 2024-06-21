@@ -71,13 +71,11 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const user = this.security.getSignedInUser();
     if (user) {
-      this.dataSpecification
-        .list()
-        .subscribe((dataSpecifications: DataSpecification[]) => {
-          this.openDataSpecifications = [
-            ...dataSpecifications.filter((dataSpecification) => dataSpecification.status === 'unsent'),
-          ];
-        });
+      this.dataSpecification.list().subscribe((dataSpecifications: DataSpecification[]) => {
+        this.openDataSpecifications = [
+          ...dataSpecifications.filter((dataSpecification) => dataSpecification.status === 'draft'),
+        ];
+      });
     }
 
     this.loadBookmarks();
@@ -107,9 +105,7 @@ export class MyBookmarksComponent implements OnInit, OnDestroy {
       this.toastr.success(`${event.item.label} removed from bookmarks`);
     });
 
-    this.userBookmarks = this.userBookmarks.filter(
-      (bookmark) => bookmark.id !== event.item.id
-    );
+    this.userBookmarks = this.userBookmarks.filter((bookmark) => bookmark.id !== event.item.id);
   }
 
   onSelectAll(event: MatCheckboxChange) {

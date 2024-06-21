@@ -17,25 +17,9 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { HttpErrorResponse } from '@angular/common/http';
-import {
-  Component,
-  ElementRef,
-  HostListener,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import {
-  catchError,
-  EMPTY,
-  filter,
-  finalize,
-  map,
-  Subject,
-  switchMap,
-  takeUntil,
-} from 'rxjs';
+import { catchError, EMPTY, filter, finalize, map, Subject, switchMap, takeUntil } from 'rxjs';
 import { environment } from '../environments/environment';
 import { BroadcastEvent, BroadcastService } from './core/broadcast.service';
 import { StateRouterService } from './core/state-router.service';
@@ -73,7 +57,7 @@ export class AppComponent implements OnInit, OnDestroy {
   isLoading = false;
   loadingCaption = '';
 
-  unsentDataSpecificationsCount = 0;
+  draftDataSpecificationsCount = 0;
 
   signedInUserProfileImageSrc?: string;
 
@@ -237,11 +221,11 @@ export class AppComponent implements OnInit, OnDestroy {
         takeUntil(this.unsubscribe$),
         switchMap((signedInUser) => {
           this.setupSignedInUser(signedInUser);
-          return this.getUnsentDataSpecificationCount();
+          return this.getDraftDataSpecificationCount();
         }),
         map(
-          (unsentDataSpecificationsCount) =>
-            (this.unsentDataSpecificationsCount = unsentDataSpecificationsCount)
+          (draftDataSpecificationsCount) =>
+            (this.draftDataSpecificationsCount = draftDataSpecificationsCount)
         )
       )
       .subscribe(() => {});
@@ -254,9 +238,9 @@ export class AppComponent implements OnInit, OnDestroy {
     const user = this.userDetails.get();
     if (user) {
       this.setupSignedInUser(user);
-      this.getUnsentDataSpecificationCount().subscribe(
-        (unsentDataSpecificationsCount) =>
-          (this.unsentDataSpecificationsCount = unsentDataSpecificationsCount)
+      this.getDraftDataSpecificationCount().subscribe(
+        (draftDataSpecificationsCount) =>
+          (this.draftDataSpecificationsCount = draftDataSpecificationsCount)
       );
     }
 
@@ -337,18 +321,15 @@ export class AppComponent implements OnInit, OnDestroy {
       : undefined;
   }
 
-  private getUnsentDataSpecificationCount() {
+  private getDraftDataSpecificationCount() {
     return this.dataSpecification.list().pipe(
       catchError(() => {
-        this.toastr.error(
-          'There was a problem locating your current data specifications.'
-        );
+        this.toastr.error('There was a problem locating your current data specifications.');
         return EMPTY;
       }),
       map((dataSpecifications) => {
-        return dataSpecifications.filter(
-          (specification) => specification.status === 'unsent'
-        ).length;
+        return dataSpecifications.filter((specification) => specification.status === 'draft')
+          .length;
       })
     );
   }
@@ -358,22 +339,22 @@ export class AppComponent implements OnInit, OnDestroy {
       .on('data-specification-added')
       .pipe(
         takeUntil(this.unsubscribe$),
-        switchMap(() => this.getUnsentDataSpecificationCount()),
+        switchMap(() => this.getDraftDataSpecificationCount()),
         map(
-          (unsentDataSpecificationsCount) =>
-            (this.unsentDataSpecificationsCount = unsentDataSpecificationsCount)
+          (draftDataSpecificationsCount) =>
+            (this.draftDataSpecificationsCount = draftDataSpecificationsCount)
         )
       )
-      .subscribe(() => { });
+      .subscribe(() => {});
 
     this.broadcast
       .on('data-specification-finalised')
       .pipe(
         takeUntil(this.unsubscribe$),
-        switchMap(() => this.getUnsentDataSpecificationCount()),
+        switchMap(() => this.getDraftDataSpecificationCount()),
         map(
-          (unsentDataSpecificationsCount) =>
-            (this.unsentDataSpecificationsCount = unsentDataSpecificationsCount)
+          (draftDataSpecificationsCount) =>
+            (this.draftDataSpecificationsCount = draftDataSpecificationsCount)
         )
       )
       .subscribe(() => {});

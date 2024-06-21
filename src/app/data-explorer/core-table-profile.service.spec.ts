@@ -60,14 +60,12 @@ describe('CoreTableProfileService', () => {
         id: '1',
         label: 'data model',
         domainType: CatalogueItemDomainType.DataModel,
-        status: 'unsent',
+        status: 'draft',
       };
 
       const profiles: Profile[] = [];
 
-      profiles.push(
-        QueryBuilderTestingHelper.createCoreTableProfile(rootDataModel, coreTable)
-      );
+      profiles.push(QueryBuilderTestingHelper.createCoreTableProfile(rootDataModel, coreTable));
 
       const mockProfile = (profile: Profile[]) => {
         QueryBuilderTestingHelper.mockProfile(
@@ -113,7 +111,7 @@ describe('CoreTableProfileService', () => {
         id: '1',
         label: 'data model',
         domainType: CatalogueItemDomainType.DataModel,
-        status: 'unsent',
+        status: 'draft',
       };
 
       const profiles: Profile[] = [];
@@ -171,7 +169,7 @@ describe('CoreTableProfileService', () => {
         id: '1',
         label: 'data model',
         domainType: CatalogueItemDomainType.DataModel,
-        status: 'unsent',
+        status: 'draft',
       };
 
       const profiles: Profile[] = [];
@@ -234,7 +232,7 @@ describe('CoreTableProfileService', () => {
         id: '1',
         label: 'data model',
         domainType: CatalogueItemDomainType.DataModel,
-        status: 'unsent',
+        status: 'draft',
       };
 
       const profiles: Profile[] = [];
@@ -301,10 +299,7 @@ describe('CoreTableProfileService', () => {
         a: expected,
       });
 
-      const actual$ = service.validateQueryBuilderCoreTableProfile(
-        coreTableProfile,
-        rootDataModel
-      );
+      const actual$ = service.validateQueryBuilderCoreTableProfile(coreTableProfile, rootDataModel);
 
       expect(actual$).toBeObservable(expected$);
     });
@@ -314,7 +309,7 @@ describe('CoreTableProfileService', () => {
         id: '1',
         label: 'data model',
         domainType: CatalogueItemDomainType.DataModel,
-        status: 'unsent',
+        status: 'draft',
       };
 
       const profiles: Profile[] = [];
@@ -359,10 +354,7 @@ describe('CoreTableProfileService', () => {
         a: expected,
       });
 
-      const actual$ = service.validateQueryBuilderCoreTableProfile(
-        coreTableProfile,
-        rootDataModel
-      );
+      const actual$ = service.validateQueryBuilderCoreTableProfile(coreTableProfile, rootDataModel);
 
       expect(actual$).toBeObservable(expected$);
     });

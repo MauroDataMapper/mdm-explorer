@@ -48,7 +48,8 @@ export interface ThemeRegularColors {
  */
 export interface ThemeContrastColors {
   page: string;
-  unsentDataSpecification: string;
+  draftDataSpecification: string;
+  finalisedDataSpecification: string;
   submittedDataSpecification: string;
   classRow: string;
 }
@@ -155,8 +156,9 @@ export const defaultTheme: Theme = {
   },
   contrastColors: {
     page: '#fff',
-    unsentDataSpecification: '#008bce',
-    submittedDataSpecification: '#0e8f77',
+    draftDataSpecification: '#008bce',
+    finalisedDataSpecification: '#b86c02',
+    submittedDataSpecification: '#0e8f48',
     classRow: '#c4c4c4',
   },
   images: {
@@ -217,7 +219,7 @@ export interface ThemeImageUrl {
 export class ThemeService {
   allCss = {};
 
-  constructor(private researchPlugin: ResearchPluginService) { }
+  constructor(private researchPlugin: ResearchPluginService) {}
 
   private static multiply(rgb1: ColorFormats.RGBA, rgb2: ColorFormats.RGBA) {
     rgb1.b = Math.floor((rgb1.b * rgb2.b) / 255);
@@ -282,16 +284,8 @@ export class ThemeService {
             'material.colors.primary',
             defaultTheme.material.colors.primary
           ),
-          accent: getKviValue(
-            props,
-            'material.colors.accent',
-            defaultTheme.material.colors.accent
-          ),
-          warn: getKviValue(
-            props,
-            'material.colors.warn',
-            defaultTheme.material.colors.warn
-          ),
+          accent: getKviValue(props, 'material.colors.accent', defaultTheme.material.colors.accent),
+          warn: getKviValue(props, 'material.colors.warn', defaultTheme.material.colors.warn),
         },
         typography: {
           fontFamily: getKviValue(
@@ -352,10 +346,15 @@ export class ThemeService {
       },
       contrastColors: {
         page: getKviValue(props, 'contrastcolors.page', defaultTheme.contrastColors.page),
-        unsentDataSpecification: getKviValue(
+        draftDataSpecification: getKviValue(
           props,
-          'contrastcolors.unsent-data-specification',
-          defaultTheme.contrastColors.unsentDataSpecification
+          'contrastcolors.draft-data-specification',
+          defaultTheme.contrastColors.draftDataSpecification
+        ),
+        finalisedDataSpecification: getKviValue(
+          props,
+          'contrastcolors.submitted-data-specification',
+          defaultTheme.contrastColors.finalisedDataSpecification
         ),
         submittedDataSpecification: getKviValue(
           props,
@@ -463,15 +462,12 @@ export class ThemeService {
 
     this.applyCss(contrastColors);
 
-    const regularColors = Object.entries(theme.regularColors).reduce(
-      (prev, [property, value]) => {
-        return {
-          ...prev,
-          [`--theme-color-${property}`]: tinycolor(value as string).toHexString(),
-        };
-      },
-      {}
-    );
+    const regularColors = Object.entries(theme.regularColors).reduce((prev, [property, value]) => {
+      return {
+        ...prev,
+        [`--theme-color-${property}`]: tinycolor(value as string).toHexString(),
+      };
+    }, {});
 
     this.applyCss(regularColors);
   }
@@ -504,10 +500,7 @@ export class ThemeService {
     // See https://github.com/mbitson/mcg/blob/master/scripts/controllers/ColorGeneratorCtrl.js
     // and http://mcg.mbitson.com/#!?mcgpalette0=%2319381f&themename=mcgtheme
     const baseLight = tinycolor('#ffffff');
-    const baseDark = ThemeService.multiply(
-      tinycolor(baseHex).toRgb(),
-      tinycolor(baseHex).toRgb()
-    );
+    const baseDark = ThemeService.multiply(tinycolor(baseHex).toRgb(), tinycolor(baseHex).toRgb());
 
     // Note: there is a bug in the original source code, commented out below. A tetrad is retrieved
     // and the 4th element is used, but TypeScript correctly points out that there is no 4th element in
@@ -530,22 +523,10 @@ export class ThemeService {
       this.getColorObject(tinycolor.mix(baseDark, baseHex, 70), '700'),
       this.getColorObject(tinycolor.mix(baseDark, baseHex, 54), '800'),
       this.getColorObject(tinycolor.mix(baseDark, baseHex, 25), '900'),
-      this.getColorObject(
-        tinycolor.mix(baseDark, triad4, 15).saturate(80).lighten(65),
-        'A100'
-      ),
-      this.getColorObject(
-        tinycolor.mix(baseDark, triad4, 15).saturate(80).lighten(55),
-        'A200'
-      ),
-      this.getColorObject(
-        tinycolor.mix(baseDark, triad4, 15).saturate(100).lighten(45),
-        'A400'
-      ),
-      this.getColorObject(
-        tinycolor.mix(baseDark, triad4, 15).saturate(100).lighten(40),
-        'A700'
-      ),
+      this.getColorObject(tinycolor.mix(baseDark, triad4, 15).saturate(80).lighten(65), 'A100'),
+      this.getColorObject(tinycolor.mix(baseDark, triad4, 15).saturate(80).lighten(55), 'A200'),
+      this.getColorObject(tinycolor.mix(baseDark, triad4, 15).saturate(100).lighten(45), 'A400'),
+      this.getColorObject(tinycolor.mix(baseDark, triad4, 15).saturate(100).lighten(40), 'A700'),
     ];
   }
 

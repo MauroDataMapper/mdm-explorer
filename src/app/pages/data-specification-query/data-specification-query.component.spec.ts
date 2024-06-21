@@ -41,10 +41,7 @@ import { createBroadcastServiceStub } from '../../testing/stubs/broadcast.stub';
 import { createDataSpecificationServiceStub } from '../../testing/stubs/data-specifications.stub';
 import { createStateRouterStub } from '../../testing/stubs/state-router.stub';
 import { createToastrServiceStub } from '../../testing/stubs/toastr.stub';
-import {
-  ComponentHarness,
-  setupTestModuleForComponent,
-} from '../../testing/testing.helpers';
+import { ComponentHarness, setupTestModuleForComponent } from '../../testing/testing.helpers';
 
 import { DataSpecificationQueryComponent } from './data-specification-query.component';
 import { createQueryBuilderWrapperServiceStub } from 'src/app/testing/stubs/query-builder-wrapper.stub';
@@ -123,7 +120,7 @@ describe('DataSpecificationQueryComponent', () => {
       id: dataSpecificationId,
       label: 'test',
       domainType: CatalogueItemDomainType.DataModel,
-      status: 'unsent',
+      status: 'draft',
     };
 
     const dataElements: DataElement[] = [
@@ -173,9 +170,7 @@ describe('DataSpecificationQueryComponent', () => {
     it('should show an error if data specification is missing', fakeAsync(() => {
       const toastrSpy = jest.spyOn(toastrStub, 'error');
 
-      dataSpecificationStub.get.mockImplementationOnce(() =>
-        throwError(() => new Error())
-      );
+      dataSpecificationStub.get.mockImplementationOnce(() => throwError(() => new Error()));
 
       harness.component.ngOnInit();
       tick();
@@ -247,10 +242,7 @@ describe('DataSpecificationQueryComponent', () => {
       harness.component.ngOnInit();
       tick();
 
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/dataSpecifications/',
-        dataSpecification.id,
-      ]);
+      expect(routerSpy).toHaveBeenCalledWith(['/dataSpecifications/', dataSpecification.id]);
     }));
 
     it('should load data specification with existing query', fakeAsync(() => {
@@ -355,7 +347,7 @@ describe('DataSpecificationQueryComponent', () => {
       id: dataSpecificationId,
       label: 'test',
       domainType: CatalogueItemDomainType.DataModel,
-      status: 'unsent',
+      status: 'draft',
     };
 
     const query: DataSpecificationQuery = {
