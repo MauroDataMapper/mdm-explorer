@@ -139,7 +139,10 @@ describe('DataExporterService', () => {
 
     const expected$ = cold('-(a|)', {
       a: expect.objectContaining({
-        filename: expect.stringMatching(/^label_\d{8}T\d{6}\.sql$/),
+        filename:
+          exporterName === ExporterName.DataModelPdfExporterService
+            ? expect.stringMatching(/^label_\d{8}T\d{6}\.pdf$/)
+            : expect.stringMatching(/^label_\d{8}T\d{6}\.sql$/),
         url: 'mockedObjectURL',
       }),
     });
