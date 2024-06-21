@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { ISubmissionState } from './submission.resource';
+import { FileProperties, ISubmissionState } from '../type-declarations/submission.resource';
 
 @Injectable({
   providedIn: 'root',
@@ -48,7 +48,7 @@ export class SubmissionStateService {
   ): Partial<ISubmissionState> {
     return inputShape.reduce((acc, key) => {
       if (this._state[key] !== undefined) {
-        acc[key] = this._state[key];
+        acc[key] = this._state[key] as string & FileProperties;
       }
       return acc;
     }, {} as Partial<ISubmissionState>);

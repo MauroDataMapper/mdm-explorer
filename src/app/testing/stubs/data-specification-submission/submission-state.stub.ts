@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { ISubmissionState } from '../submission.resource';
+import { ISubmissionState } from '../../../data-explorer/specification-submission/type-declarations/submission.resource';
 
 export type StateServiceSetFn = (state: Partial<ISubmissionState>) => void;
 export type StateServiceSetMockedFn = jest.MockedFunction<StateServiceSetFn>;

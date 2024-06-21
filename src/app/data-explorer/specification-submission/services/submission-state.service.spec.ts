@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { SubmissionStateService } from './submission-state.service';
 import { setupTestModuleForService } from 'src/app/testing/testing.helpers';
-import { ISubmissionState } from './submission.resource';
+import { ISubmissionState } from '../type-declarations/submission.resource';
 
 describe('SubmissionStepService', () => {
   let service: SubmissionStateService;

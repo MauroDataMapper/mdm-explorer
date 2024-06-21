@@ -17,7 +17,11 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Observable } from 'rxjs';
-import { ISubmissionState, StepName, StepResult } from '../submission.resource';
+import {
+  ISubmissionState,
+  StepName,
+  StepResult,
+} from '../../../data-explorer/specification-submission/type-declarations/submission.resource';
 
 export type StepIsRequiredFn = () => Observable<StepResult>;
 export type StepIsRequiredMockedFn = jest.MockedFunction<StepIsRequiredFn>;
