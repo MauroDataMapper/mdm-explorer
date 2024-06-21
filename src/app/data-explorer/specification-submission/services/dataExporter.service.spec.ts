@@ -61,7 +61,7 @@ describe('DataExporterService', () => {
   test.each([
     [ExporterName.DataModelSqlExporterService, '123'],
     [ExporterName.DataModelPdfExporterService, '456'],
-  ])('should export data specification', (exporterName, dataId) => {
+  ])('should export file with correct name and type when using %p', (exporterName, dataId) => {
     endpointsStub.dataModel.exporters.mockImplementation(() => {
       return cold('a|', {
         a: {

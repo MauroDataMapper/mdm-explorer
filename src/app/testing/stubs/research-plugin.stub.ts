@@ -16,12 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import {
-  DataModel,
-  DataModelDetail,
-  FolderDetail,
-  Uuid,
-} from '@maurodatamapper/mdm-resources';
+import { DataModelDetail, FolderDetail, Uuid } from '@maurodatamapper/mdm-resources';
 import { Observable } from 'rxjs';
 import { KeyValueIdentifier } from 'src/app/mauro/mauro.types';
 import { PluginResearchContactPayload } from 'src/app/mauro/plugins/plugin-research.resource';
@@ -29,30 +24,22 @@ import { PluginResearchContactPayload } from 'src/app/mauro/plugins/plugin-resea
 export type ResearchPluginContactFn = (
   data: PluginResearchContactPayload
 ) => Observable<PluginResearchContactPayload>;
-export type ResearchPluginSubmitDataSpecificationFn = (
-  id: Uuid
-) => Observable<DataModelDetail>;
 export type ResearchPluginUserFolderFn = (id: Uuid) => Observable<FolderDetail>;
 
 export interface ResearchPluginServiceStub {
   contact: jest.MockedFunction<ResearchPluginContactFn>;
-  finaliseDataSpecification: jest.MockedFunction<ResearchPluginSubmitDataSpecificationFn>;
   userFolder: jest.MockedFunction<ResearchPluginUserFolderFn>;
   templateFolder: jest.MockedFunction<() => Observable<FolderDetail>>;
   rootDataModel: jest.MockedFunction<() => Observable<DataModelDetail>>;
   theme: jest.MockedFunction<() => Observable<KeyValueIdentifier[]>>;
-  getLatestModelDataSpecifications: jest.MockedFunction<() => Observable<DataModel[]>>;
 }
 
 export const createResearchPluginServiceStub = (): ResearchPluginServiceStub => {
   return {
     contact: jest.fn() as jest.MockedFunction<ResearchPluginContactFn>,
-    finaliseDataSpecification:
-      jest.fn() as jest.MockedFunction<ResearchPluginSubmitDataSpecificationFn>,
     userFolder: jest.fn() as jest.MockedFunction<ResearchPluginUserFolderFn>,
     templateFolder: jest.fn(),
     rootDataModel: jest.fn(),
     theme: jest.fn(),
-    getLatestModelDataSpecifications: jest.fn(),
   };
 };

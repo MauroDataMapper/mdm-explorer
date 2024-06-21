@@ -57,14 +57,12 @@ $color-warn-contrast: var(--theme-color-warn-contrast);
 // Contrasting colours - base colour with matching compliment
 $color-page: var(--theme-color-page);
 $color-page-contrast: var(--theme-color-page-contrast);
-$color-unsentDataSpecification: var(--theme-color-unsentDataSpecification);
-$color-unsentDataSpecification-contrast: var(
-  --theme-color-unsentDataSpecification-contrast
-);
+$color-draftDataSpecification: var(--theme-color-draftDataSpecification);
+$color-draftDataSpecification-contrast: var(--theme-color-draftDataSpecification-contrast);
 $color-submittedDataSpecification: var(--theme-color-submittedDataSpecification);
-$color-submittedDataSpecification-contrast: var(
-  --theme-color-submittedDataSpecification-contrast
-);
+$color-submittedDataSpecification-contrast: var(--theme-color-submittedDataSpecification-contrast);
+$color-finalisedDataSpecification: var(--theme-color-finalisedDataSpecification);
+$color-finalisedDataSpecification-contrast: var(--theme-color-finalisedDataSpecification-contrast);
 $color-classRow: var(--theme-color-classRow);
 $color-classRow-contrast: var(--theme-color-classRow-contrast);
 

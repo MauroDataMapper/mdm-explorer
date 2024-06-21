@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 -->
 <div class="mdm-sign-in-form">
-  <div class="mdm-sign-in-form__account">
+  <div class="mdm-sign-in-form__account" style="display: none">
     <form [formGroup]="signInForm" role="form" autocomplete="on" name="signInForm">
       <div class="form-input">
         <mat-form-field [appearance]="formFieldAppearance">
@@ -79,7 +79,7 @@ SPDX-License-Identifier: Apache-2.0
     *ngIf="openIdConnectProviders && openIdConnectProviders.length > 0"
     class="mdm-sign-in-form__openid"
   >
-    <p class="text-center">or</p>
+    <p class="text-center" style="display: none">or</p>
     <div class="mdm-sign-in-form__openid-providers">
       <button
         *ngFor="let provider of openIdConnectProviders"

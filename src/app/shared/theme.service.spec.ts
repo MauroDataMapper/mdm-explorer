@@ -23,11 +23,7 @@ import { createResearchPluginServiceStub } from '../testing/stubs/research-plugi
 import { ResearchPluginService } from '../mauro/research-plugin.service';
 import { cold, ObservableWithSubscriptions } from 'jest-marbles';
 
-const toHaveCssVariable = (
-  style: CSSStyleDeclaration,
-  name: string,
-  expected: string
-) => {
+const toHaveCssVariable = (style: CSSStyleDeclaration, name: string, expected: string) => {
   const actual = style.getPropertyValue(name);
   const pass = Object.is(actual, expected);
 
@@ -302,10 +298,12 @@ describe('ThemeService', () => {
 
       expectCssVariable('--theme-color-page', '#ffffff');
       expectCssVariable('--theme-color-page-contrast', 'rgba(black, 0.87)');
-      expectCssVariable('--theme-color-unsentDataSpecification', '#008bce');
-      expectCssVariable('--theme-color-unsentDataSpecification-contrast', 'white');
-      expectCssVariable('--theme-color-submittedDataSpecification', '#0e8f77');
+      expectCssVariable('--theme-color-draftDataSpecification', '#008bce');
+      expectCssVariable('--theme-color-draftDataSpecification-contrast', 'white');
+      expectCssVariable('--theme-color-submittedDataSpecification', '#0e8f48');
       expectCssVariable('--theme-color-submittedDataSpecification-contrast', 'white');
+      expectCssVariable('--theme-color-finalisedDataSpecification', '#b86c02');
+      expectCssVariable('--theme-color-finalisedDataSpecification-contrast', 'white');
       expectCssVariable('--theme-color-classRow', '#c4c4c4');
       expectCssVariable('--theme-color-classRow-contrast', 'rgba(black, 0.87)');
       expectCssVariable('--theme-color-hyperlink', '#003752');

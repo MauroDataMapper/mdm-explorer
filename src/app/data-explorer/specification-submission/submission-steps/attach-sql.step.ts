@@ -26,6 +26,7 @@ import {
 } from '../type-declarations/submission.resource';
 import { AttachmentType } from '@maurodatamapper/sde-resources';
 import { FileAttachmentStepService } from '../services/fileAttachmentStep.service';
+import { SubmissionBroadcastService } from '../services/submission.broadcast.service';
 
 @Injectable({
   providedIn: 'root',
@@ -33,9 +34,14 @@ import { FileAttachmentStepService } from '../services/fileAttachmentStep.servic
 export class AttachSqlStep implements ISubmissionStep {
   name: StepName = StepName.AttachSqlFile;
 
-  constructor(private fileAttachmentStepService: FileAttachmentStepService) {}
+  constructor(
+    private fileAttachmentStepService: FileAttachmentStepService,
+    private submissionBroadcastService: SubmissionBroadcastService
+  ) {}
 
   isRequired(input: Partial<ISubmissionState>): Observable<StepResult> {
+    this.submissionBroadcastService.broadcast('Attaching sql file...');
+
     return this.fileAttachmentStepService.isRequired(
       input,
       this.name,

@@ -52,7 +52,6 @@ import {
   DataSpecificationQueryPayload,
   DataSpecificationQueryType,
   DataSchema,
-  mapToDataSpecification,
   QueryCondition,
 } from '../../data-explorer/data-explorer.types';
 import {
@@ -65,7 +64,6 @@ import {
   OkCancelDialogResponse,
 } from '../../data-explorer/ok-cancel-dialog/ok-cancel-dialog.component';
 import { DataSchemaService } from '../../data-explorer/data-schema.service';
-import { ResearchPluginService } from '../../mauro/research-plugin.service';
 import { DataSpecificationElementAddDeleteEvent } from '../../shared/data-element-in-data-specification/data-element-in-data-specification.component';
 import { ShareDataSpecificationDialogInputOutput } from 'src/app/data-explorer/share-data-specification-dialog/share-data-specification-dialog.component';
 import { DataModelService } from 'src/app/mauro/data-model.service';
@@ -74,6 +72,9 @@ import { StateRouterService } from 'src/app/core/state-router.service';
 import { FolderService } from 'src/app/mauro/folder.service';
 import { VersionTreeSortingService } from 'src/app/data-explorer/version-tree-sorting.service';
 import { SpecificationSubmissionService } from 'src/app/data-explorer/specification-submission/services/specification-submission.service';
+import { SubmissionSDEService } from 'src/app/data-explorer/specification-submission/services/submission.sde.service';
+import { DataSpecificationResearchPluginService } from 'src/app/mauro/data-specification-research-plugin.service';
+import { RequestDialogService, RequestEndpointsResearcher } from '@maurodatamapper/sde-resources';
 export interface RemoveSelectedResponse {
   okCancelDialogResponse: Observable<OkCancelDialogResponse>;
   deletedItems: Observable<DataElementMultipleOperationResult>;
@@ -141,7 +142,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     private stateRouter: StateRouterService,
     private dataSpecificationService: DataSpecificationService,
     private toastr: ToastrService,
-    private researchPlugin: ResearchPluginService,
+    private dataSpecificationResearchPlugin: DataSpecificationResearchPluginService,
     private dialogs: DialogService,
     private broadcastService: BroadcastService,
     private dataSchemaService: DataSchemaService,
@@ -149,7 +150,10 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     private securityService: SecurityService,
     private folderService: FolderService,
     private versionSorter: VersionTreeSortingService,
-    private specificationSubmissionService: SpecificationSubmissionService
+    private specificationSubmissionService: SpecificationSubmissionService,
+    private submissionSDEService: SubmissionSDEService,
+    private researcherRequestEndpoints: RequestEndpointsResearcher,
+    private requestDialogService: RequestDialogService
   ) {
     this.sourceTargetIntersections = {
       dataSpecifications: [],
@@ -184,7 +188,39 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
       return;
     }
     this.specificationSubmissionService.submit(specificationId).subscribe((result: boolean) => {
-      console.log('Specification submission: ', result);
+      if (result) {
+        this.dialogs.openSuccess({
+          heading: 'Data specification submitted.',
+          message: `Your data specification "${this.dataSpecification?.label}" has been successfully submitted.`,
+        });
+
+        if (!this.dataSpecification) {
+          return;
+        }
+
+        this.submissionSDEService
+          .mapToDataSpecificationWithSDEStatusCheck(this.dataSpecification)
+          .pipe(
+            switchMap((dataSpecification) => {
+              // Refresh the current state of the data specification in view
+              return this.setDataSpecification(dataSpecification);
+            }),
+            switchMap(([dataSchemas, intersections, versionTree]) => {
+              if (dataSchemas && intersections && versionTree) {
+                this.setDataSchemasIntersectionsAndVersionTree(
+                  dataSchemas,
+                  intersections,
+                  versionTree
+                );
+              }
+
+              // Refresh finalised state in the backend (equivalent to click the refresh)
+              // button in mdm-ui
+              return this.folderService.treeList();
+            })
+          )
+          .subscribe();
+      }
     });
   }
 
@@ -192,7 +228,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     if (
       !this.dataSpecification ||
       !this.dataSpecification.id ||
-      this.dataSpecification.status !== 'unsent'
+      this.dataSpecification.status !== 'draft'
     ) {
       return;
     }
@@ -210,11 +246,17 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
             isLoading: true,
             caption: 'Finalising your data specification...',
           });
-          return this.researchPlugin.finaliseDataSpecification(this.dataSpecification.id);
+          return this.dataSpecificationResearchPlugin.finaliseDataSpecification(
+            this.dataSpecification.id
+          );
         }),
         switchMap((dataModel) => {
           // Refresh the current state of the data specification in view
-          return this.setDataSpecification(mapToDataSpecification(dataModel));
+          return this.submissionSDEService.mapToDataSpecificationWithSDEStatusCheck(dataModel);
+        }),
+        switchMap((dataSpecification) => {
+          // Refresh the current state of the data specification in view
+          return this.setDataSpecification(dataSpecification);
         }),
         switchMap(([dataSchemas, intersections, versionTree]) => {
           if (dataSchemas && intersections && versionTree) {
@@ -282,6 +324,28 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
           : `${userFacingText?.failureMessage}${result.message}`;
         this.processRemoveDataElementResponse(result.success, message);
       });
+  }
+
+  viewRequest() {
+    if (
+      !this.dataSpecification ||
+      !this.dataSpecification.id ||
+      this.dataSpecification.status !== 'submitted'
+    ) {
+      return;
+    }
+
+    this.researcherRequestEndpoints
+      .getRequestForDataSpecification(this.dataSpecification.id)
+      .pipe(
+        switchMap((requestResponse) => {
+          if (!requestResponse) {
+            return EMPTY;
+          }
+          return this.requestDialogService.showRequestResponse(requestResponse, 'RESEARCHER');
+        })
+      )
+      .subscribe(() => {});
   }
 
   // Listens for external update to the data specification and refreshes if so.

@@ -50,7 +50,6 @@ import {
 import { DataSchemaService } from '../../data-explorer/data-schema.service';
 import { OkCancelDialogResponse } from '../../data-explorer/ok-cancel-dialog/ok-cancel-dialog.component';
 import { DataModelService } from '../../mauro/data-model.service';
-import { ResearchPluginService } from '../../mauro/research-plugin.service';
 import { UserDetails } from '../../security/user-details.service';
 import { DataSpecificationElementAddDeleteEvent } from '../../shared/data-element-in-data-specification/data-element-in-data-specification.component';
 import { createBroadcastServiceStub } from '../../testing/stubs/broadcast.stub';
@@ -59,7 +58,6 @@ import { createDataModelServiceStub } from '../../testing/stubs/data-model.stub'
 import { createDataSpecificationServiceStub } from '../../testing/stubs/data-specifications.stub';
 import { createDataSchemaServiceStub } from '../../testing/stubs/data-schema.stub';
 import { createMatDialogStub } from '../../testing/stubs/mat-dialog.stub';
-import { createResearchPluginServiceStub } from '../../testing/stubs/research-plugin.stub';
 import { createSecurityServiceStub } from '../../testing/stubs/security.stub';
 import { createToastrServiceStub } from '../../testing/stubs/toastr.stub';
 import { ComponentHarness, setupTestModuleForComponent } from '../../testing/testing.helpers';
@@ -69,6 +67,13 @@ import { createFolderServiceStub } from 'src/app/testing/stubs/folder.stub';
 import { FolderService } from 'src/app/mauro/folder.service';
 import { createSpecificationSubmissionServiceStub } from 'src/app/testing/stubs/data-specification-submission/specification-submission-service.stub';
 import { SpecificationSubmissionService } from 'src/app/data-explorer/specification-submission/services/specification-submission.service';
+import { DataSpecificationResearchPluginService } from 'src/app/mauro/data-specification-research-plugin.service';
+import { createDataSpecificationResearchPluginServiceStub } from 'src/app/testing/stubs/data-specification-research-plugin.stub';
+import { SubmissionSDEService } from 'src/app/data-explorer/specification-submission/services/submission.sde.service';
+import { RequestDialogService, RequestEndpointsResearcher } from '@maurodatamapper/sde-resources';
+import { createSubmissionSDEServiceStub } from 'src/app/testing/stubs/data-specification-submission/submission-sde-service.stub';
+import { createRequestEndpointsResearcherStub } from 'src/app/testing/stubs/sde/request-endpoints-researcher.stub';
+import { createRequestDialogServiceStub } from 'src/app/testing/stubs/sde/request-dialog-service.stub';
 
 describe('MyDataSpecificationDetailComponent', () => {
   let harness: ComponentHarness<MyDataSpecificationDetailComponent>;
@@ -76,13 +81,16 @@ describe('MyDataSpecificationDetailComponent', () => {
   const dataSchemaStub = createDataSchemaServiceStub();
   const dataModelsStub = createDataModelServiceStub();
   const toastrStub = createToastrServiceStub();
-  const researchPluginStub = createResearchPluginServiceStub();
+  const dataSpecificationResearchPluginStub = createDataSpecificationResearchPluginServiceStub();
   const dialogsStub = createMatDialogStub();
   const broadcastStub = createBroadcastServiceStub();
   const explorerStub = createDataExplorerServiceStub();
   const securityStub = createSecurityServiceStub();
   const folderServiceStub = createFolderServiceStub();
   const specificationSubmissionServiceStub = createSpecificationSubmissionServiceStub();
+  const submissionSDEServiceStub = createSubmissionSDEServiceStub();
+  const researcherRequestEndpointsStub = createRequestEndpointsResearcherStub();
+  const requestDialogServiceStub = createRequestDialogServiceStub();
   const dataSpecificationId = '1';
   const activatedRoute: ActivatedRoute = {
     params: of({
@@ -110,8 +118,8 @@ describe('MyDataSpecificationDetailComponent', () => {
           useValue: toastrStub,
         },
         {
-          provide: ResearchPluginService,
-          useValue: researchPluginStub,
+          provide: DataSpecificationResearchPluginService,
+          useValue: dataSpecificationResearchPluginStub,
         },
         {
           provide: MatDialog,
@@ -141,6 +149,18 @@ describe('MyDataSpecificationDetailComponent', () => {
           provide: SpecificationSubmissionService,
           useValue: specificationSubmissionServiceStub,
         },
+        {
+          provide: SubmissionSDEService,
+          useValue: submissionSDEServiceStub,
+        },
+        {
+          provide: RequestEndpointsResearcher,
+          useValue: researcherRequestEndpointsStub,
+        },
+        {
+          provide: RequestDialogService,
+          useValue: requestDialogServiceStub,
+        },
       ],
     });
   });
@@ -149,7 +169,7 @@ describe('MyDataSpecificationDetailComponent', () => {
     id: '1',
     label: 'data specification 1',
     domainType: CatalogueItemDomainType.DataModel,
-    status: 'unsent',
+    status: 'draft',
     author: 'Test User',
   };
 
@@ -238,7 +258,7 @@ describe('MyDataSpecificationDetailComponent', () => {
 
   describe('submit data specification', () => {
     beforeEach(() => {
-      researchPluginStub.finaliseDataSpecification.mockClear();
+      dataSpecificationResearchPluginStub.finaliseDataSpecification.mockClear();
       toastrStub.error.mockClear();
       broadcastStub.dispatch.mockClear();
       broadcastStub.loading.mockClear();
@@ -246,22 +266,22 @@ describe('MyDataSpecificationDetailComponent', () => {
 
     it('should do nothing if there is no data specification', () => {
       harness.component.finaliseDataSpecification();
-      expect(researchPluginStub.finaliseDataSpecification).not.toHaveBeenCalled();
+      expect(dataSpecificationResearchPluginStub.finaliseDataSpecification).not.toHaveBeenCalled();
     });
 
-    it('should do nothing if current data specification is not in unsent state', () => {
+    it('should do nothing if current data specification is not in draft state', () => {
       harness.component.dataSpecification = {
         ...dataSpecification,
         status: 'finalised',
       };
 
       harness.component.finaliseDataSpecification();
-      expect(researchPluginStub.finaliseDataSpecification).not.toHaveBeenCalled();
+      expect(dataSpecificationResearchPluginStub.finaliseDataSpecification).not.toHaveBeenCalled();
     });
 
     it('should raise error if failed to submit', () => {
       // Arrange
-      researchPluginStub.finaliseDataSpecification.mockImplementationOnce((id) => {
+      dataSpecificationResearchPluginStub.finaliseDataSpecification.mockImplementationOnce((id) => {
         expect(id).toBe(dataSpecification.id);
         return throwError(() => new Error());
       });
@@ -277,25 +297,23 @@ describe('MyDataSpecificationDetailComponent', () => {
       harness.component.finaliseDataSpecification();
 
       // Assert
-      expect(researchPluginStub.finaliseDataSpecification).toHaveBeenCalled();
+      expect(dataSpecificationResearchPluginStub.finaliseDataSpecification).toHaveBeenCalled();
       expect(broadcastStub.loading).toHaveBeenCalledTimes(2);
       expect(toastrStub.error).toHaveBeenCalled();
     });
 
     it('should update status of current data specification once submitted', () => {
-      // Arrange
-      const submittedDataModel: DataModelDetail = {
-        id: dataSpecification.id,
-        label: dataSpecification.label,
+      const submittedDataSpecification: DataSpecification = {
+        id: '1',
+        label: 'data specification 1',
         domainType: CatalogueItemDomainType.DataModel,
-        availableActions: ['show'],
-        finalised: true,
-        modelVersion: '1.0.0',
+        status: 'finalised',
+        author: 'Test User',
       };
 
-      researchPluginStub.finaliseDataSpecification.mockImplementationOnce((id) => {
-        expect(id).toBe(dataSpecification.id);
-        return of(submittedDataModel);
+      dataSpecificationResearchPluginStub.finaliseDataSpecification.mockImplementationOnce((id) => {
+        expect(id).toBe(submittedDataSpecification.id);
+        return of(submittedDataSpecification);
       });
 
       const okCancelResponse: OkCancelDialogResponse = {
@@ -303,13 +321,17 @@ describe('MyDataSpecificationDetailComponent', () => {
       };
       dialogsStub.usage.afterClosed.mockReturnValue(of(okCancelResponse));
 
+      submissionSDEServiceStub.mapToDataSpecificationWithSDEStatusCheck.mockReturnValueOnce(
+        of(submittedDataSpecification)
+      );
+
       harness.component.dataSpecification = dataSpecification;
 
       // Act
       harness.component.finaliseDataSpecification();
 
       // Assert
-      expect(researchPluginStub.finaliseDataSpecification).toHaveBeenCalled();
+      expect(dataSpecificationResearchPluginStub.finaliseDataSpecification).toHaveBeenCalled();
       expect(harness.component.dataSpecification.status).toBe('finalised');
       expect(broadcastStub.dispatch).toHaveBeenCalledWith('data-specification-finalised');
       expect(broadcastStub.loading).toHaveBeenCalledTimes(2);
@@ -337,8 +359,10 @@ describe('MyDataSpecificationDetailComponent', () => {
       harness.component.finaliseDataSpecification();
 
       // Assert
-      expect(researchPluginStub.finaliseDataSpecification).toHaveBeenCalledTimes(0);
-      expect(harness.component.dataSpecification.status).toBe('unsent');
+      expect(dataSpecificationResearchPluginStub.finaliseDataSpecification).toHaveBeenCalledTimes(
+        0
+      );
+      expect(harness.component.dataSpecification.status).toBe('draft');
       expect(broadcastStub.dispatch).toHaveBeenCalledTimes(0);
       expect(broadcastStub.loading).toHaveBeenCalledWith({ isLoading: false });
     });
@@ -796,7 +820,7 @@ describe('MyDataSpecificationDetailComponent', () => {
         id: '2',
         label: 'data specification 2',
         domainType: CatalogueItemDomainType.DataModel,
-        status: 'unsent',
+        status: 'draft',
       };
       const event: DataSpecificationElementAddDeleteEvent = {
         adding: true,

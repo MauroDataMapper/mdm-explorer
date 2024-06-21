@@ -158,7 +158,7 @@ describe('FileAttachmentsStepService', () => {
   });
 
   it('getInputShape should return expected fields', () => {
-    const expectedInputStep = ['dataRequestId', 'fileProperties'];
+    const expectedInputStep = ['dataRequestId', 'fileProperties', 'cancel'];
     const inputStep = fileAttachmentStepService.getInputShape();
     expect(inputStep).toEqual(expectedInputStep);
   });

@@ -201,6 +201,41 @@ Highlights a box area behind other page components, e.g. a form
       font-weight: 500;
     }
   }
+
+  &__tight-card {
+    background-color: $color-highlight-box;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 1em;
+
+    h3 {
+      font-weight: 500;
+    }
+  }
+}
+
+.loose-flex-container {
+  display: flex;
+  width: 100%;
+
+  &__tight-card {
+    background-color: $color-highlight-box;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 1em;
+
+    h3 {
+      font-weight: 500;
+    }
+  }
+
+  &__column {
+    flex: 1;
+    margin-left: 14px;
+    width: 100px;
+  }
 }
 
 .toast-top-right-custom {

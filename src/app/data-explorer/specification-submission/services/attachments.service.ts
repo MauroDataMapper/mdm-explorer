@@ -49,7 +49,7 @@ export class AttachmentsService {
         const stepResult: StepResult = {
           result: { fileProperties: { url: '', filename: '' } as FileProperties },
           isRequired,
-        };
+        } as StepResult;
         return stepResult;
       })
     );

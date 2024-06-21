@@ -27,6 +27,7 @@ import {
 } from '../type-declarations/submission.resource';
 import { AttachmentType } from '@maurodatamapper/sde-resources';
 import { FileGenerationStepService } from '../services/fileGenerationStep.service';
+import { SubmissionBroadcastService } from '../services/submission.broadcast.service';
 
 @Injectable({
   providedIn: 'root',
@@ -34,9 +35,14 @@ import { FileGenerationStepService } from '../services/fileGenerationStep.servic
 export class GenerateSqlStep implements ISubmissionStep {
   name: StepName = StepName.GeneratePdfFile;
 
-  constructor(private fileGenerationStepService: FileGenerationStepService) {}
+  constructor(
+    private fileGenerationStepService: FileGenerationStepService,
+    private submissionBroadcastService: SubmissionBroadcastService
+  ) {}
 
   isRequired(input: Partial<ISubmissionState>): Observable<StepResult> {
+    this.submissionBroadcastService.broadcast('Generating sql file...');
+
     return this.fileGenerationStepService.isRequired(
       input,
       this.name,
