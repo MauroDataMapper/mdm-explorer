@@ -16,26 +16,11 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-@import "../../../styles/base/all";
+import { Pipe, PipeTransform } from '@angular/core';
 
-.mdm-data-specification-status-chip {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 23px;
-  margin: 5px 0 5px;
-
-  &--draft {
-    color: $color-draftDataSpecification-contrast;
-    background-color: $color-draftDataSpecification;
-  }
-
-  &--finalised {
-    color: $color-finalisedDataSpecification-contrast;
-    background-color: $color-finalisedDataSpecification;
-  }
-
-  &--submitted {
-    color: $color-submittedDataSpecification-contrast;
-    background-color: $color-submittedDataSpecification;
+@Pipe({ name: 'readOnlyMeql', pure: false })
+export class ReadOnlyMeqlPipe implements PipeTransform {
+  transform(status: string, isEmpty: boolean, currentUserOwnsDataSpec: boolean): boolean {
+    return status === 'finalised' || status === 'submitted' || isEmpty || !currentUserOwnsDataSpec;
   }
 }

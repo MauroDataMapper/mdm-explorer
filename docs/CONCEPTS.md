@@ -75,9 +75,9 @@ Each user will automatically create user data specification data models, usually
 
 1. Be created directly under their own data specification folder.
 2. Be accessible only to that user or administrators.
-3. Be created as a draft. In the context of the Mauro Data Explorer, these are "unsent" data specifications which may still be edited.
+3. Be created as a draft. In the context of the Mauro Data Explorer, these are "draft" data specifications which may still be edited.
 
-A user is able to create more than one unsent data specification at once.
+A user is able to create more than one draft data specification at once.
 
 ## Copying Data Elements
 

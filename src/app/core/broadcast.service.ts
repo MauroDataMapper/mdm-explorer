@@ -104,4 +104,16 @@ export class BroadcastService {
   onLoading(): Observable<LoadingBroadcastPayload> {
     return this.on<LoadingBroadcastPayload>('loading');
   }
+
+  /**
+   * Broadcast message to show when submitting data specification
+   *
+   * @param message The message to show
+   */
+  submittingDataSpecification(message: string) {
+    this.loading({
+      isLoading: true,
+      caption: `Submitting your data specification - ${message}`,
+    });
+  }
 }

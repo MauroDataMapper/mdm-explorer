@@ -17,6 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
+import { RequestsListMode } from '@maurodatamapper/sde-resources';
 import { SecurityService } from 'src/app/security/security.service';
 
 @Component({
@@ -25,6 +26,7 @@ import { SecurityService } from 'src/app/security/security.service';
 })
 export class SdeMainComponent implements OnInit {
   signedIn = false;
+  requestsNeedingApprovalListConfig: RequestsListMode = RequestsListMode.CanAuthorise;
 
   constructor(private security: SecurityService) {}
 

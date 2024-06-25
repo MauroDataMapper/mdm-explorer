@@ -64,10 +64,7 @@ import {
   throwError,
   toArray,
 } from 'rxjs';
-import {
-  DataElementDto,
-  DataElementInstance,
-} from '../data-explorer/data-explorer.types';
+import { DataElementDto, DataElementInstance } from '../data-explorer/data-explorer.types';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { DataClassIdentifier, isDataClass } from './mauro.types';
 

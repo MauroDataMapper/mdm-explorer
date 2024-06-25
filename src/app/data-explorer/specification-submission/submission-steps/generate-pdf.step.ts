@@ -27,6 +27,7 @@ import {
 } from '../type-declarations/submission.resource';
 import { AttachmentType } from '@maurodatamapper/sde-resources';
 import { FileGenerationStepService } from '../services/fileGenerationStep.service';
+import { BroadcastService } from 'src/app/core/broadcast.service';
 
 @Injectable({
   providedIn: 'root',
@@ -34,9 +35,14 @@ import { FileGenerationStepService } from '../services/fileGenerationStep.servic
 export class GeneratePdfStep implements ISubmissionStep {
   name: StepName = StepName.GeneratePdfFile;
 
-  constructor(private fileGenerationStepService: FileGenerationStepService) {}
+  constructor(
+    private fileGenerationStepService: FileGenerationStepService,
+    private broadcastService: BroadcastService
+  ) {}
 
   isRequired(input: Partial<ISubmissionState>): Observable<StepResult> {
+    this.broadcastService.submittingDataSpecification('Generating pdf file...');
+
     return this.fileGenerationStepService.isRequired(
       input,
       this.name,
@@ -53,6 +59,6 @@ export class GeneratePdfStep implements ISubmissionStep {
   }
 
   getInputShape(): (keyof ISubmissionState)[] {
-    return ['specificationId', 'dataRequestId'];
+    return this.fileGenerationStepService.getInputShape();
   }
 }

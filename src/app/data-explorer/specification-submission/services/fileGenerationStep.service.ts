@@ -74,6 +74,6 @@ export class FileGenerationStepService {
   }
 
   getInputShape(): (keyof ISubmissionState)[] {
-    return ['specificationId', 'dataRequestId'];
+    return ['specificationId', 'dataRequestId', 'cancel'];
   }
 }

@@ -24,8 +24,9 @@ import { DataSpecificationService } from '../../data-explorer/data-specification
 import { SortByOption } from '../../data-explorer/sort-by/sort-by.component';
 import { FilterByOption } from '../../data-explorer/filter-by/filter-by.component';
 import { Sort } from '../../mauro/sort.type';
-import { ResearchPluginService } from '../../mauro/research-plugin.service';
+
 import { ActivatedRoute } from '@angular/router';
+import { DataSpecificationResearchPluginService } from '../../mauro/data-specification-research-plugin.service';
 
 /**
  * These options must be of the form '{propertyToSortBy}-{order}' where propertyToSortBy
@@ -43,7 +44,6 @@ export class TemplateDataSpecificationsComponent implements OnInit {
   templateDataSpecifications: DataSpecification[] = [];
   filteredDataSpecifications: DataSpecification[] = [];
   sharedDataSpecifications: DataSpecification[] = [];
-  communityDataSpecifications: DataSpecification[] = [];
 
   state: 'idle' | 'loading' = 'idle';
 
@@ -64,7 +64,7 @@ export class TemplateDataSpecificationsComponent implements OnInit {
   constructor(
     private dataSpecification: DataSpecificationService,
     private toastr: ToastrService,
-    private researchPlugin: ResearchPluginService,
+    private dataSpecificationResearchPlugin: DataSpecificationResearchPluginService,
     private route: ActivatedRoute
   ) {}
 
@@ -82,7 +82,7 @@ export class TemplateDataSpecificationsComponent implements OnInit {
         }),
         switchMap((templates) => {
           this.templateDataSpecifications = templates;
-          return this.researchPlugin.listSharedDataSpecifications();
+          return this.dataSpecificationResearchPlugin.listSharedDataSpecifications();
         }),
         catchError(() => {
           this.toastr.error('There was a problem finding the templates.');
@@ -119,6 +119,14 @@ export class TemplateDataSpecificationsComponent implements OnInit {
   }
 
   private filterAndSortDataSpecifications(sortBy?: FilterByOption) {
+    if (this.templateDataSpecifications.length === 0) {
+      return;
+    }
+
+    if (this.sharedDataSpecifications.length === 0) {
+      return;
+    }
+
     const filteredTemplates = this.templateDataSpecifications;
     const filteredSharedDataSpecs = this.sharedDataSpecifications;
 

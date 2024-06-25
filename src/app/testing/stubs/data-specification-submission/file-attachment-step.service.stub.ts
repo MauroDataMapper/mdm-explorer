@@ -1,12 +1,3 @@
-import { AttachmentType } from '@maurodatamapper/sde-resources';
-import { Observable } from 'rxjs';
-import {
-  ExporterName,
-  ISubmissionState,
-  StepName,
-  StepResult,
-} from 'src/app/data-explorer/specification-submission/type-declarations/submission.resource';
-
 /*
 Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
@@ -25,6 +16,15 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+import { AttachmentType } from '@maurodatamapper/sde-resources';
+import { Observable } from 'rxjs';
+import {
+  ExporterName,
+  ISubmissionState,
+  StepName,
+  StepResult,
+} from 'src/app/data-explorer/specification-submission/type-declarations/submission.resource';
+
 export type IsRequiredFn = (
   input: Partial<ISubmissionState>,
   stepName: StepName,

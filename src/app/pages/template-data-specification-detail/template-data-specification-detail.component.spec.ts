@@ -34,10 +34,7 @@ import { DataSchemaService } from '../../data-explorer/data-schema.service';
 import { createDataSpecificationServiceStub } from '../../testing/stubs/data-specifications.stub';
 import { createDataSchemaServiceStub } from '../../testing/stubs/data-schema.stub';
 import { createToastrServiceStub } from '../../testing/stubs/toastr.stub';
-import {
-  ComponentHarness,
-  setupTestModuleForComponent,
-} from '../../testing/testing.helpers';
+import { ComponentHarness, setupTestModuleForComponent } from '../../testing/testing.helpers';
 
 import { TemplateDataSpecificationDetailComponent } from './template-data-specification-detail.component';
 import { SecurityService } from 'src/app/security/security.service';
@@ -60,37 +57,34 @@ describe('TemplateDataSpecificationDetailComponent', () => {
   } as unknown as ActivatedRoute;
 
   beforeEach(async () => {
-    harness = await setupTestModuleForComponent(
-      TemplateDataSpecificationDetailComponent,
-      {
-        providers: [
-          {
-            provide: ActivatedRoute,
-            useValue: activatedRoute,
-          },
-          {
-            provide: DataSpecificationService,
-            useValue: dataSpecificationStub,
-          },
-          {
-            provide: DataSchemaService,
-            useValue: dataSchemaStub,
-          },
-          {
-            provide: ToastrService,
-            useValue: toastrStub,
-          },
-          {
-            provide: MdmResourcesConfiguration,
-            useValue: mdmResourcesConfiguration,
-          },
-          {
-            provide: SecurityService,
-            useValue: securityStub,
-          },
-        ],
-      }
-    );
+    harness = await setupTestModuleForComponent(TemplateDataSpecificationDetailComponent, {
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: activatedRoute,
+        },
+        {
+          provide: DataSpecificationService,
+          useValue: dataSpecificationStub,
+        },
+        {
+          provide: DataSchemaService,
+          useValue: dataSchemaStub,
+        },
+        {
+          provide: ToastrService,
+          useValue: toastrStub,
+        },
+        {
+          provide: MdmResourcesConfiguration,
+          useValue: mdmResourcesConfiguration,
+        },
+        {
+          provide: SecurityService,
+          useValue: securityStub,
+        },
+      ],
+    });
   });
 
   it('should create', () => {
@@ -234,7 +228,7 @@ describe('TemplateDataSpecificationDetailComponent', () => {
           ...dataSpecification,
           id: '3',
           label: 'copied data specification',
-          status: 'unsent',
+          status: 'draft',
         });
       });
 

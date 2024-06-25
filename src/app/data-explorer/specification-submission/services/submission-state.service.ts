@@ -48,7 +48,7 @@ export class SubmissionStateService {
   ): Partial<ISubmissionState> {
     return inputShape.reduce((acc, key) => {
       if (this._state[key] !== undefined) {
-        acc[key] = this._state[key] as string & FileProperties;
+        acc[key] = this._state[key] as string & FileProperties & boolean;
       }
       return acc;
     }, {} as Partial<ISubmissionState>);

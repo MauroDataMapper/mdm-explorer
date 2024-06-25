@@ -62,7 +62,6 @@ import {
   DataSpecificationQueryType,
   DataSchema,
   ForkDataSpecificationOptions,
-  mapToDataSpecification,
   QueryExpression,
 } from './data-explorer.types';
 import { DataSpecification } from '../data-explorer/data-explorer.types';
@@ -78,6 +77,7 @@ import { ResearchPluginService } from '../mauro/research-plugin.service';
 import { EditDataSpecificationDialogOptions as EditDataSpecificationDialogOptions } from './edit-data-specification-dialog/edit-data-specification-dialog.component';
 import { ShareDataSpecificationDialogInputOutput } from './share-data-specification-dialog/share-data-specification-dialog.component';
 import { CoreTableProfileService } from './core-table-profile.service';
+import { SubmissionSDEService } from './specification-submission/services/submission.sde.service';
 
 /**
  * A collection of data specifications and their intersections with target models.
@@ -101,7 +101,8 @@ export class DataSpecificationService {
     private dialogs: DialogService,
     private rules: RulesService,
     private researchPlugin: ResearchPluginService,
-    private coreTableProfileService: CoreTableProfileService
+    private coreTableProfileService: CoreTableProfileService,
+    private submissionSDEService: SubmissionSDEService
   ) {}
 
   /**
@@ -122,9 +123,11 @@ export class DataSpecificationService {
    * @throws the underlaying API may return a {@link HttpErrorResponse}
    */
   get(id: Uuid): Observable<DataSpecification> {
-    return this.dataModels
-      .getDataModelById(id)
-      .pipe(map((dataModel) => mapToDataSpecification(dataModel)));
+    return this.dataModels.getDataModelById(id).pipe(
+      switchMap((dataModel) => {
+        return this.submissionSDEService.mapToDataSpecificationWithSDEStatusCheck(dataModel);
+      })
+    );
   }
 
   /**
@@ -224,7 +227,15 @@ export class DataSpecificationService {
       switchMap((dataSpecificationFolder: FolderDetail): Observable<DataModel[]> => {
         return this.dataModels.listInFolder(dataSpecificationFolder.id!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
       }),
-      map((dataModels) => dataModels.map(mapToDataSpecification))
+      switchMap((dataModels) => {
+        if (dataModels.length === 0) {
+          return of([]);
+        }
+        const dataSpecification$ = dataModels.map((dataModel) => {
+          return this.submissionSDEService.mapToDataSpecificationWithSDEStatusCheck(dataModel);
+        });
+        return forkJoin(dataSpecification$);
+      })
     );
   }
 
@@ -238,7 +249,7 @@ export class DataSpecificationService {
       switchMap((folder: FolderDetail): Observable<DataModel[]> => {
         return this.dataModels.listInFolder(folder.id!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
       }),
-      map((dataModels) => dataModels.map(mapToDataSpecification))
+      map((dataModels) => dataModels.map(this.submissionSDEService.mapToDataSpecification))
     );
   }
 
@@ -355,7 +366,7 @@ export class DataSpecificationService {
         return this.dataModels.addToFolder(folder.id, payload);
       }),
       map((dataModel) => {
-        return mapToDataSpecification(dataModel);
+        return this.submissionSDEService.mapToDataSpecification(dataModel);
       })
     );
   }
@@ -465,7 +476,7 @@ export class DataSpecificationService {
   }
 
   /**
-   * Given a source data model and list of data elements, get all unsent data specifications and
+   * Given a source data model and list of data elements, get all draft data specifications and
    * get the intersection of the source with each data specification, for the list of data elements.
    *
    * @param sourceDataModelId
@@ -483,9 +494,9 @@ export class DataSpecificationService {
     }
 
     return this.list().pipe(
-      map((dataSpecifications: DataSpecification[]) =>
-        dataSpecifications.filter((dr) => dr.status === 'unsent')
-      ),
+      map((dataSpecifications: DataSpecification[]) => {
+        return dataSpecifications.filter((dr) => dr.status === 'draft');
+      }),
       switchMap((dataSpecifications: DataSpecification[]) => {
         const sourceTargetIntersections: DataSpecificationSourceTargetIntersections = {
           dataSpecifications,
@@ -556,7 +567,9 @@ export class DataSpecificationService {
       switchMap(([dataSpecification, coreTableProfile]) => {
         return this.saveCoreTableProfile(dataSpecification, coreTableProfile);
       }),
-      map(([_, targetDataModel]) => mapToDataSpecification(targetDataModel))
+      map(([_, targetDataModel]) =>
+        this.submissionSDEService.mapToDataSpecification(targetDataModel)
+      )
     );
   }
 
@@ -675,7 +688,7 @@ export class DataSpecificationService {
 
           return of(nextDraftModel);
         }),
-        map((nextDraftModel) => mapToDataSpecification(nextDraftModel)),
+        map((nextDraftModel) => this.submissionSDEService.mapToDataSpecification(nextDraftModel)),
         map((nextDataSpecification) => {
           this.broadcast.dispatch('data-specification-added');
           this.dialogs.openSuccess({

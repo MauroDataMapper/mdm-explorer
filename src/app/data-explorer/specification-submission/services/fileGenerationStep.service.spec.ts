@@ -147,7 +147,7 @@ describe('FileGenerationStepService', () => {
   });
 
   it('getInputShape should return expected fields', () => {
-    const expectedInputStep = ['specificationId', 'dataRequestId'];
+    const expectedInputStep = ['specificationId', 'dataRequestId', 'cancel'];
     const inputStep = fileGenerationStepService.getInputShape();
     expect(inputStep).toEqual(expectedInputStep);
   });

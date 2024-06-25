@@ -16,34 +16,27 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import {
-  CatalogueItemDomainType,
-  FolderDetail,
-  MdmResourcesConfiguration,
-} from '@maurodatamapper/mdm-resources';
+import { CatalogueItemDomainType, FolderDetail } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { of, throwError } from 'rxjs';
 import { DataSpecification } from '../../data-explorer/data-explorer.types';
 import { DataSpecificationService } from '../../data-explorer/data-specification.service';
 import { createDataSpecificationServiceStub } from '../../testing/stubs/data-specifications.stub';
 import { createToastrServiceStub } from '../../testing/stubs/toastr.stub';
-import {
-  ComponentHarness,
-  setupTestModuleForComponent,
-} from '../../testing/testing.helpers';
+import { ComponentHarness, setupTestModuleForComponent } from '../../testing/testing.helpers';
 
 import { TemplateDataSpecificationsComponent } from './template-data-specifications.component';
-import { SecurityService } from 'src/app/security/security.service';
-import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { ActivatedRoute } from '@angular/router';
+import { DataSpecificationResearchPluginService } from 'src/app/mauro/data-specification-research-plugin.service';
+import { createDataSpecificationResearchPluginServiceStub } from 'src/app/testing/stubs/data-specification-research-plugin.stub';
 
 describe('TemplateDataSpecificationsComponent', () => {
   let harness: ComponentHarness<TemplateDataSpecificationsComponent>;
 
   const dataSpecificationStub = createDataSpecificationServiceStub();
   const toastrStub = createToastrServiceStub();
-  const securityStub = createSecurityServiceStub();
-  const mdmResourcesConfiguration = new MdmResourcesConfiguration();
+  const dataSpecificationResearchPluginServiceStub =
+    createDataSpecificationResearchPluginServiceStub();
 
   const activatedRoute: ActivatedRoute = {
     queryParams: of({}),
@@ -61,12 +54,8 @@ describe('TemplateDataSpecificationsComponent', () => {
           useValue: toastrStub,
         },
         {
-          provide: SecurityService,
-          useValue: securityStub,
-        },
-        {
-          provide: MdmResourcesConfiguration,
-          useValue: mdmResourcesConfiguration,
+          provide: DataSpecificationResearchPluginService,
+          useValue: dataSpecificationResearchPluginServiceStub,
         },
         {
           provide: ActivatedRoute,
@@ -142,18 +131,16 @@ describe('TemplateDataSpecificationsComponent', () => {
     });
 
     it('should copy a template to a new data specification', () => {
-      dataSpecificationStub.forkWithDialogs.mockImplementationOnce(
-        (specification, options) => {
-          expect(specification).toBe(dataSpecification);
-          expect(options?.targetFolder).toBe(dataSpecificationFolder);
-          return of({
-            ...dataSpecification,
-            id: '3',
-            label: 'copied data specification',
-            status: 'unsent',
-          });
-        }
-      );
+      dataSpecificationStub.forkWithDialogs.mockImplementationOnce((specification, options) => {
+        expect(specification).toBe(dataSpecification);
+        expect(options?.targetFolder).toBe(dataSpecificationFolder);
+        return of({
+          ...dataSpecification,
+          id: '3',
+          label: 'copied data specification',
+          status: 'draft',
+        });
+      });
 
       harness.component.copy(dataSpecification);
 

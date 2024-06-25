@@ -29,7 +29,6 @@ import {
 } from '../../data-explorer/data-explorer.types';
 import { DataSpecificationService } from '../../data-explorer/data-specification.service';
 import { DataModelService } from '../../mauro/data-model.service';
-import { ResearchPluginService } from '../../mauro/research-plugin.service';
 import { SecurityService } from '../../security/security.service';
 import { UserDetails } from '../../security/user-details.service';
 import { createBroadcastServiceStub } from '../../testing/stubs/broadcast.stub';
@@ -37,14 +36,12 @@ import { createDataExplorerServiceStub } from '../../testing/stubs/data-explorer
 import { createDataModelServiceStub } from '../../testing/stubs/data-model.stub';
 import { createDataSpecificationServiceStub } from '../../testing/stubs/data-specifications.stub';
 import { createMatDialogStub } from '../../testing/stubs/mat-dialog.stub';
-import { createResearchPluginServiceStub } from '../../testing/stubs/research-plugin.stub';
 import { createSecurityServiceStub } from '../../testing/stubs/security.stub';
 import { createToastrServiceStub } from '../../testing/stubs/toastr.stub';
-import {
-  ComponentHarness,
-  setupTestModuleForComponent,
-} from '../../testing/testing.helpers';
+import { ComponentHarness, setupTestModuleForComponent } from '../../testing/testing.helpers';
 import { MyDataSpecificationsComponent } from './my-data-specifications.component';
+import { createDataSpecificationResearchPluginServiceStub } from 'src/app/testing/stubs/data-specification-research-plugin.stub';
+import { DataSpecificationResearchPluginService } from 'src/app/mauro/data-specification-research-plugin.service';
 
 describe('MyDataSpecificationsComponent', () => {
   let harness: ComponentHarness<MyDataSpecificationsComponent>;
@@ -52,7 +49,7 @@ describe('MyDataSpecificationsComponent', () => {
   const dataSpecificationStub = createDataSpecificationServiceStub();
   const dataModelsStub = createDataModelServiceStub();
   const toastrStub = createToastrServiceStub();
-  const researchPluginStub = createResearchPluginServiceStub();
+  const dataSpecificationResearchPluginStub = createDataSpecificationResearchPluginServiceStub();
   const dialogsStub = createMatDialogStub();
   const broadcastStub = createBroadcastServiceStub();
   const explorerStub = createDataExplorerServiceStub();
@@ -77,8 +74,8 @@ describe('MyDataSpecificationsComponent', () => {
           useValue: toastrStub,
         },
         {
-          provide: ResearchPluginService,
-          useValue: researchPluginStub,
+          provide: DataSpecificationResearchPluginService,
+          useValue: dataSpecificationResearchPluginStub,
         },
         {
           provide: MatDialog,
@@ -111,13 +108,15 @@ describe('MyDataSpecificationsComponent', () => {
 
   describe('initialisation', () => {
     beforeEach(() => {
-      researchPluginStub.getLatestModelDataSpecifications.mockClear();
+      dataSpecificationResearchPluginStub.getLatestModelDataSpecifications.mockClear();
       toastrStub.error.mockClear();
     });
 
     it('should do nothing if there is no user', () => {
       harness.component.ngOnInit();
-      expect(researchPluginStub.getLatestModelDataSpecifications).not.toHaveBeenCalled();
+      expect(
+        dataSpecificationResearchPluginStub.getLatestModelDataSpecifications
+      ).not.toHaveBeenCalled();
     });
   });
 
@@ -127,37 +126,37 @@ describe('MyDataSpecificationsComponent', () => {
         id: '1',
         label: 'data specification 1',
         domainType: CatalogueItemDomainType.DataModel,
-        status: 'unsent',
+        status: 'draft',
       },
       {
         id: '2',
         label: 'data specification 2',
         domainType: CatalogueItemDomainType.DataModel,
-        status: 'unsent',
+        status: 'draft',
       },
     ];
 
     mockSignedInUser();
 
-    researchPluginStub.getLatestModelDataSpecifications.mockImplementationOnce(() => {
-      expect(harness.component.state).toBe('loading');
-      return of(dataSpecifications);
-    });
+    dataSpecificationResearchPluginStub.getLatestModelDataSpecifications.mockImplementationOnce(
+      () => {
+        expect(harness.component.state).toBe('loading');
+        return of(dataSpecifications);
+      }
+    );
 
     harness.component.ngOnInit();
 
     expect(harness.component.state).toBe('idle');
     expect(harness.component.allDataSpecifications).toStrictEqual(dataSpecifications);
-    expect(harness.component.filteredDataSpecifications).toStrictEqual(
-      dataSpecifications
-    ); // No filters yet
+    expect(harness.component.filteredDataSpecifications).toStrictEqual(dataSpecifications); // No filters yet
   });
 
   it('should display an error if failed to get data specifications', () => {
     mockSignedInUser();
 
-    researchPluginStub.getLatestModelDataSpecifications.mockImplementationOnce(() =>
-      throwError(() => new Error())
+    dataSpecificationResearchPluginStub.getLatestModelDataSpecifications.mockImplementationOnce(
+      () => throwError(() => new Error())
     );
 
     harness.component.ngOnInit();
@@ -171,10 +170,12 @@ describe('MyDataSpecificationsComponent', () => {
   it('should handle having no data specifications available', () => {
     mockSignedInUser();
 
-    researchPluginStub.getLatestModelDataSpecifications.mockImplementationOnce(() => {
-      expect(harness.component.state).toBe('loading');
-      return of([]);
-    });
+    dataSpecificationResearchPluginStub.getLatestModelDataSpecifications.mockImplementationOnce(
+      () => {
+        expect(harness.component.state).toBe('loading');
+        return of([]);
+      }
+    );
 
     harness.component.ngOnInit();
 
@@ -189,13 +190,13 @@ describe('MyDataSpecificationsComponent', () => {
         id: '1',
         label: 'data specification 1',
         domainType: CatalogueItemDomainType.DataModel,
-        status: 'unsent',
+        status: 'draft',
       },
       {
         id: '2',
         label: 'data specification 2',
         domainType: CatalogueItemDomainType.DataModel,
-        status: 'unsent',
+        status: 'draft',
       },
       {
         id: '3',
@@ -214,13 +215,11 @@ describe('MyDataSpecificationsComponent', () => {
 
       harness.component.filterByStatus(event);
 
-      expect(harness.component.statusFilters).toStrictEqual(['finalised', 'unsent']);
-      expect(harness.component.filteredDataSpecifications).toStrictEqual(
-        dataSpecifications
-      );
+      expect(harness.component.statusFilters).toStrictEqual(['finalised', 'submitted', 'draft']);
+      expect(harness.component.filteredDataSpecifications).toStrictEqual(dataSpecifications);
     });
 
-    it.each<DataSpecificationStatus>(['unsent', 'finalised'])(
+    it.each<DataSpecificationStatus>(['draft', 'finalised'])(
       'should display only data specifications of status %p',
       (status) => {
         const event = { value: status } as MatSelectChange;

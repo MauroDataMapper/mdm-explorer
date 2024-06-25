@@ -43,11 +43,13 @@ SPDX-License-Identifier: Apache-2.0
         [showLabel]="false"
         [showStatus]="true"
         [currentUserOwnsDataSpec]="currentUserOwnsDataSpec"
-        [showEditButton]="dataSpecification.status === 'unsent' && currentUserOwnsDataSpec"
-        [showCopyButton]="dataSpecification.status === 'finalised'"
+        [showEditButton]="dataSpecification.status === 'draft' && currentUserOwnsDataSpec"
+        [showCopyButton]="
+          dataSpecification.status === 'finalised' || dataSpecification.status === 'submitted'
+        "
         [showNewVersionButton]="
           currentUserOwnsDataSpec &&
-          dataSpecification.status === 'finalised' &&
+          (dataSpecification.status === 'finalised' || dataSpecification.status === 'submitted') &&
           !newerVersionExists &&
           currentVersionIsLatest
         "
@@ -58,6 +60,7 @@ SPDX-License-Identifier: Apache-2.0
         (shareClick)="shareDataSpecification()"
         (ViewDifferentVersionClick)="handleViewDifferentVersion($event)"
         (newVersionClick)="handleNewVersionClick()"
+        (viewRequestClick)="viewRequest()"
       ></mdm-data-specification-row>
     </div>
 
@@ -66,26 +69,31 @@ SPDX-License-Identifier: Apache-2.0
     <mdm-data-query-row
       queryType="cohort"
       [condition]="cohortQuery"
-      [readOnly]="dataSpecification.status === 'finalised' || isEmpty || !currentUserOwnsDataSpec"
+      [readOnly]="dataSpecification.status | readOnlyMeql : isEmpty : currentUserOwnsDataSpec"
       createRouterLink="queries/cohort"
       editRouterLink="queries/cohort"
     ></mdm-data-query-row>
     <mdm-data-query-row
       queryType="data"
       [condition]="dataQuery"
-      [readOnly]="dataSpecification.status === 'finalised' || isEmpty || !currentUserOwnsDataSpec"
+      [readOnly]="
+        dataSpecification.status === 'finalised' ||
+        dataSpecification.status === 'submitted' ||
+        isEmpty ||
+        !currentUserOwnsDataSpec
+      "
       createRouterLink="queries/data"
       editRouterLink="queries/data"
     ></mdm-data-query-row>
 
     <h2>Data elements</h2>
-    <p *ngIf="dataSpecification.status === 'unsent'">
+    <p *ngIf="dataSpecification.status === 'draft'">
       You can add more data elements to this data specification by
       <a routerLink="/browse">browsing</a> or <a routerLink="/search">searching</a> our catalogue.
     </p>
 
     <div
-      *ngIf="dataSpecification.status === 'unsent' && currentUserOwnsDataSpec"
+      *ngIf="dataSpecification.status === 'draft' && currentUserOwnsDataSpec"
       class="mdm-my-data-specification__specification-elements-selectall"
     >
       <mat-checkbox (change)="onSelectAll()" [checked]="allElementsSelected"
@@ -102,14 +110,12 @@ SPDX-License-Identifier: Apache-2.0
       </button>
     </div>
 
-    <div
-      class="mdm-my-data-specification__specification-elements"
-      *ngIf="sourceTargetIntersections.dataSpecifications.length > 0 || !currentUserOwnsDataSpec"
-    >
+    <div class="mdm-my-data-specification__specification-elements">
+      <!--*ngIf="sourceTargetIntersections.dataSpecifications.length > 0 || !currentUserOwnsDataSpec"-->
       <mdm-data-schema-row
         *ngFor="let dataSchema of dataSchemas"
         [dataSchema]="dataSchema"
-        [canDelete]="dataSpecification.status === 'unsent' && currentUserOwnsDataSpec"
+        [canDelete]="dataSpecification.status === 'draft' && currentUserOwnsDataSpec"
         (deleteItemEvent)="removeItem($event)"
         [suppressViewDataSpecificationsDialogButton]="true"
         (dataSpecificationAddDelete)="handleDataSpecificationElementsChange($event)"

@@ -26,6 +26,7 @@ import {
 } from '../type-declarations/submission.resource';
 import { AttachmentType } from '@maurodatamapper/sde-resources';
 import { FileAttachmentStepService } from '../services/fileAttachmentStep.service';
+import { BroadcastService } from 'src/app/core/broadcast.service';
 
 @Injectable({
   providedIn: 'root',
@@ -33,9 +34,14 @@ import { FileAttachmentStepService } from '../services/fileAttachmentStep.servic
 export class AttachPdfStep implements ISubmissionStep {
   name: StepName = StepName.AttachPdfFile;
 
-  constructor(private fileAttachmentStepService: FileAttachmentStepService) {}
+  constructor(
+    private fileAttachmentStepService: FileAttachmentStepService,
+    private broadcastService: BroadcastService
+  ) {}
 
   isRequired(input: Partial<ISubmissionState>): Observable<StepResult> {
+    this.broadcastService.submittingDataSpecification('Attaching pdf file...');
+
     return this.fileAttachmentStepService.isRequired(
       input,
       this.name,

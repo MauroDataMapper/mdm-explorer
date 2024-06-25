@@ -97,9 +97,7 @@ export class BrowseComponent implements OnInit {
     }
 
     if (!this.selected) {
-      this.toastr.error(
-        'You must have selected an element to create a data specification with.'
-      );
+      this.toastr.error('You must have selected an element to create a data specification with.');
       return;
     }
 
@@ -121,14 +119,10 @@ export class BrowseComponent implements OnInit {
     this.dataSpecification
       .createWithDialogs(getDataElements, this.suppressViewDataSpecificationsDialogButton)
       .subscribe((response) => {
-        console.log(response);
         if (response.action === 'view-data-specifications') {
           this.stateRouter.navigateToKnownPath('/dataSpecifications');
         } else if (response.action === 'view-data-specification-detail') {
-          this.stateRouter.navigateTo([
-            '/dataSpecifications',
-            response.dataSpecification.id,
-          ]);
+          this.stateRouter.navigateTo(['/dataSpecifications', response.dataSpecification.id]);
         }
       });
   }
@@ -181,9 +175,7 @@ export class BrowseComponent implements OnInit {
         }),
         switchMap((parent) => this.dataModels.getDataClasses(parent)),
         catchError(() => {
-          this.toastr.error(
-            'There was a problem getting the data classes required for browsing.'
-          );
+          this.toastr.error('There was a problem getting the data classes required for browsing.');
           return EMPTY;
         })
       )
@@ -195,9 +187,7 @@ export class BrowseComponent implements OnInit {
       .getDataClasses(parent)
       .pipe(
         catchError(() => {
-          this.toastr.error(
-            'There was a problem getting the data classes required for browsing.'
-          );
+          this.toastr.error('There was a problem getting the data classes required for browsing.');
           return EMPTY;
         })
       )

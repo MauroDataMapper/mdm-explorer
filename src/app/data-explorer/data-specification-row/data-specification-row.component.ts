@@ -44,20 +44,24 @@ export class DataSpecificationRowComponent implements OnChanges {
   @Output() shareClick = new EventEmitter<void>();
   @Output() newVersionClick = new EventEmitter<void>();
   @Output() ViewDifferentVersionClick = new EventEmitter<string>();
+  @Output() viewRequestClick = new EventEmitter<void>();
 
   showFinaliseButton = false;
   showShareButton = false;
   showSubmitButton = false;
+  showViewRequestButton = false;
 
   ngOnChanges(): void {
     const status = this.dataSpecification?.status;
 
     // Can only finalise if not already finalised and user owns the data spec.
-    this.showFinaliseButton = this.currentUserOwnsDataSpec && status === 'unsent';
+    this.showFinaliseButton = this.currentUserOwnsDataSpec && status === 'draft';
 
     // Can only submit/share if finalised and user owns the data spec.
     this.showSubmitButton = this.currentUserOwnsDataSpec && status === 'finalised';
-    this.showShareButton = this.currentUserOwnsDataSpec && status === 'finalised';
+    this.showShareButton =
+      this.currentUserOwnsDataSpec && (status === 'finalised' || status === 'submitted');
+    this.showViewRequestButton = this.currentUserOwnsDataSpec && status === 'submitted';
   }
 
   onSubmitClick() {
@@ -86,5 +90,9 @@ export class DataSpecificationRowComponent implements OnChanges {
 
   onShareClick() {
     this.shareClick.emit();
+  }
+
+  onViewRequestClick() {
+    this.viewRequestClick.emit();
   }
 }

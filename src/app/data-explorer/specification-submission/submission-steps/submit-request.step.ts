@@ -27,6 +27,7 @@ import {
 } from '../type-declarations/submission.resource';
 import { RequestEndpoints } from '@maurodatamapper/sde-resources';
 import { ErrorService } from '../services/error.service';
+import { BroadcastService } from 'src/app/core/broadcast.service';
 
 @Injectable({
   providedIn: 'root',
@@ -34,9 +35,14 @@ import { ErrorService } from '../services/error.service';
 export class SubmitRequestStep implements ISubmissionStep {
   name: StepName = StepName.SubmitDataRequest;
 
-  constructor(private requestEndpoints: RequestEndpoints) {}
+  constructor(
+    private requestEndpoints: RequestEndpoints,
+    private broadcastService: BroadcastService
+  ) {}
 
   isRequired(input: Partial<ISubmissionState>): Observable<StepResult> {
+    this.broadcastService.submittingDataSpecification('Submitting data request...');
+
     if (!input.dataRequestId) {
       return ErrorService.missingInputError(this.name, StepFunction.IsRequired, 'dataRequestId');
     }
@@ -46,7 +52,7 @@ export class SubmitRequestStep implements ISubmissionStep {
         const stepResult: StepResult = {
           result: {},
           isRequired: requestResponse.status !== 'AWAITING_APPROVAL',
-        };
+        } as StepResult;
         return stepResult;
       })
     );
@@ -60,14 +66,16 @@ export class SubmitRequestStep implements ISubmissionStep {
     return this.requestEndpoints
       .changeStatus(input.dataRequestId, { requestAction: 'REQUEST_SUBMISSION_APPROVAL' })
       .pipe(
-        map(() => {
-          alert('Submission Complete');
-          return { result: {} } as StepResult;
+        map((requestResponse) => {
+          if (requestResponse.status !== 'AWAITING_APPROVAL') {
+            return { result: { succeeded: false } } as StepResult;
+          }
+          return { result: { succeeded: true } } as StepResult;
         })
       );
   }
 
   getInputShape(): (keyof ISubmissionState)[] {
-    return ['dataRequestId'];
+    return ['dataRequestId', 'cancel'];
   }
 }

@@ -129,8 +129,7 @@ export class QueryBuilderComponent
 
   @Input() allowRuleset = true;
   @Input() allowCollapse = false;
-  @Input() emptyMessage =
-    'A ruleset cannot be empty. Please add a rule or remove it all together.';
+  @Input() emptyMessage = 'A ruleset cannot be empty. Please add a rule or remove it all together.';
   @Input() classNames!: QueryBuilderClassNames;
   @Input() operatorMap!: { [key: string]: string[] };
   @Input() parentValue!: RuleSet;
@@ -225,13 +224,7 @@ export class QueryBuilderComponent
     'boolean',
     'multiselect',
   ];
-  private defaultPersistValueTypes: string[] = [
-    'string',
-    'number',
-    'time',
-    'date',
-    'boolean',
-  ];
+  private defaultPersistValueTypes: string[] = ['string', 'number', 'time', 'date', 'boolean'];
   private defaultEmptyList: any[] = [];
   private operatorsCache: { [key: string]: string[] } = {};
   private inputContextCache = new Map<Rule, InputContext>();
@@ -241,10 +234,7 @@ export class QueryBuilderComponent
   private removeButtonContextCache = new Map<Rule, RemoveButtonContext>();
   private buttonGroupContext!: ButtonGroupContext;
 
-  constructor(
-    private changeDetectorRef: ChangeDetectorRef,
-    private matDialog: MatDialog
-  ) {}
+  constructor(private changeDetectorRef: ChangeDetectorRef, private matDialog: MatDialog) {}
 
   // ----------ControlValueAccessor Implementation----------
   @Input()
@@ -268,7 +258,6 @@ export class QueryBuilderComponent
   // ----------OnChanges Implementation----------
 
   ngOnChanges(_: SimpleChanges) {
-    console.log('onChanges');
     const config = this.config;
     const type = typeof config;
     if (type === 'object') {
@@ -586,8 +575,6 @@ export class QueryBuilderComponent
             this.addRuleSetInternal(parent, entity?.name);
 
             this.isRuleSetAvailable = this.ruleSetAvailable();
-          } else {
-            console.log('Dialog closed without result');
           }
         });
       }
@@ -628,9 +615,7 @@ export class QueryBuilderComponent
   computedTreeContainerHeight(): void {
     const nativeElement: HTMLElement = this.treeContainer.nativeElement;
     if (nativeElement && nativeElement.firstElementChild) {
-      nativeElement.style.maxHeight = `${
-        nativeElement.firstElementChild.clientHeight + 8
-      }px`;
+      nativeElement.style.maxHeight = `${nativeElement.firstElementChild.clientHeight + 8}px`;
     }
   }
 
@@ -659,11 +644,7 @@ export class QueryBuilderComponent
     this.handleDataChange();
   }
 
-  coerceValueForOperator(
-    operator: string | null | undefined,
-    value: any,
-    rule: Rule
-  ): any {
+  coerceValueForOperator(operator: string | null | undefined, value: any, rule: Rule): any {
     const inputType: string | null = this.getInputType(rule.field, operator);
     if (inputType === 'multiselect' && !Array.isArray(value)) {
       return [value];
@@ -725,9 +706,7 @@ export class QueryBuilderComponent
     }
     let i = index;
     let rs = data;
-    const entity: Entity | undefined = this.entities?.find(
-      (e) => e?.value === entityValue
-    );
+    const entity: Entity | undefined = this.entities?.find((e) => e?.value === entityValue);
     const defaultField: Field | null = this.getDefaultField(entity);
     if (!rs) {
       rs = this.data;
@@ -814,9 +793,7 @@ export class QueryBuilderComponent
         addRule: this.addRule.bind(this),
         addRuleSet: this.allowRuleset ? this.addRuleSet.bind(this) : undefined,
         removeRuleSet:
-          this.allowRuleset && this.parentValue
-            ? this.removeRuleSet.bind(this)
-            : undefined,
+          this.allowRuleset && this.parentValue ? this.removeRuleSet.bind(this) : undefined,
         getDisabledState: this.getDisabledState,
         $implicit: this.data,
       };
@@ -931,8 +908,7 @@ export class QueryBuilderComponent
   }
 
   isInvalidRuleSet(ruleSet: RuleSet | undefined, config: QueryBuilderConfig): boolean {
-    const invalid =
-      !config.allowEmptyRulesets && ruleSet?.rules && ruleSet.rules.length === 0;
+    const invalid = !config.allowEmptyRulesets && ruleSet?.rules && ruleSet.rules.length === 0;
     return invalid ?? false;
   }
 
@@ -971,7 +947,6 @@ export class QueryBuilderComponent
   }
 
   arrowFormatEntityName(entityName?: string): string {
-    console.log('arrowFormatEntityName');
     return entityName?.replace('.', ' > ') ?? '';
   }
 
@@ -1070,10 +1045,8 @@ export class QueryBuilderComponent
     parent = parent || this.data;
     entityName = entityName || parent.entity;
     if (this.config.addRuleSet) {
-      console.log('addRuleSetInternal config');
       this.config.addRuleSet(parent);
     } else {
-      console.log('addRuleSetInternal Parent');
       parent.rules = parent.rules.concat([
         {
           condition: 'and',
@@ -1088,8 +1061,6 @@ export class QueryBuilderComponent
   }
 
   private ruleSetAvailable(): boolean {
-    console.log('ruleSetAvailable');
-    console.log(`ruleSetAvailable: ${this.parentValue}`);
     const filteredEntities = this.getFilteredEntityList(this.data, this.entities);
     return (filteredEntities?.length ?? 0) > 0;
   }

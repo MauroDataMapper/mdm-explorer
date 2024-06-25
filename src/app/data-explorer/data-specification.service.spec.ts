@@ -73,6 +73,8 @@ import { RulesService } from '../mauro/rules.service';
 import { EditDataSpecificationDialogResponse } from './edit-data-specification-dialog/edit-data-specification-dialog.component';
 import { CoreTableProfileService } from './core-table-profile.service';
 import { createCoreTableProfileStub } from '../testing/stubs/core-table-profile.stub';
+import { SubmissionSDEService } from './specification-submission/services/submission.sde.service';
+import { createSubmissionSDEServiceStub } from '../testing/stubs/data-specification-submission/submission-sde-service.stub';
 
 describe('DataSpecificationService', () => {
   let service: DataSpecificationService;
@@ -86,6 +88,7 @@ describe('DataSpecificationService', () => {
   const toastrStub = createToastrServiceStub();
   const rulesStub = createRulesServiceStub();
   const coreTableProfileStub = createCoreTableProfileStub();
+  const submissionSDEServiceStub = createSubmissionSDEServiceStub();
 
   beforeEach(() => {
     service = setupTestModuleForService(DataSpecificationService, {
@@ -129,6 +132,10 @@ describe('DataSpecificationService', () => {
         {
           provide: CoreTableProfileService,
           useValue: coreTableProfileStub,
+        },
+        {
+          provide: SubmissionSDEService,
+          useValue: submissionSDEServiceStub,
         },
       ],
     });
@@ -175,12 +182,13 @@ describe('DataSpecificationService', () => {
 
   describe('get', () => {
     it('should get a data specification', () => {
-      const expectedModel: DataModelDetail = {
+      const expectedModel: DataSpecification = {
         id: '1',
         label: 'test model',
         domainType: CatalogueItemDomainType.DataModel,
         availableActions: ['show'],
         finalised: false,
+        status: 'draft',
       };
 
       dataModelsStub.getDataModelById.mockImplementationOnce((id) => {
@@ -190,7 +198,16 @@ describe('DataSpecificationService', () => {
         });
       });
 
-      const expected$ = cold('--a|', { a: { ...expectedModel, status: 'unsent' } });
+      submissionSDEServiceStub.mapToDataSpecificationWithSDEStatusCheck.mockImplementationOnce(
+        (dataModel) => {
+          expect(dataModel.id).toBe(expectedModel.id);
+          return cold('----a|', {
+            a: expectedModel as DataSpecification,
+          });
+        }
+      );
+
+      const expected$ = cold('------a|', { a: { ...expectedModel, status: 'draft' } });
       const actual$ = service.get(expectedModel.id!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
       expect(actual$).toBeObservable(expected$);
     });
@@ -230,9 +247,17 @@ describe('DataSpecificationService', () => {
         });
       });
 
+      submissionSDEServiceStub.mapToDataSpecificationWithSDEStatusCheck.mockImplementation(
+        (dataModel) => {
+          return cold('(a|)', {
+            a: { ...dataModel, status: 'draft' } as DataSpecification,
+          });
+        }
+      );
+
       const expected$ = cold('-a|', {
         a: dms.map((dm) => {
-          return { ...dm, status: 'unsent' };
+          return { ...dm, status: 'draft' };
         }),
       });
 
@@ -251,13 +276,13 @@ describe('DataSpecificationService', () => {
           id: '1',
           domainType: CatalogueItemDomainType.DataModel,
           label: 'template 1',
-          status: 'unsent',
+          status: 'draft',
         },
         {
           id: '2',
           domainType: CatalogueItemDomainType.DataModel,
           label: 'template 2',
-          status: 'unsent',
+          status: 'draft',
         },
       ];
 
@@ -275,6 +300,10 @@ describe('DataSpecificationService', () => {
       dataModelsStub.listInFolder.mockImplementationOnce((fId) => {
         expect(fId).toBe(folder.id);
         return cold('-a|', { a: templates });
+      });
+
+      submissionSDEServiceStub.mapToDataSpecification.mockImplementation((dataModel) => {
+        return { ...dataModel, status: 'draft' } as DataSpecification;
       });
 
       const expected$ = cold('--a|', { a: templates });
@@ -363,7 +392,7 @@ describe('DataSpecificationService', () => {
       label: name,
       description,
       domainType: CatalogueItemDomainType.DataModel,
-      status: 'unsent',
+      status: 'draft',
     };
 
     beforeEach(() => {
@@ -407,6 +436,12 @@ describe('DataSpecificationService', () => {
       const expected$ = cold('---a|', {
         a: dataSpecification,
       });
+
+      submissionSDEServiceStub.mapToDataSpecification.mockImplementationOnce((dataModel) => {
+        expect(dataModel.id).toBe(dataSpecification.id);
+        return dataSpecification;
+      });
+
       const actual$ = service.create(user, name, description);
       expect(actual$).toBeObservable(expected$);
     });
@@ -449,6 +484,11 @@ describe('DataSpecificationService', () => {
         return cold('-a|', { a: undefined });
       });
 
+      submissionSDEServiceStub.mapToDataSpecification.mockImplementation((dataModel) => {
+        expect(dataModel.id).toBe(dataSpecification.id);
+        return dataSpecification;
+      });
+
       const expected$ = cold('--------(a|)', {
         a: dataSpecification,
       });
@@ -466,7 +506,7 @@ describe('DataSpecificationService', () => {
       const expectedDataSpecification: DataSpecification = {
         id: 'targetId',
         label: 'Data Specification 1',
-        status: 'unsent',
+        status: 'draft',
         domainType: CatalogueItemDomainType.DataModel,
       };
 
@@ -530,16 +570,20 @@ describe('DataSpecificationService', () => {
       };
 
       dataModelsStub.getIntersectionMany.mockImplementationOnce(() => {
-        return cold('----a|', {
+        return cold('---a|', {
           a: many,
         });
       });
 
-      // Actual
-      const actual$ = service.getDataSpecificationIntersections(
-        sourceDataModelId,
-        dataElementIds
+      submissionSDEServiceStub.mapToDataSpecificationWithSDEStatusCheck.mockImplementationOnce(
+        (dataModel) => {
+          expect(dataModel.id).toBe(expectedDataSpecification.id);
+          return cold('a|', { a: expectedDataSpecification });
+        }
       );
+
+      // Actual
+      const actual$ = service.getDataSpecificationIntersections(sourceDataModelId, dataElementIds);
 
       // Assert
       expect(actual$).toBeObservable(expected$);
@@ -856,7 +900,7 @@ describe('DataSpecificationService', () => {
       id: '456',
       domainType: CatalogueItemDomainType.DataModel,
       label: 'forked data specification',
-      status: 'unsent',
+      status: 'draft',
     };
 
     it('should return nothing if no data specification is provided', () => {
@@ -882,7 +926,7 @@ describe('DataSpecificationService', () => {
       const actual$ = service.forkWithDialogs({
         id: '123',
         modelVersion: '1',
-        status: 'unsent',
+        status: 'draft',
       } as unknown as DataSpecification);
       expect(actual$).toBeObservable(expected$);
     });
@@ -934,6 +978,11 @@ describe('DataSpecificationService', () => {
         cold('--a|', { a: forkedDataSpecification })
       );
 
+      submissionSDEServiceStub.mapToDataSpecification.mockImplementationOnce((dataModel) => {
+        expect(dataModel.id).toBe(forkedDataSpecification.id);
+        return forkedDataSpecification;
+      });
+
       const expected$ = cold('--a|', { a: forkedDataSpecification });
       const actual$ = service.forkWithDialogs(originalDataSpecification);
       expect(actual$).toBeObservable(expected$);
@@ -966,6 +1015,11 @@ describe('DataSpecificationService', () => {
         return cold('--a|', { a: forkedDataSpecification });
       });
 
+      submissionSDEServiceStub.mapToDataSpecification.mockImplementationOnce((dataModel) => {
+        expect(dataModel.id).toBe(forkedDataSpecification.id);
+        return forkedDataSpecification;
+      });
+
       const expected$ = cold('----a|', { a: forkedDataSpecification });
       const actual$ = service.forkWithDialogs(originalDataSpecification, options);
       expect(actual$).toBeObservable(expected$);
@@ -988,26 +1042,23 @@ describe('DataSpecificationService', () => {
       expect(actual$).toBeObservable(expected$);
     });
 
-    it.each(queryTypes)(
-      'should return nothing when no matching %p rule found',
-      (type) => {
-        rulesStub.list.mockImplementationOnce((dt, id) => {
-          expect(dt).toBe('dataModels');
-          expect(id).toBe(dataSpecificationId);
-          return cold('--a|', {
-            a: [
-              {
-                name: 'test',
-              },
-            ],
-          });
+    it.each(queryTypes)('should return nothing when no matching %p rule found', (type) => {
+      rulesStub.list.mockImplementationOnce((dt, id) => {
+        expect(dt).toBe('dataModels');
+        expect(id).toBe(dataSpecificationId);
+        return cold('--a|', {
+          a: [
+            {
+              name: 'test',
+            },
+          ],
         });
+      });
 
-        const expected$ = cold('--a|', { a: undefined });
-        const actual$ = service.getQuery(dataSpecificationId, type);
-        expect(actual$).toBeObservable(expected$);
-      }
-    );
+      const expected$ = cold('--a|', { a: undefined });
+      const actual$ = service.getQuery(dataSpecificationId, type);
+      expect(actual$).toBeObservable(expected$);
+    });
 
     it.each(queryTypes)(
       'should return nothing when no representation found for %p rule',
@@ -1119,42 +1170,39 @@ describe('DataSpecificationService', () => {
       expect(actual$).toBeObservable(expected$);
     });
 
-    it.each(queryTypes)(
-      'should use an existing %p rule and create a representation',
-      (type) => {
-        const payload: DataSpecificationQueryPayload = {
-          ruleId: rule.id,
-          type,
-          condition,
-        };
+    it.each(queryTypes)('should use an existing %p rule and create a representation', (type) => {
+      const payload: DataSpecificationQueryPayload = {
+        ruleId: rule.id,
+        type,
+        condition,
+      };
 
-        const expected: DataSpecificationQuery = {
-          ruleId: rule.id,
-          representationId: representation.id,
-          ...payload,
-        };
+      const expected: DataSpecificationQuery = {
+        ruleId: rule.id,
+        representationId: representation.id,
+        ...payload,
+      };
 
-        rulesStub.get.mockImplementationOnce((dt, id, rid) => {
-          expect(dt).toBe('dataModels');
-          expect(id).toBe(dataSpecificationId);
-          expect(rid).toBe(rid);
-          return cold('-a|', { a: rule });
-        });
+      rulesStub.get.mockImplementationOnce((dt, id, rid) => {
+        expect(dt).toBe('dataModels');
+        expect(id).toBe(dataSpecificationId);
+        expect(rid).toBe(rid);
+        return cold('-a|', { a: rule });
+      });
 
-        rulesStub.createRepresentation.mockImplementationOnce((dt, id, rid, rrpl) => {
-          expect(dt).toBe('dataModels');
-          expect(id).toBe(dataSpecificationId);
-          expect(rid).toBe(rule.id);
-          expect(rrpl.language).toBe(dataSpecificationQueryLanguage);
-          expect(rrpl.representation).toBe(representation.representation);
-          return cold('-a|', { a: representation });
-        });
+      rulesStub.createRepresentation.mockImplementationOnce((dt, id, rid, rrpl) => {
+        expect(dt).toBe('dataModels');
+        expect(id).toBe(dataSpecificationId);
+        expect(rid).toBe(rule.id);
+        expect(rrpl.language).toBe(dataSpecificationQueryLanguage);
+        expect(rrpl.representation).toBe(representation.representation);
+        return cold('-a|', { a: representation });
+      });
 
-        const expected$ = cold('---(a|)', { a: expected });
-        const actual$ = service.createOrUpdateQuery(dataSpecificationId, payload);
-        expect(actual$).toBeObservable(expected$);
-      }
-    );
+      const expected$ = cold('---(a|)', { a: expected });
+      const actual$ = service.createOrUpdateQuery(dataSpecificationId, payload);
+      expect(actual$).toBeObservable(expected$);
+    });
 
     it.each(queryTypes)('should update a representation for a %p rule', (type) => {
       const payload: DataSpecificationQueryPayload = {
@@ -1254,9 +1302,7 @@ describe('DataSpecificationService', () => {
         },
       });
 
-      const actual$ = service.deleteDataElementsFromQuery(dataSpecificationId, type, [
-        'field1',
-      ]);
+      const actual$ = service.deleteDataElementsFromQuery(dataSpecificationId, type, ['field1']);
       expect(actual$).toBeObservable(expected$);
     });
 
@@ -1319,13 +1365,13 @@ describe('DataSpecificationService', () => {
       {
         label: 'label1',
         id: 'id1',
-        status: 'unsent',
+        status: 'draft',
         domainType: CatalogueItemDomainType.DataModel,
       },
       {
         label: 'label2',
         id: 'id2',
-        status: 'unsent',
+        status: 'draft',
         domainType: CatalogueItemDomainType.DataModel,
       },
       {
@@ -1337,7 +1383,7 @@ describe('DataSpecificationService', () => {
       {
         label: 'label4',
         id: 'id4',
-        status: 'unsent',
+        status: 'draft',
         domainType: CatalogueItemDomainType.DataModel,
       },
     ];

@@ -50,7 +50,10 @@ describe('SubmitRequestStep', () => {
   });
 
   it('getInputShape should return expected fields', () => {
-    const expectedInputStep = ['dataRequestId' as keyof ISubmissionState];
+    const expectedInputStep = [
+      'dataRequestId' as keyof ISubmissionState,
+      'cancel' as keyof ISubmissionState,
+    ];
 
     const inputStep = step.getInputShape();
     expect(inputStep).toEqual(expectedInputStep);
@@ -89,7 +92,7 @@ describe('SubmitRequestStep', () => {
   });
 
   it('run should return expected fields', () => {
-    const stepResult = { result: {} } as StepResult;
+    const stepResult = { result: { succeeded: false } } as StepResult;
     const expected$ = cold('(a|)', { a: stepResult });
 
     requestEndpointsStub.changeStatus.mockReturnValueOnce(of({} as RequestResponse));

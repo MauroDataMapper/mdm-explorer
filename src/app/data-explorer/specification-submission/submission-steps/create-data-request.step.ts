@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { Observable, filter, forkJoin, map, of, switchMap } from 'rxjs';
+import { Observable, defaultIfEmpty, filter, forkJoin, map, of, switchMap } from 'rxjs';
 import {
   ISubmissionState,
   ISubmissionStep,
@@ -42,6 +42,7 @@ import {
 } from '@maurodatamapper/sde-resources';
 import { DataSpecificationService } from '../../data-specification.service';
 import { NoProjectsFoundError } from '../type-declarations/submission.custom-errors';
+import { BroadcastService } from 'src/app/core/broadcast.service';
 
 export interface SelectProjectStepResult {
   specificationId: Uuid;
@@ -57,7 +58,8 @@ export class CreateDataRequestStep implements ISubmissionStep {
     private dialog: DialogService,
     private memberships: MembershipEndpointsResearcher,
     private researcherRequestEndpoints: RequestEndpointsResearcher,
-    private dataSpecificationService: DataSpecificationService
+    private dataSpecificationService: DataSpecificationService,
+    private broadcastService: BroadcastService
   ) {}
 
   isRequired(input: Partial<ISubmissionState>): Observable<StepResult> {
@@ -76,7 +78,7 @@ export class CreateDataRequestStep implements ISubmissionStep {
               dataRequestId: request?.id,
             },
             isRequired,
-          };
+          } as StepResult;
           return stepResult;
         })
       );
@@ -119,6 +121,8 @@ export class CreateDataRequestStep implements ISubmissionStep {
               return forkJoin([of(response), this.dataSpecificationService.get(specificationId)]);
             }),
             switchMap(([response, dataSpecification]) => {
+              this.broadcastService.submittingDataSpecification('Creating data request...');
+
               // Save a request here
               const requestCreate: RequestCreate = {
                 type: RequestType.Data,
@@ -139,7 +143,10 @@ export class CreateDataRequestStep implements ISubmissionStep {
               return { result: { dataRequestId: requestResponse.id } } as StepResult;
             })
           );
-      })
+      }),
+      defaultIfEmpty({
+        result: { cancel: true },
+      } as StepResult)
     );
   }
 

@@ -19,10 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 <header class="mdm-header">
   <div class="mdm-header__logo">
     <a [routerLink]="logoLink?.routerLink ?? ''">
-      <img
-        [src]="logoLink?.customImageSrc || logoLink?.defaultImageSrc"
-        [alt]="logoLink?.label"
-      />
+      <img [src]="logoLink?.customImageSrc || logoLink?.defaultImageSrc" [alt]="logoLink?.label" />
     </a>
   </div>
   <div class="mdm-header__links">
@@ -35,8 +32,7 @@ SPDX-License-Identifier: Apache-2.0
             routerLinkActive="active"
           >
             <span
-              >{{ link.label }}
-              <span [mdmArrow]="link.arrow" [matMenuTriggerFor]="menu"> </span
+              >{{ link.label }} <span [mdmArrow]="link.arrow" [matMenuTriggerFor]="menu"> </span
             ></span>
           </a>
 
@@ -81,9 +77,9 @@ SPDX-License-Identifier: Apache-2.0
           >
             <span class="fas fa-cart-shopping" style="font-size: x-large"></span>
             <span
-              *ngIf="unsentDataSpecificationCount > 0"
+              *ngIf="draftDataSpecificationCount > 0"
               class="mdm-header__links--data-specification-count"
-              >{{ unsentDataSpecificationCount }}</span
+              >{{ draftDataSpecificationCount }}</span
             >
             <span [mdmArrow]="accountLink.arrow"> {{ accountLink.label }} </span>
           </a>
@@ -93,9 +89,7 @@ SPDX-License-Identifier: Apache-2.0
     <div *ngIf="includeSignIn" class="mdm-header__links--account">
       <div class="mdm-header__user">
         <div *ngIf="!isSignedIn" class="mdm-header__user--sign-in">
-          <a id="signIn" [routerLink]="signInLink?.routerLink ?? ''"
-            >{{ signInLink?.label }}
-          </a>
+          <a id="signIn" [routerLink]="signInLink?.routerLink ?? ''">{{ signInLink?.label }} </a>
         </div>
         <div *ngIf="isSignedIn" class="mdm-header__user--sign-out">
           <a class="mdm-header__containOverlay" routerLink="/account">
@@ -117,8 +111,7 @@ SPDX-License-Identifier: Apache-2.0
               *ngIf="!signedInUserProfileImageSrc"
               class="mdm-header__user--name mdm-header__overlayUserInitials"
             >
-              {{ signedInUser?.firstName?.charAt(0)
-              }}{{ signedInUser?.lastName?.charAt(0) }}
+              {{ signedInUser?.firstName?.charAt(0) }}{{ signedInUser?.lastName?.charAt(0) }}
             </div>
           </a>
         </div>

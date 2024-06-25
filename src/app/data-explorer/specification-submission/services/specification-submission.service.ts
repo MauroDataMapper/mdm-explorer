@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
 import { Uuid } from '@maurodatamapper/sde-resources';
-import { EMPTY, catchError, concatMap, from, tap } from 'rxjs';
+import { EMPTY, catchError, concatMap, finalize, from, map, tap } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
 import { of } from 'rxjs/internal/observable/of';
 import { switchMap } from 'rxjs/internal/operators/switchMap';
@@ -32,6 +32,7 @@ import { AttachSqlStep } from '../submission-steps/attach-sql.step';
 import { GeneratePdfStep } from '../submission-steps/generate-pdf.step';
 import { AttachPdfStep } from '../submission-steps/attach-pdf.step';
 import { SubmitRequestStep } from '../submission-steps/submit-request.step';
+import { BroadcastService } from 'src/app/core/broadcast.service';
 
 @Injectable({
   providedIn: 'root',
@@ -42,6 +43,7 @@ export class SpecificationSubmissionService {
   constructor(
     private stateService: SubmissionStateService,
     private toast: ToastrService,
+    private broadcastService: BroadcastService,
     private createDataRequestStep: CreateDataRequestStep,
     private generateSqlStep: GenerateSqlStep,
     private attachSqlStep: AttachSqlStep,
@@ -64,7 +66,7 @@ export class SpecificationSubmissionService {
    * @param specificationId The ID of the specification to submit.
    * @returns An observable that emits a boolean value indicating whether the submission was successful.
    */
-  submit(specificationId: Uuid): Observable<any> {
+  submit(specificationId: Uuid): Observable<boolean> {
     // Set initial state.
     this.stateService.set({ specificationId });
 
@@ -73,6 +75,10 @@ export class SpecificationSubmissionService {
       concatMap((step: ISubmissionStep) => {
         // Retrieve the step input from the state.
         const stepInput = this.stateService.getStepInputFromShape(step.getInputShape());
+
+        if (stepInput.cancel) {
+          return EMPTY;
+        }
 
         return step.isRequired(stepInput).pipe(
           // Get a step result, either from checking or running the step.
@@ -91,11 +97,21 @@ export class SpecificationSubmissionService {
             console.error('Error running step', step.name, error);
             const errorHandled = this.handleSubmissionError(error);
             if (errorHandled) {
+              const cancelResult = {
+                result: { cancel: true },
+              } as StepResult;
+              this.stateService.set({ ...cancelResult.result });
               return EMPTY;
             }
             throw error;
           })
         );
+      }),
+      map((stepResult) => {
+        return stepResult.result.succeeded ?? false;
+      }),
+      finalize(() => {
+        this.broadcastService.loading({ isLoading: false });
       })
     );
   }

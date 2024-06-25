@@ -180,7 +180,12 @@ describe('CreateDataRequestStep', () => {
 
         const actual$ = step.run(input);
 
-        expectObservable(actual$).toBe('|');
+        const expectedMarble = '(a|)';
+        const expectedValues = {
+          a: { result: { cancel: true } },
+        };
+
+        expectObservable(actual$).toBe(expectedMarble, expectedValues);
       });
     });
 

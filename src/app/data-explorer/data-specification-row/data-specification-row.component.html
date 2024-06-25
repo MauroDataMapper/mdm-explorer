@@ -18,9 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 -->
 <mdm-header-and-content-box *ngIf="dataSpecification">
   <h3 header-title class="header-title">
-    <a *ngIf="showLabel" [routerLink]="detailsRouterLink">
-      {{ dataSpecification.label }}
-    </a>
+    <a *ngIf="showLabel" [routerLink]="detailsRouterLink"> {{ dataSpecification.label }} </a>
   </h3>
   <ng-container header-actions class="data-specification-row-actions">
     <mdm-version-selector
@@ -50,6 +48,16 @@ SPDX-License-Identifier: Apache-2.0
     >
       <span class="fa-solid fa-paper-plane"></span>
       Submit
+    </button>
+    <button
+      *ngIf="showViewRequestButton"
+      mat-raised-button
+      color="primary"
+      aria-label="View data request"
+      (click)="onViewRequestClick()"
+    >
+      <span class="fa-solid fa-eye"></span>
+      View Request
     </button>
     <button
       *ngIf="showCopyButton"

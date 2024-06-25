@@ -16,7 +16,7 @@
 # SPDX-License-Identifier: Apache-2.0
 Feature: Viewing data specifications
   As an authenticated user
-  I want to view my unsent and submitted data specifications and manage them
+  I want to view my draft and submitted data specifications and manage them
 
   Background:
     Given I am signed in
@@ -32,7 +32,7 @@ Feature: Viewing data specifications
 
     Examples:
       | status    |
-      | unsent    |
+      | draft    |
       | submitted |
 
   Scenario: View data elements in a data specification
@@ -40,19 +40,19 @@ Feature: Viewing data specifications
     Then The details panel of the data specification changes the label to match the selected data specification
     And The list of data elements changes
 
-  Scenario: Remove a single data element from an unsent data specification
-    Given I have selected an unsent data specification to view
+  Scenario: Remove a single data element from an draft data specification
+    Given I have selected an draft data specification to view
     When I click the "Remove" button from the top data element in the list
     Then The data element is removed from the data specification
 
-  Scenario: Remove multiple data elements from an unsent data specification
-    Given I have selected an unsent data specification to view
+  Scenario: Remove multiple data elements from an draft data specification
+    Given I have selected an draft data specification to view
     And And I tick one or more checkboxes in the data elements list
     When I click the "Remove selected" button
     Then The selected data elements are removed from the data specification
 
-  Scenario: Remove all data elements from an unsent data specification
-    Given I have selected an unsent data specification to view
+  Scenario: Remove all data elements from an draft data specification
+    Given I have selected an draft data specification to view
     And And I tick the "Select all" checkbox
     When I click the "Remove selected" button
     Then The selected data elements are removed from the data specification

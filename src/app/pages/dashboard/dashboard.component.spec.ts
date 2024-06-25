@@ -31,10 +31,7 @@ import { createDataSpecificationServiceStub } from 'src/app/testing/stubs/data-s
 import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { createStateRouterStub } from 'src/app/testing/stubs/state-router.stub';
 import { createToastrServiceStub } from 'src/app/testing/stubs/toastr.stub';
-import {
-  ComponentHarness,
-  setupTestModuleForComponent,
-} from 'src/app/testing/testing.helpers';
+import { ComponentHarness, setupTestModuleForComponent } from 'src/app/testing/testing.helpers';
 
 import { DashboardComponent } from './dashboard.component';
 
@@ -47,11 +44,7 @@ describe('DashboardComponent', () => {
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(DashboardComponent, {
-      declarations: [
-        MockComponent(Carousel),
-        MockComponent(MatFormField),
-        MockComponent(MatIcon),
-      ],
+      declarations: [MockComponent(Carousel), MockComponent(MatFormField), MockComponent(MatIcon)],
       providers: [
         {
           provide: SecurityService,
@@ -96,8 +89,8 @@ describe('DashboardComponent', () => {
       });
 
       const openDataSpecifications = [
-        { label: 'dataModel-1', status: 'unsent' },
-        { label: 'dataModel-2', status: 'unsent' },
+        { label: 'dataModel-1', status: 'draft' },
+        { label: 'dataModel-2', status: 'draft' },
         { label: 'dataModel-3', status: 'finalised' },
       ] as DataSpecification[];
 
@@ -107,7 +100,7 @@ describe('DashboardComponent', () => {
 
       harness.component.ngOnInit();
 
-      const expected = openDataSpecifications.filter((r) => r.status === 'unsent');
+      const expected = openDataSpecifications.filter((r) => r.status === 'draft');
       expect(harness.component.currentUserDataSpecifications).toEqual(expected);
     });
   });

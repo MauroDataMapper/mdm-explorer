@@ -23,11 +23,7 @@ import { isDataModel } from '../mauro/mauro.types';
 import { createDataModelServiceStub } from '../testing/stubs/data-model.stub';
 import { buildDataClass, buildDataElement } from '../testing/stubs/data-schema.stub';
 import { setupTestModuleForService } from '../testing/testing.helpers';
-import {
-  DataClassWithElements,
-  DataSpecification,
-  DataSchema,
-} from './data-explorer.types';
+import { DataClassWithElements, DataSpecification, DataSchema } from './data-explorer.types';
 import { DataSchemaService } from './data-schema.service';
 
 describe('DataSchemaService', () => {
@@ -36,26 +32,17 @@ describe('DataSchemaService', () => {
 
   const dataClass1Schema1: DataClassWithElements = {
     dataClass: buildDataClass('s1.class 1'),
-    dataElements: [
-      buildDataElement('s1.c1.element 1'),
-      buildDataElement('s1.c1.element 2'),
-    ],
+    dataElements: [buildDataElement('s1.c1.element 1'), buildDataElement('s1.c1.element 2')],
   };
 
   const dataClass2Schema1: DataClassWithElements = {
     dataClass: buildDataClass('s1.class 2'),
-    dataElements: [
-      buildDataElement('s1.c2.element 1'),
-      buildDataElement('s1.c2.element 2'),
-    ],
+    dataElements: [buildDataElement('s1.c2.element 1'), buildDataElement('s1.c2.element 2')],
   };
 
   const dataClass1Schema2: DataClassWithElements = {
     dataClass: buildDataClass('s2.class 1'),
-    dataElements: [
-      buildDataElement('s2.c1.element 1'),
-      buildDataElement('s2.c1.element 2'),
-    ],
+    dataElements: [buildDataElement('s2.c1.element 1'), buildDataElement('s2.c1.element 2')],
   };
 
   const dataSchema1: DataSchema = {
@@ -97,10 +84,7 @@ describe('DataSchemaService', () => {
   });
 
   it('should get all data elements from a single schema', () => {
-    const expected = [
-      ...dataClass1Schema1.dataElements,
-      ...dataClass2Schema1.dataElements,
-    ];
+    const expected = [...dataClass1Schema1.dataElements, ...dataClass2Schema1.dataElements];
     const actual = service.reduceDataElementsFromSchema(dataSchema1);
     expect(actual).toStrictEqual(expected);
   });
@@ -138,8 +122,7 @@ describe('DataSchemaService', () => {
 
     dataModelsStub.getDataElementsForDataClass.mockImplementation((dc) => {
       return cold('--a|', {
-        a: dataSchema1.dataClasses.find((dsc) => dsc.dataClass.label === dc.label)
-          ?.dataElements,
+        a: dataSchema1.dataClasses.find((dsc) => dsc.dataClass.label === dc.label)?.dataElements,
       });
     });
 
@@ -165,7 +148,7 @@ describe('DataSchemaService', () => {
       id: '123',
       label: 'data specification',
       domainType: CatalogueItemDomainType.DataModel,
-      status: 'unsent',
+      status: 'draft',
     };
 
     dataModelsStub.getDataClasses.mockImplementation((arg) => {
@@ -185,9 +168,8 @@ describe('DataSchemaService', () => {
       const schemaIndex = Number(dc.label[1]) - 1;
 
       return cold('--a|', {
-        a: schemas[schemaIndex].dataClasses.find(
-          (dsc) => dsc.dataClass.label === dc.label
-        )?.dataElements,
+        a: schemas[schemaIndex].dataClasses.find((dsc) => dsc.dataClass.label === dc.label)
+          ?.dataElements,
       });
     });
 
@@ -199,14 +181,8 @@ describe('DataSchemaService', () => {
       expect(dataModelsStub.getDataClasses).toHaveBeenNthCalledWith(1, dataSpecification);
 
       // Schemas
-      expect(dataModelsStub.getDataClasses).toHaveBeenNthCalledWith(
-        2,
-        dataSchema1.schema
-      );
-      expect(dataModelsStub.getDataClasses).toHaveBeenNthCalledWith(
-        3,
-        dataSchema2.schema
-      );
+      expect(dataModelsStub.getDataClasses).toHaveBeenNthCalledWith(2, dataSchema1.schema);
+      expect(dataModelsStub.getDataClasses).toHaveBeenNthCalledWith(3, dataSchema2.schema);
 
       // Classes
       expect(dataModelsStub.getDataElementsForDataClass).toHaveBeenNthCalledWith(

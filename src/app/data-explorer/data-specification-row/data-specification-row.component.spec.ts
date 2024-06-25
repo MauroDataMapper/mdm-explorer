@@ -60,8 +60,8 @@ describe('DataSpecificationRowComponent', () => {
     dataSpecStatus | currentUserOwnsDataSpec | showFinaliseButton | showShareButton | showSubmitButton
     ${'finalised'} | ${true}                 | ${false}           | ${true}         | ${true}
     ${'finalised'} | ${false}                | ${false}           | ${false}        | ${false}
-    ${'unsent'}    | ${true}                 | ${true}            | ${false}        | ${false}
-    ${'unsent'}    | ${false}                | ${false}           | ${false}        | ${false}
+    ${'draft'}     | ${true}                 | ${true}            | ${false}        | ${false}
+    ${'draft'}     | ${false}                | ${false}           | ${false}        | ${false}
   `(
     'should set properties correctly when isFinalised=$isFinalised and currentUserOwnsDataSpec=$currentUserOwnsDataSpec',
     ({

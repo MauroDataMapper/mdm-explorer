@@ -64,17 +64,10 @@ export interface ISubmissionState {
   specificationTitle: string;
   specificationDescription: string;
   fileProperties: FileProperties;
+  succeeded: boolean;
+  cancel: boolean;
 }
 
-/*
-export type StepName =
-  | 'Create data request'
-  | 'Generate sql file'
-  | 'Attach sql file to data request'
-  | 'Generate pdf of data request'
-  | 'Attach pdf to data request'
-  | 'Submit data request';
-  */
 export enum StepName {
   CreateDataRequest = 'Create data request',
   GenerateSqlFile = 'Generate sql file',

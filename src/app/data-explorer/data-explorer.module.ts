@@ -65,6 +65,7 @@ import { EntitySelectorDialogComponent } from './query-builder/dialogs/entity-se
 import { HasFieldsPipe } from './query-builder/pipes/has-fields-pipe';
 import { ArrowFormatPipe } from './query-builder/pipes/arrow-format-pipe';
 import { SelectProjectDialogComponent } from './specification-submission/select-project-dialog/select-project-dialog.component';
+import { ReadOnlyMeqlPipe } from './pipes/readonly-meql.pipe';
 
 const queryBuilderModules = [
   QueryBuilderComponent,
@@ -104,6 +105,7 @@ const queryBuilderModules = [
     OkCancelDialogComponent,
     QueryBuilderWrapperComponent,
     MeqlPipe,
+    ReadOnlyMeqlPipe,
     MeqlOutputComponent,
     DataSpecificationRowComponent,
     DataQueryRowComponent,
@@ -141,6 +143,7 @@ const queryBuilderModules = [
     SelectionCompactComponent,
     FilterByComponent,
     LetDirective,
+    ReadOnlyMeqlPipe,
     ...queryBuilderModules,
   ],
   providers: [
