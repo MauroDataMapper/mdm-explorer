@@ -42,7 +42,6 @@ import {
 } from '@maurodatamapper/sde-resources';
 import { DataSpecificationService } from '../../data-specification.service';
 import { NoProjectsFoundError } from '../type-declarations/submission.custom-errors';
-import { SubmissionBroadcastService } from '../services/submission.broadcast.service';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 
 export interface SelectProjectStepResult {
