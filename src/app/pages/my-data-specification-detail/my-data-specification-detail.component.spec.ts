@@ -21,7 +21,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import {
   CatalogueItemDomainType,
-  DataModelDetail,
   Rule,
   RuleRepresentation,
   SimpleModelVersionTree,

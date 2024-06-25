@@ -43,6 +43,7 @@ import {
 import { DataSpecificationService } from '../../data-specification.service';
 import { NoProjectsFoundError } from '../type-declarations/submission.custom-errors';
 import { SubmissionBroadcastService } from '../services/submission.broadcast.service';
+import { BroadcastService } from 'src/app/core/broadcast.service';
 
 export interface SelectProjectStepResult {
   specificationId: Uuid;
@@ -59,7 +60,7 @@ export class CreateDataRequestStep implements ISubmissionStep {
     private memberships: MembershipEndpointsResearcher,
     private researcherRequestEndpoints: RequestEndpointsResearcher,
     private dataSpecificationService: DataSpecificationService,
-    private submissionBroadcastService: SubmissionBroadcastService
+    private broadcastService: BroadcastService
   ) {}
 
   isRequired(input: Partial<ISubmissionState>): Observable<StepResult> {
@@ -121,7 +122,7 @@ export class CreateDataRequestStep implements ISubmissionStep {
               return forkJoin([of(response), this.dataSpecificationService.get(specificationId)]);
             }),
             switchMap(([response, dataSpecification]) => {
-              this.submissionBroadcastService.broadcast('Creating data request...');
+              this.broadcastService.submittingDataSpecification('Creating data request...');
 
               // Save a request here
               const requestCreate: RequestCreate = {

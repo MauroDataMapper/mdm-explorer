@@ -16,19 +16,11 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Injectable } from '@angular/core';
-import { BroadcastService } from 'src/app/core/broadcast.service';
+import { Pipe, PipeTransform } from '@angular/core';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class SubmissionBroadcastService {
-  constructor(private broadcastService: BroadcastService) {}
-
-  broadcast(message: string) {
-    this.broadcastService.loading({
-      isLoading: true,
-      caption: `Submitting your data specification - ${message}`,
-    });
+@Pipe({ name: 'readOnlyMeql', pure: false })
+export class ReadOnlyMeqlPipe implements PipeTransform {
+  transform(status: string, isEmpty: boolean, currentUserOwnsDataSpec: boolean): boolean {
+    return status === 'finalised' || status === 'submitted' || isEmpty || !currentUserOwnsDataSpec;
   }
 }

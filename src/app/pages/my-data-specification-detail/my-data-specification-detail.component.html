@@ -69,12 +69,7 @@ SPDX-License-Identifier: Apache-2.0
     <mdm-data-query-row
       queryType="cohort"
       [condition]="cohortQuery"
-      [readOnly]="
-        dataSpecification.status === 'finalised' ||
-        dataSpecification.status === 'submitted' ||
-        isEmpty ||
-        !currentUserOwnsDataSpec
-      "
+      [readOnly]="dataSpecification.status | readOnlyMeql : isEmpty : currentUserOwnsDataSpec"
       createRouterLink="queries/cohort"
       editRouterLink="queries/cohort"
     ></mdm-data-query-row>

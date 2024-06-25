@@ -27,7 +27,7 @@ import {
 } from '../type-declarations/submission.resource';
 import { RequestEndpoints } from '@maurodatamapper/sde-resources';
 import { ErrorService } from '../services/error.service';
-import { SubmissionBroadcastService } from '../services/submission.broadcast.service';
+import { BroadcastService } from 'src/app/core/broadcast.service';
 
 @Injectable({
   providedIn: 'root',
@@ -37,11 +37,11 @@ export class SubmitRequestStep implements ISubmissionStep {
 
   constructor(
     private requestEndpoints: RequestEndpoints,
-    private submissionBroadcastService: SubmissionBroadcastService
+    private broadcastService: BroadcastService
   ) {}
 
   isRequired(input: Partial<ISubmissionState>): Observable<StepResult> {
-    this.submissionBroadcastService.broadcast('Submitting data request...');
+    this.broadcastService.submittingDataSpecification('Submitting data request...');
 
     if (!input.dataRequestId) {
       return ErrorService.missingInputError(this.name, StepFunction.IsRequired, 'dataRequestId');

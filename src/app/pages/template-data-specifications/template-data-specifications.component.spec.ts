@@ -16,11 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import {
-  CatalogueItemDomainType,
-  FolderDetail,
-  MdmResourcesConfiguration,
-} from '@maurodatamapper/mdm-resources';
+import { CatalogueItemDomainType, FolderDetail } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
 import { of, throwError } from 'rxjs';
 import { DataSpecification } from '../../data-explorer/data-explorer.types';
