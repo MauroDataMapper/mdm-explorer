@@ -1,4 +1,4 @@
-/*
+<!--
 Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -15,21 +15,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
-*/
-import { Component, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { SimpleDialogComponent, SimpleDialogData } from '../simple-dialog/simple-dialog.component';
-
-@Component({
-  selector: 'mdm-success-dialog',
-  templateUrl: './success-dialog.component.html',
-  styleUrls: ['./success-dialog.component.scss'],
-})
-export class SuccessDialogComponent extends SimpleDialogComponent {
-  constructor(
-    dialogRef: MatDialogRef<SuccessDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) data: SimpleDialogData
-  ) {
-    super(dialogRef, data);
-  }
-}
+-->
+<h1 mat-dialog-title>{{ heading }}</h1>
+<mat-dialog-content *ngIf="message" [innerHTML]="message"> </mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-flat-button color="primary" (click)="close()">Continue</button>
+</mat-dialog-actions>

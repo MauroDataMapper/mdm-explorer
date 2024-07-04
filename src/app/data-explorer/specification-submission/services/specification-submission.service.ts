@@ -24,15 +24,14 @@ import { of } from 'rxjs/internal/observable/of';
 import { switchMap } from 'rxjs/internal/operators/switchMap';
 import { SubmissionStateService } from './submission-state.service';
 import { CreateDataRequestStep } from '../submission-steps/create-data-request.step';
-import { ISubmissionStep, StepResult } from '../type-declarations/submission.resource';
-import { ToastrService } from 'ngx-toastr';
-import { NoProjectsFoundError } from '../type-declarations/submission.custom-errors';
+import { ISubmissionStep, StepName, StepResult } from '../type-declarations/submission.resource';
 import { GenerateSqlStep } from '../submission-steps/generate-sql.step';
 import { AttachSqlStep } from '../submission-steps/attach-sql.step';
 import { GeneratePdfStep } from '../submission-steps/generate-pdf.step';
 import { AttachPdfStep } from '../submission-steps/attach-pdf.step';
 import { SubmitRequestStep } from '../submission-steps/submit-request.step';
 import { BroadcastService } from 'src/app/core/broadcast.service';
+import { DialogService } from '../../dialog.service';
 
 @Injectable({
   providedIn: 'root',
@@ -42,7 +41,7 @@ export class SpecificationSubmissionService {
 
   constructor(
     private stateService: SubmissionStateService,
-    private toast: ToastrService,
+    private dialogService: DialogService,
     private broadcastService: BroadcastService,
     private createDataRequestStep: CreateDataRequestStep,
     private generateSqlStep: GenerateSqlStep,
@@ -94,16 +93,16 @@ export class SpecificationSubmissionService {
             this.stateService.set({ ...stepResult.result });
           }),
           catchError((error: Error) => {
-            console.error('Error running step', step.name, error);
-            const errorHandled = this.handleSubmissionError(error);
-            if (errorHandled) {
-              const cancelResult = {
-                result: { cancel: true },
-              } as StepResult;
-              this.stateService.set({ ...cancelResult.result });
-              return EMPTY;
-            }
-            throw error;
+            this.handleSubmissionError(error, step.name);
+
+            // Cancel the submission at this step if an error occurs.
+            const cancelResult = {
+              result: { cancel: true },
+            } as StepResult;
+            this.stateService.set({ ...cancelResult.result });
+
+            // Complete the step with cancel set.
+            return EMPTY;
           })
         );
       }),
@@ -116,12 +115,17 @@ export class SpecificationSubmissionService {
     );
   }
 
-  // Toast is probably not the way we want to deal with errors. But having a generic error handler is a good idea.
-  private handleSubmissionError(error: Error) {
-    if (error instanceof NoProjectsFoundError) {
-      this.toast.error(error.message);
-      return true;
-    }
-    return false;
+  private handleSubmissionError(error: Error, stepName: StepName): void {
+    // Log the error to the console.
+    console.error(`Error running step ${stepName}. Step failed with error message: ${error}`);
+
+    const errorMessage = this.buildErrorMessage(stepName);
+    this.dialogService.openSimple({ heading: 'Submission Error', message: errorMessage });
+  }
+
+  private buildErrorMessage(stepName: StepName): string {
+    return `<p>Submission Step <b>${stepName}</b> failed.</p>
+    <p>Please press the Submit button again to submit your data specification.
+    If you keep seeing this message then please contact Mauro administrators for help.</p>`;
   }
 }

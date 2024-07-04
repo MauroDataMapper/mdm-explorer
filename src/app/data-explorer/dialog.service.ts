@@ -52,10 +52,7 @@ import {
   DataSpecificationUpdatedData,
   DataSpecificationUpdatedDialogComponent,
 } from './data-specification-updated-dialog/data-specification-updated-dialog.component';
-import {
-  SuccessDialogComponent,
-  SuccessDialogData,
-} from './success-dialog/success-dialog.component';
+import { SuccessDialogComponent } from './success-dialog/success-dialog.component';
 import {
   ShareDataSpecificationDialogComponent,
   ShareDataSpecificationDialogInputOutput,
@@ -64,6 +61,7 @@ import {
   SelectProjectDialogComponent,
   SelectProjectDialogData,
 } from './specification-submission/select-project-dialog/select-project-dialog.component';
+import { SimpleDialogComponent, SimpleDialogData } from './simple-dialog/simple-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -111,13 +109,12 @@ export class DialogService {
   }
 
   openConfirmation(data: ConfirmationDialogConfig) {
-    return this.matDialog.open<
+    return this.matDialog.open<ConfirmationDialogComponent, ConfirmationDialogConfig, DialogResult>(
       ConfirmationDialogComponent,
-      ConfirmationDialogConfig,
-      DialogResult
-    >(ConfirmationDialogComponent, {
-      data,
-    });
+      {
+        data,
+      }
+    );
   }
 
   openFeedbackForm() {
@@ -127,24 +124,27 @@ export class DialogService {
   }
 
   openOkCancel(data: OkCancelDialogData) {
-    return this.matDialog.open<
+    return this.matDialog.open<OkCancelDialogComponent, OkCancelDialogData, OkCancelDialogResponse>(
       OkCancelDialogComponent,
-      OkCancelDialogData,
-      OkCancelDialogResponse
-    >(OkCancelDialogComponent, {
-      maxWidth: 500,
-      data,
-    });
-  }
-
-  openSuccess(data: SuccessDialogData) {
-    return this.matDialog.open<SuccessDialogComponent, SuccessDialogData>(
-      SuccessDialogComponent,
       {
         maxWidth: 500,
         data,
       }
     );
+  }
+
+  openSuccess(data: SimpleDialogData) {
+    return this.matDialog.open<SuccessDialogComponent, SimpleDialogData>(SuccessDialogComponent, {
+      maxWidth: 500,
+      data,
+    });
+  }
+
+  openSimple(data: SimpleDialogData) {
+    return this.matDialog.open<SimpleDialogComponent, SimpleDialogData>(SimpleDialogComponent, {
+      maxWidth: 500,
+      data,
+    });
   }
 
   shareWithCommunity(data: ShareDataSpecificationDialogInputOutput) {

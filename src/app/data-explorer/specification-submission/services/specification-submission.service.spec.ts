@@ -24,13 +24,14 @@ import { createStateServiceStub } from '../../../testing/stubs/data-specificatio
 import { SubmissionStateService } from './submission-state.service';
 import { createStepStub } from '../../../testing/stubs/data-specification-submission/step.stub';
 import { CreateDataRequestStep } from '../submission-steps/create-data-request.step';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { ISubmissionState, StepName, StepResult } from '../type-declarations/submission.resource';
 import { GenerateSqlStep } from '../submission-steps/generate-sql.step';
 import { AttachSqlStep } from '../submission-steps/attach-sql.step';
 import { GeneratePdfStep } from '../submission-steps/generate-pdf.step';
 import { AttachPdfStep } from '../submission-steps/attach-pdf.step';
 import { SubmitRequestStep } from '../submission-steps/submit-request.step';
+import { SimpleDialogComponent } from '../../simple-dialog/simple-dialog.component';
 
 describe('SpecificationSubmissionService', () => {
   let service: SpecificationSubmissionService;
@@ -391,5 +392,44 @@ describe('SpecificationSubmissionService', () => {
 
     expect(isRequiredSpySubmitDataRequest).toHaveBeenCalledTimes(0);
     expect(runSpySubmitDataRequest).toHaveBeenCalledTimes(0);
+  });
+
+  it('should display a simpleDialog when an error is thrown', () => {
+    // Mock the returns
+    const expectedInputShape: (keyof Partial<ISubmissionState>)[] = ['specificationId'];
+    const expectedRunInput = { specificationId: 'test-id' };
+    const expectedRunResult = true;
+    const isRequired$ = of({ result: {}, isRequired: true } as StepResult);
+    const run$ = throwError(() => new Error(StepName.CreateDataRequest));
+
+    stateServiceStub.getStepInputFromShape.mockReturnValue({
+      specificationId: 'test-id',
+    });
+
+    // Create Data Request
+    createDataRequestStepStub.getInputShape.mockReturnValueOnce(expectedInputShape);
+    const isRequiredSpyCreateDataRequest = jest.spyOn(createDataRequestStepStub, 'isRequired');
+    const runSpyCreateDataRequest = jest.spyOn(createDataRequestStepStub, 'run');
+    const simpleDialogSpy = jest.spyOn(matDialogStub, 'open');
+    isRequiredSpyCreateDataRequest.mockReturnValue(isRequired$);
+    runSpyCreateDataRequest.mockReturnValue(run$);
+
+    // Submit the Data Specification
+    service.submit('test-id').subscribe((result: boolean) => {
+      expect(result).toEqual(expectedRunResult);
+    });
+
+    expect(isRequiredSpyCreateDataRequest).toHaveBeenCalled();
+    expect(runSpyCreateDataRequest).toHaveBeenCalledWith(expectedRunInput);
+
+    // Check MatDialog is called with a submission error.
+    expect(simpleDialogSpy).toHaveBeenCalledWith(
+      SimpleDialogComponent,
+      expect.objectContaining({
+        data: expect.objectContaining({
+          heading: 'Submission Error',
+        }),
+      })
+    );
   });
 });
