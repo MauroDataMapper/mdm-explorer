@@ -154,4 +154,16 @@ export class MdmPluginResearchResource extends MdmResource {
     const url = `${this.apiEndpoint}/explorer/getLatestModelDataSpecifications`;
     return this.simpleGet(url);
   }
+
+  /**
+   * `HTTP POST` - Get the required data element ids corresponding to the primary key of the
+   * core table (datamodel) and the foreign keys in the parent tables of the supplied data elements.
+   *
+   * @param data The list of data model IDs to get the required core table related data elements for.
+   *
+   */
+  getRequiredCoreTableDataElementIds(data: Uuid[], options?: RequestSettings) {
+    const url = `${this.apiEndpoint}/explorer/getRequiredCoreTableDataElementIds`;
+    return this.simplePost(url, data, options);
+  }
 }

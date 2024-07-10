@@ -22,6 +22,7 @@ import {
   DataModelDetail,
   DataModelDetailResponse,
   DataModelIndexResponse,
+  MdmResponse,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { forkJoin, map, Observable, of, switchMap } from 'rxjs';
@@ -70,5 +71,11 @@ export class DataSpecificationResearchPluginService {
         return forkJoin(dataSpecification$);
       })
     );
+  }
+
+  getRequiredCoreTableDataElementIds(dataElementsIds: Uuid[]): Observable<Uuid[]> {
+    return this.endpoints.pluginResearch
+      .getRequiredCoreTableDataElementIds(dataElementsIds)
+      .pipe(map((response: MdmResponse<Uuid[]>) => response.body));
   }
 }

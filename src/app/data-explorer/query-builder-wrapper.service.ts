@@ -317,7 +317,7 @@ export class QueryBuilderWrapperService {
   private getCoreTableProfile(
     dataModel: DataModel
   ): Observable<[Profile, ProfileValidationErrorList] | undefined> {
-    return this.coreTableProfileService.getQueryBuilderCoreTableProfile(dataModel).pipe(
+    return this.coreTableProfileService.getQueryBuilderCoreTableProfile(dataModel.id).pipe(
       switchMap((coreTableProfile: Profile | undefined) => {
         if (!coreTableProfile) {
           return of(undefined);
