@@ -28,10 +28,13 @@ export type GetLatestModelDataSpecificationsMockedFn =
 
 export type ListSharedDataSpecificationsFn = () => Observable<DataSpecification[]>;
 
+export type GetRequiredCoreTableDataElementIdsFn = (dataElementsIds: Uuid[]) => Observable<Uuid[]>;
+
 export interface DataSpecificationResearchPluginServiceStub {
   finaliseDataSpecification: jest.MockedFunction<ResearchPluginSubmitDataSpecificationFn>;
   getLatestModelDataSpecifications: GetLatestModelDataSpecificationsMockedFn;
   listSharedDataSpecifications: jest.MockedFunction<ListSharedDataSpecificationsFn>;
+  getRequiredCoreTableDataElementIds: jest.MockedFunction<GetRequiredCoreTableDataElementIdsFn>;
 }
 
 export const createDataSpecificationResearchPluginServiceStub =
@@ -42,5 +45,7 @@ export const createDataSpecificationResearchPluginServiceStub =
       getLatestModelDataSpecifications: jest.fn() as GetLatestModelDataSpecificationsMockedFn,
       listSharedDataSpecifications:
         jest.fn() as jest.MockedFunction<ListSharedDataSpecificationsFn>,
+      getRequiredCoreTableDataElementIds:
+        jest.fn() as jest.MockedFunction<GetRequiredCoreTableDataElementIdsFn>,
     };
   };
