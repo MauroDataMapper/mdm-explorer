@@ -32,6 +32,10 @@ import { AttachPdfStep } from '../submission-steps/attach-pdf.step';
 import { SubmitRequestStep } from '../submission-steps/submit-request.step';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { DialogService } from '../../dialog.service';
+import {
+  DEFAULT_ERROR_MESSAGE,
+  NoProjectsFoundError,
+} from '../type-declarations/submission.custom-errors';
 
 @Injectable({
   providedIn: 'root',
@@ -116,16 +120,23 @@ export class SpecificationSubmissionService {
   }
 
   private handleSubmissionError(error: Error, stepName: StepName): void {
-    // Log the error to the console.
+    // Log the true error to the console no matter what.
     console.error(`Error running step ${stepName}. Step failed with error message: ${error}`);
 
-    const errorMessage = this.buildErrorMessage(stepName);
-    this.dialogService.openSimple({ heading: 'Submission Error', message: errorMessage });
+    const userFriendlyErrorMessage = this.getUserFriendlyErrorMessage(error, stepName);
+    this.dialogService.openSimple({
+      heading: 'Submission Error',
+      message: userFriendlyErrorMessage,
+    });
   }
 
-  private buildErrorMessage(stepName: StepName): string {
-    return `<p>Submission Step <b>${stepName}</b> failed.</p>
-    <p>Please press the Submit button again to submit your data specification.
-    If you keep seeing this message then please contact Mauro administrators for help.</p>`;
+  private getUserFriendlyErrorMessage(error: Error, stepName: StepName): string {
+    const title = `Submission Step <b>${stepName}</b> failed.`;
+
+    // If the error is a NoProjectsFoundError, show the message from the error. Otherwise, show the default message.
+    // This is becuase the no projects error is the only error a researcher can feasibly fix on their own.
+    const content = error instanceof NoProjectsFoundError ? error.message : DEFAULT_ERROR_MESSAGE;
+
+    return `<p>${title}</p><p>${content}</p>`;
   }
 }

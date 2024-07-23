@@ -16,13 +16,16 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+
+export const DEFAULT_ERROR_MESSAGE =
+  'Please try submitting your data specification again by pressing the Submit button. If the issue persists, contact the Mauro administrators for assistance.';
+
 export const DEFAULT_NO_PROJECTS_MESSAGE =
-  'You do not have any projects to submit this data request for. ';
+  'You are not an active member of any projects and every data specification submission must include the project you are submitting it for. Please either submit a Help request to join an existing project or submit a New Project request before submitting this data specificaiton.';
 
 export class NoProjectsFoundError extends Error {
   constructor(message?: string) {
     super(message ?? DEFAULT_NO_PROJECTS_MESSAGE);
     Object.setPrototypeOf(this, NoProjectsFoundError.prototype);
-    this.name = 'NoProjectsFoundError';
   }
 }
