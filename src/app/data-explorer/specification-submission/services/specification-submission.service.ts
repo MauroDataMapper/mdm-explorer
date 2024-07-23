@@ -71,6 +71,7 @@ export class SpecificationSubmissionService {
    */
   submit(specificationId: Uuid): Observable<boolean> {
     // Set initial state.
+    this.stateService.clear();
     this.stateService.set({ specificationId });
 
     // Run each step, once at a time, ensuring it completes before running the next.

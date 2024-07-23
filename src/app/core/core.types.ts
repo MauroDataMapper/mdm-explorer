@@ -23,4 +23,5 @@ export const defaultEmailPattern =
 export interface LoadingBroadcastPayload {
   isLoading: boolean;
   caption?: string;
+  fillviewport?: boolean;
 }

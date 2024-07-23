@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<div class="mdm-spinner-container">
+<div [ngClass]="spinnerContainerCssClassMap">
   <mat-spinner [diameter]="diameter" [color]="color"></mat-spinner>
   <div [className]="color">{{ caption }}</div>
 </div>

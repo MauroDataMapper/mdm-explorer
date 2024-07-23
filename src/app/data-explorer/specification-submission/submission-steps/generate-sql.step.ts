@@ -33,7 +33,7 @@ import { BroadcastService } from 'src/app/core/broadcast.service';
   providedIn: 'root',
 })
 export class GenerateSqlStep implements ISubmissionStep {
-  name: StepName = StepName.GeneratePdfFile;
+  name: StepName = StepName.GenerateSqlFile;
 
   constructor(
     private fileGenerationStepService: FileGenerationStepService,
