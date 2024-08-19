@@ -73,6 +73,8 @@ jobs:
           repository: MauroDataMapper/sde-resources
           ref: refs/heads/develop # change this to test against another branch
           path: ./sde-resources
+          # Add a token, since this is still a private repo
+          token: ${{ secrets.ACCESS_TOKEN }}
 
       - name: Build sde-resources
         if: success() && github.ref != 'refs/heads/main'
