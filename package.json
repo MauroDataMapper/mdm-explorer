@@ -24,6 +24,10 @@
     "pr-checks": "npm run license-check check && npm run eslint && npm run test"
   },
   "private": true,
+  "eslint-junit": {
+    "suiteName": "eslint tests",
+    "output": "./eslint/eslint-junit.xml"
+  },
   "dependencies": {
     "@angular-material-extensions/password-strength": "11.0.1",
     "@angular/animations": "14.2.12",
