@@ -81,7 +81,7 @@ jobs:
         working-directory: ./sde-resources
         run: |
           npm install
-          npm run build
+          ng build sde-resources
           cd dist/sde-resources
           npm link
 
