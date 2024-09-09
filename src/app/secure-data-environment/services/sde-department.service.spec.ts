@@ -16,18 +16,18 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { setupTestModuleForService } from 'src/app/testing/testing.helpers';
-import { SdeOrganisationService } from './sde-organisation.service';
-import { createSdeOrganisationEndpointsStub } from 'src/app/testing/stubs/sde/organisation-endpoints.stub';
+import { setupTestModuleForService } from '../../testing/testing.helpers';
+import { SdeDepartmentService } from './sde-department.service';
+import { createSdeOrganisationEndpointsStub } from '../../testing/stubs/sde/department-endpoints.stub';
 import { Organisation, OrganisationEndpoints } from '@maurodatamapper/sde-resources';
 import { of } from 'rxjs';
 
-describe('SdeOrganisationService', () => {
-  let service: SdeOrganisationService;
+describe('SdeDepartmentService', () => {
+  let service: SdeDepartmentService;
   const organisationEndpointsStub = createSdeOrganisationEndpointsStub();
 
   beforeEach(() => {
-    service = setupTestModuleForService(SdeOrganisationService, {
+    service = setupTestModuleForService(SdeDepartmentService, {
       providers: [
         {
           provide: OrganisationEndpoints,

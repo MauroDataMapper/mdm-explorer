@@ -25,11 +25,11 @@ import {
 } from '@maurodatamapper/sde-resources';
 
 @Component({
-  selector: 'mdm-organisation-list',
-  templateUrl: './organisation-list.component.html',
-  styleUrls: ['./organisation-list.component.scss'],
+  selector: 'mdm-department-list',
+  templateUrl: './department-list.component.html',
+  styleUrls: ['./department-list.component.scss'],
 })
-export class OrganisationListComponent implements OnInit {
+export class DepartmentListComponent implements OnInit {
   @Input() myOrganisations: UserOrganisationDTO[] = [];
   @Output() rowClickEvent = new EventEmitter<UserOrganisationDTO>();
   @Output() listLoadedEvent = new EventEmitter<Organisation>();

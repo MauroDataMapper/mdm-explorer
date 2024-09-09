@@ -16,13 +16,13 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { OrganisationsComponent } from './organisations.component';
-import { SdeOrganisationService } from '../../services/sde-organisation.service';
-import { createSdeOrganisationServiceStub } from 'src/app/testing/stubs/sde/sde-organisation-service.stub';
+import { DepartmentsComponent } from './departments.component';
+import { SdeDepartmentService } from '../../services/sde-department.service';
+import { createSdeOrganisationServiceStub } from '../../../testing/stubs/sde/sde-department-service.stub';
 import {
   ComponentHarness,
   setupTestModuleForComponent,
-} from 'src/app/testing/testing.helpers';
+} from '../../../testing/testing.helpers';
 import {
   APPROVER_DISPLAY_COLUMNS_FOR_ORG_MEMBER_LIST,
   ListColumn,
@@ -31,19 +31,19 @@ import {
   OrganisationMemberService,
   UserOrganisationDTO,
 } from '@maurodatamapper/sde-resources';
-import { createOrganisationMemberServiceStub } from 'src/app/testing/stubs/sde/organisation-member.service.stub';
+import { createOrganisationMemberServiceStub } from '../../../testing/stubs/sde/department-member.service.stub';
 import { of } from 'rxjs';
 
-describe('OrganisationsComponent', () => {
-  let harness: ComponentHarness<OrganisationsComponent>;
+describe('DepartmentsComponent', () => {
+  let harness: ComponentHarness<DepartmentsComponent>;
   const sdeOrganisationServiceStub = createSdeOrganisationServiceStub();
   const organisationMemberService = createOrganisationMemberServiceStub();
 
   beforeEach(async () => {
-    harness = await setupTestModuleForComponent(OrganisationsComponent, {
+    harness = await setupTestModuleForComponent(DepartmentsComponent, {
       providers: [
         {
-          provide: SdeOrganisationService,
+          provide: SdeDepartmentService,
           useValue: sdeOrganisationServiceStub,
         },
         {

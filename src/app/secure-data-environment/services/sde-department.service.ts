@@ -28,7 +28,7 @@ import {
 @Injectable({
   providedIn: 'root',
 })
-export class SdeOrganisationService {
+export class SdeDepartmentService {
   private _organisations = new BehaviorSubject<Organisation[]>([]);
 
   constructor(private organisationEndpoints: OrganisationEndpoints) {}

@@ -25,15 +25,15 @@ import {
   UserOrganisationDTO,
   Uuid,
 } from '@maurodatamapper/sde-resources';
-import { SdeOrganisationService } from '../../services/sde-organisation.service';
+import { SdeDepartmentService } from '../../services/sde-department.service';
 import { switchMap, EMPTY, of, forkJoin } from 'rxjs';
 
 @Component({
-  selector: 'mdm-organisations',
-  templateUrl: './organisations.component.html',
-  styleUrls: ['./organisations.component.scss'],
+  selector: 'mdm-departments',
+  templateUrl: './departments.component.html',
+  styleUrls: ['./departments.component.scss'],
 })
-export class OrganisationsComponent implements OnInit {
+export class DepartmentsComponent implements OnInit {
   selectedOrganisation: Organisation | undefined = undefined;
   selectedOrganisationId = this.selectedOrganisation?.id;
   displayColumnsForOrganisationMemberList: ListColumn[] = [];
@@ -45,7 +45,7 @@ export class OrganisationsComponent implements OnInit {
   myRequestsListConfig: RequestsListMode = RequestsListMode.MyOrganisationRequests;
 
   constructor(
-    private sdeOrganisationService: SdeOrganisationService,
+    private sdeOrganisationService: SdeDepartmentService,
     private organisationMemberService: OrganisationMemberService
   ) { }
 
