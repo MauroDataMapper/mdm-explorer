@@ -19,45 +19,45 @@ SPDX-License-Identifier: Apache-2.0
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, tap } from 'rxjs';
 import {
+  Department,
+  DepartmentEndpoints,
+  UserDepartmentDTO,
   Uuid,
-  Organisation,
-  UserOrganisationDTO,
-  OrganisationEndpoints,
 } from '@maurodatamapper/sde-resources';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SdeDepartmentService {
-  private _organisations = new BehaviorSubject<Organisation[]>([]);
+  private _departments = new BehaviorSubject<Department[]>([]);
 
-  constructor(private organisationEndpoints: OrganisationEndpoints) {}
+  constructor(private departmentEndpoints: DepartmentEndpoints) {}
 
-  get organisations$(): Observable<Organisation[]> {
-    return this._organisations.asObservable();
+  get departments$(): Observable<Department[]> {
+    return this._departments.asObservable();
   }
 
-  get organisations(): Organisation[] {
-    return this._organisations.value;
+  get departments(): Department[] {
+    return this._departments.value;
   }
 
-  get(organisationId: Uuid): Observable<Organisation> {
-    const cachedOrg = this.organisations.find((org) => org.id === organisationId);
-    return cachedOrg ? of(cachedOrg) : this.fetch(organisationId);
+  get(departmentId: Uuid): Observable<Department> {
+    const cachedDept = this.departments.find((dept) => dept.id === departmentId);
+    return cachedDept ? of(cachedDept) : this.fetch(departmentId);
   }
 
-  getUsersOrganisations(): Observable<UserOrganisationDTO[]> {
-    return this.organisationEndpoints.listResearchersOrganisationMemberships();
+  getUsersDepartments(): Observable<UserDepartmentDTO[]> {
+    return this.departmentEndpoints.listResearchersDepartmentMemberships();
   }
 
-  addOrganisationToCache(organisation: Organisation): void {
-    this._organisations.next([...this.organisations, organisation]);
+  addDepartmentToCache(department: Department): void {
+    this._departments.next([...this.departments, department]);
   }
 
-  private fetch(organisationId: Uuid): Observable<Organisation> {
-    return this.organisationEndpoints.getOrganisation(organisationId).pipe(
-      tap((org: Organisation) => {
-        this.addOrganisationToCache(org);
+  private fetch(departmentId: Uuid): Observable<Department> {
+    return this.departmentEndpoints.getDepartment(departmentId).pipe(
+      tap((dept: Department) => {
+        this.addDepartmentToCache(dept);
       })
     );
   }

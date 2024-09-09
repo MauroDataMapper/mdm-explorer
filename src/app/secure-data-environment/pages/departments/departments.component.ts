@@ -18,11 +18,11 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
 import {
+  Department,
+  DepartmentMemberService,
   ListColumn,
-  Organisation,
-  OrganisationMemberService,
   RequestsListMode,
-  UserOrganisationDTO,
+  UserDepartmentDTO,
   Uuid,
 } from '@maurodatamapper/sde-resources';
 import { SdeDepartmentService } from '../../services/sde-department.service';
@@ -34,82 +34,78 @@ import { switchMap, EMPTY, of, forkJoin } from 'rxjs';
   styleUrls: ['./departments.component.scss'],
 })
 export class DepartmentsComponent implements OnInit {
-  selectedOrganisation: Organisation | undefined = undefined;
-  selectedOrganisationId = this.selectedOrganisation?.id;
-  displayColumnsForOrganisationMemberList: ListColumn[] = [];
-  myOrganisations: UserOrganisationDTO[] = [];
-  userHasOrganisations = true;
-  userIsApproverForSelectedOrganisation = false;
+  selectedDepartment: Department | undefined = undefined;
+  selectedDepartmentId = this.selectedDepartment?.id;
+  displayColumnsForDepartmentMemberList: ListColumn[] = [];
+  myDepartments: UserDepartmentDTO[] = [];
+  userHasDepartments = true;
+  userIsApproverForSelectedDepartment = false;
 
   requestsNeedingApprovalListConfig: RequestsListMode = RequestsListMode.CanAuthorise;
-  myRequestsListConfig: RequestsListMode = RequestsListMode.MyOrganisationRequests;
+  myRequestsListConfig: RequestsListMode = RequestsListMode.MyDepartmentRequests;
 
   constructor(
-    private sdeOrganisationService: SdeDepartmentService,
-    private organisationMemberService: OrganisationMemberService
-  ) { }
+    private sdeDepartmentService: SdeDepartmentService,
+    private departmentMemberService: DepartmentMemberService
+  ) {}
 
   ngOnInit(): void {
-    this.sdeOrganisationService
-      .getUsersOrganisations()
+    this.sdeDepartmentService
+      .getUsersDepartments()
       .pipe(
-        switchMap((userOrgs: UserOrganisationDTO[]) => {
-          // Theoretically, a user should always have an organisation. If they don't, trigger
+        switchMap((userDepts: UserDepartmentDTO[]) => {
+          // Theoretically, a user should always have an department. If they don't, trigger
           // a flag to show a message to the user.
-          if (userOrgs.length === 0) {
-            this.userHasOrganisations = false;
+          if (userDepts.length === 0) {
+            this.userHasDepartments = false;
             return EMPTY;
           }
 
-          this.myOrganisations = userOrgs;
-          const initialOrgValue = this.myOrganisations[0] as UserOrganisationDTO;
+          this.myDepartments = userDepts;
+          const initialDeptValue = this.myDepartments[0] as UserDepartmentDTO;
 
           return forkJoin([
-            this.sdeOrganisationService.get(initialOrgValue.organisationId),
-            of(userOrgs),
+            this.sdeDepartmentService.get(initialDeptValue.departmentId),
+            of(userDepts),
           ]);
         })
       )
-      .subscribe(([initialOrg, userOrgs]: [Organisation, UserOrganisationDTO[]]) => {
-        this.setSelectedOrganisationAndDisplayColumns(initialOrg, userOrgs);
+      .subscribe(([initialDept, userDepts]: [Department, UserDepartmentDTO[]]) => {
+        this.setSelectedDepartmentAndDisplayColumns(initialDept, userDepts);
       });
   }
 
-  onOrganisationSelectEvent(value: UserOrganisationDTO) {
-    const selectedOrgId = value.organisationId as Uuid;
-    this.sdeOrganisationService
-      .get(selectedOrgId)
-      .subscribe((org: Organisation | undefined) => {
-        this.setSelectedOrganisationAndDisplayColumns(org, this.myOrganisations);
-      });
+  onDepartmentSelectEvent(value: UserDepartmentDTO) {
+    const selectedOrgId = value.departmentId as Uuid;
+    this.sdeDepartmentService.get(selectedOrgId).subscribe((dept: Department | undefined) => {
+      this.setSelectedDepartmentAndDisplayColumns(dept, this.myDepartments);
+    });
   }
 
   /**
-   * Each time the user selects a new organisation, we need to modify what information they are
-   * allowed to see. Therefore the organisation and userRole info need to be updated and passed into
-   * the organisation member list component.
+   * Each time the user selects a new department, we need to modify what information they are
+   * allowed to see. Therefore the department and userRole info need to be updated and passed into
+   * the department member list component.
    */
-  private setSelectedOrganisationAndDisplayColumns(
-    selectedOrg: Organisation | undefined,
-    userOrgs: UserOrganisationDTO[]
+  private setSelectedDepartmentAndDisplayColumns(
+    selectedDept: Department | undefined,
+    userDepts: UserDepartmentDTO[]
   ) {
-    // Find the user's role at the selected organisation.
-    const userRoleAtSelectedOrg = userOrgs.find(
-      (org) => org.organisationId === selectedOrg?.id
+    // Find the user's role at the selected department.
+    const userRoleAtSelectedDept = userDepts.find(
+      (dept) => dept.departmentId === selectedDept?.id
     )?.role;
 
-    // If no organisation or role, keep the selectedOrganisation value as it's default: undefined.
+    // If no department or role, keep the selectedDepartment value as it's default: undefined.
     // An error message will be displayed to the user.
-    if (!selectedOrg || !userRoleAtSelectedOrg) {
+    if (!selectedDept || !userRoleAtSelectedDept) {
       return;
     }
 
-    this.selectedOrganisation = selectedOrg;
-    this.userIsApproverForSelectedOrganisation = userRoleAtSelectedOrg === 'APPROVER';
+    this.selectedDepartment = selectedDept;
+    this.userIsApproverForSelectedDepartment = userRoleAtSelectedDept === 'APPROVER';
 
-    this.displayColumnsForOrganisationMemberList =
-      this.organisationMemberService.getDisplayColumnsForResearcher(
-        userRoleAtSelectedOrg
-      );
+    this.displayColumnsForDepartmentMemberList =
+      this.departmentMemberService.getDisplayColumnsForResearcher(userRoleAtSelectedDept);
   }
 }

@@ -19,14 +19,8 @@ SPDX-License-Identifier: Apache-2.0
 import { SimpleChange } from '@angular/core';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MockComponent, MockDirective } from 'ng-mocks';
-import {
-  CatalogueUser,
-  CatalogueUserPayload,
-} from 'src/app/mauro/catalogue-user.service';
-import {
-  ComponentHarness,
-  setupTestModuleForComponent,
-} from 'src/app/testing/testing.helpers';
+import { CatalogueUser, CatalogueUserPayload } from 'src/app/mauro/catalogue-user.service';
+import { ComponentHarness, setupTestModuleForComponent } from 'src/app/testing/testing.helpers';
 import { CatalogueUserBasicFormComponent } from './catalogue-user-basic-form.component';
 
 describe('CatalogueUserBasicFormComponent', () => {

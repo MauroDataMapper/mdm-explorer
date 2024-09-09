@@ -107,14 +107,11 @@ describe('DataModelService', () => {
   });
 
   describe('get data classes', () => {
-    it.each([undefined, null])(
-      'should return an empty list if %p parent provided',
-      (parent) => {
-        const expected$ = cold('(a|)', { a: [] });
-        const actual$ = service.getDataClasses(parent!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
-        expect(actual$).toBeObservable(expected$);
-      }
-    );
+    it.each([undefined, null])('should return an empty list if %p parent provided', (parent) => {
+      const expected$ = cold('(a|)', { a: [] });
+      const actual$ = service.getDataClasses(parent!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
+      expect(actual$).toBeObservable(expected$);
+    });
 
     it('should return an empty list if no parent id provided', () => {
       const parent: DataModel = {
@@ -256,18 +253,16 @@ describe('DataModelService', () => {
         availableActions: ['show'],
       };
 
-      endpointsStub.dataClass.getChildDataClass.mockImplementationOnce(
-        (dmId, dcId, cDcId) => {
-          expect(dmId).toBe(id.dataModelId);
-          expect(dcId).toBe(id.parentDataClassId);
-          expect(cDcId).toBe(id.dataClassId);
-          return cold('--a|', {
-            a: {
-              body: expectedDataClass,
-            },
-          });
-        }
-      );
+      endpointsStub.dataClass.getChildDataClass.mockImplementationOnce((dmId, dcId, cDcId) => {
+        expect(dmId).toBe(id.dataModelId);
+        expect(dcId).toBe(id.parentDataClassId);
+        expect(cDcId).toBe(id.dataClassId);
+        return cold('--a|', {
+          a: {
+            body: expectedDataClass,
+          },
+        });
+      });
 
       const expected$ = cold('--a|', { a: expectedDataClass });
       const actual$ = service.getDataClass(id);
@@ -657,17 +652,15 @@ describe('DataModelService', () => {
         modelVersion: undefined,
       };
 
-      endpointsStub.dataModel.newBranchModelVersion.mockImplementationOnce(
-        (id, payload) => {
-          expect(id).toBe(currentModel.id);
-          expect(payload).toStrictEqual({});
-          return cold('--a|', {
-            a: {
-              body: nextModel,
-            },
-          });
-        }
-      );
+      endpointsStub.dataModel.newBranchModelVersion.mockImplementationOnce((id, payload) => {
+        expect(id).toBe(currentModel.id);
+        expect(payload).toStrictEqual({});
+        return cold('--a|', {
+          a: {
+            body: nextModel,
+          },
+        });
+      });
 
       const expected$ = cold('--a|', {
         a: nextModel,

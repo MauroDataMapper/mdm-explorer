@@ -18,20 +18,20 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { setupTestModuleForService } from '../../testing/testing.helpers';
 import { SdeDepartmentService } from './sde-department.service';
-import { createSdeOrganisationEndpointsStub } from '../../testing/stubs/sde/department-endpoints.stub';
-import { Organisation, OrganisationEndpoints } from '@maurodatamapper/sde-resources';
+import { createSdeDepartmentEndpointsStub } from '../../testing/stubs/sde/department-endpoints.stub';
+import { Department, DepartmentEndpoints } from '@maurodatamapper/sde-resources';
 import { of } from 'rxjs';
 
 describe('SdeDepartmentService', () => {
   let service: SdeDepartmentService;
-  const organisationEndpointsStub = createSdeOrganisationEndpointsStub();
+  const departmentEndpointsStub = createSdeDepartmentEndpointsStub();
 
   beforeEach(() => {
     service = setupTestModuleForService(SdeDepartmentService, {
       providers: [
         {
-          provide: OrganisationEndpoints,
-          useValue: organisationEndpointsStub,
+          provide: DepartmentEndpoints,
+          useValue: departmentEndpointsStub,
         },
       ],
     });
@@ -41,35 +41,35 @@ describe('SdeDepartmentService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('add an organisation to the cache', () => {
-    const expectedOrg = { id: 'test-org-id' } as Organisation;
+  it('add an department to the cache', () => {
+    const expectedDept = { id: 'test-dept-id' } as Department;
 
-    service.addOrganisationToCache(expectedOrg);
+    service.addDepartmentToCache(expectedDept);
 
-    expect(service.organisations).toContain(expectedOrg);
+    expect(service.departments).toContain(expectedDept);
   });
 
-  it('should return cached organisation data when available', () => {
-    const orgId = 'test-org-id';
-    const expectedOrg = { id: orgId } as Organisation;
+  it('should return cached department data when available', () => {
+    const deptId = 'test-dept-id';
+    const expectedDept = { id: deptId } as Department;
 
-    service.addOrganisationToCache(expectedOrg);
+    service.addDepartmentToCache(expectedDept);
 
-    service.get(orgId).subscribe((org) => {
-      expect(org).toEqual(expectedOrg);
-      expect(organisationEndpointsStub.getOrganisation).not.toHaveBeenCalled();
+    service.get(deptId).subscribe((dept) => {
+      expect(dept).toEqual(expectedDept);
+      expect(departmentEndpointsStub.getDepartment).not.toHaveBeenCalled();
     });
   });
 
-  it('should fetch organisation data when not cached and add that org to the cache', () => {
-    const orgId = 'test-org-id';
-    const expectedOrg = { id: orgId } as Organisation;
+  it('should fetch department data when not cached and add that dept to the cache', () => {
+    const deptId = 'test-dept-id';
+    const expectedDept = { id: deptId } as Department;
 
-    organisationEndpointsStub.getOrganisation.mockReturnValueOnce(of(expectedOrg));
+    departmentEndpointsStub.getDepartment.mockReturnValueOnce(of(expectedDept));
 
-    service.get(orgId).subscribe((org) => {
-      expect(org).toEqual(expectedOrg);
-      expect(service.organisations).toContain(expectedOrg);
+    service.get(deptId).subscribe((dept) => {
+      expect(dept).toEqual(expectedDept);
+      expect(service.departments).toContain(expectedDept);
     });
   });
 });

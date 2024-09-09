@@ -18,11 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import {
-  ListColumn,
-  Organisation,
-  UserOrganisationDTO,
-} from '@maurodatamapper/sde-resources';
+import { ListColumn, Department, UserDepartmentDTO } from '@maurodatamapper/sde-resources';
 
 @Component({
   selector: 'mdm-department-list',
@@ -30,12 +26,12 @@ import {
   styleUrls: ['./department-list.component.scss'],
 })
 export class DepartmentListComponent implements OnInit {
-  @Input() myOrganisations: UserOrganisationDTO[] = [];
-  @Output() rowClickEvent = new EventEmitter<UserOrganisationDTO>();
-  @Output() listLoadedEvent = new EventEmitter<Organisation>();
+  @Input() myDepartments: UserDepartmentDTO[] = [];
+  @Output() rowClickEvent = new EventEmitter<UserDepartmentDTO>();
+  @Output() listLoadedEvent = new EventEmitter<Department>();
 
   displayColumns: ListColumn[] = [
-    { displayHeader: 'Name', fieldName: 'organisationName' },
+    { displayHeader: 'Name', fieldName: 'departmentName' },
     { displayHeader: 'Role', fieldName: 'role' },
     { displayHeader: 'End date', fieldName: 'endDate' },
   ];
@@ -46,7 +42,7 @@ export class DepartmentListComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  onRowClickEvent(value: UserOrganisationDTO) {
+  onRowClickEvent(value: UserDepartmentDTO) {
     this.rowClickEvent.emit(value);
   }
 }

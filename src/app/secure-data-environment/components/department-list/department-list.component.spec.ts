@@ -17,13 +17,10 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { DepartmentListComponent } from './department-list.component';
-import {
-  ComponentHarness,
-  setupTestModuleForComponent,
-} from '../../../testing/testing.helpers';
+import { ComponentHarness, setupTestModuleForComponent } from '../../../testing/testing.helpers';
 import { createMatDialogStub } from '../../../testing/stubs/mat-dialog.stub';
 import { MatDialog } from '@angular/material/dialog';
-import { UserOrganisationDTO } from '@maurodatamapper/sde-resources';
+import { UserDepartmentDTO } from '@maurodatamapper/sde-resources';
 import { spyOn } from 'jest-mock';
 
 describe('DepartmentListComponent', () => {
@@ -46,7 +43,7 @@ describe('DepartmentListComponent', () => {
   });
 
   it('should emit rowClickEvent when onRowClickEvent is called', () => {
-    const userOrgDto = { organisationId: '1' } as UserOrganisationDTO;
+    const userOrgDto = { departmentId: '1' } as UserDepartmentDTO;
     const spy = spyOn(harness.component.rowClickEvent, 'emit');
 
     harness.component.onRowClickEvent(userOrgDto);

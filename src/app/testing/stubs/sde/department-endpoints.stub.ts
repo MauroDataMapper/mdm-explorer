@@ -18,44 +18,41 @@ SPDX-License-Identifier: Apache-2.0
 */
 
 import {
-  Organisation,
-  OrganisationMember,
-  OrganisationMemberDTO,
+  Department,
+  DepartmentMember,
+  DepartmentMemberDTO,
   Uuid,
 } from '@maurodatamapper/sde-resources';
 import { Observable } from 'rxjs';
 
-export type ListOrganisationsFn = () => Observable<Organisation[]>;
-export type ListOrganisationsMockedFn = jest.MockedFunction<ListOrganisationsFn>;
+export type ListDepartmentsFn = () => Observable<Department[]>;
+export type ListDepartmentsMockedFn = jest.MockedFunction<ListDepartmentsFn>;
 
-export type GetOrganisationFn = (organisationId: Uuid) => Observable<Organisation>;
-export type GetOrganisationMockedFn = jest.MockedFunction<GetOrganisationFn>;
+export type GetDepartmentFn = (departmentId: Uuid) => Observable<Department>;
+export type GetDepartmentMockedFn = jest.MockedFunction<GetDepartmentFn>;
 
-export type ListOrganisationMembersFn = (
-  organisationId: Uuid
-) => Observable<OrganisationMember[]>;
-export type ListOrganisationMembersMockedFn =
-  jest.MockedFunction<ListOrganisationMembersFn>;
+export type ListDepartmentMembersFn = (departmentId: Uuid) => Observable<DepartmentMember[]>;
+export type ListDepartmentMembersMockedFn = jest.MockedFunction<ListDepartmentMembersFn>;
 
-export type ListOrganisationApproversAndProjectPeersFn = (
-  organisationId: Uuid
-) => Observable<OrganisationMemberDTO[]>;
-export type ListOrganisationApproversAndProjectPeersMockedFn =
-  jest.MockedFunction<ListOrganisationApproversAndProjectPeersFn>;
+export type ListDepartmentApproversAndProjectPeersFn = (
+  departmentId: Uuid
+) => Observable<DepartmentMemberDTO[]>;
+export type ListDepartmentApproversAndProjectPeersMockedFn =
+  jest.MockedFunction<ListDepartmentApproversAndProjectPeersFn>;
 
-export interface SdeOrganisationEndpointsStub {
-  listOrganisations: ListOrganisationsMockedFn;
-  getOrganisation: GetOrganisationMockedFn;
-  listOrganisationMembers: ListOrganisationMembersMockedFn;
-  listOrganisationApproversAndProjectPeers: ListOrganisationApproversAndProjectPeersMockedFn;
+export interface SdeDepartmentEndpointsStub {
+  listDepartments: ListDepartmentsMockedFn;
+  getDepartment: GetDepartmentMockedFn;
+  listDepartmentMembers: ListDepartmentMembersMockedFn;
+  listDepartmentApproversAndProjectPeers: ListDepartmentApproversAndProjectPeersMockedFn;
 }
 
-export const createSdeOrganisationEndpointsStub = (): SdeOrganisationEndpointsStub => {
+export const createSdeDepartmentEndpointsStub = (): SdeDepartmentEndpointsStub => {
   return {
-    listOrganisations: jest.fn() as ListOrganisationsMockedFn,
-    getOrganisation: jest.fn() as GetOrganisationMockedFn,
-    listOrganisationMembers: jest.fn() as ListOrganisationMembersMockedFn,
-    listOrganisationApproversAndProjectPeers:
-      jest.fn() as ListOrganisationApproversAndProjectPeersMockedFn,
+    listDepartments: jest.fn() as ListDepartmentsMockedFn,
+    getDepartment: jest.fn() as GetDepartmentMockedFn,
+    listDepartmentMembers: jest.fn() as ListDepartmentMembersMockedFn,
+    listDepartmentApproversAndProjectPeers:
+      jest.fn() as ListDepartmentApproversAndProjectPeersMockedFn,
   };
 };

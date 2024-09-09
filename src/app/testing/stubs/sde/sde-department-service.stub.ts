@@ -17,36 +17,29 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 
-import {
-  Organisation,
-  OrganisationMemberDTO,
-  UserOrganisationDTO,
-} from '@maurodatamapper/sde-resources';
+import { Department, DepartmentMemberDTO, UserDepartmentDTO } from '@maurodatamapper/sde-resources';
 import { Uuid } from '@maurodatamapper/sde-resources';
 import { Observable } from 'rxjs';
 
-export type GetOrganisationFn = (organisationId: Uuid) => Observable<Organisation>;
-export type GetOrganisationMockedFn = jest.MockedFunction<GetOrganisationFn>;
+export type GetDepartmentFn = (departmentId: Uuid) => Observable<Department>;
+export type GetDepartmentMockedFn = jest.MockedFunction<GetDepartmentFn>;
 
-export type GetUsersOrganisationsFn = () => Observable<UserOrganisationDTO[]>;
-export type GetUsersOrganisationsMockedFn = jest.MockedFunction<GetUsersOrganisationsFn>;
+export type GetUsersDepartmentsFn = () => Observable<UserDepartmentDTO[]>;
+export type GetUsersDepartmentsMockedFn = jest.MockedFunction<GetUsersDepartmentsFn>;
 
-export type GetApproversForOrganisationFn = (
-  organisationId: Uuid
-) => Observable<OrganisationMemberDTO[]>;
-export type GetApproversForOrganisationMockedFn =
-  jest.MockedFunction<GetApproversForOrganisationFn>;
+export type GetApproversForDepartmentFn = (departmentId: Uuid) => Observable<DepartmentMemberDTO[]>;
+export type GetApproversForDepartmentMockedFn = jest.MockedFunction<GetApproversForDepartmentFn>;
 
-export interface SdeOrganisationServiceStub {
-  get: GetOrganisationMockedFn;
-  getUsersOrganisations: GetUsersOrganisationsMockedFn;
-  getApproversForOrganisation: GetApproversForOrganisationMockedFn;
+export interface SdeDepartmentServiceStub {
+  get: GetDepartmentMockedFn;
+  getUsersDepartments: GetUsersDepartmentsMockedFn;
+  getApproversForDepartment: GetApproversForDepartmentMockedFn;
 }
 
-export const createSdeOrganisationServiceStub = (): SdeOrganisationServiceStub => {
+export const createSdeDepartmentServiceStub = (): SdeDepartmentServiceStub => {
   return {
-    get: jest.fn() as GetOrganisationMockedFn,
-    getUsersOrganisations: jest.fn() as GetUsersOrganisationsMockedFn,
-    getApproversForOrganisation: jest.fn() as GetApproversForOrganisationMockedFn,
+    get: jest.fn() as GetDepartmentMockedFn,
+    getUsersDepartments: jest.fn() as GetUsersDepartmentsMockedFn,
+    getApproversForDepartment: jest.fn() as GetApproversForDepartmentMockedFn,
   };
 };

@@ -18,37 +18,34 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { DepartmentsComponent } from './departments.component';
 import { SdeDepartmentService } from '../../services/sde-department.service';
-import { createSdeOrganisationServiceStub } from '../../../testing/stubs/sde/sde-department-service.stub';
+import { createSdeDepartmentServiceStub } from '../../../testing/stubs/sde/sde-department-service.stub';
+import { ComponentHarness, setupTestModuleForComponent } from '../../../testing/testing.helpers';
 import {
-  ComponentHarness,
-  setupTestModuleForComponent,
-} from '../../../testing/testing.helpers';
-import {
-  APPROVER_DISPLAY_COLUMNS_FOR_ORG_MEMBER_LIST,
+  APPROVER_DISPLAY_COLUMNS_FOR_DEPT_MEMBER_LIST,
+  MEMBER_DISPLAY_COLUMNS_FOR_DEPT_MEMBER_LIST,
   ListColumn,
-  MEMBER_DISPLAY_COLUMNS_FOR_ORG_MEMBER_LIST,
-  Organisation,
-  OrganisationMemberService,
-  UserOrganisationDTO,
+  Department,
+  DepartmentMemberService,
+  UserDepartmentDTO,
 } from '@maurodatamapper/sde-resources';
-import { createOrganisationMemberServiceStub } from '../../../testing/stubs/sde/department-member.service.stub';
+import { createDepartmentMemberServiceStub } from '../../../testing/stubs/sde/department-member.service.stub';
 import { of } from 'rxjs';
 
 describe('DepartmentsComponent', () => {
   let harness: ComponentHarness<DepartmentsComponent>;
-  const sdeOrganisationServiceStub = createSdeOrganisationServiceStub();
-  const organisationMemberService = createOrganisationMemberServiceStub();
+  const sdeDepartmentServiceStub = createSdeDepartmentServiceStub();
+  const departmentMemberService = createDepartmentMemberServiceStub();
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(DepartmentsComponent, {
       providers: [
         {
           provide: SdeDepartmentService,
-          useValue: sdeOrganisationServiceStub,
+          useValue: sdeDepartmentServiceStub,
         },
         {
-          provide: OrganisationMemberService,
-          useValue: organisationMemberService,
+          provide: DepartmentMemberService,
+          useValue: departmentMemberService,
         },
       ],
     });
@@ -58,58 +55,54 @@ describe('DepartmentsComponent', () => {
     expect(harness.component).toBeTruthy();
   });
 
-  describe('ngOnInit: setting initial selectedOrg, myOrganisations, userHasOrganisations, and displayColumns', () => {
-    it('should handle the case where the user has no organisations', () => {
-      sdeOrganisationServiceStub.getUsersOrganisations.mockReturnValueOnce(of([]));
+  describe('ngOnInit: setting initial selectedDept, myDepartments, userHasDepartments, and displayColumns', () => {
+    it('should handle the case where the user has no departments', () => {
+      sdeDepartmentServiceStub.getUsersDepartments.mockReturnValueOnce(of([]));
 
       harness.detectChanges();
 
-      expect(harness.component.myOrganisations).toEqual([]);
-      expect(harness.component.selectedOrganisation).toBeUndefined();
-      expect(harness.component.userHasOrganisations).toBe(false);
-      expect(harness.component.displayColumnsForOrganisationMemberList).toEqual([]);
+      expect(harness.component.myDepartments).toEqual([]);
+      expect(harness.component.selectedDepartment).toBeUndefined();
+      expect(harness.component.userHasDepartments).toBe(false);
+      expect(harness.component.displayColumnsForDepartmentMemberList).toEqual([]);
     });
 
     it('should initialise for an APPROVER', () => {
-      const userOrgs = [{ organisationId: '1', role: 'APPROVER' } as UserOrganisationDTO];
-      const expectedOrg = { id: '1' } as Organisation;
-      const expectedDisplayColumns = APPROVER_DISPLAY_COLUMNS_FOR_ORG_MEMBER_LIST;
+      const userDepts = [{ departmentId: '1', role: 'APPROVER' } as UserDepartmentDTO];
+      const expectedDept = { id: '1' } as Department;
+      const expectedDisplayColumns = APPROVER_DISPLAY_COLUMNS_FOR_DEPT_MEMBER_LIST;
 
-      sdeOrganisationServiceStub.getUsersOrganisations.mockReturnValueOnce(of(userOrgs));
-      sdeOrganisationServiceStub.get.mockReturnValueOnce(of(expectedOrg));
-      organisationMemberService.getDisplayColumnsForResearcher.mockReturnValueOnce(
-        APPROVER_DISPLAY_COLUMNS_FOR_ORG_MEMBER_LIST as ListColumn[]
+      sdeDepartmentServiceStub.getUsersDepartments.mockReturnValueOnce(of(userDepts));
+      sdeDepartmentServiceStub.get.mockReturnValueOnce(of(expectedDept));
+      departmentMemberService.getDisplayColumnsForResearcher.mockReturnValueOnce(
+        APPROVER_DISPLAY_COLUMNS_FOR_DEPT_MEMBER_LIST as ListColumn[]
       );
 
       harness.detectChanges();
 
-      expect(harness.component.myOrganisations).toEqual(userOrgs);
-      expect(harness.component.selectedOrganisation).toEqual(expectedOrg);
-      expect(harness.component.userHasOrganisations).toBe(true);
-      expect(harness.component.displayColumnsForOrganisationMemberList).toBe(
-        expectedDisplayColumns
-      );
+      expect(harness.component.myDepartments).toEqual(userDepts);
+      expect(harness.component.selectedDepartment).toEqual(expectedDept);
+      expect(harness.component.userHasDepartments).toBe(true);
+      expect(harness.component.displayColumnsForDepartmentMemberList).toBe(expectedDisplayColumns);
     });
 
     it('should initialise for a MEMBER', () => {
-      const userOrgs = [{ organisationId: '1', role: 'MEMBER' } as UserOrganisationDTO];
-      const expectedOrg = { id: '1' } as Organisation;
-      const expectedDisplayColumns = MEMBER_DISPLAY_COLUMNS_FOR_ORG_MEMBER_LIST;
+      const userDepts = [{ departmentId: '1', role: 'MEMBER' } as UserDepartmentDTO];
+      const expectedDept = { id: '1' } as Department;
+      const expectedDisplayColumns = MEMBER_DISPLAY_COLUMNS_FOR_DEPT_MEMBER_LIST;
 
-      sdeOrganisationServiceStub.getUsersOrganisations.mockReturnValueOnce(of(userOrgs));
-      sdeOrganisationServiceStub.get.mockReturnValueOnce(of(expectedOrg));
-      organisationMemberService.getDisplayColumnsForResearcher.mockReturnValueOnce(
-        MEMBER_DISPLAY_COLUMNS_FOR_ORG_MEMBER_LIST as ListColumn[]
+      sdeDepartmentServiceStub.getUsersDepartments.mockReturnValueOnce(of(userDepts));
+      sdeDepartmentServiceStub.get.mockReturnValueOnce(of(expectedDept));
+      departmentMemberService.getDisplayColumnsForResearcher.mockReturnValueOnce(
+        MEMBER_DISPLAY_COLUMNS_FOR_DEPT_MEMBER_LIST as ListColumn[]
       );
 
       harness.detectChanges();
 
-      expect(harness.component.myOrganisations).toEqual(userOrgs);
-      expect(harness.component.selectedOrganisation).toEqual(expectedOrg);
-      expect(harness.component.userHasOrganisations).toBe(true);
-      expect(harness.component.displayColumnsForOrganisationMemberList).toBe(
-        expectedDisplayColumns
-      );
+      expect(harness.component.myDepartments).toEqual(userDepts);
+      expect(harness.component.selectedDepartment).toEqual(expectedDept);
+      expect(harness.component.userHasDepartments).toBe(true);
+      expect(harness.component.displayColumnsForDepartmentMemberList).toBe(expectedDisplayColumns);
     });
   });
 });
