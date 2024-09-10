@@ -568,7 +568,8 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
       .pipe(
         switchMap(
           (okCancelDialogResponse?: OkCancelDialogResponse): Observable<DataModelDetail> => {
-            if (!okCancelDialogResponse || !this.dataSpecification) {
+            // If dataSpec or dialogResponse undefined, or if user clicked No, return EMPTY
+            if (okCancelDialogResponse?.result === false || !this.dataSpecification) {
               return EMPTY;
             }
 
@@ -591,7 +592,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
         finalize(() => this.broadcastService.loading({ isLoading: false }))
       )
       .subscribe((newVersion?) => {
-        this.stateRouter.navigateTo(['/dataSpecifications', newVersion.id]);
+        this.stateRouter.navigateTo(['/dataSpecifications', newVersion?.id]);
       });
   }
 
