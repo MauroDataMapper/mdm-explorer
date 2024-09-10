@@ -21,6 +21,11 @@ import { Uuid } from '@maurodatamapper/mdm-resources';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { DataElementSearchResult } from './data-explorer.types';
 
+type StorageType = {
+  lastUpdated: number;
+  selection: DataElementSearchResult[];
+};
+
 @Injectable({
   providedIn: 'root',
 })
@@ -35,14 +40,22 @@ export class SelectionService {
   private listSubject: Subject<DataElementSearchResult[]>;
 
   private STORAGE_KEY = 'elementSelection';
+  private SELECTION_TIMEOUT = 24 * 60 * 60 * 1000;
 
   constructor() {
+    let storedSelection: DataElementSearchResult[] | null = null;
     const storedJson = localStorage.getItem(this.STORAGE_KEY);
-    if (storedJson == null) {
+    if (storedJson != null) {
+      const stored = JSON.parse(storedJson) as StorageType;
+      if (stored.lastUpdated + this.SELECTION_TIMEOUT > Date.now()) {
+        storedSelection = stored.selection;
+      }
+    }
+
+    if (storedSelection == null) {
       this.selected = new Map();
       this.listSubject = new BehaviorSubject<DataElementSearchResult[]>([]);
     } else {
-      const storedSelection = JSON.parse(storedJson) as DataElementSearchResult[];
       this.listSubject = new BehaviorSubject<DataElementSearchResult[]>(storedSelection);
       this.selected = new Map(storedSelection.map((e) => [e.id, e]));
     }
@@ -88,10 +101,13 @@ export class SelectionService {
   }
 
   private storeAndEmit() {
-    const selectionArray = Array.from(this.selected.values());
+    const storageValue: StorageType = {
+      lastUpdated: Date.now(),
+      selection: Array.from(this.selected.values()),
+    };
 
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(selectionArray));
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(storageValue));
 
-    this.listSubject.next(selectionArray);
+    this.listSubject.next(storageValue.selection);
   }
 }

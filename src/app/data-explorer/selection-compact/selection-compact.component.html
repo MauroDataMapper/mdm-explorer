@@ -16,10 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<div
-  class="highlight-box mdm-selection-compact"
-  *ngIf="(selectedElements$ | async)?.length != 0"
->
+<div class="highlight-box mdm-selection-compact" *ngIf="(selectedElements$ | async)?.length != 0">
   <div class="mdm-selection-compact__header">
     <h3>Current selection</h3>
   </div>
@@ -42,6 +39,7 @@ SPDX-License-Identifier: Apache-2.0
       <mdm-data-element-multi-select
         [sourceTargetIntersections]="sourceTargetIntersections"
         [dataElements]="(selectedElements$ | async) ?? []"
+        (selectionAddedToSpec)="clearSelection()"
       ></mdm-data-element-multi-select>
     </div>
   </div>
