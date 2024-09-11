@@ -38,10 +38,14 @@ import { createMdmEndpointsStub } from '../testing/stubs/mdm-endpoints.stub';
 import { setupTestModuleForService } from '../testing/testing.helpers';
 import { DataModelService } from './data-model.service';
 import { DataClassIdentifier } from './mauro.types';
+import { createDataSpecificationResearchPluginServiceStub } from '../testing/stubs/data-specification-research-plugin.stub';
+import { DataSpecificationResearchPluginService } from './data-specification-research-plugin.service';
 
 describe('DataModelService', () => {
   let service: DataModelService;
   const endpointsStub = createMdmEndpointsStub();
+  const dataSpecificationResearchPluginServiceStub =
+    createDataSpecificationResearchPluginServiceStub();
 
   beforeEach(() => {
     service = setupTestModuleForService(DataModelService, {
@@ -49,6 +53,10 @@ describe('DataModelService', () => {
         {
           provide: MdmEndpointsService,
           useValue: endpointsStub,
+        },
+        {
+          provide: DataSpecificationResearchPluginService,
+          useValue: dataSpecificationResearchPluginServiceStub,
         },
       ],
     });
@@ -107,14 +115,11 @@ describe('DataModelService', () => {
   });
 
   describe('get data classes', () => {
-    it.each([undefined, null])(
-      'should return an empty list if %p parent provided',
-      (parent) => {
-        const expected$ = cold('(a|)', { a: [] });
-        const actual$ = service.getDataClasses(parent!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
-        expect(actual$).toBeObservable(expected$);
-      }
-    );
+    it.each([undefined, null])('should return an empty list if %p parent provided', (parent) => {
+      const expected$ = cold('(a|)', { a: [] });
+      const actual$ = service.getDataClasses(parent!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
+      expect(actual$).toBeObservable(expected$);
+    });
 
     it('should return an empty list if no parent id provided', () => {
       const parent: DataModel = {
@@ -256,18 +261,16 @@ describe('DataModelService', () => {
         availableActions: ['show'],
       };
 
-      endpointsStub.dataClass.getChildDataClass.mockImplementationOnce(
-        (dmId, dcId, cDcId) => {
-          expect(dmId).toBe(id.dataModelId);
-          expect(dcId).toBe(id.parentDataClassId);
-          expect(cDcId).toBe(id.dataClassId);
-          return cold('--a|', {
-            a: {
-              body: expectedDataClass,
-            },
-          });
-        }
-      );
+      endpointsStub.dataClass.getChildDataClass.mockImplementationOnce((dmId, dcId, cDcId) => {
+        expect(dmId).toBe(id.dataModelId);
+        expect(dcId).toBe(id.parentDataClassId);
+        expect(cDcId).toBe(id.dataClassId);
+        return cold('--a|', {
+          a: {
+            body: expectedDataClass,
+          },
+        });
+      });
 
       const expected$ = cold('--a|', { a: expectedDataClass });
       const actual$ = service.getDataClass(id);
@@ -489,33 +492,56 @@ describe('DataModelService', () => {
   });
 
   describe('copy subset', () => {
-    it('should copy a subset to a target model', () => {
-      const sourceId = '123';
-      const targetId = '456';
-      const payload: DataModelSubsetPayload = {
-        additions: ['1', '2', '3'],
-        deletions: ['4', '5'],
-      };
+    it.each([
+      { additionalRequiredIds: [] },
+      { additionalRequiredIds: ['1'] },
+      { additionalRequiredIds: ['1', '5'] },
+      { additionalRequiredIds: ['5', '6'] },
+    ])(
+      'should copy a subset to a target model with any additionally required ids %p',
+      ({ additionalRequiredIds }) => {
+        const sourceId = '123';
+        const targetId = '456';
+        const initialPayload: DataModelSubsetPayload = {
+          additions: ['1', '2', '3'],
+          deletions: ['4', '5'],
+        };
 
-      const targetDataModel: DataModelDetail = {
-        id: targetId,
-        label: 'target',
-        domainType: CatalogueItemDomainType.DataModel,
-        availableActions: ['show'],
-        finalised: false,
-      };
+        const expectedAdditionsPayload = new Set([
+          ...initialPayload.additions,
+          ...additionalRequiredIds,
+        ]);
+        const expectedPayload: DataModelSubsetPayload = {
+          additions: Array.from(expectedAdditionsPayload),
+          deletions: initialPayload.deletions,
+        };
 
-      endpointsStub.dataModel.copySubset.mockImplementation((sId, tId, pl) => {
-        expect(sId).toBe(sourceId);
-        expect(tId).toBe(targetId);
-        expect(pl).toBe(payload);
-        return cold('--a|', { a: { body: targetDataModel } });
-      });
+        const targetDataModel: DataModelDetail = {
+          id: targetId,
+          label: 'target',
+          domainType: CatalogueItemDomainType.DataModel,
+          availableActions: ['show'],
+          finalised: false,
+        };
 
-      const expected$ = cold('--a|', { a: targetDataModel });
-      const actual$ = service.copySubset(sourceId, targetId, payload);
-      expect(actual$).toBeObservable(expected$);
-    });
+        dataSpecificationResearchPluginServiceStub.getRequiredCoreTableDataElementIds.mockImplementation(
+          () => {
+            return cold('--a|', { a: additionalRequiredIds });
+          }
+        );
+
+        endpointsStub.dataModel.copySubset.mockImplementation((sId, tId, pl) => {
+          expect(sId).toBe(sourceId);
+          expect(tId).toBe(targetId);
+          expect(pl).toStrictEqual(expectedPayload);
+          return cold('--a|', { a: { body: targetDataModel } });
+        });
+
+        const expected$ = cold('----a|', { a: targetDataModel });
+        const actual$ = service.copySubset(sourceId, targetId, initialPayload);
+        expect(actual$).toBeObservable(expected$);
+      }
+    );
   });
 
   describe('get data elements for data class', () => {
@@ -657,17 +683,15 @@ describe('DataModelService', () => {
         modelVersion: undefined,
       };
 
-      endpointsStub.dataModel.newBranchModelVersion.mockImplementationOnce(
-        (id, payload) => {
-          expect(id).toBe(currentModel.id);
-          expect(payload).toStrictEqual({});
-          return cold('--a|', {
-            a: {
-              body: nextModel,
-            },
-          });
-        }
-      );
+      endpointsStub.dataModel.newBranchModelVersion.mockImplementationOnce((id, payload) => {
+        expect(id).toBe(currentModel.id);
+        expect(payload).toStrictEqual({});
+        return cold('--a|', {
+          a: {
+            body: nextModel,
+          },
+        });
+      });
 
       const expected$ = cold('--a|', {
         a: nextModel,

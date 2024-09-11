@@ -22,6 +22,7 @@ import {
   DataModel,
   Profile,
   ProfileValidationErrorList,
+  Uuid,
 } from '@maurodatamapper/mdm-resources';
 import { Observable, of } from 'rxjs';
 import { ProfileService } from '../mauro/profile.service';
@@ -32,22 +33,21 @@ import { ProfileService } from '../mauro/profile.service';
 export class CoreTableProfileService {
   private readonly queryBuilderProfileNamespace =
     'uk.ac.ox.softeng.maurodatamapper.plugins.explorer.querybuilder';
-  private readonly queryBuilderCoreTableProfileName =
-    'QueryBuilderCoreTableProfileProviderService';
+  private readonly queryBuilderCoreTableProfileName = 'QueryBuilderCoreTableProfileProviderService';
 
   constructor(private profileService: ProfileService) {}
 
   public getQueryBuilderCoreTableProfile(
-    dataModel: DataModel
+    dataModelId: Uuid | undefined
   ): Observable<Profile | undefined> {
     const requestOptions = {
       handleGetErrors: false,
     };
 
-    if (dataModel.id) {
+    if (dataModelId) {
       return this.profileService.get(
         CatalogueItemDomainType.DataModel,
-        dataModel.id,
+        dataModelId,
         this.queryBuilderProfileNamespace,
         this.queryBuilderCoreTableProfileName,
         requestOptions
