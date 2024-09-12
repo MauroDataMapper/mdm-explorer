@@ -41,7 +41,7 @@ The primary use case of the Mauro Data Explorer is to:
 
 1. Browse or search the provided catalogue for data elements.
 2. Gather data elements of interest to the user into a formal _user data specification_.
-3. Submit this user data specification to the organisation running this instance to gain access to the real data sets owned by the organisation, 
+3. Submit this user data specification to the department running this instance to gain access to the real data sets owned by the department, 
    based on the data elements specified.
 
 The current implementation considers user data specifications to be _data models_ in their own right - they are created under the access level of the user signed-in to the Mauro Data Explorer, then populated with data elements before they are submitted. The sections below go into further detail.
@@ -105,12 +105,13 @@ The `subset` endpoint is a core Mauro endpoint which allows a deep copy of a set
 
 ## Submitting Data Specifications
 
-Once happy with the collection of data elements gathered, the user will be able to submit their data specification to the organisation hosting the Mauro Data Explorer. Submission covers several areas:
+Once happy with the collection of data elements gathered, the user will be able to submit their data specification to the department hosting the 
+Mauro Data Explorer. Submission covers several areas:
 
 1. The data specification data model is [finalised](https://maurodatamapper.github.io/user-guides/finalising-data-models/finalising-data-models/).
 2. The current implementation of `mdm-plugin-explorer` will email a notification to an administrator.
 
-At this point, the Mauro Data Explorer does not handle the submitted data specification anymore, the request for data access now falls under the control/responsibility of the hosting organisation.
+At this point, the Mauro Data Explorer does not handle the submitted data specification anymore, the request for data access now falls under the control/responsibility of the hosting department.
 
 It is possible for a user to create a new version of a previously submitted data specification, using the same [versioning](https://maurodatamapper.github.io/user-guides/branch-version-fork/branch-version-fork/) mechanisms that all data models have. This will create a new draft version which can be modified again before being submitted (finalised) a second time.
 

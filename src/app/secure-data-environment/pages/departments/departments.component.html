@@ -18,30 +18,30 @@ SPDX-License-Identifier: Apache-2.0
 -->
 <dialog #dataDialog></dialog>
 
-<!-- Display this div if for some reason the user has no organisations -->
-<div *ngIf="!userHasOrganisations">
+<!-- Display this div if for some reason the user has no departments -->
+<div *ngIf="!userHasDepartments">
   <p class="mt-3">
-    Sorry, you are not a member of any organisations. If you think something is wrong,
-    please submit a help request or contact your administrator.
+    Sorry, you are not a member of any departments. If you think something is wrong, please submit a
+    help request or contact your administrator.
   </p>
 </div>
 
 <!-- resizable divs -->
-<div *ngIf="userHasOrganisations" style="display: flex; height: 100%">
+<div *ngIf="userHasDepartments" style="display: flex; height: 100%">
   <!-- left side -->
   <div class="container side-bar medium-top-spacer">
     <div class="flex-container">
       <div class="flex-container__card">
         <mat-card>
           <div class="header-content">
-            <h2>My Organisations</h2>
+            <h2>My Departments</h2>
           </div>
         </mat-card>
-        <mdm-organisation-list
-          [myOrganisations]="myOrganisations"
-          (rowClickEvent)="onOrganisationSelectEvent($event)"
+        <mdm-department-list
+          [myDepartments]="myDepartments"
+          (rowClickEvent)="onDepartmentSelectEvent($event)"
         >
-        </mdm-organisation-list>
+        </mdm-department-list>
       </div>
     </div>
   </div>
@@ -49,55 +49,57 @@ SPDX-License-Identifier: Apache-2.0
   <!-- right side -->
   <div class="main-content">
     <div
-      *ngIf="selectedOrganisation != undefined && selectedOrganisation != null"
+      *ngIf="selectedDepartment != undefined && selectedDepartment != null"
       class="container medium-top-spacer"
     >
       <div class="flex-container">
         <div class="flex-container__card">
           <mat-card class="header">
             <div class="header-content">
-              <h2>{{ selectedOrganisation != null ? selectedOrganisation.name : "" }}</h2>
+              <h2>{{ selectedDepartment != null ? selectedDepartment.name : "" }}</h2>
             </div>
             <p>
-              {{ selectedOrganisation != null ? selectedOrganisation.description : "" }}
+              {{ selectedDepartment != null ? selectedDepartment.description : "" }}
             </p>
           </mat-card>
           <div class="medium-top-spacer">
-            <h2>Organisation Members</h2>
-            <sde-organisation-member-list
-              [organisation]="selectedOrganisation"
-              [displayColumns]="displayColumnsForOrganisationMemberList"
-            ></sde-organisation-member-list>
+            <h2>Department Members</h2>
+            <sde-department-member-list
+              [department]="selectedDepartment"
+              [displayColumns]="displayColumnsForDepartmentMemberList"
+            ></sde-department-member-list>
             <div class="help-text mt-2">
               <i class="bi bi-info-circle-fill info-icon"></i>
               <span>
-                The organisation members list displays all approvers at the selected
-                organisation as well as any members of the organisation that you share a
-                project with.
+                The department members list displays all approvers at the selected department as
+                well as any members of the department that you share a project with.
               </span>
             </div>
           </div>
-          <!-- Display users organisation requests. -->
+          <!-- Display users department requests. -->
           <div class="medium-top-spacer">
-            <sde-requests-list [useConfig]="myRequestsListConfig"
-              [organisationId]="selectedOrganisation.id"></sde-requests-list>
+            <sde-requests-list
+              [useConfig]="myRequestsListConfig"
+              [departmentId]="selectedDepartment.id"
+            ></sde-requests-list>
             <div class="help-text mt-2">
               <i class="bi bi-info-circle-fill info-icon"></i>
               <span>
-                Contains all organisation scoped requests for this organisation that were
-                created by you.
+                Contains all department scoped requests for this department that were created by
+                you.
               </span>
             </div>
           </div>
-          <!-- Display organisation scoped requests needing approval. -->
-          <div *ngIf="userIsApproverForSelectedOrganisation" class="medium-top-spacer">
-            <sde-requests-list [useConfig]="requestsNeedingApprovalListConfig"
-              [organisationId]="selectedOrganisation.id"></sde-requests-list>
+          <!-- Display department scoped requests needing approval. -->
+          <div *ngIf="userIsApproverForSelectedDepartment" class="medium-top-spacer">
+            <sde-requests-list
+              [useConfig]="requestsNeedingApprovalListConfig"
+              [departmentId]="selectedDepartment.id"
+            ></sde-requests-list>
             <div class="help-text mt-2">
               <i class="bi bi-info-circle-fill info-icon"></i>
               <span>
-                A list of all organisation scoped requests that require approval at this
-                organisation.
+                A list of all department scoped requests that require approval at this department.
               </span>
             </div>
           </div>

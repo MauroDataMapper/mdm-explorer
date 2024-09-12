@@ -16,22 +16,19 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { OrganisationListComponent } from './organisation-list.component';
-import {
-  ComponentHarness,
-  setupTestModuleForComponent,
-} from 'src/app/testing/testing.helpers';
-import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
+import { DepartmentListComponent } from './department-list.component';
+import { ComponentHarness, setupTestModuleForComponent } from '../../../testing/testing.helpers';
+import { createMatDialogStub } from '../../../testing/stubs/mat-dialog.stub';
 import { MatDialog } from '@angular/material/dialog';
-import { UserOrganisationDTO } from '@maurodatamapper/sde-resources';
+import { UserDepartmentDTO } from '@maurodatamapper/sde-resources';
 import { spyOn } from 'jest-mock';
 
-describe('OrganisationListComponent', () => {
-  let harness: ComponentHarness<OrganisationListComponent>;
+describe('DepartmentListComponent', () => {
+  let harness: ComponentHarness<DepartmentListComponent>;
   const matDialogStub = createMatDialogStub();
 
   beforeEach(async () => {
-    harness = await setupTestModuleForComponent(OrganisationListComponent, {
+    harness = await setupTestModuleForComponent(DepartmentListComponent, {
       providers: [
         {
           provide: MatDialog,
@@ -46,7 +43,7 @@ describe('OrganisationListComponent', () => {
   });
 
   it('should emit rowClickEvent when onRowClickEvent is called', () => {
-    const userOrgDto = { organisationId: '1' } as UserOrganisationDTO;
+    const userOrgDto = { departmentId: '1' } as UserDepartmentDTO;
     const spy = spyOn(harness.component.rowClickEvent, 'emit');
 
     harness.component.onRowClickEvent(userOrgDto);

@@ -20,10 +20,7 @@ import { SimpleChange } from '@angular/core';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MockComponent, MockDirective } from 'ng-mocks';
 import { PluginResearchContactPayload } from 'src/app/mauro/plugins/plugin-research.resource';
-import {
-  ComponentHarness,
-  setupTestModuleForComponent,
-} from 'src/app/testing/testing.helpers';
+import { ComponentHarness, setupTestModuleForComponent } from 'src/app/testing/testing.helpers';
 
 import { ContactFormComponent, ContactFormState } from './contact-form.component';
 

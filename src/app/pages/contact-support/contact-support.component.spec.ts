@@ -30,19 +30,13 @@ import { PluginResearchContactPayload } from 'src/app/mauro/plugins/plugin-resea
 import { ResearchPluginService } from 'src/app/mauro/research-plugin.service';
 import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
 import { createResearchPluginServiceStub } from 'src/app/testing/stubs/research-plugin.stub';
-import {
-  ComponentHarness,
-  setupTestModuleForComponent,
-} from 'src/app/testing/testing.helpers';
+import { ComponentHarness, setupTestModuleForComponent } from 'src/app/testing/testing.helpers';
 import { ContactSupportComponent } from './contact-support.component';
 
 describe('ContactSupportComponent', () => {
   let harness: ComponentHarness<ContactSupportComponent>;
   const researchStub = createResearchPluginServiceStub();
-  const dialogStub = createMatDialogStub<
-    FeedbackDialogComponent,
-    FeedbackDialogResponse
-  >();
+  const dialogStub = createMatDialogStub<FeedbackDialogComponent, FeedbackDialogResponse>();
 
   const contactData: PluginResearchContactPayload = {
     firstName: 'test',
@@ -55,11 +49,7 @@ describe('ContactSupportComponent', () => {
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(ContactSupportComponent, {
-      declarations: [
-        ContactFormComponent,
-        MockComponent(MatFormField),
-        MockDirective(MatLabel),
-      ],
+      declarations: [ContactFormComponent, MockComponent(MatFormField), MockDirective(MatLabel)],
       providers: [
         {
           provide: ResearchPluginService,

@@ -33,10 +33,7 @@ import { createCatalogueUserServiceStub } from 'src/app/testing/stubs/catalogue-
 import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { createStateRouterStub } from 'src/app/testing/stubs/state-router.stub';
 import { createToastrServiceStub } from 'src/app/testing/stubs/toastr.stub';
-import {
-  ComponentHarness,
-  setupTestModuleForComponent,
-} from 'src/app/testing/testing.helpers';
+import { ComponentHarness, setupTestModuleForComponent } from 'src/app/testing/testing.helpers';
 import { MyAccountComponent } from './my-account.component';
 import { createDataSpecificationServiceStub } from 'src/app/testing/stubs/data-specifications.stub';
 import { DataSpecificationService } from 'src/app/data-explorer/data-specification.service';
@@ -296,12 +293,10 @@ describe('MyAccountComponent', () => {
         return of(folder);
       });
 
-      dataSpecificationStub.getDataSpecificationFolderName.mockImplementationOnce(
-        (email) => {
-          expect(email).toBe(updatedUser.emailAddress);
-          return newFolderName;
-        }
-      );
+      dataSpecificationStub.getDataSpecificationFolderName.mockImplementationOnce((email) => {
+        expect(email).toBe(updatedUser.emailAddress);
+        return newFolderName;
+      });
 
       dataSpecificationStub.updateDataSpecificationsFolder.mockImplementationOnce(
         (folderId, email) => {

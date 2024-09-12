@@ -20,22 +20,22 @@ import { NgModule } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
 import { CoreModule } from '../core/core.module';
 import { SdeRequestsComponent } from './components/sde-requests/sde-requests.component';
-import { OrganisationListComponent } from './components/organisation-list/organisation-list.component';
-import { OrganisationsComponent } from './pages/organisations/organisations.component';
+import { DepartmentListComponent } from './components/department-list/department-list.component';
+import { DepartmentsComponent } from './pages/departments/departments.component';
 import { SdeSignInComponent } from './sde-sign-in/sde-sign-in.component';
 
 @NgModule({
   declarations: [
     SdeRequestsComponent,
-    OrganisationListComponent,
-    OrganisationsComponent,
+    DepartmentListComponent,
+    DepartmentsComponent,
     SdeSignInComponent,
   ],
   imports: [CoreModule, SharedModule],
   exports: [
     SdeRequestsComponent,
-    OrganisationListComponent,
-    OrganisationsComponent,
+    DepartmentListComponent,
+    DepartmentsComponent,
     SdeSignInComponent,
   ],
 })

@@ -17,38 +17,32 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import {
+  DepartmentMemberDTO,
+  DepartmentRole,
   ListColumn,
-  OrganisationMemberDTO,
-  OrganisationRole,
   Uuid,
 } from '@maurodatamapper/sde-resources';
 import { Observable } from 'rxjs';
 
-export type ListOrganisationMembersFn = (
-  organisationId: Uuid
-) => Observable<OrganisationMemberDTO[]>;
-export type ListOrganisationMembersMockedFn =
-  jest.MockedFunction<ListOrganisationMembersFn>;
+export type ListDepartmentMembersFn = (departmentId: Uuid) => Observable<DepartmentMemberDTO[]>;
+export type ListDepartmentMembersMockedFn = jest.MockedFunction<ListDepartmentMembersFn>;
 
 export type GetDisplayColumnsForAdminFn = () => ListColumn[];
-export type GetDisplayColumnsForAdminMockedFn =
-  jest.MockedFunction<GetDisplayColumnsForAdminFn>;
+export type GetDisplayColumnsForAdminMockedFn = jest.MockedFunction<GetDisplayColumnsForAdminFn>;
 
-export type GetDisplayColumnsForResearcherFn = (
-  userOrganisationRole: OrganisationRole
-) => ListColumn[];
+export type GetDisplayColumnsForResearcherFn = (userDepartmentRole: DepartmentRole) => ListColumn[];
 export type GetDisplayColumnsForResearcherMockedFn =
   jest.MockedFunction<GetDisplayColumnsForResearcherFn>;
 
-export interface OrganisationMemberServiceStub {
-  listOrganisationMembers: ListOrganisationMembersMockedFn;
+export interface DepartmentMemberServiceStub {
+  listDepartmentMembers: ListDepartmentMembersMockedFn;
   getDisplayColumnsForAdmin: GetDisplayColumnsForAdminMockedFn;
   getDisplayColumnsForResearcher: GetDisplayColumnsForResearcherMockedFn;
 }
 
-export const createOrganisationMemberServiceStub = (): OrganisationMemberServiceStub => {
+export const createDepartmentMemberServiceStub = (): DepartmentMemberServiceStub => {
   return {
-    listOrganisationMembers: jest.fn() as ListOrganisationMembersMockedFn,
+    listDepartmentMembers: jest.fn() as ListDepartmentMembersMockedFn,
     getDisplayColumnsForAdmin: jest.fn() as GetDisplayColumnsForAdminMockedFn,
     getDisplayColumnsForResearcher: jest.fn() as GetDisplayColumnsForResearcherMockedFn,
   };
