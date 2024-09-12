@@ -101,7 +101,7 @@ describe('CoreTableProfileService', () => {
         a: expectedResult,
       });
 
-      const actual$ = service.getQueryBuilderCoreTableProfile(rootDataModel as DataModel);
+      const actual$ = service.getQueryBuilderCoreTableProfile(rootDataModel.id);
 
       expect(actual$).toBeObservable(expected$);
     });
@@ -159,7 +159,7 @@ describe('CoreTableProfileService', () => {
         a: expectedFrameResults,
       });
 
-      const actual$ = service.getQueryBuilderCoreTableProfile(rootDataModel as DataModel);
+      const actual$ = service.getQueryBuilderCoreTableProfile(rootDataModel.id);
 
       expect(actual$).toBeObservable(expected$);
     });

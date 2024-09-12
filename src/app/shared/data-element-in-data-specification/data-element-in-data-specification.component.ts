@@ -183,7 +183,7 @@ export class DataElementInDataSpecificationComponent implements OnInit, OnDestro
                 (de) => de.id
               );
             }
-            return this.endpoints.dataModel.copySubset(
+            return this.dataModelService.copySubset(
               transposedDataElements[0].model,
               targetDataModelId,
               datamodelSubsetPayload

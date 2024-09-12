@@ -51,22 +51,17 @@ import {
   SourceTargetIntersectionResponse,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
-import {
-  filter,
-  forkJoin,
-  from,
-  map,
-  mergeMap,
-  Observable,
-  of,
-  OperatorFunction,
-  switchMap,
-  throwError,
-  toArray,
-} from 'rxjs';
+import { filter, map, mergeMap, switchMap, toArray } from 'rxjs/operators';
 import { DataElementDto, DataElementInstance } from '../data-explorer/data-explorer.types';
 import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { DataClassIdentifier, isDataClass } from './mauro.types';
+import { DataSpecificationResearchPluginService } from './data-specification-research-plugin.service';
+import { Observable } from 'rxjs/internal/Observable';
+import { of } from 'rxjs/internal/observable/of';
+import { forkJoin } from 'rxjs/internal/observable/forkJoin';
+import { throwError } from 'rxjs/internal/observable/throwError';
+import { from } from 'rxjs/internal/observable/from';
+import { OperatorFunction } from 'rxjs/internal/types';
 
 /**
  * Service to handle data interactions with Data Models and related items, such as Data Classes.
@@ -75,7 +70,10 @@ import { DataClassIdentifier, isDataClass } from './mauro.types';
   providedIn: 'root',
 })
 export class DataModelService {
-  constructor(private endpoints: MdmEndpointsService) {}
+  constructor(
+    private endpoints: MdmEndpointsService,
+    private dataSpecResearchPluginService: DataSpecificationResearchPluginService
+  ) {}
 
   /**
    * Gets a Data Model based on the ID of the model in the catalogue.
@@ -243,7 +241,8 @@ export class DataModelService {
 
   /**
    * Copy a subset of a Data Model to another Data Model. Define which Data Elements to add/remove and the related
-   * schema will also be copied to the target as well.
+   * schema will also be copied to the target as well. It also ensures the copying brings in the core table,
+   * and any foreign keys present in the elements being copied.
    *
    * @param sourceId The unique identifier of the source Data Model to copy from.
    * @param targetId The unique identifier of the source Data Model to copy to.
@@ -255,9 +254,18 @@ export class DataModelService {
     targetId: Uuid,
     payload: DataModelSubsetPayload
   ): Observable<DataModelDetail> {
-    return this.endpoints.dataModel
-      .copySubset(sourceId, targetId, payload)
-      .pipe(map((response: DataModelDetailResponse) => response.body));
+    return this.dataSpecResearchPluginService
+      .getRequiredCoreTableDataElementIds([...payload.additions])
+      .pipe(
+        switchMap((requiredIds: Uuid[]): Observable<DataModelDetailResponse> => {
+          // Merge required IDs with the existing additions.
+          const updatedAdditions = Array.from(new Set([...payload.additions, ...requiredIds]));
+          payload.additions = updatedAdditions;
+
+          return this.endpoints.dataModel.copySubset(sourceId, targetId, payload);
+        }),
+        map((response: DataModelDetailResponse) => response.body)
+      );
   }
 
   /**

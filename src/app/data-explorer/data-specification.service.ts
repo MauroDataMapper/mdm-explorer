@@ -870,7 +870,7 @@ export class DataSpecificationService {
   ): Observable<[DataModelDetail, Profile | undefined]> {
     return forkJoin([
       of(dataModelDetail),
-      this.coreTableProfileService.getQueryBuilderCoreTableProfile(rootDataModel),
+      this.coreTableProfileService.getQueryBuilderCoreTableProfile(rootDataModel.id),
     ]);
   }
 
