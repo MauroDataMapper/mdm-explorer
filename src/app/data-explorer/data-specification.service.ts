@@ -546,8 +546,12 @@ export class DataSpecificationService {
       this.create(user, name, description),
     ]).pipe(
       switchMap(([rootDataModel, dataSpecification]) => {
-        if (!rootDataModel?.id || !dataSpecification?.id) {
-          return throwError(() => new Error('Missing root data model or data specification'));
+        if (!rootDataModel?.id) {
+          return throwError(() => new Error('Missing root data model.'));
+        }
+
+        if (!dataSpecification?.id) {
+          return throwError(() => new Error('Missing data specification.'));
         }
 
         // Get the result of copying the elements to the new data specification.
@@ -561,23 +565,22 @@ export class DataSpecificationService {
         );
 
         // Get the coreTableProfile.
-        const coreTableProfile$ =
-          this.coreTableProfileService.getQueryBuilderCoreTableProfile(rootDataModel);
+        const coreTableProfile$ = this.coreTableProfileService.getQueryBuilderCoreTableProfile(
+          rootDataModel.id
+        );
 
         return forkJoin({
           populatedDataSpecification: populatedDataSpecification$,
           coreTableProfile: coreTableProfile$,
         });
       }),
-      map(({ populatedDataSpecification, coreTableProfile }) => {
+      switchMap(({ populatedDataSpecification, coreTableProfile }) => {
         // Save the core table profile to the newly created data specification.
-        this.coreTableProfileService.saveQueryBuilderCoreTableProfile(
-          populatedDataSpecification,
-          coreTableProfile
-        );
-
-        // We don't care about the output above so just return the data specification.
-        return this.submissionSDEService.mapToDataSpecification(populatedDataSpecification);
+        return this.coreTableProfileService
+          .saveQueryBuilderCoreTableProfile(populatedDataSpecification, coreTableProfile)
+          .pipe(
+            map(() => this.submissionSDEService.mapToDataSpecification(populatedDataSpecification))
+          );
       })
     );
   }

@@ -484,7 +484,12 @@ describe('DataSpecificationService', () => {
         return cold('-a|', { a: undefined });
       });
 
-      const expected$ = cold('------(a|)', {
+      submissionSDEServiceStub.mapToDataSpecification.mockImplementationOnce((dataModel) => {
+        expect(dataModel.id).toBe(dataSpecification.id);
+        return dataSpecification;
+      });
+
+      const expected$ = cold('-------a|', {
         a: dataSpecification,
       });
       const actual$ = service.createFromDataElements(elements, user, name, description);
