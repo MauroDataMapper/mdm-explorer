@@ -20,17 +20,23 @@ import { ISubmissionState } from '../../../data-explorer/specification-submissio
 
 export type StateServiceSetFn = (state: Partial<ISubmissionState>) => void;
 export type StateServiceSetMockedFn = jest.MockedFunction<StateServiceSetFn>;
+
 export type StateServiceGetFn = () => ISubmissionState;
 export type StateServiceGetMockedFn = jest.MockedFunction<StateServiceGetFn>;
+
 export type StateServiceGetStepInputFromShapeFn = (
   shape: (keyof ISubmissionState)[]
 ) => Partial<ISubmissionState>;
 export type StateServiceGetStepInputFromShapeMockedFn =
   jest.MockedFunction<StateServiceGetStepInputFromShapeFn>;
 
+export type StateServiceClearFn = () => void;
+export type StateServiceClearMockedFn = jest.MockedFunction<StateServiceClearFn>;
+
 export interface StateServiceStub {
   set: StateServiceSetMockedFn;
   get: StateServiceGetMockedFn;
+  clear: StateServiceClearMockedFn;
   getStepInputFromShape: StateServiceGetStepInputFromShapeMockedFn;
 }
 
@@ -38,6 +44,7 @@ export const createStateServiceStub = (): StateServiceStub => {
   return {
     set: jest.fn() as StateServiceSetMockedFn,
     get: jest.fn() as StateServiceGetMockedFn,
+    clear: jest.fn() as StateServiceClearMockedFn,
     getStepInputFromShape: jest.fn() as StateServiceGetStepInputFromShapeMockedFn,
   };
 };
