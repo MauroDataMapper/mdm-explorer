@@ -31,10 +31,9 @@ SPDX-License-Identifier: Apache-2.0
   </div>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-  <button mat-stroked-button color="warn" (click)="clearSelection()">
-    Clear selection
-  </button>
+  <button mat-stroked-button color="warn" (click)="clearSelection()">Clear selection</button>
   <mdm-data-element-multi-select
+    (selectionAddedToSpec)="clearSelection()"
     [sourceTargetIntersections]="sourceTargetIntersections"
     [dataElements]="(selectedElements$ | async) ?? []"
   ></mdm-data-element-multi-select>
