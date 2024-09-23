@@ -54,8 +54,7 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
   @Input() showRemoveFromBookmarks = false;
   @Input() suppressViewDataSpecificationsDialogButton = false;
 
-  @Output() createDataSpecificationClicked =
-    new EventEmitter<CreateDataSpecificationEvent>();
+  @Output() selectionAddedToSpec = new EventEmitter();
 
   @Output() remove = new EventEmitter<RemoveBookmarkEvent>();
 
@@ -121,11 +120,9 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
         if (response.action === 'view-data-specifications') {
           this.stateRouter.navigateToKnownPath('/dataSpecifications');
         } else if (response.action === 'view-data-specification-detail') {
-          this.stateRouter.navigateTo([
-            '/dataSpecifications',
-            response.dataSpecification.id,
-          ]);
+          this.stateRouter.navigateTo(['/dataSpecifications', response.dataSpecification.id]);
         }
+        this.selectionAddedToSpec.emit();
       });
   }
 
@@ -137,8 +134,7 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
   onClickAddSelectedToDataSpecification(item: DataModel) {
     // If there are any selected data elements then they should all be from the same source data model.
     // So pick the first and use that
-    const sourceDataModelId =
-      this.dataElements.length > 0 ? this.dataElements[0].model : null;
+    const sourceDataModelId = this.dataElements.length > 0 ? this.dataElements[0].model : null;
 
     // The target data model (aka data specification)
     const targetDataModelId = item.id;
@@ -149,11 +145,7 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
       deletions: [],
     };
 
-    if (
-      sourceDataModelId &&
-      targetDataModelId &&
-      datamodelSubsetPayload.additions.length > 0
-    ) {
+    if (sourceDataModelId && targetDataModelId && datamodelSubsetPayload.additions.length > 0) {
       this.broadcast.loading({
         isLoading: true,
         caption: 'Updating your data specification...',
@@ -166,6 +158,7 @@ export class DataElementMultiSelectComponent implements OnInit, OnDestroy {
           // Really this is an update rather than add, but broadcasting data-specification-added has the effect we want
           // i.e. forcing intersections to be refreshed
           this.broadcast.dispatch('data-specification-added');
+          this.selectionAddedToSpec.emit();
 
           return this.dialogs
             .openDataSpecificationUpdated({
