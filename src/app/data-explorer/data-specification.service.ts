@@ -24,7 +24,6 @@ import {
   DataModelCreatePayload,
   DataModelDetail,
   ModelUpdatePayload,
-  Profile,
   RuleRepresentationPayload,
   Uuid,
 } from '@maurodatamapper/mdm-resources';
@@ -542,34 +541,47 @@ export class DataSpecificationService {
   ): Observable<DataSpecification> {
     return forkJoin([
       // TODO: assume there is only one data model, will have to change in future
+      // Get the rootModel and create a new empty data specification.
       this.dataExplorer.getRootDataModel(),
       this.create(user, name, description),
     ]).pipe(
       switchMap(([rootDataModel, dataSpecification]) => {
-        if (!rootDataModel || !rootDataModel.id) {
-          return throwError(() => new Error('No root data model'));
+        if (!rootDataModel?.id) {
+          return throwError(() => new Error('Missing root data model.'));
         }
 
-        if (!dataSpecification || !dataSpecification.id) {
-          return throwError(() => new Error('No data specification'));
+        if (!dataSpecification?.id) {
+          return throwError(() => new Error('Missing data specification.'));
         }
 
-        return this.copyDataElementsToDataModel(
-          rootDataModel,
+        // Get the result of copying the elements to the new data specification.
+        const populatedDataSpecification$ = this.dataModels.copySubset(
           rootDataModel.id,
-          elements,
-          dataSpecification.id
+          dataSpecification.id,
+          {
+            additions: elements.map((de) => de.id),
+            deletions: [],
+          }
         );
+
+        // Get the coreTableProfile.
+        const coreTableProfile$ = this.coreTableProfileService.getQueryBuilderCoreTableProfile(
+          rootDataModel.id
+        );
+
+        return forkJoin({
+          populatedDataSpecification: populatedDataSpecification$,
+          coreTableProfile: coreTableProfile$,
+        });
       }),
-      switchMap(([rootDataModel, dataSpecification]) => {
-        return this.getCoreTableProfile(rootDataModel, dataSpecification);
-      }),
-      switchMap(([dataSpecification, coreTableProfile]) => {
-        return this.saveCoreTableProfile(dataSpecification, coreTableProfile);
-      }),
-      map(([_, targetDataModel]) =>
-        this.submissionSDEService.mapToDataSpecification(targetDataModel)
-      )
+      switchMap(({ populatedDataSpecification, coreTableProfile }) => {
+        // Save the core table profile to the newly created data specification.
+        return this.coreTableProfileService
+          .saveQueryBuilderCoreTableProfile(populatedDataSpecification, coreTableProfile)
+          .pipe(
+            map(() => this.submissionSDEService.mapToDataSpecification(populatedDataSpecification))
+          );
+      })
     );
   }
 
@@ -847,43 +859,5 @@ export class DataSpecificationService {
         return of(!dataSpecifications.some((element) => element.label === name));
       })
     );
-  }
-
-  private copyDataElementsToDataModel(
-    rootDataModel: DataModel,
-    rootDataModelId: Uuid,
-    elements: DataElementInstance[],
-    dataSpecificationId: Uuid
-  ): Observable<[DataModel, DataModelDetail]> {
-    return forkJoin([
-      of(rootDataModel),
-      this.dataModels.copySubset(rootDataModelId, dataSpecificationId, {
-        additions: elements.map((de) => de.id),
-        deletions: [],
-      }),
-    ]);
-  }
-
-  private getCoreTableProfile(
-    rootDataModel: DataModel,
-    dataModelDetail: DataModelDetail
-  ): Observable<[DataModelDetail, Profile | undefined]> {
-    return forkJoin([
-      of(dataModelDetail),
-      this.coreTableProfileService.getQueryBuilderCoreTableProfile(rootDataModel.id),
-    ]);
-  }
-
-  private saveCoreTableProfile(
-    dataModelDetail: DataModelDetail,
-    coreTableProfile: Profile | undefined
-  ): Observable<[Profile | undefined, DataModelDetail]> {
-    const $profile = coreTableProfile
-      ? this.coreTableProfileService.saveQueryBuilderCoreTableProfile(
-          dataModelDetail,
-          coreTableProfile
-        )
-      : of(undefined);
-    return forkJoin([$profile, of(dataModelDetail)]);
   }
 }
