@@ -16,7 +16,8 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<div [ngClass]="spinnerContainerCssClassMap">
-  <mat-spinner [diameter]="diameter" [color]="color"></mat-spinner>
-  <div [className]="color">{{ caption }}</div>
-</div>
+<h1 mat-dialog-title>{{ heading }}</h1>
+<mat-dialog-content *ngIf="message" [innerHTML]="message"> </mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-flat-button color="primary" (click)="close()">Continue</button>
+</mat-dialog-actions>

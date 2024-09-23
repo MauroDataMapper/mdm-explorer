@@ -29,6 +29,10 @@ export class SubmissionStateService {
     this._state = {} as ISubmissionState;
   }
 
+  clear(): void {
+    this._state = {} as ISubmissionState;
+  }
+
   get(): ISubmissionState {
     return { ...this._state };
   }

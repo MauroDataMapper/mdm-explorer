@@ -56,6 +56,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   isLoading = false;
   loadingCaption = '';
+  fillviewport = true;
 
   draftDataSpecificationsCount = 0;
 
@@ -259,6 +260,7 @@ export class AppComponent implements OnInit, OnDestroy {
       .subscribe((payload) => {
         this.isLoading = payload.isLoading;
         this.loadingCaption = payload.caption ?? '';
+        this.fillviewport = payload.fillviewport ?? true;
       });
 
     // Check immediately if the last authenticated session is expired and setup a recurring

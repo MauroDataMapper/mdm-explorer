@@ -25,11 +25,10 @@ import {
 import { MockDirective } from 'ng-mocks';
 import { createMatDialogRefStub } from 'src/app/testing/stubs/mat-dialog.stub';
 import { ComponentHarness, setupTestModuleForComponent } from 'src/app/testing/testing.helpers';
-import { SuccessDialogComponent } from './success-dialog.component';
-import { SimpleDialogData } from '../simple-dialog/simple-dialog.component';
+import { SimpleDialogComponent, SimpleDialogData } from './simple-dialog.component';
 
-describe('SuccessDialogComponent', () => {
-  let harness: ComponentHarness<SuccessDialogComponent>;
+describe('SimpleDialogComponent', () => {
+  let harness: ComponentHarness<SimpleDialogComponent>;
   const dialogRefStub = createMatDialogRefStub<void>();
 
   const data: SimpleDialogData = {
@@ -38,7 +37,7 @@ describe('SuccessDialogComponent', () => {
   };
 
   beforeEach(async () => {
-    harness = await setupTestModuleForComponent(SuccessDialogComponent, {
+    harness = await setupTestModuleForComponent(SimpleDialogComponent, {
       declarations: [MockDirective(MatDialogContent), MockDirective(MatDialogActions)],
       providers: [
         {

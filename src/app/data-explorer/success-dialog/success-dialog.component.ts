@@ -18,32 +18,18 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-
-export interface SuccessDialogData {
-  heading: string;
-  message?: string;
-}
+import { SimpleDialogComponent, SimpleDialogData } from '../simple-dialog/simple-dialog.component';
 
 @Component({
   selector: 'mdm-success-dialog',
   templateUrl: './success-dialog.component.html',
   styleUrls: ['./success-dialog.component.scss'],
 })
-export class SuccessDialogComponent {
+export class SuccessDialogComponent extends SimpleDialogComponent {
   constructor(
-    private dialogRef: MatDialogRef<SuccessDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) private data: SuccessDialogData
-  ) {}
-
-  get heading() {
-    return this.data.heading;
-  }
-
-  get message() {
-    return this.data.message;
-  }
-
-  close() {
-    this.dialogRef.close();
+    dialogRef: MatDialogRef<SuccessDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) data: SimpleDialogData
+  ) {
+    super(dialogRef, data);
   }
 }

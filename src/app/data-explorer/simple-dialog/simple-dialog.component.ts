@@ -16,12 +16,34 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-// eslint-disable-next-line no-useless-escape
-export const defaultEmailPattern =
-  /^[_A-Za-z0-9-'!#%&=\/~\`\+\$\*\?\^\{\|\}]+(\.[_A-Za-z0-9-'!#%&=\/~\`\+\$\*\?\^\{\|\}]+)*@[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-\+]+)*(\.[A-Za-z]{2,})$/;
+import { Component, Inject } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
-export interface LoadingBroadcastPayload {
-  isLoading: boolean;
-  caption?: string;
-  fillviewport?: boolean;
+export interface SimpleDialogData {
+  heading: string;
+  message?: string;
+}
+
+@Component({
+  selector: 'mdm-simple-dialog',
+  templateUrl: './simple-dialog.component.html',
+  styleUrls: ['./simple-dialog.component.scss'],
+})
+export class SimpleDialogComponent {
+  constructor(
+    private dialogRef: MatDialogRef<SimpleDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) private data: SimpleDialogData
+  ) {}
+
+  get heading() {
+    return this.data.heading;
+  }
+
+  get message() {
+    return this.data.message;
+  }
+
+  close() {
+    this.dialogRef.close();
+  }
 }

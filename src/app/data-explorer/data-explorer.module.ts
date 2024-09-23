@@ -66,6 +66,7 @@ import { HasFieldsPipe } from './query-builder/pipes/has-fields-pipe';
 import { ArrowFormatPipe } from './query-builder/pipes/arrow-format-pipe';
 import { SelectProjectDialogComponent } from './specification-submission/select-project-dialog/select-project-dialog.component';
 import { ReadOnlyMeqlPipe } from './pipes/readonly-meql.pipe';
+import { SimpleDialogComponent } from './simple-dialog/simple-dialog.component';
 
 const queryBuilderModules = [
   QueryBuilderComponent,
@@ -99,6 +100,7 @@ const queryBuilderModules = [
     DataSpecificationCreatedDialogComponent,
     DataSpecificationUpdatedDialogComponent,
     SuccessDialogComponent,
+    SimpleDialogComponent,
     IdentifiableDataIconComponent,
     SearchFiltersComponent,
     CatalogueSearchFormComponent,

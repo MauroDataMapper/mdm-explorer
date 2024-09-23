@@ -28,4 +28,16 @@ export class LoadingSpinnerComponent {
   @Input() color: ThemePalette = 'primary';
   @Input() diameter = 50;
   @Input() caption = 'Loading ...';
+  @Input() fillviewport = true;
+
+  /**
+   * Get the CSS class to use to size the spinner container, mapped to an object that can be applied to
+   * the NgClass directive.
+   */
+  get spinnerContainerCssClassMap() {
+    return {
+      'mdm-spinner-container--fill': this.fillviewport,
+      'mdm-spinner-container--centre': !this.fillviewport,
+    };
+  }
 }
