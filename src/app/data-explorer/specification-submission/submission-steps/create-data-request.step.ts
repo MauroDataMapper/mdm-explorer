@@ -122,15 +122,17 @@ export class CreateDataRequestStep implements ISubmissionStep {
             }),
             switchMap(([response, dataSpecification]) => {
               this.broadcastService.submittingDataSpecification('Creating data request...');
+              const dataSpecificationName = `${dataSpecification.label} (${dataSpecification.modelVersion})`;
 
               // Save a request here
               const requestCreate: RequestCreate = {
                 type: RequestType.Data,
                 projectId: response.projectId,
-                mauroDataSpecificationId: specificationId,
                 definition: {
-                  title: `${dataSpecification.label} (${dataSpecification.modelVersion})`,
+                  title: dataSpecificationName,
                   content: dataSpecification.description ?? 'No description provided',
+                  mauroDataSpecificationId: specificationId,
+                  mauroDataSpecificationName: dataSpecificationName,
                 } as RequestDefinition,
               };
 
