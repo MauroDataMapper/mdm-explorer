@@ -1,0 +1,207 @@
+<!--
+Copyright 2022-2023 University of Oxford
+and Health and Social Care Information Centre, also known as NHS Digital
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+SPDX-License-Identifier: Apache-2.0
+-->
+<h2>Personal details</h2>
+<form
+  [formGroup]="registrationForm"
+  (submit)="submit()"
+  role="form"
+  autocomplete="on"
+  name="contactForm"
+>
+  <div formGroupName="personalDetails">
+    <div class="row">
+      <div class="col-md-6">
+        <mat-form-field [appearance]="formFieldAppearance">
+          <mat-label>First name</mat-label>
+          <input
+            matInput
+            type="text"
+            name="firstName"
+            formControlName="firstName"
+            autocomplete="on"
+          />
+          <mat-error *ngIf="personalDetails.firstName?.errors?.required">
+            First name is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="col-md-6">
+        <mat-form-field [appearance]="formFieldAppearance">
+          <mat-label>Last name</mat-label>
+          <input
+            matInput
+            type="text"
+            name="lastName"
+            formControlName="lastName"
+            autocomplete="on"
+          />
+          <mat-error *ngIf="personalDetails.lastName?.errors?.required">
+            Last name is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-input">
+          <mat-form-field [appearance]="formFieldAppearance">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" name="email" formControlName="email" autocomplete="on" />
+            <mat-error *ngIf="personalDetails.email?.errors?.required">
+              Email is required
+            </mat-error>
+            <mat-error *ngIf="personalDetails.email?.errors?.email">
+              Please enter a valid email address
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-input">
+          <mat-form-field [appearance]="formFieldAppearance">
+            <mat-label>Phone number</mat-label>
+            <input
+              matInput
+              type="tel"
+              name="phoneNumber"
+              formControlName="phoneNumber"
+              autocomplete="on"
+            />
+            <mat-error *ngIf="personalDetails.phoneNumber?.errors?.required">
+              Phone number is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Organisation section -->
+  <h2>Organisation</h2>
+  <p>Would you like to join an existing organisation or create a new one?</p>
+  <div class="mb-lg-3">
+    <mat-radio-group
+      [value]="isCreatingNewOrganisation"
+      (change)="toggleOrganisationCreation($event.value)"
+    >
+      <div class="row">
+        <div class="col text-left">
+          <mat-radio-button [value]="false">Join existing organisation</mat-radio-button>
+        </div>
+        <div class="col text-right">
+          <mat-radio-button [value]="true">Create new organisation</mat-radio-button>
+        </div>
+      </div>
+    </mat-radio-group>
+  </div>
+
+  <div formGroupName="organisationDetails">
+    <div *ngIf="!isCreatingNewOrganisation">
+      <mat-form-field [appearance]="formFieldAppearance">
+        <mat-label>Organisation</mat-label>
+        <mat-select formControlName="organisation" required>
+          <mat-option *ngFor="let option of organisationOptions" [value]="option.value">
+            {{ option.displayValue }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="organisationDetails.organisation.errors?.required"
+          >Organisation is required</mat-error
+        >
+      </mat-form-field>
+    </div>
+
+    <div *ngIf="isCreatingNewOrganisation">
+      <div class="form-input">
+        <mat-form-field [appearance]="formFieldAppearance">
+          <mat-label>Organisation Name</mat-label>
+          <input matInput type="text" formControlName="orgName" required />
+          <mat-error *ngIf="organisationDetails.orgName.errors?.required"
+            >Organisation name is required</mat-error
+          >
+        </mat-form-field>
+      </div>
+      <div class="form-input">
+        <mat-form-field [appearance]="formFieldAppearance">
+          <mat-label>Website</mat-label>
+          <input matInput type="url" formControlName="orgWebsite" required />
+          <mat-error *ngIf="organisationDetails.orgWebsite.errors?.required"
+            >Website is required</mat-error
+          >
+        </mat-form-field>
+      </div>
+      <div class="form-input">
+        <mat-form-field [appearance]="formFieldAppearance">
+          <mat-label>Country of Registration</mat-label>
+          <input matInput type="text" formControlName="orgCountryOfRegistration" required />
+          <mat-error *ngIf="organisationDetails.orgCountryOfRegistration.errors?.required"
+            >Country of registration is required</mat-error
+          >
+        </mat-form-field>
+      </div>
+      <div class="form-input">
+        <mat-form-field [appearance]="formFieldAppearance">
+          <mat-label>Organisation Type</mat-label>
+          <input matInput type="text" formControlName="orgType" required />
+          <mat-error *ngIf="organisationDetails.orgType.errors?.required"
+            >Organisation type is required</mat-error
+          >
+        </mat-form-field>
+      </div>
+      <div class="form-input mb-2">
+        <mat-checkbox formControlName="smallMediumBusinessStatus"
+          >Does you company have Small/Medium Business status?</mat-checkbox
+        >
+      </div>
+    </div>
+  </div>
+
+  <!-- Organisation section -->
+  <h2>Department</h2>
+  <p *ngIf="isCreatingNewOrganisation">
+    Every organisation must have at least one department, please enter the name of the department at
+    your organisation that you would like to be affiliated with.
+  </p>
+  <p *ngIf="!isCreatingNewOrganisation">Please select which department you would like to join.</p>
+  <div formGroupName="departmentDetails">
+    <mat-form-field *ngIf="isCreatingNewOrganisation" [appearance]="formFieldAppearance">
+      <mat-label>Department Name</mat-label>
+      <input matInput formControlName="deptName" />
+      <mat-error *ngIf="departmentDetails.deptName.invalid">Department Name is required</mat-error>
+    </mat-form-field>
+    <mat-form-field *ngIf="!isCreatingNewOrganisation" [appearance]="formFieldAppearance">
+      <mat-label>Department</mat-label>
+      <mat-select formControlName="department">
+        <mat-option *ngFor="let department of mockedDepartments" [value]="department.value">
+          {{ department.displayValue }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="departmentDetails.department.invalid">Department is required</mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="form-submit">
+    <button mat-flat-button color="primary" type="submit" class="button-wide">
+      <!-- [disabled]="state === 'sending' || registrationForm.invalid" -->
+      Request account
+    </button>
+  </div>
+  <!-- <div *ngIf="state === 'sending'" class="form-working">
+    <mat-progress-bar color="primary" mode="indeterminate"></mat-progress-bar>
+  </div> -->
+</form>

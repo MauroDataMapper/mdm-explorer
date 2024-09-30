@@ -43,6 +43,7 @@ import { TemplateDataSpecificationsComponent } from './template-data-specificati
 import { TemplateDataSpecificationDetailComponent } from './template-data-specification-detail/template-data-specification-detail.component';
 import { SdeMainComponent } from './sde-main/sde-main.component';
 import { SdeAuthenticationFinalizeComponent } from './sde-authentication-finalize/sde-authentication-finalize.component';
+import { UserRegistrationComponent } from './user-registration/user-registration.component';
 
 export const buildStaticContentRoute = (path: string, staticAssetPath: string): Route => {
   return {
@@ -113,6 +114,10 @@ export const routes: Route[] = [
   {
     path: 'sign-in',
     component: SignInComponent,
+  },
+  {
+    path: 'user-registration',
+    component: UserRegistrationComponent,
   },
   {
     path: 'forgot-password',
