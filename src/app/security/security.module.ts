@@ -25,6 +25,7 @@ import { CatalogueUserBasicFormComponent } from './catalogue-user-basic-form/cat
 import { CatalogueUserContactFormComponent } from './catalogue-user-contact-form/catalogue-user-contact-form.component';
 import { CoreModule } from '../core/core.module';
 import { ChangePasswordFormComponent } from './change-password-form/change-password-form.component';
+import { UserRegistrationFormComponent } from '../pages/user-registration/user-registration-form/user-registration-form.component';
 
 @NgModule({
   declarations: [
@@ -34,10 +35,12 @@ import { ChangePasswordFormComponent } from './change-password-form/change-passw
     CatalogueUserBasicFormComponent,
     CatalogueUserContactFormComponent,
     ChangePasswordFormComponent,
+    UserRegistrationFormComponent,
   ],
   imports: [CoreModule, SharedModule],
   exports: [
     SignInFormComponent,
+    UserRegistrationFormComponent,
     OpenIdConnectAuthorizeComponent,
     ForgotPasswordFormComponent,
     CatalogueUserBasicFormComponent,
