@@ -108,13 +108,14 @@ export class AppComponent implements OnInit, OnDestroy {
       routerLink: '/search',
       onlySignedIn: true,
     },
+    /* Temporarily removed
     {
       label: 'Templates',
       routerLink: '/templates',
       onlySignedIn: true,
-    },
+    },*/
     {
-      label: 'SDE',
+      label: 'Requests',
       routerLink: '/sde',
       onlySignedIn: true,
     },

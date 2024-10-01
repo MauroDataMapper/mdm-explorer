@@ -23,28 +23,21 @@ SPDX-License-Identifier: Apache-2.0
       <div class="mdm-dashboard__search-form">
         <form role="form" name="search" (submit)="search()">
           <mat-form-field appearance="outline" class="mdm-dashboard__search-input">
-            <input
-              matInput
-              placeholder="Search"
-              name="search"
-              [(ngModel)]="searchTerms"
-            />
+            <input matInput placeholder="Search" name="search" [(ngModel)]="searchTerms" />
             <button mat-icon-button matSuffix type="submit">
               <mat-icon fontSet="fa-solid" fontIcon="fa-magnifying-glass"></mat-icon>
             </button>
           </mat-form-field>
         </form>
-        <a class="mdm-dashboard__search-advanced" routerLink="/search">
-          Advanced Search...</a
-        >
+        <a class="mdm-dashboard__search-advanced" routerLink="/search"> Advanced Search...</a>
         <div class="mdm-dashboard__search-browse">
           <p class="text-center">
             Not sure what you are looking for? Try
             <a routerLink="/browse">browsing our catalogue</a> instead.
           </p>
           <p class="text-center">
-            Or read our <a routerLink="/help">help guides</a> to understand what the Mauro
-            Data Explorer is for and how it can help you.
+            Or read our <a routerLink="/help">help guides</a> to understand what the Mauro Data
+            Explorer is for and how it can help you.
           </p>
         </div>
       </div>
@@ -57,26 +50,25 @@ SPDX-License-Identifier: Apache-2.0
         >
       </div>
       <p>
-        You will find your active projects here, which organises our data points you are
-        interested in for your own research. You can then submit these to us to request
-        permission for our data.
+        You will find your active projects here, which organises our data points you are interested
+        in for your own research. You can then submit these to us to request permission for our
+        data.
       </p>
       <p>
+        <a routerLink="/search">Search</a> or <a routerLink="/browse">browse</a> our catalogue to
+        identify further data points of interest.
+        <!-- Temporarily removed
         <a routerLink="/search">Search</a> or <a routerLink="/browse">browse</a> our
         catalogue to identify further data points of interest. You can also use our
         <a routerLink="/templates">data specification templates</a>, curated to represent
         common scenarios, as a starting point for your own data specifications.
+        -->
       </p>
       <p *ngIf="currentUserDataSpecifications.length === 0" class="text-center">
-        No active data specifications yet? Search the catalogue to start, or review our
-        templates.
+        No active data specifications yet? Search the catalogue to start, or review our templates.
       </p>
       <div *ngIf="currentUserDataSpecifications.length > 0">
-        <p-carousel
-          [value]="currentUserDataSpecifications"
-          [numVisible]="3"
-          [numScroll]="3"
-        >
+        <p-carousel [value]="currentUserDataSpecifications" [numVisible]="3" [numScroll]="3">
           <ng-template let-dataSpecification pTemplate="item">
             <div
               class="mdm-dashboard__data-specification-card"
