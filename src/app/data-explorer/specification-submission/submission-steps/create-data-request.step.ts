@@ -39,7 +39,7 @@ import {
   RequestType,
   UserProjectDTO,
   Uuid,
-  MauroDataSpecificationKeyValuePair,
+  MauroDataSpecificationDTO,
 } from '@maurodatamapper/sde-resources';
 import { DataSpecificationService } from '../../data-specification.service';
 import { NoProjectsFoundError } from '../type-declarations/submission.custom-errors';
@@ -126,10 +126,10 @@ export class CreateDataRequestStep implements ISubmissionStep {
               const dataSpecificationName = `${dataSpecification.label} (${dataSpecification.modelVersion})`;
 
               // Save a request here
-              const mauroDataSpecificationKeyValuePair = {
+              const mauroDataSpecificationDTO = {
                 mauroId: specificationId,
                 name: dataSpecificationName,
-              } as MauroDataSpecificationKeyValuePair;
+              } as MauroDataSpecificationDTO;
 
               const requestCreate: RequestCreate = {
                 type: RequestType.Data,
@@ -137,7 +137,7 @@ export class CreateDataRequestStep implements ISubmissionStep {
                 definition: {
                   title: dataSpecificationName,
                   content: dataSpecification.description ?? 'No description provided',
-                  mauroDataSpecificationDTO: mauroDataSpecificationKeyValuePair,
+                  mauroDataSpecificationDTO,
                 } as DataRequestDefinition,
               };
 
