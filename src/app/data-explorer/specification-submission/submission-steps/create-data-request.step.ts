@@ -33,12 +33,13 @@ import {
   IdNamePair,
   MembershipEndpointsResearcher,
   RequestCreate,
-  RequestDefinition,
+  DataRequestDefinition,
   RequestEndpointsResearcher,
   RequestResponse,
   RequestType,
   UserProjectDTO,
   Uuid,
+  MauroDataSpecificationKeyValuePair,
 } from '@maurodatamapper/sde-resources';
 import { DataSpecificationService } from '../../data-specification.service';
 import { NoProjectsFoundError } from '../type-declarations/submission.custom-errors';
@@ -125,15 +126,19 @@ export class CreateDataRequestStep implements ISubmissionStep {
               const dataSpecificationName = `${dataSpecification.label} (${dataSpecification.modelVersion})`;
 
               // Save a request here
+              const mauroDataSpecificationKeyValuePair = {
+                mauroId: specificationId,
+                name: dataSpecificationName,
+              } as MauroDataSpecificationKeyValuePair;
+
               const requestCreate: RequestCreate = {
                 type: RequestType.Data,
                 projectId: response.projectId,
                 definition: {
                   title: dataSpecificationName,
                   content: dataSpecification.description ?? 'No description provided',
-                  mauroDataSpecificationId: specificationId,
-                  mauroDataSpecificationName: dataSpecificationName,
-                } as RequestDefinition,
+                  mauroDataSpecificationDTO: mauroDataSpecificationKeyValuePair,
+                } as DataRequestDefinition,
               };
 
               return this.researcherRequestEndpoints.createRequest(requestCreate);
