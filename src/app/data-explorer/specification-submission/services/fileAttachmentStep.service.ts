@@ -70,12 +70,13 @@ export class FileAttachmentStepService {
     return this.attachmentsService.attachFile(
       input.dataRequestId,
       input.fileProperties,
-      attachmentType
+      attachmentType,
+      input.specificationId
     );
   }
 
   getInputShape(): (keyof ISubmissionState)[] {
-    return ['dataRequestId', 'fileProperties', 'cancel'];
+    return ['dataRequestId', 'fileProperties', 'cancel', 'specificationId'];
   }
 
   private inputIsDefined(input: Partial<ISubmissionState>): input is ISubmissionState {

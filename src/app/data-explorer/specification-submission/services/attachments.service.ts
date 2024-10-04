@@ -58,7 +58,8 @@ export class AttachmentsService {
   attachFile(
     dataRequestId: Uuid,
     fileProperties: FileProperties,
-    attachmentType: AttachmentType
+    attachmentType: AttachmentType,
+    dataSpecificationId: Uuid
   ): Observable<StepResult> {
     return this.sdeRestHandler.download(fileProperties.url).pipe(
       switchMap((blob) => {
@@ -79,7 +80,7 @@ export class AttachmentsService {
           return EMPTY; // Emit nothing for progress events
         } else {
           return this.requestEndpoints
-            .attachFile(dataRequestId, uploadEvent.fileId, attachmentType)
+            .attachFile(dataRequestId, uploadEvent.fileId, attachmentType, dataSpecificationId)
             .pipe(
               map(() => {
                 // Process the final result here
