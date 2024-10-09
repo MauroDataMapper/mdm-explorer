@@ -66,7 +66,7 @@ export class FooterComponent {
   /**
    * Provide the name to use in the copyright message.
    */
-  @Input() copyright?: string = ' - Researcher interface. Powered by Mauro Data Mapper.';
+  @Input() copyright?: string = ' - SDE User Portal. Powered by Mauro Data Mapper.';
 
   year = new Date().getFullYear();
 }

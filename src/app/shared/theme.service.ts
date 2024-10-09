@@ -39,6 +39,8 @@ export interface ThemeMaterialColors {
 export interface ThemeRegularColors {
   hyperlink: string;
   dataSpecificationCount: string;
+  applicationTypeBannerBackground: string;
+  applicationTypeBannerText: string;
 }
 
 /**
@@ -153,6 +155,8 @@ export const defaultTheme: Theme = {
   regularColors: {
     hyperlink: '#003752',
     dataSpecificationCount: '#ffe603',
+    applicationTypeBannerBackground: '#00a499',
+    applicationTypeBannerText: 'white',
   },
   contrastColors: {
     page: '#fff',
@@ -197,7 +201,7 @@ const mapKviToTypographyLevel = (
   };
 };
 
-const lightContrastTextColor = 'rgba(black, 0.87)';
+const lightContrastTextColor = '#003186';
 const darkContrastTextColor = 'white';
 
 interface Color {
@@ -343,6 +347,16 @@ export class ThemeService {
           'regularcolors.data-specification-count',
           defaultTheme.regularColors.dataSpecificationCount
         ),
+        applicationTypeBannerBackground: getKviValue(
+          props,
+          'regularcolors.application-type-banner-background',
+          defaultTheme.regularColors.applicationTypeBannerBackground
+        ),
+        applicationTypeBannerText: getKviValue(
+          props,
+          'regularcolors.application-type-banner-text',
+          defaultTheme.regularColors.applicationTypeBannerText
+        ),
       },
       contrastColors: {
         page: getKviValue(props, 'contrastcolors.page', defaultTheme.contrastColors.page),
@@ -389,9 +403,10 @@ export class ThemeService {
       .map((color) => {
         return {
           [`--theme-mat-${paletteName}-${color.name}`]: color.hex,
-          [`--theme-mat-${paletteName}-contrast-${color.name}`]: color.isLight
-            ? lightContrastTextColor
-            : darkContrastTextColor,
+          [`--theme-mat-${paletteName}-contrast-${color.name}`]:
+            color.isLight || color.name === 'primary'
+              ? lightContrastTextColor
+              : darkContrastTextColor,
         };
       })
       .reduce((prev, current) => {
@@ -544,9 +559,8 @@ export class ThemeService {
       [`--theme-color-${name}`]: color.toHexString(),
       [`--theme-color-${name}-light`]: color.lighten(25).toHexString(),
       [`--theme-color-${name}-dark`]: color.darken(25).toHexString(),
-      [`--theme-color-${name}-contrast`]: color.isLight()
-        ? lightContrastTextColor
-        : darkContrastTextColor,
+      [`--theme-color-${name}-contrast`]:
+        color.isLight() || name !== 'primary' ? lightContrastTextColor : darkContrastTextColor,
     };
   }
 

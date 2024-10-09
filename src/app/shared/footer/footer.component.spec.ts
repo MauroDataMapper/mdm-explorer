@@ -18,10 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MockDirective } from 'ng-mocks';
-import {
-  ComponentHarness,
-  setupTestModuleForComponent,
-} from '../../testing/testing.helpers';
+import { ComponentHarness, setupTestModuleForComponent } from '../../testing/testing.helpers';
 import { FooterComponent } from './footer.component';
 
 describe('FooterComponent', () => {
@@ -41,9 +38,7 @@ describe('FooterComponent', () => {
 
   it('should create', () => {
     expect(harness?.isComponentCreated).toBeTruthy();
-    expect(harness.component.copyright).toBe(
-      ' - Researcher interface. Powered by Mauro Data Mapper.'
-    );
+    expect(harness.component.copyright).toBe(' - SDE User Portal. Powered by Mauro Data Mapper.');
     expect(harness.component.year).toBe(new Date().getFullYear());
   });
 
