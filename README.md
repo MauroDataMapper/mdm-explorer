@@ -1,10 +1,10 @@
-# Mauro Data Explorer
+# Secure Data Environment User Portal
 
 A web application to browse a Mauro metadata catalogue and request access to particular
 data via the department.
 
 It is useful to get an overview of the [high-level concepts](docs/CONCEPTS.md) of the
-Mauro Data Explorer before diving in. Once you have some familiarity, please follow the
+Secure Data Environment User Portal before diving in. Once you have some familiarity, please follow the
 installation and setup instructions below to get started.
 
 # License
@@ -33,7 +33,7 @@ development backend.
 # Setup and Configuration
 
 Please read the [setup guide](docs/SETUP.md) to correctly configure your Mauro instance to
-use the Mauro Data Explorer.
+use the Secure Data Environment User Portal.
 
 # Installation
 

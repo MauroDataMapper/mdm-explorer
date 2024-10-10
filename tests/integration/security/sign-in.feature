@@ -16,7 +16,7 @@
 # SPDX-License-Identifier: Apache-2.0
 Feature: Sign in
   As a user
-  I want to sign in to Mauro Data Explorer to access further features
+  I want to sign in to Secure Data Environment User Portal to access further features
 
   Background:
     Given There exists a user with the email address "researcher@maurodatamapper.com"

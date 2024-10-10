@@ -65,7 +65,7 @@ export class AppComponent implements OnInit, OnDestroy {
   signedInUser?: UserDetails | null;
 
   logoLink: HeaderImageLink = {
-    label: 'Mauro Data Explorer',
+    label: 'Secure Data Environment User Portal',
     routerLink: '',
     defaultImageSrc: 'assets/images/SNSDE-TVS-logo-with-part-of-white.png',
     defaultRightImageSrc: 'assets/images/NHS-logo-blue-text.png',

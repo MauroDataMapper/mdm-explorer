@@ -16,7 +16,7 @@
 # SPDX-License-Identifier: Apache-2.0
 Feature: Accessing public content
   As a site visitor who is not a registered user
-  I want to see publicly visible content in the Mauro Data Explorer
+  I want to see publicly visible content in the Secure Data Environment User Portal
 
   Background:
     Given I am signed out

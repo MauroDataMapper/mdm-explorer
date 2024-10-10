@@ -16,7 +16,7 @@
 # SPDX-License-Identifier: Apache-2.0
 Feature: Accessing user content
   As an authenticated user
-  I want to see restricted, user-only content in the Mauro Data Explorer
+  I want to see restricted, user-only content in the Secure Data Environment User Portal
 
   Background:
     Given I am signed in
