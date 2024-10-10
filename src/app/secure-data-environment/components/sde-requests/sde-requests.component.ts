@@ -17,7 +17,8 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
-import { RequestsListMode } from '@maurodatamapper/sde-resources';
+import { RequestsListMode, MembershipEndpointsResearcher } from '@maurodatamapper/sde-resources';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'mdm-sde-requests',
@@ -25,9 +26,25 @@ import { RequestsListMode } from '@maurodatamapper/sde-resources';
   styleUrls: ['./sde-requests.component.scss'],
 })
 export class SdeRequestsComponent implements OnInit {
+  canAuthorise = false;
+
   requestsListConfig: RequestsListMode = RequestsListMode.CreatedByMe;
+  requestsNeedingApprovalListConfig: RequestsListMode = RequestsListMode.CanAuthorise;
 
-  constructor() {}
+  constructor(private membershipEndpointsResearcher: MembershipEndpointsResearcher) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.userCanAuthoriseRequests();
+  }
+
+  private userCanAuthoriseRequests() {
+    forkJoin({
+      departments: this.membershipEndpointsResearcher.listDepartments(),
+      projects: this.membershipEndpointsResearcher.listProjects(),
+    }).subscribe(({ departments, projects }) => {
+      this.canAuthorise =
+        !!departments.find((department) => department.role === 'APPROVER') ||
+        !!projects.find((project) => project.role === 'MANAGER');
+    });
+  }
 }

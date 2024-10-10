@@ -67,7 +67,8 @@ export class AppComponent implements OnInit, OnDestroy {
   logoLink: HeaderImageLink = {
     label: 'Mauro Data Explorer',
     routerLink: '',
-    defaultImageSrc: 'assets/images/mauro-data-explorer.svg',
+    defaultImageSrc: 'assets/images/SNSDE-TVS-logo-with-part-of-white.png',
+    defaultRightImageSrc: 'assets/images/NHS-logo-blue-text.png',
   };
 
   helpMenuLinks: HeaderLink[] = [
@@ -132,6 +133,7 @@ export class AppComponent implements OnInit, OnDestroy {
       label: 'Bookmarks',
       routerLink: '/bookmarks',
       defaultImageSrc: '',
+      defaultRightImageSrc: '',
     },
   ];
 

@@ -69,15 +69,17 @@ $color-classRow-contrast: var(--theme-color-classRow-contrast);
 // Regular colours
 $color-hyperlink: var(--theme-color-hyperlink);
 $color-dataSpecificationCount: var(--theme-color-dataSpecificationCount);
+$color-applicationTypeBanner-background: var(--theme-color-applicationTypeBannerBackground);
+$color-applicationTypeBanner-text: var(--theme-color-applicationTypeBannerText);
 
 /*
 ----------------------------------
 Colour components
 ----------------------------------
 */
-$color-hero: $color-accent;
-$color-section-header: $color-accent;
+$color-hero: $color-accent-light;
+$color-section-header: $color-accent-light;
 $color-highlight-box: $color-accent-light;
-$color-highlight-box-strong: $color-accent;
+$color-highlight-box-strong: $color-accent-light;
 $color-stroked-border: $color-black;
 $color-description-info-underline: $color-gray-85;

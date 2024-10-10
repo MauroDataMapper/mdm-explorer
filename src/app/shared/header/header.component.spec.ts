@@ -19,10 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 import { TestBed } from '@angular/core/testing';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { MockDirective } from 'ng-mocks';
-import {
-  ComponentHarness,
-  setupTestModuleForComponent,
-} from '../../testing/testing.helpers';
+import { ComponentHarness, setupTestModuleForComponent } from '../../testing/testing.helpers';
 import { ArrowDirective } from '../directives/arrow.directive';
 import { HeaderComponent } from './header.component';
 
@@ -103,6 +100,7 @@ describe('HeaderComponent', () => {
         label: 'Bookmarks',
         routerLink: 'app.container.my-bookmarks',
         defaultImageSrc: '',
+        defaultRightImageSrc: '',
       },
     ];
     harness.component.accountLink = {
@@ -115,9 +113,7 @@ describe('HeaderComponent', () => {
     const signInElement = dom.querySelector('#signIn');
     const signOutElement = dom.querySelector('.mdm-header__overlayUserInitials');
     const bookmarks = dom.querySelector('#app\\.container\\.my-bookmarks');
-    const dataSpecifications = dom.querySelector(
-      '#app\\.container\\.my-data-specifications'
-    );
+    const dataSpecifications = dom.querySelector('#app\\.container\\.my-data-specifications');
     expect(signInElement).toBeFalsy();
     expect(signOutElement).toBeTruthy();
     expect(bookmarks).toBeTruthy();

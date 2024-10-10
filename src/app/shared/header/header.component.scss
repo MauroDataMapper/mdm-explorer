@@ -62,6 +62,10 @@ $link-color: $header-text;
   &__logo {
     position: relative;
     align-items: center;
+
+    &--align-right {
+      margin-left: auto;
+    }
   }
 
   &__links {
@@ -213,4 +217,13 @@ $link-color: $header-text;
       }
     }
   }
+}
+
+.application-type {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: $color-applicationTypeBanner-background;
+  color: $color-applicationTypeBanner-text;
+  font-weight: 500;
 }
