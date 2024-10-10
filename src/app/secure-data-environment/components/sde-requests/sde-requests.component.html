@@ -16,4 +16,19 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<sde-requests-list [useConfig]="requestsListConfig"></sde-requests-list>
+
+<div *ngIf="canAuthorise" class="medium-top-spacer flex-container__card">
+  <sde-requests-list [useConfig]="requestsNeedingApprovalListConfig"></sde-requests-list>
+  <div class="help-text mt-2">
+    <i class="bi bi-info-circle-fill info-icon"></i>
+    <span> A list of all requests that require your approval. </span>
+  </div>
+</div>
+
+<div class="flex-container__card">
+  <sde-requests-list [useConfig]="requestsListConfig"></sde-requests-list>
+  <div class="help-text mt-2">
+    <i class="bi bi-info-circle-fill info-icon"></i>
+    <span> A list of all requests that you have made. </span>
+  </div>
+</div>

@@ -55,6 +55,8 @@ export interface HeaderLink {
 export interface HeaderImageLink extends HeaderLink {
   defaultImageSrc: string;
   customImageSrc?: string;
+  defaultRightImageSrc: string;
+  customRightImageSrc?: string;
 }
 
 /**
