@@ -49,10 +49,7 @@ SPDX-License-Identifier: Apache-2.0
           let getFields = getFields
         "
       >
-        <mat-form-field
-          appearance="outline"
-          class="query-builder-field mat-form-field-no-padding"
-        >
+        <mat-form-field appearance="outline" class="query-builder-field mat-form-field-no-padding">
           <mat-select [(ngModel)]="rule.field" (ngModelChange)="onChange($event, rule)">
             <mat-option
               *ngFor="let field of getFields(rule.entity)"
@@ -67,9 +64,7 @@ SPDX-License-Identifier: Apache-2.0
         </mat-form-field>
       </ng-container>
       <!-- Operator -->
-      <ng-container
-        *queryOperator="let rule; let operators = operators; let onChange = onChange"
-      >
+      <ng-container *queryOperator="let rule; let operators = operators; let onChange = onChange">
         <mat-form-field appearance="outline" class="query-builder-operator">
           <mat-select [(ngModel)]="rule.operator" (ngModelChange)="onChange(rule)">
             <mat-option *ngFor="let value of operators" [value]="value">
@@ -80,10 +75,7 @@ SPDX-License-Identifier: Apache-2.0
       </ng-container>
       <!-- Boolean -->
       <ng-container *queryInput="let rule; type: 'boolean'; let onChange = onChange">
-        <mat-form-field
-          appearance="outline"
-          class="query-builder-input mat-form-field-no-padding"
-        >
+        <mat-form-field appearance="outline" class="query-builder-input mat-form-field-no-padding">
           <mat-select [(ngModel)]="rule.value" (ngModelChange)="onChange()">
             <mat-option [value]="false">False</mat-option>
             <mat-option [value]="true">True</mat-option>
@@ -100,10 +92,7 @@ SPDX-License-Identifier: Apache-2.0
           let onChange = onChange
         "
       >
-        <mat-form-field
-          appearance="outline"
-          class="query-builder-input mat-form-field-no-padding"
-        >
+        <mat-form-field appearance="outline" class="query-builder-input mat-form-field-no-padding">
           <mat-select [(ngModel)]="rule.value" (ngModelChange)="onChange()">
             <mat-option *ngFor="let opt of options" [value]="opt.value">
               {{ opt.value }}
@@ -113,10 +102,7 @@ SPDX-License-Identifier: Apache-2.0
       </ng-container>
       <!-- DateTime -->
       <ng-container *queryInput="let rule; type: 'datetime'; let onChange = onChange">
-        <mat-form-field
-          appearance="outline"
-          class="query-builder-input mat-form-field-no-padding"
-        >
+        <mat-form-field appearance="outline" class="query-builder-input mat-form-field-no-padding">
           <input
             matInput
             type="datetime-local"
@@ -127,10 +113,7 @@ SPDX-License-Identifier: Apache-2.0
       </ng-container>
       <!-- Date -->
       <ng-container *queryInput="let rule; type: 'date'; let onChange = onChange">
-        <mat-form-field
-          appearance="outline"
-          class="query-builder-input mat-form-field-no-padding"
-        >
+        <mat-form-field appearance="outline" class="query-builder-input mat-form-field-no-padding">
           <input
             matInput
             [matDatepicker]="picker"
@@ -143,26 +126,13 @@ SPDX-License-Identifier: Apache-2.0
       </ng-container>
       <!-- Time -->
       <ng-container *queryInput="let rule; type: 'time'; let onChange = onChange">
-        <mat-form-field
-          appearance="outline"
-          class="query-builder-input mat-form-field-no-padding"
-        >
-          <input
-            matInput
-            type="time"
-            [(ngModel)]="rule.value"
-            (ngModelChange)="onChange()"
-          />
+        <mat-form-field appearance="outline" class="query-builder-input mat-form-field-no-padding">
+          <input matInput type="time" [(ngModel)]="rule.value" (ngModelChange)="onChange()" />
         </mat-form-field>
       </ng-container>
       <!-- Multiselect -->
       <ng-container
-        *queryInput="
-          let rule;
-          let options = options;
-          type: 'multiselect';
-          let onChange = onChange
-        "
+        *queryInput="let rule; let options = options; type: 'multiselect'; let onChange = onChange"
       >
         <mat-form-field appearance="outline" class="query-builder-input">
           <mat-select [(ngModel)]="rule.value" multiple (ngModelChange)="onChange()">
@@ -174,12 +144,7 @@ SPDX-License-Identifier: Apache-2.0
       </ng-container>
       <!-- Integer -->
       <ng-container
-        *queryInput="
-          let rule;
-          let field = field;
-          type: 'integer';
-          let onChange = onChange
-        "
+        *queryInput="let rule; let field = field; type: 'integer'; let onChange = onChange"
       >
         <mat-form-field appearance="outline">
           <input
@@ -194,12 +159,7 @@ SPDX-License-Identifier: Apache-2.0
       </ng-container>
       <!-- Decimal -->
       <ng-container
-        *queryInput="
-          let rule;
-          let field = field;
-          type: 'decimal';
-          let onChange = onChange
-        "
+        *queryInput="let rule; let field = field; type: 'decimal'; let onChange = onChange"
       >
         <mat-form-field appearance="outline">
           <input
@@ -216,42 +176,25 @@ SPDX-License-Identifier: Apache-2.0
       <ng-container
         *queryInput="let rule; let field = field; type: 'string'; let onChange = onChange"
       >
-        <mat-form-field
-          appearance="outline"
-          class="query-builder-input mat-form-field-no-padding"
-        >
+        <mat-form-field appearance="outline" class="query-builder-input mat-form-field-no-padding">
           <input matInput [(ngModel)]="rule.value" (ngModelChange)="onChange()" />
         </mat-form-field>
       </ng-container>
       <!-- Text Area -->
       <ng-container
-        *queryInput="
-          let rule;
-          let field = field;
-          type: 'textarea';
-          let onChange = onChange
-        "
+        *queryInput="let rule; let field = field; type: 'textarea'; let onChange = onChange"
       >
-        <mat-form-field
-          appearance="outline"
-          class="query-builder-input mat-form-field-no-padding"
-        >
-          <textarea matInput [(ngModel)]="rule.value" (ngModelChange)="onChange()">
-          </textarea>
+        <mat-form-field appearance="outline" class="query-builder-input mat-form-field-no-padding">
+          <textarea matInput [(ngModel)]="rule.value" (ngModelChange)="onChange()"> </textarea>
         </mat-form-field>
       </ng-container>
       <!-- Terminology -->
       <ng-container
-        *queryInput="
-          let rule;
-          let options = options;
-          type: 'terminology';
-          let onChange = onChange
-        "
+        *queryInput="let rule; let options = options; type: 'terminology'; let onChange = onChange"
       >
         <mat-form-field
           appearance="outline"
-          class="query-builder-input query-builder-autocomplete"
+          class="query-builder-terminology query-builder-autocomplete"
         >
           <mdm-autocomplete-select
             [(ngModel)]="rule.value"
