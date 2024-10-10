@@ -103,8 +103,8 @@ export interface ThemeHeaderImages {
 export const defaultTheme: Theme = {
   material: {
     colors: {
-      primary: '#19381f',
-      accent: '#cdb980',
+      primary: '#003186',
+      accent: '#5677b2',
       warn: '#a5122a',
     },
     // Default typography settings taken from

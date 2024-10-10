@@ -19,16 +19,27 @@ SPDX-License-Identifier: Apache-2.0
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SdeRequestsComponent } from './sde-requests.component';
+import { MembershipEndpointsResearcher } from '@maurodatamapper/sde-resources';
+import { of } from 'rxjs';
+import { listenerCount } from 'process';
 
 describe('SdeRequestsComponent', () => {
   let component: SdeRequestsComponent;
   let fixture: ComponentFixture<SdeRequestsComponent>;
 
   beforeEach(async () => {
+    // Create a mock instance using Jasmine spy object
+    const mockMembershipEndpointsResearcher = {
+      listDepartments: jest.fn(),
+      listProjects: jest.fn(),
+    };
+
     await TestBed.configureTestingModule({
-      declarations: [ SdeRequestsComponent ]
-    })
-    .compileComponents();
+      declarations: [SdeRequestsComponent],
+      providers: [
+        { provide: MembershipEndpointsResearcher, useValue: mockMembershipEndpointsResearcher },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SdeRequestsComponent);
     component = fixture.componentInstance;

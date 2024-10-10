@@ -17,11 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
-import {
-  RequestsListMode,
-  DepartmentsService,
-  MembershipEndpointsResearcher,
-} from '@maurodatamapper/sde-resources';
+import { RequestsListMode, MembershipEndpointsResearcher } from '@maurodatamapper/sde-resources';
 import { forkJoin } from 'rxjs';
 
 @Component({
