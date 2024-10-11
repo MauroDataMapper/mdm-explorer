@@ -112,7 +112,7 @@ describe('ContactSupportComponent', () => {
 
     researchStub.contact.mockImplementationOnce((data) => {
       expect(data).toStrictEqual({
-        subject: 'Mauro Data Explorer feedback',
+        subject: 'Secure Data Environment User Portal feedback',
         message: feedback.message,
       });
       return of(data);
@@ -136,7 +136,7 @@ describe('ContactSupportComponent', () => {
 
     researchStub.contact.mockImplementationOnce((data) => {
       expect(data).toStrictEqual({
-        subject: 'Mauro Data Explorer feedback',
+        subject: 'Secure Data Environment User Portal feedback',
         message: feedback.message,
       });
       return throwError(() => new Error());

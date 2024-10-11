@@ -44,13 +44,17 @@ module.exports = {
   },
   reporters: [
     "default",
-    ["jest-junit", {
-      outputDirectory: "test-report",
-      reportTestSuiteErrors: "true"}],
+    [
+      "jest-junit",
+      {
+        outputDirectory: "test-report",
+        reportTestSuiteErrors: "true",
+      },
+    ],
     [
       "jest-html-reporter",
       {
-        pageTitle: "Mauro Data Explorer: Test Report",
+        pageTitle: "Secure Data Environment User Portal: Test Report",
         outputPath: "test-report/index.html",
         includeFailureMsg: true,
       },

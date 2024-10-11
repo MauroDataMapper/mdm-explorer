@@ -1,6 +1,6 @@
-# Theming of Mauro Data Explorer
+# Theming of Secure Data Environment User Portal
 
-Theming of the Mauro Data Explorer is made up of a few concepts which are customisable. The theme as a whole is comprised of:
+Theming of the Secure Data Environment User Portal is made up of a few concepts which are customisable. The theme as a whole is comprised of:
 
 1. An [Angular Material theme](https://material.angular.io/guide/theming) to control the colours for the Angular Material components - buttons, form controls etc.
 2. Additional colours for the application as whole, based on the core colours from the Angular Material theme with some extensions.

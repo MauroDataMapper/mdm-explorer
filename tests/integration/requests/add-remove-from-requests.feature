@@ -16,7 +16,7 @@
 # SPDX-License-Identifier: Apache-2.0
 Feature: Add and remove data elements from data specifications
   As an authenticated user
-  I want to add or remove data elements from my data specifications through the Mauro Data Explorer
+  I want to add or remove data elements from my data specifications through the Secure Data Environment User Portal
 
   Background:
     Given I am signed in
