@@ -16,7 +16,7 @@
 # SPDX-License-Identifier: Apache-2.0
 Feature: Sign out
   As an authenticated user
-  I want to sign out of Mauro Data Explorer
+  I want to sign out of Secure Data Environment User Portal
 
   Background:
     Given I am signed in

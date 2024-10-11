@@ -35,22 +35,14 @@ export const configurationKeys = {
   profileServiceName: 'explorer.config.profile_service_name',
 };
 
-const getExplorerApiProperty = (
-  props: ApiProperty[],
-  key: string
-): ApiProperty | undefined => {
-  return props.find(
-    (p) => p.category === configurationKeys.category && p.key === key && p.value
-  );
+const getExplorerApiProperty = (props: ApiProperty[], key: string): ApiProperty | undefined => {
+  return props.find((p) => p.category === configurationKeys.category && p.key === key && p.value);
 };
 
 const getExplorerApiProperties = (props: ApiProperty[]) => {
   return {
     profileNamespace: getExplorerApiProperty(props, configurationKeys.profileNamespace),
-    profileServiceName: getExplorerApiProperty(
-      props,
-      configurationKeys.profileServiceName
-    ),
+    profileServiceName: getExplorerApiProperty(props, configurationKeys.profileServiceName),
   };
 };
 
@@ -107,9 +99,7 @@ export class DataExplorerService {
 
   getProfileFieldsForFilters(): Observable<ProfileField[]> {
     if (!this.config) {
-      return throwError(
-        () => new Error('DataExplorerService.initialise() has not been invoked')
-      );
+      return throwError(() => new Error('DataExplorerService.initialise() has not been invoked'));
     }
 
     return this.profiles

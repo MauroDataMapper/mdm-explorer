@@ -32,7 +32,10 @@ export class ContactSupportComponent {
   state: ContactFormState = 'idle';
   contactData?: PluginResearchContactPayload;
 
-  constructor(private research: ResearchPluginService, private dialog: DialogService) {}
+  constructor(
+    private research: ResearchPluginService,
+    private dialog: DialogService
+  ) {}
 
   reset() {
     this.contactData = {
@@ -60,7 +63,7 @@ export class ContactSupportComponent {
         filter((response) => !!response),
         switchMap((response) => {
           const data: PluginResearchContactPayload = {
-            subject: 'Mauro Data Explorer feedback',
+            subject: 'Secure Data Environment User Portal feedback',
             message: response!.message, // eslint-disable-line @typescript-eslint/no-non-null-assertion
           };
 
