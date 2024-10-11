@@ -18,7 +18,11 @@ SPDX-License-Identifier: Apache-2.0
 -->
 <div role="group">
   <mat-chip-list #chipList aria-label="Selection" [disabled]="disabled">
-    <mat-chip *ngFor="let option of selected" (removed)="deselectOption(option)">
+    <mat-chip
+      *ngFor="let option of selected"
+      (removed)="deselectOption(option)"
+      class="dynamic-height-chip"
+    >
       {{ option.name }}
       <button matChipRemove>
         <mat-icon>cancel</mat-icon>
@@ -37,12 +41,7 @@ SPDX-License-Identifier: Apache-2.0
       [placeholder]="placeholder"
     />
     <span *ngIf="showMatchCount">{{ searchResults.count }} found</span>
-    <button
-      *ngIf="searchCtrl.value"
-      mat-icon-button
-      aria-label="Clear"
-      (click)="clearSearch()"
-    >
+    <button *ngIf="searchCtrl.value" mat-icon-button aria-label="Clear" (click)="clearSearch()">
       <mat-icon>close</mat-icon>
     </button>
   </div>
@@ -51,7 +50,11 @@ SPDX-License-Identifier: Apache-2.0
     [displayWith]="displayWith"
     (optionSelected)="selectOption($event)"
   >
-    <mat-option *ngFor="let option of searchResults.options" [value]="option">
+    <mat-option
+      *ngFor="let option of searchResults.options"
+      [value]="option"
+      [matTooltip]="option.name"
+    >
       {{ option.name }}
     </mat-option>
   </mat-autocomplete>

@@ -52,3 +52,21 @@ $content-color: $color-accent-light;
     vertical-align: top;
   }
 }
+
+.query-builder {
+  &-field {
+    width: 340px;
+  }
+
+  &-input {
+    width: 600px;
+  }
+
+  &-operator {
+    width: 110px;
+  }
+
+  &-terminology {
+    width: 600px;
+  }
+}
