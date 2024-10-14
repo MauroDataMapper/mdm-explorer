@@ -43,8 +43,8 @@ SPDX-License-Identifier: Apache-2.0
   </ng-container>
   <ng-container>
     <div class="mdm-data-element-search-result__content">
-      <div *ngIf="item.description" class="mdm-data-element-search-result__description">
-        {{ item.description }}
+      <div *ngIf="item.description" class="mdm-data-element-search-result__description" [innerHTML]=item.description style="display: block">
+<!--        {{ item.description }}-->
       </div>
       <div
         *ngIf="!item.description"

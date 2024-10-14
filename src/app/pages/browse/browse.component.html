@@ -113,8 +113,8 @@ SPDX-License-Identifier: Apache-2.0
 <div *ngIf="selected && selected.label && selected.description" class="highlight-box">
   <div class="highlight-box__content">
     <h2>{{ selected.label }}</h2>
-    <div>
-      {{ selected.description }}
+    <div [innerHTML]=selected.description>
+<!--      {{ selected.description }}-->
     </div>
   </div>
 </div>
