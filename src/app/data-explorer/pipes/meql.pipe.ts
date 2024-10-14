@@ -67,9 +67,7 @@ export class MeqlPipe implements PipeTransform {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const date = moment.isMoment(value) ? value : moment(value);
 
-    return `${quotes}${this._date
-      .transform(date.toDate(), 'dd/MM/yyyy')
-      ?.toString()}${quotes}`;
+    return `${quotes}${this._date.transform(date.toDate(), 'dd/MM/yyyy')?.toString()}${quotes}`;
   }
 
   private parseQuery(
@@ -115,9 +113,7 @@ export class MeqlPipe implements PipeTransform {
           }
           break;
         case 'field': {
-          const entity = value.entity as string;
-          const fullName = entity ? `${entity}.${value[key]}` : value[key];
-          meql += this.formattedValue(fullName, true) + ' ';
+          meql += this.formattedValue(value[key], true) + ' ';
           break;
         }
         case 'value':

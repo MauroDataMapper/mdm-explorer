@@ -27,17 +27,13 @@ SPDX-License-Identifier: Apache-2.0
     [ngClass]="getClassNames('arrowIconButton', data.collapsed ? 'collapsed' : null)"
   >
     <ng-container *ngIf="getArrowIconTemplate() as template; else defaultArrowIcon">
-      <ng-container
-        *ngTemplateOutlet="template; context: getArrowIconContext()"
-      ></ng-container>
+      <ng-container *ngTemplateOutlet="template; context: getArrowIconContext()"></ng-container>
     </ng-container>
   </a>
 
   <ng-container *ngIf="getButtonGroupTemplate() as template; else defaultButtonGroup">
     <div [ngClass]="getClassNames('buttonGroup', 'rightAlign')">
-      <ng-container
-        *ngTemplateOutlet="template; context: getButtonGroupContext()"
-      ></ng-container>
+      <ng-container *ngTemplateOutlet="template; context: getButtonGroupContext()"></ng-container>
     </div>
   </ng-container>
 
@@ -80,21 +76,13 @@ SPDX-License-Identifier: Apache-2.0
   </ng-template>
 
   <ng-container *ngIf="getSwitchGroupTemplate() as template; else defaultSwitchGroup">
-    <ng-container
-      *ngTemplateOutlet="template; context: getSwitchGroupContext()"
-    ></ng-container>
+    <ng-container *ngTemplateOutlet="template; context: getSwitchGroupContext()"></ng-container>
   </ng-container>
 
   <ng-template #defaultSwitchGroup>
-    <mat-radio-group
-      *ngIf="data"
-      [(ngModel)]="data.condition"
-      (ngModelChange)="changeConnective()"
-    >
+    <mat-radio-group *ngIf="data" [(ngModel)]="data.condition" (ngModelChange)="changeConnective()">
       <mat-radio-button color="primary" value="and">AND</mat-radio-button>
-      <mat-radio-button *ngIf="showOrRadioButton()" color="primary" value="or"
-        >OR</mat-radio-button
-      >
+      <mat-radio-button *ngIf="showOrRadioButton()" color="primary" value="or">OR</mat-radio-button>
     </mat-radio-group>
   </ng-template>
 
@@ -145,9 +133,7 @@ SPDX-License-Identifier: Apache-2.0
                 Condition used to be: entities?.length ?? 0 > 0
                 -->
                 <div *ngIf="false" class="q-inline-block-display">
-                  <ng-container
-                    *ngIf="getEntityTemplate() as template; else defaultEntity"
-                  >
+                  <ng-container *ngIf="getEntityTemplate() as template; else defaultEntity">
                     <ng-container
                       *ngTemplateOutlet="template; context: getEntityContext(rule)"
                     ></ng-container>
@@ -183,19 +169,14 @@ SPDX-License-Identifier: Apache-2.0
                       (ngModelChange)="changeField($event, rule)"
                       [disabled]="disabled"
                     >
-                      <option
-                        *ngFor="let field of getFields(rule.entity)"
-                        [ngValue]="field.value"
-                      >
+                      <option *ngFor="let field of getFields(rule.entity)" [ngValue]="field.value">
                         {{ field.name }}
                       </option>
                     </select>
                   </div>
                 </ng-template>
 
-                <ng-container
-                  *ngIf="getOperatorTemplate() as template; else defaultOperator"
-                >
+                <ng-container *ngIf="getOperatorTemplate() as template; else defaultOperator">
                   <ng-container
                     *ngTemplateOutlet="template; context: getOperatorContext(rule)"
                   ></ng-container>
@@ -219,9 +200,7 @@ SPDX-License-Identifier: Apache-2.0
                   </div>
                 </ng-template>
 
-                <ng-container
-                  *ngIf="findTemplateForRule(rule) as template; else defaultInput"
-                >
+                <ng-container *ngIf="findTemplateForRule(rule) as template; else defaultInput">
                   <ng-container
                     *ngTemplateOutlet="template; context: getInputContext(rule)"
                   ></ng-container>
@@ -271,10 +250,7 @@ SPDX-License-Identifier: Apache-2.0
                       [disabled]="disabled"
                       *ngSwitchCase="'category'"
                     >
-                      <option
-                        *ngFor="let opt of getOptions(rule.field)"
-                        [ngValue]="opt.value"
-                      >
+                      <option *ngFor="let opt of getOptions(rule.field)" [ngValue]="opt.value">
                         {{ opt.name }}
                       </option>
                     </select>
@@ -286,10 +262,7 @@ SPDX-License-Identifier: Apache-2.0
                         [disabled]="disabled"
                         multiple
                       >
-                        <option
-                          *ngFor="let opt of getOptions(rule.field)"
-                          [ngValue]="opt.value"
-                        >
+                        <option *ngFor="let opt of getOptions(rule.field)" [ngValue]="opt.value">
                           {{ opt.name }}
                         </option>
                       </select>
@@ -315,18 +288,10 @@ SPDX-License-Identifier: Apache-2.0
                 [parentOperatorTemplate]="parentOperatorTemplate || operatorTemplate"
                 [parentFieldTemplate]="parentFieldTemplate || fieldTemplate"
                 [parentEntityTemplate]="parentEntityTemplate || entityTemplate"
-                [parentSwitchGroupTemplate]="
-                  parentSwitchGroupTemplate || switchGroupTemplate
-                "
-                [parentButtonGroupTemplate]="
-                  parentButtonGroupTemplate || buttonGroupTemplate
-                "
-                [parentRemoveButtonTemplate]="
-                  parentRemoveButtonTemplate || removeButtonTemplate
-                "
-                [parentEmptyWarningTemplate]="
-                  parentEmptyWarningTemplate || emptyWarningTemplate
-                "
+                [parentSwitchGroupTemplate]="parentSwitchGroupTemplate || switchGroupTemplate"
+                [parentButtonGroupTemplate]="parentButtonGroupTemplate || buttonGroupTemplate"
+                [parentRemoveButtonTemplate]="parentRemoveButtonTemplate || removeButtonTemplate"
+                [parentEmptyWarningTemplate]="parentEmptyWarningTemplate || emptyWarningTemplate"
                 [parentArrowIconTemplate]="parentArrowIconTemplate || arrowIconTemplate"
                 [parentValue]="data"
                 [classNames]="classNames"
@@ -340,9 +305,7 @@ SPDX-License-Identifier: Apache-2.0
               >
               </query-builder>
 
-              <ng-container
-                *ngIf="getEmptyWarningTemplate() as template; else defaultEmptyWarning"
-              >
+              <ng-container *ngIf="getEmptyWarningTemplate() as template; else defaultEmptyWarning">
                 <ng-container *ngIf="local.invalid">
                   <ng-container
                     *ngTemplateOutlet="template; context: getEmptyWarningContext()"

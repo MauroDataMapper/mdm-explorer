@@ -55,9 +55,7 @@ export const mapModelDataTypeToOptionsArray = (dataType: DataType): Option[] => 
   ];
 };
 
-export const mapOptionsArrayToModelDataType = (
-  options: Option[]
-): Required<CatalogueItem> => {
+export const mapOptionsArrayToModelDataType = (options: Option[]): Required<CatalogueItem> => {
   const domainType = options.find((o) => o.name === 'modelResourceDomainType')
     ?.value as CatalogueItemDomainType;
   const id = options.find((o) => o.name === 'modelResourceId')?.value;
@@ -90,10 +88,7 @@ export class QueryBuilderWrapperService {
       map(([items, coreTableProfile]) => {
         let errorMessage = '';
 
-        errorMessage = this.appendErrorMessages(
-          errorMessage,
-          this.getDataTypeProfileErrors(items)
-        );
+        errorMessage = this.appendErrorMessages(errorMessage, this.getDataTypeProfileErrors(items));
 
         errorMessage = this.appendErrorMessages(
           errorMessage,
@@ -128,6 +123,12 @@ export class QueryBuilderWrapperService {
       .join('.');
   }
 
+  private getEntityAndLabel(dataElement: DataElementSearchResult) {
+    const entity = this.getEntity(dataElement);
+    const label = dataElement.label;
+    return entity ? `${entity}.${label}` : label;
+  }
+
   private getQueryBuilderDatatypeProfile(dataType?: DataType): Observable<Profile> {
     if (dataType?.domainType === CatalogueItemDomainType.PrimitiveType) {
       const requestOptions = {
@@ -148,8 +149,7 @@ export class QueryBuilderWrapperService {
   private getDataTypeString(data: Profile, dataElement: DataElementSearchResult) {
     if (
       dataElement.dataType?.domainType === CatalogueItemDomainType.ModelDataType &&
-      (dataElement.dataType?.modelResourceDomainType ===
-        CatalogueItemDomainType.Terminology ||
+      (dataElement.dataType?.modelResourceDomainType === CatalogueItemDomainType.Terminology ||
         dataElement.dataType?.modelResourceDomainType === CatalogueItemDomainType.CodeSet)
     ) {
       return 'terminology';
@@ -190,10 +190,10 @@ export class QueryBuilderWrapperService {
     return dataTypeString.toLowerCase() === 'number'
       ? 0
       : dataTypeString.toLowerCase() === 'string'
-      ? ''
-      : dataTypeString.toLowerCase() === 'boolean'
-      ? false
-      : null;
+        ? ''
+        : dataTypeString.toLowerCase() === 'boolean'
+          ? false
+          : null;
   }
 
   private getQueryCondition(query?: DataSpecificationQueryPayload): QueryCondition {
@@ -211,7 +211,7 @@ export class QueryBuilderWrapperService {
     dataElement: DataElementSearchResult,
     config: QueryBuilderConfig
   ) {
-    config.fields[dataElement.label] = {
+    config.fields[this.getEntityAndLabel(dataElement)] = {
       name: dataElement.label + ' (' + dataTypeString + ')',
       type: dataTypeString,
       entity: this.getEntity(dataElement),
@@ -225,12 +225,11 @@ export class QueryBuilderWrapperService {
     config: QueryBuilderConfig,
     queryCondition: QueryCondition
   ) {
+    const dataElementPath = this.getEntityAndLabel(dataElement);
     if (
-      queryCondition?.rules?.find((x) =>
-        (x as QueryExpression)?.field?.startsWith(dataElement.label)
-      )
+      queryCondition?.rules?.find((x) => (x as QueryExpression)?.field?.startsWith(dataElementPath))
     ) {
-      config.fields[dataElement.label] = {
+      config.fields[dataElementPath] = {
         name: dataElement.label + ' (string)',
         type: 'string',
         entity: this.getEntity(dataElement),
