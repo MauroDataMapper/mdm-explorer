@@ -294,11 +294,11 @@ export class DataModelService {
         // If this is a child DataClass, only the DataElements from that class will be fetched
         const allClasses = [dataClass, ...childDataClasses];
         const elements$ = allClasses.map((dc) =>
-          this.getDataElements({
+          this.getDataElements( {
             dataClassId: dc.id ?? '',
             dataModelId: dc.model ?? '',
-            parentDataClassId: dc.parentDataClass,
-          }).pipe(map((response) => response.items))
+            parentDataClassId: dc.parentDataClass
+          }, {max: 9999}).pipe(map((response) => response.items))
         );
 
         return forkJoin(elements$);

@@ -60,9 +60,10 @@ SPDX-License-Identifier: Apache-2.0
       <mat-card
         *ngIf="dataElement.description && dataElement.description.length > 0"
         class="mdm-data-element-card"
+        [innerHTML]=dataElement.description
       >
         <p>
-          {{ dataElement.description }}
+<!--          {{ dataElement.description }}-->
         </p>
       </mat-card>
 
