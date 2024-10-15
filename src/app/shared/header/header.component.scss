@@ -35,6 +35,7 @@ $link-color: $header-text;
   background-color: $header-background;
   color: $header-text;
   flex-wrap: wrap;
+  align-items: center;
 
   &__containOverlay {
     position: relative;
@@ -162,6 +163,10 @@ $link-color: $header-text;
           &.active {
             border-bottom: 2px solid $link-color;
           }
+
+          //img {
+          //  vertical-align: middle;
+          //}
         }
       }
     }
