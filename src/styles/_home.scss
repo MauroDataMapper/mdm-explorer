@@ -37,6 +37,7 @@ SPDX-License-Identifier: Apache-2.0
   flex-flow: row;
   justify-content: flex-start;
   text-align: center;
+  padding-bottom: 4em;
 
   @include respond-to-tablet {
     flex-flow: column;
