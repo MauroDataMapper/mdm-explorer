@@ -37,6 +37,7 @@ import {
 import { QueryBuilderConfig } from './query-builder/query-builder.interfaces';
 import { createProfileServiceStub } from '../testing/stubs/profile.stub';
 import { QueryBuilderTestingHelper } from '../testing/querybuilder.testing.helpers';
+import { Console } from 'console';
 describe('QueryBuilderService', () => {
   let service: QueryBuilderWrapperService;
   const profilesStub = createProfileServiceStub();
@@ -255,7 +256,7 @@ describe('QueryBuilderService', () => {
               condition: 'and',
               rules: [
                 {
-                  field: `field (${expectedMappedType})`,
+                  field: `schema.class.field (${expectedMappedType})`,
                   operator: '=',
                   value: 'value-1',
                 },
@@ -268,15 +269,15 @@ describe('QueryBuilderService', () => {
         fields:
           expectedMappedType !== undefined
             ? {
-                field: {
+                [`${entityName}.field`]: {
                   defaultValue:
                     expectedMappedType === 'number'
                       ? 0
                       : expectedMappedType === 'string'
-                      ? ''
-                      : expectedMappedType === 'boolean'
-                      ? false
-                      : null,
+                        ? ''
+                        : expectedMappedType === 'boolean'
+                          ? false
+                          : null,
                   name: `field (${expectedMappedType})`,
                   entity: entityName,
                   options:
@@ -286,14 +287,14 @@ describe('QueryBuilderService', () => {
                           { name: 'Option 2', value: 'Option 2' },
                         ]
                       : expectedMappedType === 'terminology'
-                      ? [
-                          {
-                            name: 'modelResourceDomainType',
-                            value: dataType.modelResourceDomainType,
-                          },
-                          { name: 'modelResourceId', value: dataType.modelResourceId },
-                        ]
-                      : [],
+                        ? [
+                            {
+                              name: 'modelResourceDomainType',
+                              value: dataType.modelResourceDomainType,
+                            },
+                            { name: 'modelResourceId', value: dataType.modelResourceId },
+                          ]
+                        : [],
                   type: expectedMappedType,
                 },
               }

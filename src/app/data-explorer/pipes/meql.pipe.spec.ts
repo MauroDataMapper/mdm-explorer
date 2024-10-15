@@ -43,7 +43,7 @@ describe('MeqlPipe', () => {
         condition: 'and',
         rules: [
           {
-            field: 'field name',
+            field: 'some entity.field name',
             entity: 'some entity',
             operator: '=',
             value: 'String 1',
@@ -52,7 +52,7 @@ describe('MeqlPipe', () => {
       };
 
       const line1 = `(${newline}`;
-      const line2 = `${tab}"${query.rules[0].entity}.${query.rules[0].field}" ${query.rules[0].operator} "${query.rules[0].value}"${newline}`;
+      const line2 = `${tab}"${query.rules[0].field}" ${query.rules[0].operator} "${query.rules[0].value}"${newline}`;
       const line3 = ')';
 
       const actual = pipe.transform(query);

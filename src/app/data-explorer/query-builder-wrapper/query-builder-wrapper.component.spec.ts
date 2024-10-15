@@ -18,10 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { QueryBuilderWrapperComponent } from './query-builder-wrapper.component';
 
-import {
-  ComponentHarness,
-  setupTestModuleForComponent,
-} from 'src/app/testing/testing.helpers';
+import { ComponentHarness, setupTestModuleForComponent } from 'src/app/testing/testing.helpers';
 import { createTerminologyServiceStub } from 'src/app/testing/stubs/terminology.stub';
 import { TerminologyService } from 'src/app/mauro/terminology.service';
 import { MockComponent } from 'ng-mocks';
@@ -29,10 +26,7 @@ import { MeqlOutputComponent } from '../meql-output/meql-output.component';
 import { MatCard } from '@angular/material/card';
 import { QueryCondition } from '../data-explorer.types';
 import { mapModelDataTypeToOptionsArray } from '../query-builder-wrapper.service';
-import {
-  CatalogueItemDomainType,
-  MdmResourcesConfiguration,
-} from '@maurodatamapper/mdm-resources';
+import { CatalogueItemDomainType, MdmResourcesConfiguration } from '@maurodatamapper/mdm-resources';
 import { of } from 'rxjs';
 import { AutocompleteSelectOptionSet } from 'src/app/shared/autocomplete-select/autocomplete-select.component';
 import { QueryBuilderComponent } from '../query-builder/query-builder.component';
@@ -133,12 +127,8 @@ describe('QueryBuilderComponent', () => {
         options: [],
       };
 
-      expect(harness.component.termSearchResults['testField1']).toStrictEqual(
-        expectedSetup
-      );
-      expect(harness.component.termSearchResults['testField2']).toStrictEqual(
-        expectedSetup
-      );
+      expect(harness.component.termSearchResults['testField1']).toStrictEqual(expectedSetup);
+      expect(harness.component.termSearchResults['testField2']).toStrictEqual(expectedSetup);
     });
 
     it('should reset the query when empty', () => {

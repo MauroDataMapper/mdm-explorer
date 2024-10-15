@@ -137,7 +137,7 @@ export class QueryBuilderWrapperComponent implements OnInit {
             options: terms.items.map((item) => {
               return {
                 name: item.definition,
-                value: item.definition,
+                value: item,
               };
             }),
           };
