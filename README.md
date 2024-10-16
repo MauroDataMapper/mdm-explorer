@@ -1,7 +1,7 @@
 # Secure Data Environment User Portal
 
 A web application to browse a Mauro metadata catalogue and request access to particular
-data via the department.
+data via the organisation.
 
 It is useful to get an overview of the [high-level concepts](docs/CONCEPTS.md) of the
 Secure Data Environment User Portal before diving in. Once you have some familiarity, please follow the
