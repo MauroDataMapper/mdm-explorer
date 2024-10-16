@@ -49,9 +49,9 @@ SPDX-License-Identifier: Apache-2.0
         <div class="mdm-search-listing__sort-row">
           <div class="vertically-aligned">
             <ng-container *ngIf="source === 'browse'">
-              {{ resultSet?.totalResults }} results for '
-              <mdm-breadcrumb [item]="root"></mdm-breadcrumb>
-              '
+              {{ resultSet?.totalResults }} results for
+              <mdm-breadcrumb [item]="root" style="font-weight: 500"></mdm-breadcrumb>
+
             </ng-container>
             <ng-container *ngIf="source === 'search'">
               {{ resultSet?.totalResults }} results found
