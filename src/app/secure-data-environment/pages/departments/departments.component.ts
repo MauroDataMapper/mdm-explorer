@@ -21,7 +21,7 @@ import {
   Department,
   DepartmentMemberService,
   ListColumn,
-  RequestsListMode,
+  RequestFilterMode,
   UserDepartmentDTO,
   Uuid,
 } from '@maurodatamapper/sde-resources';
@@ -41,8 +41,8 @@ export class DepartmentsComponent implements OnInit {
   userHasDepartments = true;
   userIsApproverForSelectedDepartment = false;
 
-  requestsNeedingApprovalListConfig: RequestsListMode = RequestsListMode.CanAuthorise;
-  myRequestsListConfig: RequestsListMode = RequestsListMode.MyDepartmentRequests;
+  requestsNeedingApprovalListConfig: RequestFilterMode = RequestFilterMode.CanAuthorise;
+  myRequestsListConfig: RequestFilterMode = RequestFilterMode.MyDepartmentRequests;
 
   constructor(
     private sdeDepartmentService: SdeDepartmentService,

@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
-import { RequestsListMode, MembershipEndpointsResearcher } from '@maurodatamapper/sde-resources';
+import { RequestFilterMode, MembershipEndpointsResearcher } from '@maurodatamapper/sde-resources';
 import { forkJoin } from 'rxjs';
 
 @Component({
@@ -28,8 +28,8 @@ import { forkJoin } from 'rxjs';
 export class SdeRequestsComponent implements OnInit {
   canAuthorise = false;
 
-  requestsListConfig: RequestsListMode = RequestsListMode.CreatedByMe;
-  requestsNeedingApprovalListConfig: RequestsListMode = RequestsListMode.CanAuthorise;
+  requestsListConfig: RequestFilterMode = RequestFilterMode.CreatedByMe;
+  requestsNeedingApprovalListConfig: RequestFilterMode = RequestFilterMode.CanAuthorise;
 
   constructor(private membershipEndpointsResearcher: MembershipEndpointsResearcher) {}
 
