@@ -225,7 +225,7 @@ export const mapProfileSearchResult = (item: ProfileSearchResult): DataElementSe
   };
 };
 
-export type DataSpecificationStatus = 'draft' | 'finalised' | 'submitted';
+export type DataSpecificationStatus = 'draft' | 'finalised' | 'attached to request' | 'submitted';
 
 /**
  * Define a data specification, which is an extension of a {@link DataModel}.

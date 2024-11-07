@@ -106,7 +106,7 @@ describe('SpecificationSubmissionService', () => {
     // Mock the returns
     const expectedInputShape: (keyof Partial<ISubmissionState>)[] = ['specificationId'];
     const expectedRunInput = { specificationId: 'test-id' };
-    const dataRequestId = 'dataRequestId';
+    const requestId = 'requestId';
     const expectedRunResult = true;
 
     createDataRequestStepStub.getInputShape.mockReturnValueOnce(expectedInputShape);
@@ -118,7 +118,7 @@ describe('SpecificationSubmissionService', () => {
 
     isRequiredSpy.mockReturnValue(of({ result: {}, isRequired: true } as StepResult));
     runSpy.mockReturnValue(
-      of({ result: { dataRequestId, succeeded: true }, isRequired: false } as StepResult)
+      of({ result: { requestId, succeeded: true }, isRequired: false } as StepResult)
     );
 
     service.submit('test-id').subscribe((result: boolean) => {
@@ -152,11 +152,11 @@ describe('SpecificationSubmissionService', () => {
     // Mock the returns
     const expectedInputShape: (keyof Partial<ISubmissionState>)[] = ['specificationId'];
     const expectedRunInput = { specificationId: 'test-id' };
-    const dataRequestId = 'dataRequestId';
+    const requestId = 'requestId';
     const expectedRunResult = true;
     const isRequired$ = of({ result: {}, isRequired: true } as StepResult);
     const run$ = of({
-      result: { dataRequestId, succeeded: true },
+      result: { requestId, succeeded: true },
       isRequired: false,
     } as StepResult);
 
@@ -232,11 +232,11 @@ describe('SpecificationSubmissionService', () => {
   it('step run is not called when isRequired is false', () => {
     // Mock the returns
     const expectedInputShape: (keyof Partial<ISubmissionState>)[] = ['specificationId'];
-    const dataRequestId = 'dataRequestId';
+    const requestId = 'requestId';
     const expectedRunResult = true;
     const isRequired$ = of({ result: {}, isRequired: false } as StepResult);
     const run$ = of({
-      result: { dataRequestId, succeeded: true },
+      result: { requestId, succeeded: true },
       isRequired: false,
     } as StepResult);
 
@@ -313,11 +313,11 @@ describe('SpecificationSubmissionService', () => {
     // Mock the returns
     const expectedInputShape: (keyof Partial<ISubmissionState>)[] = ['specificationId'];
     const expectedRunInput = { specificationId: 'test-id' };
-    const dataRequestId = 'dataRequestId';
+    const requestId = 'requestId';
     const expectedRunResult = true;
     const isRequired$ = of({ result: {}, isRequired: true } as StepResult);
     const run$ = of({
-      result: { dataRequestId, cancel: true },
+      result: { requestId, cancel: true },
       isRequired: false,
     } as StepResult);
 

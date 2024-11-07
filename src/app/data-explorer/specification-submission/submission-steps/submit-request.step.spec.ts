@@ -51,7 +51,7 @@ describe('SubmitRequestStep', () => {
 
   it('getInputShape should return expected fields', () => {
     const expectedInputStep = [
-      'dataRequestId' as keyof ISubmissionState,
+      'requestId' as keyof ISubmissionState,
       'cancel' as keyof ISubmissionState,
     ];
 
@@ -66,7 +66,7 @@ describe('SubmitRequestStep', () => {
     requestEndpointsStub.getRequest.mockReturnValueOnce(of({ status: 'DRAFT' } as RequestResponse));
 
     const input: Partial<ISubmissionState> = {
-      dataRequestId: '1',
+      requestId: '1',
     };
 
     const actual$ = step.isRequired(input);
@@ -83,7 +83,7 @@ describe('SubmitRequestStep', () => {
     );
 
     const input: Partial<ISubmissionState> = {
-      dataRequestId: '1',
+      requestId: '1',
     };
 
     const actual$ = step.isRequired(input);
@@ -97,7 +97,7 @@ describe('SubmitRequestStep', () => {
 
     requestEndpointsStub.changeStatus.mockReturnValueOnce(of({} as RequestResponse));
     const input: Partial<ISubmissionState> = {
-      dataRequestId: '1',
+      requestId: '1',
     };
     const actual$ = step.run(input);
 

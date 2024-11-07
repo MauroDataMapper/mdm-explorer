@@ -38,4 +38,9 @@ SPDX-License-Identifier: Apache-2.0
     color: $color-submittedDataSpecification-contrast;
     background-color: $color-submittedDataSpecification;
   }
+
+  &--attached {
+    color: $color-attachedDataSpecification-contrast;
+    background-color: $color-attachedDataSpecification;
+  }
 }

@@ -60,8 +60,10 @@ export class DataSpecificationRowComponent implements OnChanges {
     // Can only submit/share if finalised and user owns the data spec.
     this.showSubmitButton = this.currentUserOwnsDataSpec && status === 'finalised';
     this.showShareButton =
-      this.currentUserOwnsDataSpec && (status === 'finalised' || status === 'submitted');
-    this.showViewRequestButton = this.currentUserOwnsDataSpec && status === 'submitted';
+      this.currentUserOwnsDataSpec &&
+      (status === 'finalised' || status === 'attached to request' || status === 'submitted');
+    this.showViewRequestButton =
+      this.currentUserOwnsDataSpec && (status === 'attached to request' || status === 'submitted');
   }
 
   onSubmitClick() {

@@ -49,19 +49,19 @@ class FileGenerationStepServiceTestHelper {
 
   static getStepInput(
     fileGenerationStepService: FileGenerationStepService,
-    dataRequestId: string | undefined,
+    requestId: string | undefined,
     specificationId: string | undefined
   ) {
     // Although all of this could be mocked, it seems easier to use the actual service
     const stateService: SubmissionStateService = new SubmissionStateService();
-    stateService.set({ dataRequestId, specificationId });
+    stateService.set({ requestId, specificationId });
     return stateService.getStepInputFromShape(fileGenerationStepService.getInputShape());
   }
 
   static executeIsRequiredErrorTest(
     attachmentsServiceStub: AttachmentsServiceStub,
     fileGenerationStepService: FileGenerationStepService,
-    dataRequestId: string | undefined,
+    requestId: string | undefined,
     specificationId: string | undefined,
     attachmentType: AttachmentType,
     stepName: StepName
@@ -72,7 +72,7 @@ class FileGenerationStepServiceTestHelper {
 
     const stepInput = FileGenerationStepServiceTestHelper.getStepInput(
       fileGenerationStepService,
-      dataRequestId,
+      requestId,
       specificationId
     );
 
@@ -88,14 +88,14 @@ class FileGenerationStepServiceTestHelper {
 
   static executeRunErrorTest(
     fileGenerationStepService: FileGenerationStepService,
-    dataRequestId: string | undefined,
+    requestId: string | undefined,
     specificationId: string | undefined,
     exporterName: ExporterName,
     stepName: StepName
   ) {
     const stepInput = FileGenerationStepServiceTestHelper.getStepInput(
       fileGenerationStepService,
-      dataRequestId,
+      requestId,
       specificationId
     );
 
@@ -118,7 +118,7 @@ describe('FileGenerationStepService', () => {
   const missingSpecificationIdIsRequiredError =
     'Generate pdf of data request (isRequired) expects specificationId, which was not provided.';
   const missingRequestIdIsRequiredError =
-    'Generate pdf of data request (isRequired) expects dataRequestId, which was not provided.';
+    'Generate pdf of data request (isRequired) expects requestId, which was not provided.';
   const missingSpecificationIdRunError =
     'Generate pdf of data request (run) expects specificationId, which was not provided.';
 
@@ -147,13 +147,13 @@ describe('FileGenerationStepService', () => {
   });
 
   it('getInputShape should return expected fields', () => {
-    const expectedInputStep = ['specificationId', 'dataRequestId', 'cancel'];
+    const expectedInputStep = ['specificationId', 'requestId', 'cancel'];
     const inputStep = fileGenerationStepService.getInputShape();
     expect(inputStep).toEqual(expectedInputStep);
   });
 
   it('isRequired should error if specification id parameter is missing', () => {
-    const dataRequestId = 'defined';
+    const requestId = 'defined';
     const specificationId = undefined;
     const expectedHasError = true;
     const expectedErrorMessage = missingSpecificationIdIsRequiredError;
@@ -166,7 +166,7 @@ describe('FileGenerationStepService', () => {
     const actual$ = FileGenerationStepServiceTestHelper.executeIsRequiredErrorTest(
       attachmentsServiceStub,
       fileGenerationStepService,
-      dataRequestId,
+      requestId,
       specificationId,
       AttachmentType.DataSpecificationPDF,
       StepName.GeneratePdfFile
@@ -176,7 +176,7 @@ describe('FileGenerationStepService', () => {
   });
 
   it('isRequired should error if request id parameter is missing', () => {
-    const dataRequestId = undefined;
+    const requestId = undefined;
     const specificationId = 'defined';
     const expectedHasError = true;
     const expectedErrorMessage = missingRequestIdIsRequiredError;
@@ -189,7 +189,7 @@ describe('FileGenerationStepService', () => {
     const actual$ = FileGenerationStepServiceTestHelper.executeIsRequiredErrorTest(
       attachmentsServiceStub,
       fileGenerationStepService,
-      dataRequestId,
+      requestId,
       specificationId,
       AttachmentType.DataSpecificationPDF,
       StepName.GeneratePdfFile
@@ -199,7 +199,7 @@ describe('FileGenerationStepService', () => {
   });
 
   it('isRequired should error if both request id and specification id parameters are missing', () => {
-    const dataRequestId = undefined;
+    const requestId = undefined;
     const specificationId = undefined;
     const expectedHasError = true;
     const expectedErrorMessage = missingSpecificationIdIsRequiredError;
@@ -212,7 +212,7 @@ describe('FileGenerationStepService', () => {
     const actual$ = FileGenerationStepServiceTestHelper.executeIsRequiredErrorTest(
       attachmentsServiceStub,
       fileGenerationStepService,
-      dataRequestId,
+      requestId,
       specificationId,
       AttachmentType.DataSpecificationPDF,
       StepName.GeneratePdfFile
@@ -222,7 +222,7 @@ describe('FileGenerationStepService', () => {
   });
 
   it('isRequired should NOT error if both request id and specification id parameters are provided', () => {
-    const dataRequestId = 'defined';
+    const requestId = 'defined';
     const specificationId = 'defined';
     const expectedHasError = false;
     const expectedErrorMessage = 'No error occurred';
@@ -235,7 +235,7 @@ describe('FileGenerationStepService', () => {
     const actual$ = FileGenerationStepServiceTestHelper.executeIsRequiredErrorTest(
       attachmentsServiceStub,
       fileGenerationStepService,
-      dataRequestId,
+      requestId,
       specificationId,
       AttachmentType.DataSpecificationPDF,
       StepName.GeneratePdfFile
@@ -245,7 +245,7 @@ describe('FileGenerationStepService', () => {
   });
 
   it('run should error if specification id parameter is missing', () => {
-    const dataRequestId = 'defined';
+    const requestId = 'defined';
     const specificationId = undefined;
     const expectedHasError = true;
     const expectedErrorMessage = missingSpecificationIdRunError;
@@ -257,7 +257,7 @@ describe('FileGenerationStepService', () => {
 
     const actual$ = FileGenerationStepServiceTestHelper.executeRunErrorTest(
       fileGenerationStepService,
-      dataRequestId,
+      requestId,
       specificationId,
       ExporterName.DataModelPdfExporterService,
       StepName.GeneratePdfFile

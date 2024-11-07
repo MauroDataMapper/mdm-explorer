@@ -19,6 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
+  ExporterName,
   ISubmissionState,
   ISubmissionStep,
   StepFunction,
@@ -26,18 +27,18 @@ import {
   StepResult,
 } from '../type-declarations/submission.resource';
 import { AttachmentType } from '@maurodatamapper/sde-resources';
-import { FileAttachmentStepService } from '../services/fileAttachmentStep.service';
+import { FileGenerationStepService } from '../services/fileGenerationStep.service';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { ErrorService } from '../services/error.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class AttachSqlStep implements ISubmissionStep {
-  name: StepName = StepName.AttachSqlFile;
+export class AttachToNewProjectRequestStep implements ISubmissionStep {
+  name: StepName = StepName.GenerateSqlFile;
 
   constructor(
-    private fileAttachmentStepService: FileAttachmentStepService,
+    private fileGenerationStepService: FileGenerationStepService,
     private broadcastService: BroadcastService
   ) {}
 
@@ -47,11 +48,11 @@ export class AttachSqlStep implements ISubmissionStep {
     }
 
     this.broadcastService.submittingDataSpecification(
-      'Attaching sql file...',
+      'Generating sql file...',
       input.stepRunnerIntent
     );
 
-    return this.fileAttachmentStepService.isRequired(
+    return this.fileGenerationStepService.isRequired(
       input,
       this.name,
       AttachmentType.DataSpecificationSQL
@@ -59,14 +60,14 @@ export class AttachSqlStep implements ISubmissionStep {
   }
 
   run(input: Partial<ISubmissionState>): Observable<StepResult> {
-    return this.fileAttachmentStepService.run(
+    return this.fileGenerationStepService.run(
       input,
       this.name,
-      AttachmentType.DataSpecificationSQL
+      ExporterName.DataModelSqlExporterService
     );
   }
 
   getInputShape(): (keyof ISubmissionState)[] {
-    return this.fileAttachmentStepService.getInputShape();
+    return this.fileGenerationStepService.getInputShape();
   }
 }

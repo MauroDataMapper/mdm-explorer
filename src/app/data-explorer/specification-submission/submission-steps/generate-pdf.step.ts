@@ -22,12 +22,14 @@ import {
   ExporterName,
   ISubmissionState,
   ISubmissionStep,
+  StepFunction,
   StepName,
   StepResult,
 } from '../type-declarations/submission.resource';
 import { AttachmentType } from '@maurodatamapper/sde-resources';
 import { FileGenerationStepService } from '../services/fileGenerationStep.service';
 import { BroadcastService } from 'src/app/core/broadcast.service';
+import { ErrorService } from '../services/error.service';
 
 @Injectable({
   providedIn: 'root',
@@ -41,7 +43,18 @@ export class GeneratePdfStep implements ISubmissionStep {
   ) {}
 
   isRequired(input: Partial<ISubmissionState>): Observable<StepResult> {
-    this.broadcastService.submittingDataSpecification('Generating pdf file...');
+    console.log('NIGE - GeneratePdfStep - isRequired');
+    const properties = Object.keys(input);
+    console.log(properties);
+
+    if (!input.stepRunnerIntent) {
+      return ErrorService.missingInputError(this.name, StepFunction.IsRequired, 'stepRunnerIntent');
+    }
+
+    this.broadcastService.submittingDataSpecification(
+      'Generating pdf file...',
+      input.stepRunnerIntent
+    );
 
     return this.fileGenerationStepService.isRequired(
       input,

@@ -18,6 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
 import { FileProperties, ISubmissionState } from '../type-declarations/submission.resource';
+import { StepRunnerIntent } from 'src/app/core/broadcast.service';
 
 @Injectable({
   providedIn: 'root',
@@ -52,7 +53,7 @@ export class SubmissionStateService {
   ): Partial<ISubmissionState> {
     return inputShape.reduce((acc, key) => {
       if (this._state[key] !== undefined) {
-        acc[key] = this._state[key] as string & FileProperties & boolean;
+        acc[key] = this._state[key] as string & FileProperties & boolean & StepRunnerIntent;
       }
       return acc;
     }, {} as Partial<ISubmissionState>);

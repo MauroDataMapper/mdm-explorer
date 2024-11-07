@@ -1,0 +1,151 @@
+<!-- Page 1: Initial options with radio buttons -->
+<div *ngIf="currentPage === 1">
+  <h1 mat-dialog-title>Attach to Request</h1>
+  <mat-dialog-content>
+    <p>Please choose which type of request you want to attach this Data Specification to:</p>
+    <mat-radio-group [(ngModel)]="selectedOption">
+      <mat-radio-button [value]="WizardPage.NewProjectRequest" class="spaced-radio"
+        >New Project Request</mat-radio-button
+      ><br />
+      <mat-radio-button [value]="WizardPage.ProjectChangeRequest" class="spaced-radio"
+        >Project Change Request</mat-radio-button
+      ><br />
+      <mat-radio-button [value]="WizardPage.DataRequest" class="spaced-radio"
+        >Data Request</mat-radio-button
+      ><br />
+    </mat-radio-group>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-stroked-button color="primary" (click)="close()">Cancel</button>
+    <button
+      mat-flat-button
+      color="primary"
+      (click)="goToPage(selectedOption)"
+      [disabled]="!selectedOption"
+    >
+      Next
+    </button>
+  </mat-dialog-actions>
+</div>
+
+<!-- Page 2: Select Project form -->
+<div *ngIf="currentPage === WizardPage.DataRequest">
+  <h1 mat-dialog-title>Create Data Request</h1>
+  <mat-dialog-content>
+    <form [formGroup]="selectProjectForm" role="form" name="selectProjectForm">
+      <div class="form-input">
+        <p>
+          Data Requests are automatically submitted. <br /><br />
+          Please select the project you would like to submit this data specification on behalf of.
+        </p>
+        <mat-form-field appearance="outline">
+          <mat-label>Project</mat-label>
+          <mat-select formControlName="project" required>
+            <mat-option *ngFor="let project of projects" [value]="project">{{
+              project.name
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-error *ngIf="selectProjectForm.controls.project.errors?.['required']">
+          Please select a project
+        </mat-error>
+      </div>
+    </form>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-stroked-button color="primary" (click)="goToPage(1)">Back</button>
+    <button
+      mat-flat-button
+      color="primary"
+      [disabled]="selectProjectForm.invalid"
+      (click)="submitAttachToDataRequest()"
+    >
+      Submit
+    </button>
+  </mat-dialog-actions>
+</div>
+
+<!-- Page 3: Option 2 Content -->
+<div *ngIf="currentPage === WizardPage.NewProjectRequest">
+  <h1 mat-dialog-title>Attach to New Project Request</h1>
+  <mat-dialog-content>
+    <form [formGroup]="selectNewProjectRequestForm" role="form" name="selectNewProjectRequestForm">
+      <div class="form-input">
+        <p>
+          Please select the New Project Request you would like to attach this data specification to.
+        </p>
+        <mat-form-field appearance="outline">
+          <mat-label>New Project Request</mat-label>
+          <mat-select formControlName="newProjectRequest" required>
+            <mat-option
+              *ngFor="let newProjectRequest of newProjectRequests"
+              [value]="newProjectRequest"
+              >{{ newProjectRequest.name }}</mat-option
+            >
+          </mat-select>
+        </mat-form-field>
+        <mat-error
+          *ngIf="selectNewProjectRequestForm.controls.newProjectRequest.errors?.['required']"
+        >
+          Please select a New Project Request
+        </mat-error>
+      </div>
+    </form>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-stroked-button color="primary" (click)="goToPage(1)">Back</button>
+    <button
+      mat-flat-button
+      color="primary"
+      [disabled]="selectNewProjectRequestForm.invalid"
+      (click)="submitAttachToNewProjectRequest()"
+    >
+      Submit
+    </button>
+  </mat-dialog-actions>
+</div>
+
+<!-- Page 4: Option 3 Content -->
+<div *ngIf="currentPage === WizardPage.ProjectChangeRequest">
+  <h1 mat-dialog-title>Attach to Project Change Request</h1>
+  <mat-dialog-content>
+    <form
+      [formGroup]="selectProjectChangeRequestForm"
+      role="form"
+      name="selectProjectChangeRequestForm"
+    >
+      <div class="form-input">
+        <p>
+          Please select the Project Change Request you would like to attach this data specification
+          to.
+        </p>
+        <mat-form-field appearance="outline">
+          <mat-label>Project Change Request</mat-label>
+          <mat-select formControlName="projectChangeRequest" required>
+            <mat-option
+              *ngFor="let projectChangeRequest of projectChangeRequests"
+              [value]="projectChangeRequest"
+              >{{ projectChangeRequest.name }}</mat-option
+            >
+          </mat-select>
+        </mat-form-field>
+        <mat-error
+          *ngIf="selectProjectChangeRequestForm.controls.projectChangeRequest.errors?.['required']"
+        >
+          Please select a Project Change Request
+        </mat-error>
+      </div>
+    </form>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-stroked-button color="primary" (click)="goToPage(1)">Back</button>
+    <button
+      mat-flat-button
+      color="primary"
+      [disabled]="selectProjectChangeRequestForm.invalid"
+      (click)="submitAttachToProjectChangeRequest()"
+    >
+      Submit
+    </button>
+  </mat-dialog-actions>
+</div>

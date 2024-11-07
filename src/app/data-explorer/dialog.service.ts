@@ -62,6 +62,10 @@ import {
   SelectProjectDialogData,
 } from './specification-submission/select-project-dialog/select-project-dialog.component';
 import { SimpleDialogComponent, SimpleDialogData } from './simple-dialog/simple-dialog.component';
+import {
+  SpecificationSubmissionWizardComponent,
+  SubmissionWizardDialogData,
+} from './specification-submission/specification-submission-wizard/specification-submission-wizard.component';
 
 @Injectable({
   providedIn: 'root',
@@ -158,6 +162,15 @@ export class DialogService {
   openSelectProject(data: SelectProjectDialogData) {
     return this.matDialog.open<SelectProjectDialogComponent, SelectProjectDialogData>(
       SelectProjectDialogComponent,
+      {
+        data,
+      }
+    );
+  }
+
+  openSubmissionWizard(data: SubmissionWizardDialogData) {
+    return this.matDialog.open<SpecificationSubmissionWizardComponent, SubmissionWizardDialogData>(
+      SpecificationSubmissionWizardComponent,
       {
         data,
       }

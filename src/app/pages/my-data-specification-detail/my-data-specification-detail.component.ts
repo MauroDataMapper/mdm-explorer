@@ -74,7 +74,18 @@ import { VersionTreeSortingService } from 'src/app/data-explorer/version-tree-so
 import { SpecificationSubmissionService } from 'src/app/data-explorer/specification-submission/services/specification-submission.service';
 import { SubmissionSDEService } from 'src/app/data-explorer/specification-submission/services/submission.sde.service';
 import { DataSpecificationResearchPluginService } from 'src/app/mauro/data-specification-research-plugin.service';
-import { RequestDialogService, RequestEndpointsResearcher } from '@maurodatamapper/sde-resources';
+import {
+  MauroDataSpecificationDTO,
+  NewProjectRequestDefinition,
+  ProjectChangeRequestDefinition,
+  RequestDialogService,
+  RequestEndpoints,
+  RequestEndpointsResearcher,
+  RequestService,
+  RequestType,
+} from '@maurodatamapper/sde-resources';
+import { SubmissionType } from 'src/app/data-explorer/specification-submission/type-declarations/submission.resource';
+import { SubmissionWizardDialogResponse } from 'src/app/data-explorer/specification-submission/specification-submission-wizard/specification-submission-wizard.component';
 export interface RemoveSelectedResponse {
   okCancelDialogResponse: Observable<OkCancelDialogResponse>;
   deletedItems: Observable<DataElementMultipleOperationResult>;
@@ -153,7 +164,9 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     private specificationSubmissionService: SpecificationSubmissionService,
     private submissionSDEService: SubmissionSDEService,
     private researcherRequestEndpoints: RequestEndpointsResearcher,
-    private requestDialogService: RequestDialogService
+    private requestDialogService: RequestDialogService,
+    private requestEndpoints: RequestEndpoints,
+    private requestService: RequestService
   ) {
     this.sourceTargetIntersections = {
       dataSpecifications: [],
@@ -185,43 +198,123 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     const specificationId = this.dataSpecification?.id;
 
     if (!specificationId) {
-      return;
+      throw new Error('Specification ID is required to submit a data specification');
     }
-    this.specificationSubmissionService.submit(specificationId).subscribe((result: boolean) => {
-      if (result) {
-        this.dialogs.openSuccess({
-          heading: 'Data specification submitted.',
-          message: `Your data specification "${this.dataSpecification?.label}" has been successfully submitted.`,
-        });
 
-        if (!this.dataSpecification) {
+    this.specificationSubmissionService
+      .chooseRequestType(specificationId)
+      .pipe(
+        switchMap((wizardResponse: SubmissionWizardDialogResponse) => {
+          if (wizardResponse.requestType === RequestType.Data) {
+            return this.specificationSubmissionService.submit(
+              specificationId,
+              SubmissionType.DataRequest,
+              undefined,
+              wizardResponse.projectId
+            );
+          } else if (
+            wizardResponse.requestType === RequestType.NewProject ||
+            wizardResponse.requestType === RequestType.ProjectChange
+          ) {
+            console.log(`NIGE - wizardResponse.requestId ${wizardResponse.requestId}`);
+            if (wizardResponse.requestId) {
+              this.viewRequestForId(wizardResponse.requestId);
+              return EMPTY;
+            } else {
+              this.requestDialogService.doCreateRequestDialog(
+                'RESEARCHER',
+                wizardResponse.requestType,
+                this.dataSpecification?.id,
+                `${this.dataSpecification?.label} (${this.dataSpecification?.modelVersion})`
+              );
+              return EMPTY;
+            }
+          } else {
+            return EMPTY;
+          }
+        }),
+        switchMap((result: boolean) => {
+          if (!result) {
+            return EMPTY;
+          }
+
+          this.dialogs.openSuccess({
+            heading: 'Data specification submitted.',
+            message: `Your data specification "${this.dataSpecification?.label}" has been successfully submitted.`,
+          });
+
+          if (!this.dataSpecification) {
+            return EMPTY;
+          }
+
+          return this.submissionSDEService
+            .mapToDataSpecificationWithSDEStatusCheck(this.dataSpecification)
+            .pipe(
+              switchMap((dataSpecification) => {
+                return this.setDataSpecification(dataSpecification);
+              }),
+              switchMap(([dataSchemas, intersections, versionTree]) => {
+                if (dataSchemas && intersections && versionTree) {
+                  this.setDataSchemasIntersectionsAndVersionTree(
+                    dataSchemas,
+                    intersections,
+                    versionTree
+                  );
+                }
+
+                return this.folderService.treeList();
+              })
+            );
+        })
+      )
+      .subscribe();
+    /*
+    // Do the wizard bit here
+    this.specificationSubmissionService
+      .chooseRequestType(specificationId)
+      .subscribe((wizardResponse: SubmissionWizardDialogResponse) => {
+        if (wizardResponse.requestType !== RequestType.Data) {
           return;
         }
+        this.specificationSubmissionService
+          .submit(specificationId, SubmissionType.DataRequest)
+          .subscribe((result: boolean) => {
+            if (result) {
+              this.dialogs.openSuccess({
+                heading: 'Data specification submitted.',
+                message: `Your data specification "${this.dataSpecification?.label}" has been successfully submitted.`,
+              });
 
-        this.submissionSDEService
-          .mapToDataSpecificationWithSDEStatusCheck(this.dataSpecification)
-          .pipe(
-            switchMap((dataSpecification) => {
-              // Refresh the current state of the data specification in view
-              return this.setDataSpecification(dataSpecification);
-            }),
-            switchMap(([dataSchemas, intersections, versionTree]) => {
-              if (dataSchemas && intersections && versionTree) {
-                this.setDataSchemasIntersectionsAndVersionTree(
-                  dataSchemas,
-                  intersections,
-                  versionTree
-                );
+              if (!this.dataSpecification) {
+                return;
               }
 
-              // Refresh finalised state in the backend (equivalent to click the refresh)
-              // button in mdm-ui
-              return this.folderService.treeList();
-            })
-          )
-          .subscribe();
-      }
-    });
+              this.submissionSDEService
+                .mapToDataSpecificationWithSDEStatusCheck(this.dataSpecification)
+                .pipe(
+                  switchMap((dataSpecification) => {
+                    // Refresh the current state of the data specification in view
+                    return this.setDataSpecification(dataSpecification);
+                  }),
+                  switchMap(([dataSchemas, intersections, versionTree]) => {
+                    if (dataSchemas && intersections && versionTree) {
+                      this.setDataSchemasIntersectionsAndVersionTree(
+                        dataSchemas,
+                        intersections,
+                        versionTree
+                      );
+                    }
+
+                    // Refresh finalised state in the backend (equivalent to click the refresh)
+                    // button in mdm-ui
+                    return this.folderService.treeList();
+                  })
+                )
+                .subscribe();
+            }
+          });
+      });
+      */
   }
 
   finaliseDataSpecification() {
@@ -330,7 +423,8 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     if (
       !this.dataSpecification ||
       !this.dataSpecification.id ||
-      this.dataSpecification.status !== 'submitted'
+      (this.dataSpecification.status !== 'attached to request' &&
+        this.dataSpecification.status !== 'submitted')
     ) {
       return;
     }
@@ -343,6 +437,37 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
             return EMPTY;
           }
           return this.requestDialogService.showRequestResponse(requestResponse, 'RESEARCHER');
+        })
+      )
+      .subscribe(() => {});
+  }
+
+  viewRequestForId(requestId: Uuid) {
+    if (!requestId) {
+      return;
+    }
+
+    this.requestEndpoints
+      .getRequest(requestId)
+      .pipe(
+        switchMap((requestResponse) => {
+          if (!requestResponse) {
+            return EMPTY;
+          }
+
+          if (this.dataSpecification?.id && this.dataSpecification?.label) {
+            this.requestService.setMauroId(
+              this.dataSpecification.id,
+              `${this.dataSpecification?.label} (${this.dataSpecification?.modelVersion})`,
+              requestResponse
+            );
+          }
+
+          return this.requestDialogService.showRequestResponse(
+            requestResponse,
+            'RESEARCHER',
+            'ALWAYS_EDIT'
+          );
         })
       )
       .subscribe(() => {});
@@ -911,7 +1036,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
         [
           OkCancelDialogResponse,
           DataElementMultipleOperationResult,
-          DataElementMultipleOperationResult
+          DataElementMultipleOperationResult,
         ]
       >;
     } else {
@@ -919,7 +1044,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
         [
           OkCancelDialogResponse,
           DataElementMultipleOperationResult,
-          DataElementMultipleOperationResult
+          DataElementMultipleOperationResult,
         ]
       >;
     }
@@ -934,7 +1059,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
     [
       DataElementMultipleOperationResult,
       DataElementMultipleOperationResult,
-      DataElementMultipleOperationResult
+      DataElementMultipleOperationResult,
     ]
   > {
     if (okCancelDialogResponse.result) {
@@ -946,7 +1071,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
         [
           DataElementMultipleOperationResult,
           DataElementMultipleOperationResult,
-          DataElementMultipleOperationResult
+          DataElementMultipleOperationResult,
         ]
       >;
     } else {
@@ -954,7 +1079,7 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
         [
           DataElementMultipleOperationResult,
           DataElementMultipleOperationResult,
-          DataElementMultipleOperationResult
+          DataElementMultipleOperationResult,
         ]
       >;
     }

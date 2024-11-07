@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import {
   ISubmissionState,
   ISubmissionStep,
@@ -33,8 +33,8 @@ import { ErrorService } from '../services/error.service';
 @Injectable({
   providedIn: 'root',
 })
-export class AttachSqlStep implements ISubmissionStep {
-  name: StepName = StepName.AttachSqlFile;
+export class SetDataSpecificationStatusStep implements ISubmissionStep {
+  name: StepName = StepName.SetDataSpecificationStatus;
 
   constructor(
     private fileAttachmentStepService: FileAttachmentStepService,
@@ -47,14 +47,18 @@ export class AttachSqlStep implements ISubmissionStep {
     }
 
     this.broadcastService.submittingDataSpecification(
-      'Attaching sql file...',
+      'Setting Data Specification status...',
       input.stepRunnerIntent
     );
+
+    if (!input.specificationId) {
+      return ErrorService.missingInputError(this.name, StepFunction.IsRequired, 'specificationId');
+    }
 
     return this.fileAttachmentStepService.isRequired(
       input,
       this.name,
-      AttachmentType.DataSpecificationSQL
+      AttachmentType.DataSpecificationPDF
     );
   }
 
@@ -62,7 +66,7 @@ export class AttachSqlStep implements ISubmissionStep {
     return this.fileAttachmentStepService.run(
       input,
       this.name,
-      AttachmentType.DataSpecificationSQL
+      AttachmentType.DataSpecificationPDF
     );
   }
 

@@ -49,7 +49,7 @@ export class FileAttachmentStepService {
       return ErrorService.observableError(`${stepName} (run) unexpected validation failure.`);
     }
 
-    return this.attachmentsService.attachmentsAreRequired(input.dataRequestId, attachmentType);
+    return this.attachmentsService.attachmentsAreRequired(input.requestId, attachmentType);
   }
 
   run(
@@ -68,7 +68,7 @@ export class FileAttachmentStepService {
     }
 
     return this.attachmentsService.attachFile(
-      input.dataRequestId,
+      input.requestId,
       input.fileProperties,
       attachmentType,
       input.specificationId
@@ -76,11 +76,11 @@ export class FileAttachmentStepService {
   }
 
   getInputShape(): (keyof ISubmissionState)[] {
-    return ['dataRequestId', 'fileProperties', 'cancel', 'specificationId'];
+    return ['stepRunnerIntent', 'requestId', 'fileProperties', 'cancel', 'specificationId'];
   }
 
   private inputIsDefined(input: Partial<ISubmissionState>): input is ISubmissionState {
-    return !!input.dataRequestId && !!input.fileProperties;
+    return !!input.requestId && !!input.fileProperties;
   }
 
   private validateInput(
@@ -88,8 +88,8 @@ export class FileAttachmentStepService {
     stepName: StepName,
     functionName: StepFunction
   ): Observable<StepResult> | null {
-    if (!input.dataRequestId) {
-      return ErrorService.missingInputError(stepName, functionName, 'dataRequestId');
+    if (!input.requestId) {
+      return ErrorService.missingInputError(stepName, functionName, 'requestId');
     }
 
     if (!input.fileProperties) {

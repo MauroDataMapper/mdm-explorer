@@ -52,7 +52,7 @@ describe('GeneratePdfStep', () => {
   it('getInputShape should return expected fields', () => {
     const expectedInputStep = [
       'specificationId' as keyof ISubmissionState,
-      'dataRequestId' as keyof ISubmissionState,
+      'requestId' as keyof ISubmissionState,
     ];
     fileGenerationStepServiceStub.getInputShape.mockReturnValueOnce(expectedInputStep);
 
