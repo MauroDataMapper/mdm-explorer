@@ -30,17 +30,33 @@ export interface UserRegistrationFormData {
   lastName: string;
   email: string;
   phoneNumber: string;
-  additionalInfo: string;
-  confirmations: boolean;
-  organisation: string;
-  orgName: string;
-  positionAtOrganisation: string;
-  orgWebsite: string;
-  orgCountryOfRegistration: string;
-  orgType: string;
-  smallMediumBusinessStatus: string;
-  deptName: string;
+  jobTitle: string;
+  orcidId: string;
+  gmcNumber: string;
+  nmcNumber: string;
+  hcpcNumber: string;
+  arNumber: string;
+  organisationId: string;
+  organisationName: string;
+  organisationLegalName: string;
+  organisationWebsite: string;
+  organisationCountryOfOrigin: string;
+  organisationType: OrganisationType;
+  organisationIsSmb: boolean;
+  departmentId: string;
+  departmentName: string;
 }
+
+export type OrganisationType = 'NOT_SELECTED' | 'UNIVERSITY' | 'HEALTHTECH';
+export interface OrganisationTypeOption {
+  value: OrganisationType;
+  displayName: 'University' | 'Healthcare technology company';
+}
+
+export const ORGANISATION_TYPE_OPTIONS: OrganisationTypeOption[] = [
+  { value: 'UNIVERSITY', displayName: 'University' },
+  { value: 'HEALTHTECH', displayName: 'Healthcare technology company' },
+];
 
 @Component({
   selector: 'mdm-user-registration-form',
@@ -54,26 +70,36 @@ export class UserRegistrationFormComponent {
   formFieldAppearance: MatFormFieldAppearance = 'outline';
   isCreatingNewOrganisation = false;
 
+  organisationTypeOptions = ORGANISATION_TYPE_OPTIONS;
+
   registrationForm: FormGroup = this.formBuilder.group({
     personalDetails: this.formBuilder.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       email: ['', Validators.compose([Validators.required, Validators.email])],
       phoneNumber: ['', Validators.pattern('^[- +()0-9]+$')],
-      additionalInfo: null,
-      confirmations: false,
+      jobTitle: ['', Validators.required],
+      orcidId: null,
+      gmcNumber: null,
+      nmcNumber: null,
+      hcpcNumber: null,
+      arNumber: null,
+
+      // TODO: Unconfirmed field.
+      // confirmations: false,
     }),
     organisationDetails: this.formBuilder.group({
       organisation: ['', Validators.required],
-      orgName: null,
-      orgWebsite: null,
-      orgCountryOfRegistration: null,
-      orgType: null,
-      smallMediumBusinessStatus: null,
+      organisationName: null,
+      organisationLegalName: null,
+      organisationWebsite: null,
+      organisationCountryOfOrigin: null,
+      organisationType: null,
+      organisationIsSmb: null,
     }),
     departmentDetails: this.formBuilder.group({
       department: ['', Validators.required],
-      deptName: null,
+      departmentName: null,
     }),
   });
 
@@ -148,42 +174,55 @@ export class UserRegistrationFormComponent {
     if (this.isCreatingNewOrganisation) {
       this.registrationForm.get('organisationDetails.organisation')?.clearValidators();
       this.registrationForm.get('departmentDetails.department')?.clearValidators();
-      this.registrationForm.get('organisationDetails.orgName')?.setValidators(Validators.required);
       this.registrationForm
-        .get('organisationDetails.orgWebsite')
+        .get('organisationDetails.organisationName')
         ?.setValidators(Validators.required);
       this.registrationForm
-        .get('organisationDetails.orgCountryOfRegistration')
+        .get('organisationDetails.organisationLegalName')
         ?.setValidators(Validators.required);
-      this.registrationForm.get('organisationDetails.orgType')?.setValidators(Validators.required);
       this.registrationForm
-        .get('organisationDetails.smallMediumBusinessStatus')
+        .get('organisationDetails.organisationWebsite')
         ?.setValidators(Validators.required);
-      this.registrationForm.get('departmentDetails.deptName')?.setValidators(Validators.required);
+      this.registrationForm
+        .get('organisationDetails.organisationCountryOfOrigin')
+        ?.setValidators(Validators.required);
+      this.registrationForm
+        .get('organisationDetails.organisationType')
+        ?.setValidators(Validators.required);
+      this.registrationForm
+        .get('organisationDetails.organisationIsSmb')
+        ?.setValidators(Validators.required);
+      this.registrationForm
+        .get('departmentDetails.departmentName')
+        ?.setValidators(Validators.required);
     } else {
       this.registrationForm
         .get('organisationDetails.organisation')
         ?.setValidators(Validators.required);
-      this.registrationForm.get('organisationDetails.orgName')?.clearValidators();
-      this.registrationForm.get('organisationDetails.orgWebsite')?.clearValidators();
-      this.registrationForm.get('organisationDetails.orgCountryOfRegistration')?.clearValidators();
-      this.registrationForm.get('organisationDetails.orgType')?.clearValidators();
-      this.registrationForm.get('organisationDetails.smallMediumBusinessStatus')?.clearValidators();
+      this.registrationForm.get('organisationDetails.organisationName')?.clearValidators();
+      this.registrationForm.get('organisationDetails.organisationLegalName')?.clearValidators();
+      this.registrationForm.get('organisationDetails.organisationWebsite')?.clearValidators();
+      this.registrationForm
+        .get('organisationDetails.organisationCountryOfOrigin')
+        ?.clearValidators();
+      this.registrationForm.get('organisationDetails.organisationType')?.clearValidators();
+      this.registrationForm.get('organisationDetails.organisationIsSmb')?.clearValidators();
       this.registrationForm.get('departmentDetails.department')?.setValidators(Validators.required);
-      this.registrationForm.get('departmentDetails.deptName')?.clearValidators();
+      this.registrationForm.get('departmentDetails.departmentName')?.clearValidators();
     }
 
     this.registrationForm.get('organisationDetails.organisation')?.updateValueAndValidity();
-    this.registrationForm.get('organisationDetails.orgName')?.updateValueAndValidity();
-    this.registrationForm.get('organisationDetails.orgWebsite')?.updateValueAndValidity();
+    this.registrationForm.get('organisationDetails.organisationName')?.updateValueAndValidity();
     this.registrationForm
-      .get('organisationDetails.orgCountryOfRegistration')
+      .get('organisationDetails.organisationLegalName')
       ?.updateValueAndValidity();
-    this.registrationForm.get('organisationDetails.orgType')?.updateValueAndValidity();
+    this.registrationForm.get('organisationDetails.organisationWebsite')?.updateValueAndValidity();
     this.registrationForm
-      .get('organisationDetails.smallMediumBusinessStatus')
+      .get('organisationDetails.organisationCountryOfOrigin')
       ?.updateValueAndValidity();
+    this.registrationForm.get('organisationDetails.organisationType')?.updateValueAndValidity();
+    this.registrationForm.get('organisationDetails.organisationIsSmb')?.updateValueAndValidity();
     this.registrationForm.get('departmentDetails.department')?.updateValueAndValidity();
-    this.registrationForm.get('departmentDetails.deptName')?.updateValueAndValidity();
+    this.registrationForm.get('departmentDetails.departmentName')?.updateValueAndValidity();
   }
 }
