@@ -52,6 +52,7 @@ export interface ThemeContrastColors {
   page: string;
   draftDataSpecification: string;
   finalisedDataSpecification: string;
+  attachedDataSpecification: string;
   submittedDataSpecification: string;
   classRow: string;
 }
@@ -162,6 +163,7 @@ export const defaultTheme: Theme = {
     page: '#fff',
     draftDataSpecification: '#008bce',
     finalisedDataSpecification: '#b86c02',
+    attachedDataSpecification: '#b86c02',
     submittedDataSpecification: '#0e8f48',
     classRow: '#c4c4c4',
   },
@@ -367,13 +369,18 @@ export class ThemeService {
         ),
         finalisedDataSpecification: getKviValue(
           props,
-          'contrastcolors.submitted-data-specification',
+          'contrastcolors.finalised-data-specification',
           defaultTheme.contrastColors.finalisedDataSpecification
         ),
         submittedDataSpecification: getKviValue(
           props,
           'contrastcolors.submitted-data-specification',
           defaultTheme.contrastColors.submittedDataSpecification
+        ),
+        attachedDataSpecification: getKviValue(
+          props,
+          'contrastcolors.attached-data-specification',
+          defaultTheme.contrastColors.attachedDataSpecification
         ),
         classRow: getKviValue(
           props,

@@ -37,11 +37,9 @@ export class AttachmentsService {
     private fileEndpoints: FileEndpoints
   ) {}
 
-  attachmentsAreRequired(
-    dataRequestId: Uuid,
-    attachmentType: AttachmentType
-  ): Observable<StepResult> {
-    return this.requestEndpoints.listAttachments(dataRequestId).pipe(
+  attachmentsAreRequired(requestId: Uuid, attachmentType: AttachmentType): Observable<StepResult> {
+    console.log('NIGE - AttachmentsService - attachmentsAreRequired');
+    return this.requestEndpoints.listAttachments(requestId).pipe(
       map((attachmentsList) => {
         const isRequired = !attachmentsList.some(
           (attachment) => attachment.attachmentType === attachmentType
@@ -56,7 +54,7 @@ export class AttachmentsService {
   }
 
   attachFile(
-    dataRequestId: Uuid,
+    requestId: Uuid,
     fileProperties: FileProperties,
     attachmentType: AttachmentType,
     dataSpecificationId: Uuid
@@ -80,7 +78,7 @@ export class AttachmentsService {
           return EMPTY; // Emit nothing for progress events
         } else {
           return this.requestEndpoints
-            .attachFile(dataRequestId, uploadEvent.fileId, attachmentType, dataSpecificationId)
+            .attachFile(requestId, uploadEvent.fileId, attachmentType, dataSpecificationId)
             .pipe(
               map(() => {
                 // Process the final result here

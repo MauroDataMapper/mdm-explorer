@@ -129,7 +129,7 @@ describe('CreateDataRequestStep', () => {
         cold('(a|)', { a: { id: 'request-id' } })
       );
       const expected$ = cold('(a|)', {
-        a: { isRequired: false, result: { dataRequestId: 'request-id' } },
+        a: { isRequired: false, result: { requestId: 'request-id' } },
       });
 
       const actual$ = step.isRequired(input);
@@ -245,7 +245,7 @@ describe('CreateDataRequestStep', () => {
 
         const actual$ = step.run(input);
 
-        expectObservable(actual$).toBe('(a|)', { a: { result: { dataRequestId: 'request-id' } } });
+        expectObservable(actual$).toBe('(a|)', { a: { result: { requestId: 'request-id' } } });
       });
     });
   });

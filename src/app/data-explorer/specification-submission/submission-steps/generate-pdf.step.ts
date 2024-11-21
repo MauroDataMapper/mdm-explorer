@@ -17,17 +17,19 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import {
   ExporterName,
   ISubmissionState,
   ISubmissionStep,
+  StepFunction,
   StepName,
   StepResult,
 } from '../type-declarations/submission.resource';
 import { AttachmentType } from '@maurodatamapper/sde-resources';
 import { FileGenerationStepService } from '../services/fileGenerationStep.service';
 import { BroadcastService } from 'src/app/core/broadcast.service';
+import { ErrorService } from '../services/error.service';
 
 @Injectable({
   providedIn: 'root',
@@ -41,13 +43,42 @@ export class GeneratePdfStep implements ISubmissionStep {
   ) {}
 
   isRequired(input: Partial<ISubmissionState>): Observable<StepResult> {
-    this.broadcastService.submittingDataSpecification('Generating pdf file...');
+    console.log('NIGE - GeneratePdfStep - isRequired');
+    const properties = Object.keys(input);
+    console.log(properties);
 
-    return this.fileGenerationStepService.isRequired(
+    if (!input.stepRunnerIntent) {
+      return ErrorService.missingInputError(this.name, StepFunction.IsRequired, 'stepRunnerIntent');
+    }
+
+    return this.fileGenerationStepService
+      .isRequired(input, this.name, AttachmentType.DataSpecificationPDF)
+      .pipe(
+        tap((isRequired) => {
+          if (isRequired.isRequired && input.stepRunnerIntent) {
+            this.broadcastService.submittingDataSpecification(
+              'Generating pdf file...',
+              input.stepRunnerIntent
+            );
+          }
+        })
+      );
+
+    /*
+    const isRequired = this.fileGenerationStepService.isRequired(
       input,
       this.name,
       AttachmentType.DataSpecificationPDF
     );
+
+    if (isRequired) {
+      this.broadcastService.submittingDataSpecification(
+        'Generating pdf file...',
+        input.stepRunnerIntent
+      );
+    }
+
+    return isRequired;*/
   }
 
   run(input: Partial<ISubmissionState>): Observable<StepResult> {

@@ -21,6 +21,12 @@ import { Pipe, PipeTransform } from '@angular/core';
 @Pipe({ name: 'readOnlyMeql', pure: false })
 export class ReadOnlyMeqlPipe implements PipeTransform {
   transform(status: string, isEmpty: boolean, currentUserOwnsDataSpec: boolean): boolean {
-    return status === 'finalised' || status === 'submitted' || isEmpty || !currentUserOwnsDataSpec;
+    return (
+      status === 'finalised' ||
+      status === 'attached to request' ||
+      status === 'submitted' ||
+      isEmpty ||
+      !currentUserOwnsDataSpec
+    );
   }
 }

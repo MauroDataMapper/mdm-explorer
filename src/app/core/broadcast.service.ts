@@ -37,6 +37,11 @@ export type BroadcastEvent =
   | 'data-bookmarks-refreshed'
   | 'loading';
 
+export enum StepRunnerIntent {
+  Submitting = 'Submitting',
+  Attaching = 'Attaching',
+}
+
 /**
  * Represents a message to broadcast with an optional data payload.
  */
@@ -113,10 +118,10 @@ export class BroadcastService {
    *
    * @param message The message to show
    */
-  submittingDataSpecification(message: string) {
+  submittingDataSpecification(message: string, stepRunnerIntent: StepRunnerIntent) {
     this.loading({
       isLoading: true,
-      caption: `Submitting your data specification - ${message}`,
+      caption: `${stepRunnerIntent} your data specification - ${message}`,
       fillviewport: false,
     });
   }

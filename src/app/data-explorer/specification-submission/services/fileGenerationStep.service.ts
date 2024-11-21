@@ -44,15 +44,16 @@ export class FileGenerationStepService {
     stepName: StepName,
     attachmentType: AttachmentType
   ): Observable<StepResult> {
+    console.log('NIGE - FileGenerationStepService - isRequired');
     if (!input.specificationId) {
       return ErrorService.missingInputError(stepName, StepFunction.IsRequired, 'specificationId');
     }
 
-    if (!input.dataRequestId) {
-      return ErrorService.missingInputError(stepName, StepFunction.IsRequired, 'dataRequestId');
+    if (!input.requestId) {
+      return ErrorService.missingInputError(stepName, StepFunction.IsRequired, 'requestId');
     }
 
-    return this.attachmentsService.attachmentsAreRequired(input.dataRequestId, attachmentType);
+    return this.attachmentsService.attachmentsAreRequired(input.requestId, attachmentType);
   }
 
   run(
@@ -74,6 +75,6 @@ export class FileGenerationStepService {
   }
 
   getInputShape(): (keyof ISubmissionState)[] {
-    return ['specificationId', 'dataRequestId', 'cancel'];
+    return ['stepRunnerIntent', 'specificationId', 'requestId', 'cancel'];
   }
 }

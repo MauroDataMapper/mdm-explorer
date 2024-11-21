@@ -28,19 +28,34 @@ import { DataModel } from '@maurodatamapper/mdm-resources';
 export class SubmissionSDEService {
   constructor(private researcherRequestEndpoints: RequestEndpointsResearcher) {}
 
+  /**
+   * Data Specifications are Data Models and the "Finalised" status is used within the mauro framework
+   * to determine various code paths. This status needs to be retained, but for display purposes
+   * we want to indicate whether a Data Specification is "finalised", "attached" or "submitted" based on the
+   * status of the request for that Data Specification.
+   */
   mapToDataSpecificationWithSDEStatusCheck(dataModel: DataModel): Observable<DataSpecification> {
+    console.log('NIGE - mapToDataSpecificationWithSDEStatusCheck');
     if (!dataModel.id) {
       return of(this.mapToDataSpecification(dataModel));
     }
-
+    console.log('NIGE - mapToDataSpecificationWithSDEStatusCheck - 2');
     return this.researcherRequestEndpoints.getRequestForDataSpecification(dataModel.id).pipe(
       map((requestResponse) => {
-        if (requestResponse && requestResponse?.status !== 'DRAFT') {
+        let dataSpecificationStatus;
+        console.log(`NIGE - mapToDataSpecificationWithSDEStatusCheck - 3 ${dataModel.status}`);
+        if (requestResponse) {
+          dataSpecificationStatus =
+            requestResponse?.status === 'DRAFT' ? 'attached to request' : 'submitted';
+          console.log(
+            `NIGE - mapToDataSpecificationWithSDEStatusCheck - 4 ${dataSpecificationStatus}`
+          );
           return {
             ...dataModel,
-            status: 'submitted' as DataSpecificationStatus,
+            status: dataSpecificationStatus as DataSpecificationStatus,
           } as DataSpecification;
         }
+        console.log(`NIGE - mapToDataSpecificationWithSDEStatusCheck - 5 ${dataModel.status}`);
         return this.mapToDataSpecification(dataModel);
       }),
       catchError((error) => {

@@ -204,6 +204,18 @@ describe('MyDataSpecificationsComponent', () => {
         domainType: CatalogueItemDomainType.DataModel,
         status: 'finalised',
       },
+      {
+        id: '4',
+        label: 'data specification 4',
+        domainType: CatalogueItemDomainType.DataModel,
+        status: 'attached to request',
+      },
+      {
+        id: '5',
+        label: 'data specification 5',
+        domainType: CatalogueItemDomainType.DataModel,
+        status: 'submitted',
+      },
     ];
 
     beforeEach(() => {
@@ -215,11 +227,16 @@ describe('MyDataSpecificationsComponent', () => {
 
       harness.component.filterByStatus(event);
 
-      expect(harness.component.statusFilters).toStrictEqual(['finalised', 'submitted', 'draft']);
+      expect(harness.component.statusFilters).toStrictEqual([
+        'draft',
+        'finalised',
+        'attached to request',
+        'submitted',
+      ]);
       expect(harness.component.filteredDataSpecifications).toStrictEqual(dataSpecifications);
     });
 
-    it.each<DataSpecificationStatus>(['draft', 'finalised'])(
+    it.each<DataSpecificationStatus>(['draft', 'finalised', 'submitted', 'attached to request'])(
       'should display only data specifications of status %p',
       (status) => {
         const event = { value: status } as MatSelectChange;

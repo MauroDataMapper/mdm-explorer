@@ -18,6 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Uuid } from '@maurodatamapper/sde-resources';
 import { Observable } from 'rxjs';
+import { StepRunnerIntent } from 'src/app/core/broadcast.service';
 
 /**
  * @description Data representing whether a step has run or not. If the step is required, the result
@@ -59,8 +60,10 @@ export type FileProperties = {
 };
 
 export interface ISubmissionState {
+  stepRunnerIntent: StepRunnerIntent;
   specificationId: Uuid;
-  dataRequestId: Uuid;
+  projectId: Uuid;
+  requestId: Uuid;
   specificationTitle: string;
   specificationDescription: string;
   fileProperties: FileProperties;
@@ -69,6 +72,7 @@ export interface ISubmissionState {
 }
 
 export enum StepName {
+  SetDataSpecificationStatus = 'SetDataSpecificationStatus',
   CreateDataRequest = 'Create data request',
   GenerateSqlFile = 'Generate sql file',
   AttachSqlFile = 'Attach sql file to data request',
@@ -85,4 +89,9 @@ export enum StepFunction {
 export enum ExporterName {
   DataModelSqlExporterService = 'DataModelSqlExporterService',
   DataModelPdfExporterService = 'DataModelPdfExporterService',
+}
+
+export enum SubmissionType {
+  DataRequest = 'DataRequest',
+  AttachPdfToRequest = 'AttachPdfToRequest',
 }

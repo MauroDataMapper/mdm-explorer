@@ -21,6 +21,7 @@ import { Observable, defaultIfEmpty, filter, forkJoin, map, of, switchMap } from
 import {
   ISubmissionState,
   ISubmissionStep,
+  StepFunction,
   StepName,
   StepResult,
 } from '../type-declarations/submission.resource';
@@ -44,6 +45,7 @@ import {
 import { DataSpecificationService } from '../../data-specification.service';
 import { NoProjectsFoundError } from '../type-declarations/submission.custom-errors';
 import { BroadcastService } from 'src/app/core/broadcast.service';
+import { ErrorService } from '../services/error.service';
 
 export interface SelectProjectStepResult {
   specificationId: Uuid;
@@ -65,8 +67,7 @@ export class CreateDataRequestStep implements ISubmissionStep {
 
   isRequired(input: Partial<ISubmissionState>): Observable<StepResult> {
     if (!input.specificationId) {
-      // Probably should throw an error here
-      return of({ isRequired: true } as StepResult);
+      return ErrorService.missingInputError(this.name, StepFunction.IsRequired, 'specificationId');
     }
 
     return this.researcherRequestEndpoints
@@ -76,7 +77,7 @@ export class CreateDataRequestStep implements ISubmissionStep {
           const isRequired = !request;
           const stepResult: StepResult = {
             result: {
-              dataRequestId: request?.id,
+              requestId: request?.id,
             },
             isRequired,
           } as StepResult;
@@ -86,78 +87,58 @@ export class CreateDataRequestStep implements ISubmissionStep {
   }
 
   run(input: Partial<ISubmissionState>): Observable<StepResult> {
-    const specificationId = input.specificationId;
+    const specificationId = input.specificationId as Uuid;
 
     if (!specificationId) {
       throw new Error('Specification ID is required to select a project');
     }
 
-    const projects$ = this.memberships.listProjects().pipe(
-      map((projects: UserProjectDTO[]) =>
-        projects.map<IdNamePair>((proj) => {
-          return {
-            id: proj.projectId,
-            name: proj.projectName,
-          };
-        })
-      )
-    );
+    if (!input.stepRunnerIntent) {
+      return ErrorService.missingInputError(this.name, StepFunction.IsRequired, 'stepRunnerIntent');
+    }
 
-    return projects$.pipe(
-      map((projects: IdNamePair[]) => {
-        if (projects.length === 0) {
-          throw new NoProjectsFoundError();
+    if (!input.projectId) {
+      return ErrorService.missingInputError(this.name, StepFunction.IsRequired, 'projectId');
+    }
+
+    const stepRunnerIntent = input.stepRunnerIntent;
+
+    return this.dataSpecificationService.get(specificationId).pipe(
+      switchMap((dataSpecification) => {
+        this.broadcastService.submittingDataSpecification(
+          'Creating data request...',
+          stepRunnerIntent
+        );
+        const dataSpecificationName = `${dataSpecification.label} (${dataSpecification.modelVersion})`;
+
+        // Save a request here
+        const mauroDataSpecificationDTO = {
+          mauroId: specificationId,
+          name: dataSpecificationName,
+        } as MauroDataSpecificationDTO;
+
+        const requestCreate: RequestCreate = {
+          type: RequestType.Data,
+          projectId: input.projectId,
+          definition: {
+            title: dataSpecificationName,
+            content: dataSpecification.description ?? 'No description provided',
+            mauroDataSpecificationDTO,
+          } as DataRequestDefinition,
+        };
+
+        return this.researcherRequestEndpoints.createRequest(requestCreate);
+      }),
+      map((requestResponse) => {
+        if (!requestResponse) {
+          throw new Error('Failed to create data request');
         }
-
-        const data = { projects } as SelectProjectDialogData;
-        return data;
-      }),
-      switchMap((dialogData: SelectProjectDialogData) => {
-        return this.dialog
-          .openSelectProject(dialogData)
-          .afterClosed()
-          .pipe(
-            filter((response) => !!response && !response.isCancelled),
-            switchMap((response: SelectProjectDialogResponse) => {
-              return forkJoin([of(response), this.dataSpecificationService.get(specificationId)]);
-            }),
-            switchMap(([response, dataSpecification]) => {
-              this.broadcastService.submittingDataSpecification('Creating data request...');
-              const dataSpecificationName = `${dataSpecification.label} (${dataSpecification.modelVersion})`;
-
-              // Save a request here
-              const mauroDataSpecificationDTO = {
-                mauroId: specificationId,
-                name: dataSpecificationName,
-              } as MauroDataSpecificationDTO;
-
-              const requestCreate: RequestCreate = {
-                type: RequestType.Data,
-                projectId: response.projectId,
-                definition: {
-                  title: dataSpecificationName,
-                  content: dataSpecification.description ?? 'No description provided',
-                  mauroDataSpecificationDTO,
-                } as DataRequestDefinition,
-              };
-
-              return this.researcherRequestEndpoints.createRequest(requestCreate);
-            }),
-            map((requestResponse) => {
-              if (!requestResponse) {
-                throw new Error('Failed to create data request');
-              }
-              return { result: { dataRequestId: requestResponse.id } } as StepResult;
-            })
-          );
-      }),
-      defaultIfEmpty({
-        result: { cancel: true },
-      } as StepResult)
+        return { result: { requestId: requestResponse.id } } as StepResult;
+      })
     );
   }
 
   getInputShape(): (keyof ISubmissionState)[] {
-    return ['specificationId'];
+    return ['stepRunnerIntent', 'specificationId', 'projectId'];
   }
 }

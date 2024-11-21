@@ -59,10 +59,12 @@ $color-page: var(--theme-color-page);
 $color-page-contrast: var(--theme-color-page-contrast);
 $color-draftDataSpecification: var(--theme-color-draftDataSpecification);
 $color-draftDataSpecification-contrast: var(--theme-color-draftDataSpecification-contrast);
-$color-submittedDataSpecification: var(--theme-color-submittedDataSpecification);
-$color-submittedDataSpecification-contrast: var(--theme-color-submittedDataSpecification-contrast);
 $color-finalisedDataSpecification: var(--theme-color-finalisedDataSpecification);
 $color-finalisedDataSpecification-contrast: var(--theme-color-finalisedDataSpecification-contrast);
+$color-attachedDataSpecification: var(--theme-color-finalisedDataSpecification);
+$color-attachedDataSpecification-contrast: var(--theme-color-finalisedDataSpecification-contrast);
+$color-submittedDataSpecification: var(--theme-color-submittedDataSpecification);
+$color-submittedDataSpecification-contrast: var(--theme-color-submittedDataSpecification-contrast);
 $color-classRow: var(--theme-color-classRow);
 $color-classRow-contrast: var(--theme-color-classRow-contrast);
 
