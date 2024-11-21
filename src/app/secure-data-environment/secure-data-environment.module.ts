@@ -23,12 +23,14 @@ import { SdeRequestsComponent } from './components/sde-requests/sde-requests.com
 import { DepartmentListComponent } from './components/department-list/department-list.component';
 import { DepartmentsComponent } from './pages/departments/departments.component';
 import { SdeSignInComponent } from './sde-sign-in/sde-sign-in.component';
+import { OrganisationComponent } from './pages/organisation/organisation.component';
 
 @NgModule({
   declarations: [
     SdeRequestsComponent,
     DepartmentListComponent,
     DepartmentsComponent,
+    OrganisationComponent,
     SdeSignInComponent,
   ],
   imports: [CoreModule, SharedModule],
@@ -36,6 +38,7 @@ import { SdeSignInComponent } from './sde-sign-in/sde-sign-in.component';
     SdeRequestsComponent,
     DepartmentListComponent,
     DepartmentsComponent,
+    OrganisationComponent,
     SdeSignInComponent,
   ],
 })
