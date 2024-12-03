@@ -42,14 +42,7 @@ export class SetDataSpecificationStatusStep implements ISubmissionStep {
   ) {}
 
   isRequired(input: Partial<ISubmissionState>): Observable<StepResult> {
-    if (!input.stepRunnerIntent) {
-      return ErrorService.missingInputError(this.name, StepFunction.IsRequired, 'stepRunnerIntent');
-    }
-
-    this.broadcastService.submittingDataSpecification(
-      'Setting Data Specification status...',
-      input.stepRunnerIntent
-    );
+    this.broadcastService.submittingDataSpecification('Setting Data Specification status...');
 
     if (!input.specificationId) {
       return ErrorService.missingInputError(this.name, StepFunction.IsRequired, 'specificationId');

@@ -18,7 +18,6 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Uuid } from '@maurodatamapper/sde-resources';
 import { Observable } from 'rxjs';
-import { StepRunnerIntent } from 'src/app/core/broadcast.service';
 
 /**
  * @description Data representing whether a step has run or not. If the step is required, the result
@@ -60,7 +59,6 @@ export type FileProperties = {
 };
 
 export interface ISubmissionState {
-  stepRunnerIntent: StepRunnerIntent;
   specificationId: Uuid;
   projectId: Uuid;
   requestId: Uuid;

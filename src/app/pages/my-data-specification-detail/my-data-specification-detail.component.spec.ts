@@ -73,6 +73,7 @@ import {
   RequestDialogService,
   RequestEndpoints,
   RequestEndpointsResearcher,
+  RequestResponse,
   RequestService,
   SdeResourcesBroadcastService,
 } from '@maurodatamapper/sde-resources';
@@ -81,6 +82,7 @@ import { createRequestEndpointsResearcherStub } from 'src/app/testing/stubs/sde/
 import { createRequestDialogServiceStub } from 'src/app/testing/stubs/sde/request-dialog-service.stub';
 import { createSdeRequestEndpointsSharedStub } from 'src/app/testing/stubs/sde/sde-request-endpoints-shared.stub';
 import { createRequestServiceStub } from 'src/app/testing/stubs/sde/request-service.stub';
+import { createSdeResourcesBroadcastServiceStub } from 'src/app/testing/stubs/sde/sde-resources-broadcast-service.stub';
 
 describe('MyDataSpecificationDetailComponent', () => {
   let harness: ComponentHarness<MyDataSpecificationDetailComponent>;
@@ -219,6 +221,10 @@ describe('MyDataSpecificationDetailComponent', () => {
   folderServiceStub.treeList.mockImplementation(() => {
     return of([]);
   });
+
+  sdeResourcesBroadcastServiceStub.onRequestDialogClosed.mockReturnValue(
+    of({ status: 'DRAFT' } as RequestResponse)
+  );
 
   describe('initialisation', () => {
     beforeEach(() => {

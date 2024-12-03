@@ -25,13 +25,26 @@ import { SubmissionStateService } from './submission-state.service';
 import { createStepStub } from '../../../testing/stubs/data-specification-submission/step.stub';
 import { CreateDataRequestStep } from '../submission-steps/create-data-request.step';
 import { of, throwError } from 'rxjs';
-import { ISubmissionState, StepName, StepResult } from '../type-declarations/submission.resource';
+import {
+  ISubmissionState,
+  StepName,
+  StepResult,
+  SubmissionType,
+} from '../type-declarations/submission.resource';
 import { GenerateSqlStep } from '../submission-steps/generate-sql.step';
 import { AttachSqlStep } from '../submission-steps/attach-sql.step';
 import { GeneratePdfStep } from '../submission-steps/generate-pdf.step';
 import { AttachPdfStep } from '../submission-steps/attach-pdf.step';
 import { SubmitRequestStep } from '../submission-steps/submit-request.step';
 import { SimpleDialogComponent } from '../../simple-dialog/simple-dialog.component';
+import {
+  MembershipEndpointsResearcher,
+  RequestEndpointsResearcher,
+  RequestService,
+} from '@maurodatamapper/sde-resources';
+import { createRequestEndpointsResearcherStub } from 'src/app/testing/stubs/sde/request-endpoints-researcher.stub';
+import { createRequestServiceStub } from 'src/app/testing/stubs/sde/request-service.stub';
+import { createMembershipEndpointsResearcherStub } from 'src/app/testing/stubs/sde/memberships-endpoints-researcher.stub';
 
 describe('SpecificationSubmissionService', () => {
   let service: SpecificationSubmissionService;
@@ -43,6 +56,9 @@ describe('SpecificationSubmissionService', () => {
   const generatePdfStepStub = createStepStub(StepName.GeneratePdfFile);
   const attachPdfStepStub = createStepStub(StepName.AttachPdfFile);
   const submitDataRequestStepStub = createStepStub(StepName.SubmitDataRequest);
+  const requestEndpointsResearcherStub = createRequestEndpointsResearcherStub();
+  const membershipEndpointsResearcherStub = createMembershipEndpointsResearcherStub();
+  const requestServiceStub = createRequestServiceStub();
 
   beforeEach(() => {
     service = setupTestModuleForService(SpecificationSubmissionService, {
@@ -79,6 +95,23 @@ describe('SpecificationSubmissionService', () => {
           provide: SubmitRequestStep,
           useValue: submitDataRequestStepStub,
         },
+        {
+          provide: RequestEndpointsResearcher,
+          useValue: requestEndpointsResearcherStub,
+        },
+        {
+          provide: MembershipEndpointsResearcher,
+          useValue: membershipEndpointsResearcherStub,
+        },
+        {
+          provide: RequestService,
+          useValue: requestServiceStub,
+        },
+        /*
+            private researcherRequestEndpoints: RequestEndpointsResearcher,
+    private membershipEndpoints: MembershipEndpointsResearcher,
+    private requestsService: RequestService
+        */
       ],
     });
   });
@@ -98,7 +131,7 @@ describe('SpecificationSubmissionService', () => {
       .spyOn(createDataRequestStepStub, 'isRequired')
       .mockReturnValue(of({ result: {}, isRequired: false }));
 
-    service.submit(specificationId).subscribe();
+    service.submit(specificationId, SubmissionType.DataRequest).subscribe();
     expect(setSpy).toHaveBeenCalledWith({ specificationId });
   });
 
@@ -121,7 +154,7 @@ describe('SpecificationSubmissionService', () => {
       of({ result: { requestId, succeeded: true }, isRequired: false } as StepResult)
     );
 
-    service.submit('test-id').subscribe((result: boolean) => {
+    service.submit('test-id', SubmissionType.DataRequest).subscribe((result: boolean) => {
       expect(result).toEqual(expectedRunResult);
       done();
     });
@@ -140,7 +173,7 @@ describe('SpecificationSubmissionService', () => {
 
     jest.spyOn(createDataRequestStepStub, 'isRequired').mockReturnValue(of(stepResult));
 
-    service.submit('test-id').subscribe();
+    service.submit('test-id', SubmissionType.DataRequest).subscribe();
 
     // Check the first call
     expect(setSpy).toHaveBeenCalledWith({
@@ -205,7 +238,7 @@ describe('SpecificationSubmissionService', () => {
     runSpySubmitDataRequest.mockReturnValue(run$);
 
     // Submit the Data Specification
-    service.submit('test-id').subscribe((result: boolean) => {
+    service.submit('test-id', SubmissionType.DataRequest).subscribe((result: boolean) => {
       expect(result).toEqual(expectedRunResult);
     });
 
@@ -285,7 +318,7 @@ describe('SpecificationSubmissionService', () => {
     runSpySubmitDataRequest.mockReturnValue(run$);
 
     // Submit the Data Specification
-    service.submit('test-id').subscribe((result: boolean) => {
+    service.submit('test-id', SubmissionType.DataRequest).subscribe((result: boolean) => {
       expect(result).toEqual(expectedRunResult);
     });
 
@@ -370,7 +403,7 @@ describe('SpecificationSubmissionService', () => {
     runSpySubmitDataRequest.mockReturnValue(run$);
 
     // Submit the Data Specification
-    service.submit('test-id').subscribe((result: boolean) => {
+    service.submit('test-id', SubmissionType.DataRequest).subscribe((result: boolean) => {
       expect(result).toEqual(expectedRunResult);
     });
 
@@ -415,7 +448,7 @@ describe('SpecificationSubmissionService', () => {
     runSpyCreateDataRequest.mockReturnValue(run$);
 
     // Submit the Data Specification
-    service.submit('test-id').subscribe((result: boolean) => {
+    service.submit('test-id', SubmissionType.DataRequest).subscribe((result: boolean) => {
       expect(result).toEqual(expectedRunResult);
     });
 

@@ -76,7 +76,7 @@ export class FileAttachmentStepService {
   }
 
   getInputShape(): (keyof ISubmissionState)[] {
-    return ['stepRunnerIntent', 'requestId', 'fileProperties', 'cancel', 'specificationId'];
+    return ['requestId', 'fileProperties', 'cancel', 'specificationId'];
   }
 
   private inputIsDefined(input: Partial<ISubmissionState>): input is ISubmissionState {

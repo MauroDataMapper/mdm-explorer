@@ -44,41 +44,15 @@ export class GeneratePdfStep implements ISubmissionStep {
 
   isRequired(input: Partial<ISubmissionState>): Observable<StepResult> {
     console.log('NIGE - GeneratePdfStep - isRequired');
-    const properties = Object.keys(input);
-    console.log(properties);
-
-    if (!input.stepRunnerIntent) {
-      return ErrorService.missingInputError(this.name, StepFunction.IsRequired, 'stepRunnerIntent');
-    }
-
     return this.fileGenerationStepService
       .isRequired(input, this.name, AttachmentType.DataSpecificationPDF)
       .pipe(
         tap((isRequired) => {
-          if (isRequired.isRequired && input.stepRunnerIntent) {
-            this.broadcastService.submittingDataSpecification(
-              'Generating pdf file...',
-              input.stepRunnerIntent
-            );
+          if (isRequired.isRequired) {
+            this.broadcastService.submittingDataSpecification('Generating pdf file...');
           }
         })
       );
-
-    /*
-    const isRequired = this.fileGenerationStepService.isRequired(
-      input,
-      this.name,
-      AttachmentType.DataSpecificationPDF
-    );
-
-    if (isRequired) {
-      this.broadcastService.submittingDataSpecification(
-        'Generating pdf file...',
-        input.stepRunnerIntent
-      );
-    }
-
-    return isRequired;*/
   }
 
   run(input: Partial<ISubmissionState>): Observable<StepResult> {

@@ -42,37 +42,15 @@ export class AttachPdfStep implements ISubmissionStep {
   ) {}
 
   isRequired(input: Partial<ISubmissionState>): Observable<StepResult> {
-    if (!input.stepRunnerIntent) {
-      return ErrorService.missingInputError(this.name, StepFunction.IsRequired, 'stepRunnerIntent');
-    }
-
     return this.fileAttachmentStepService
       .isRequired(input, this.name, AttachmentType.DataSpecificationPDF)
       .pipe(
         tap((isRequired) => {
-          if (isRequired.isRequired && input.stepRunnerIntent) {
-            this.broadcastService.submittingDataSpecification(
-              'Attaching pdf file...',
-              input.stepRunnerIntent
-            );
+          if (isRequired.isRequired) {
+            this.broadcastService.submittingDataSpecification('Attaching pdf file...');
           }
         })
       );
-    /*
-    const isRequired = this.fileAttachmentStepService.isRequired(
-      input,
-      this.name,
-      AttachmentType.DataSpecificationPDF
-    );
-
-    if (isRequired) {
-      this.broadcastService.submittingDataSpecification(
-        'Attaching pdf file...',
-        input.stepRunnerIntent
-      );
-    }
-
-    return isRequired;*/
   }
 
   run(input: Partial<ISubmissionState>): Observable<StepResult> {

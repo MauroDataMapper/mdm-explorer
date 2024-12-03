@@ -43,14 +43,7 @@ export class GenerateSqlStep implements ISubmissionStep {
   ) {}
 
   isRequired(input: Partial<ISubmissionState>): Observable<StepResult> {
-    if (!input.stepRunnerIntent) {
-      return ErrorService.missingInputError(this.name, StepFunction.IsRequired, 'stepRunnerIntent');
-    }
-
-    this.broadcastService.submittingDataSpecification(
-      'Generating sql file...',
-      input.stepRunnerIntent
-    );
+    this.broadcastService.submittingDataSpecification('Generating sql file...');
 
     return this.fileGenerationStepService.isRequired(
       input,

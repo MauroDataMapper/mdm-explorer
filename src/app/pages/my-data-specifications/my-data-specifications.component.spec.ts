@@ -228,10 +228,10 @@ describe('MyDataSpecificationsComponent', () => {
       harness.component.filterByStatus(event);
 
       expect(harness.component.statusFilters).toStrictEqual([
-        'draft',
         'finalised',
         'attached to request',
         'submitted',
+        'draft',
       ]);
       expect(harness.component.filteredDataSpecifications).toStrictEqual(dataSpecifications);
     });

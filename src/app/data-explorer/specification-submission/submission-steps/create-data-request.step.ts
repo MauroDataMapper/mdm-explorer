@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { Observable, defaultIfEmpty, filter, forkJoin, map, of, switchMap } from 'rxjs';
+import { Observable, map, switchMap } from 'rxjs';
 import {
   ISubmissionState,
   ISubmissionStep,
@@ -25,11 +25,6 @@ import {
   StepName,
   StepResult,
 } from '../type-declarations/submission.resource';
-import { DialogService } from 'src/app/data-explorer/dialog.service';
-import {
-  SelectProjectDialogData,
-  SelectProjectDialogResponse,
-} from '../select-project-dialog/select-project-dialog.component';
 import {
   IdNamePair,
   MembershipEndpointsResearcher,
@@ -58,7 +53,6 @@ export class CreateDataRequestStep implements ISubmissionStep {
   name: StepName = StepName.CreateDataRequest;
 
   constructor(
-    private dialog: DialogService,
     private memberships: MembershipEndpointsResearcher,
     private researcherRequestEndpoints: RequestEndpointsResearcher,
     private dataSpecificationService: DataSpecificationService,
@@ -93,52 +87,61 @@ export class CreateDataRequestStep implements ISubmissionStep {
       throw new Error('Specification ID is required to select a project');
     }
 
-    if (!input.stepRunnerIntent) {
-      return ErrorService.missingInputError(this.name, StepFunction.IsRequired, 'stepRunnerIntent');
-    }
-
     if (!input.projectId) {
       return ErrorService.missingInputError(this.name, StepFunction.IsRequired, 'projectId');
     }
 
-    const stepRunnerIntent = input.stepRunnerIntent;
+    const projects$ = this.memberships.listProjects().pipe(
+      map((projects: UserProjectDTO[]) =>
+        projects.map<IdNamePair>((proj) => {
+          return {
+            id: proj.projectId,
+            name: proj.projectName,
+          };
+        })
+      )
+    );
 
-    return this.dataSpecificationService.get(specificationId).pipe(
-      switchMap((dataSpecification) => {
-        this.broadcastService.submittingDataSpecification(
-          'Creating data request...',
-          stepRunnerIntent
-        );
-        const dataSpecificationName = `${dataSpecification.label} (${dataSpecification.modelVersion})`;
-
-        // Save a request here
-        const mauroDataSpecificationDTO = {
-          mauroId: specificationId,
-          name: dataSpecificationName,
-        } as MauroDataSpecificationDTO;
-
-        const requestCreate: RequestCreate = {
-          type: RequestType.Data,
-          projectId: input.projectId,
-          definition: {
-            title: dataSpecificationName,
-            content: dataSpecification.description ?? 'No description provided',
-            mauroDataSpecificationDTO,
-          } as DataRequestDefinition,
-        };
-
-        return this.researcherRequestEndpoints.createRequest(requestCreate);
-      }),
-      map((requestResponse) => {
-        if (!requestResponse) {
-          throw new Error('Failed to create data request');
+    return projects$.pipe(
+      switchMap((projects: IdNamePair[]) => {
+        if (projects.length === 0) {
+          throw new NoProjectsFoundError();
         }
-        return { result: { requestId: requestResponse.id } } as StepResult;
+        return this.dataSpecificationService.get(specificationId).pipe(
+          switchMap((dataSpecification) => {
+            this.broadcastService.submittingDataSpecification('Creating data request...');
+            const dataSpecificationName = `${dataSpecification.label} (${dataSpecification.modelVersion})`;
+
+            // Save a request here
+            const mauroDataSpecificationDTO = {
+              mauroId: specificationId,
+              name: dataSpecificationName,
+            } as MauroDataSpecificationDTO;
+
+            const requestCreate: RequestCreate = {
+              type: RequestType.Data,
+              projectId: input.projectId,
+              definition: {
+                title: dataSpecificationName,
+                content: dataSpecification.description ?? 'No description provided',
+                mauroDataSpecificationDTO,
+              } as DataRequestDefinition,
+            };
+
+            return this.researcherRequestEndpoints.createRequest(requestCreate);
+          }),
+          map((requestResponse) => {
+            if (!requestResponse) {
+              throw new Error('Failed to create data request');
+            }
+            return { result: { requestId: requestResponse.id } } as StepResult;
+          })
+        );
       })
     );
   }
 
   getInputShape(): (keyof ISubmissionState)[] {
-    return ['stepRunnerIntent', 'specificationId', 'projectId'];
+    return ['specificationId', 'projectId'];
   }
 }

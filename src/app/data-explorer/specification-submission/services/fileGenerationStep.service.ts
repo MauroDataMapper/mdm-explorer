@@ -75,6 +75,6 @@ export class FileGenerationStepService {
   }
 
   getInputShape(): (keyof ISubmissionState)[] {
-    return ['stepRunnerIntent', 'specificationId', 'requestId', 'cancel'];
+    return ['specificationId', 'requestId', 'cancel'];
   }
 }

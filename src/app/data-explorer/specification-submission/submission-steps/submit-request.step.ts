@@ -41,14 +41,7 @@ export class SubmitRequestStep implements ISubmissionStep {
   ) {}
 
   isRequired(input: Partial<ISubmissionState>): Observable<StepResult> {
-    if (!input.stepRunnerIntent) {
-      return ErrorService.missingInputError(this.name, StepFunction.IsRequired, 'stepRunnerIntent');
-    }
-
-    this.broadcastService.submittingDataSpecification(
-      'Submitting data request...',
-      input.stepRunnerIntent
-    );
+    this.broadcastService.submittingDataSpecification('Submitting data request...');
 
     if (!input.requestId) {
       return ErrorService.missingInputError(this.name, StepFunction.IsRequired, 'requestId');
@@ -83,6 +76,6 @@ export class SubmitRequestStep implements ISubmissionStep {
   }
 
   getInputShape(): (keyof ISubmissionState)[] {
-    return ['stepRunnerIntent', 'requestId', 'cancel'];
+    return ['requestId', 'cancel'];
   }
 }

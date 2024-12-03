@@ -42,14 +42,7 @@ export class AttachSqlStep implements ISubmissionStep {
   ) {}
 
   isRequired(input: Partial<ISubmissionState>): Observable<StepResult> {
-    if (!input.stepRunnerIntent) {
-      return ErrorService.missingInputError(this.name, StepFunction.IsRequired, 'stepRunnerIntent');
-    }
-
-    this.broadcastService.submittingDataSpecification(
-      'Attaching sql file...',
-      input.stepRunnerIntent
-    );
+    this.broadcastService.submittingDataSpecification('Attaching sql file...');
 
     return this.fileAttachmentStepService.isRequired(
       input,

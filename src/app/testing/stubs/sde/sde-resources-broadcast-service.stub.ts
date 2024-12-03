@@ -16,15 +16,18 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { UploadProgress, Uuid } from '@maurodatamapper/sde-resources';
+import { RequestResponse, UploadProgress, Uuid } from '@maurodatamapper/sde-resources';
 import { Observable } from 'rxjs';
 
 export type UploadFileFn = (file: File) => Observable<UploadProgress>;
 export type DownloadFileFn = (fileId: Uuid) => Observable<Blob | undefined>;
+export type OnRequestDialogClosedFn = () => Observable<RequestResponse>;
 
 export interface SdeResourcesBroadcastServiceStub {
   uploadFile: jest.MockedFunction<UploadFileFn>;
   downloadFile: jest.MockedFunction<DownloadFileFn>;
+  onRequestDialogClosed: jest.MockedFunction<OnRequestDialogClosedFn>;
+
   /*
     on<TPayload = any>(event: SdeResourcesBroadcastEvent): Observable<TPayload> {
     return this.handler.pipe(
@@ -93,5 +96,6 @@ export const createSdeResourcesBroadcastServiceStub = (): SdeResourcesBroadcastS
   return {
     uploadFile: jest.fn() as jest.MockedFunction<UploadFileFn>,
     downloadFile: jest.fn() as jest.MockedFunction<DownloadFileFn>,
+    onRequestDialogClosed: jest.fn() as jest.MockedFunction<OnRequestDialogClosedFn>,
   };
 };

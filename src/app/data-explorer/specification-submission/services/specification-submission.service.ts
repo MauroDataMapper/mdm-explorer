@@ -45,7 +45,7 @@ import { AttachSqlStep } from '../submission-steps/attach-sql.step';
 import { GeneratePdfStep } from '../submission-steps/generate-pdf.step';
 import { AttachPdfStep } from '../submission-steps/attach-pdf.step';
 import { SubmitRequestStep } from '../submission-steps/submit-request.step';
-import { BroadcastService, StepRunnerIntent } from 'src/app/core/broadcast.service';
+import { BroadcastService } from 'src/app/core/broadcast.service';
 import { DialogService } from '../../dialog.service';
 import {
   DEFAULT_ERROR_MESSAGE,
@@ -193,14 +193,10 @@ export class SpecificationSubmissionService {
     switch (submissionType) {
       case SubmissionType.DataRequest:
         submissionSteps = this.dataRequestSubmissionSteps;
-        console.log(`NIGE - ${StepRunnerIntent.Submitting}`);
-        this.stateService.set({ stepRunnerIntent: StepRunnerIntent.Submitting });
         this.stateService.set({ projectId });
         break;
       case SubmissionType.AttachPdfToRequest:
         submissionSteps = this.attachToRequestSubmissionSteps;
-        console.log(`NIGE - ${StepRunnerIntent.Attaching}`);
-        this.stateService.set({ stepRunnerIntent: StepRunnerIntent.Attaching });
         this.stateService.set({ requestId });
         break;
       default:

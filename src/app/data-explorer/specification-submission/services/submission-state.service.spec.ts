@@ -67,7 +67,7 @@ describe('SubmissionStepService', () => {
         specificationDescription: 'desc',
       });
       const input = service.getStepInputFromShape(['specificationId', 'requestId']);
-      expect(input).toEqual({ specificationId: 'test-id', requestId: 'dataRequest-id' });
+      expect(input).toEqual({ specificationId: 'test-id', requestId: 'request-id' });
     });
 
     it('should return an empty object if no fields are specified', () => {
