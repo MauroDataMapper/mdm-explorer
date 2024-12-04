@@ -44,7 +44,6 @@ export class FileGenerationStepService {
     stepName: StepName,
     attachmentType: AttachmentType
   ): Observable<StepResult> {
-    console.log('NIGE - FileGenerationStepService - isRequired');
     if (!input.specificationId) {
       return ErrorService.missingInputError(stepName, StepFunction.IsRequired, 'specificationId');
     }

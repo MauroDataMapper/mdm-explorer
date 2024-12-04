@@ -28,7 +28,18 @@ import {
   UserProjectDTO,
   Uuid,
 } from '@maurodatamapper/sde-resources';
-import { EMPTY, catchError, concatMap, filter, finalize, forkJoin, from, map, tap } from 'rxjs';
+import {
+  EMPTY,
+  catchError,
+  concatMap,
+  filter,
+  finalize,
+  forkJoin,
+  from,
+  map,
+  tap,
+  toArray,
+} from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
 import { of } from 'rxjs/internal/observable/of';
 import { switchMap } from 'rxjs/internal/operators/switchMap';
@@ -204,18 +215,14 @@ export class SpecificationSubmissionService {
     }
 
     this.stateService.set({ specificationId });
-    console.log('NIGE - Got here', submissionSteps);
 
     // Run each step, once at a time, ensuring it completes before running the next.
     return from(submissionSteps).pipe(
       concatMap((step: ISubmissionStep) => {
-        console.log('NIGE - ConcatMap');
         // Retrieve the step input from the state.
         const stepInput = this.stateService.getStepInputFromShape(step.getInputShape());
-        console.log('NIGE - ConcatMap');
 
         if (stepInput.cancel) {
-          console.log('NIGE - Cancelled');
           return EMPTY;
         }
 
@@ -246,8 +253,9 @@ export class SpecificationSubmissionService {
           })
         );
       }),
-      map((stepResult) => {
-        return stepResult.result.succeeded ?? false;
+      toArray(),
+      map((stepResults) => {
+        return stepResults.every((response) => response.result.succeeded);
       }),
       finalize(() => {
         this.broadcastService.loading({ isLoading: false });

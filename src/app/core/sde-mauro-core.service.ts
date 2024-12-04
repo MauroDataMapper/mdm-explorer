@@ -37,12 +37,8 @@ export class SdeMauroCoreService implements IMauroCoreService {
   ) {}
 
   getFinalisedDataSpecifications(): Observable<MauroDataSpecificationDTO[]> {
-    // return [{ mauroId: '1', name: 'My Name' } as MauroDataSpecificationDTO];
-
-    console.log('NIGE - getFinalisedDataSpecifications');
     const user = this.security.getSignedInUser();
     if (user) {
-      console.log('NIGE - getFinalisedDataSpecifications - has user');
       return this.dataSpecification.list().pipe(
         map((dataSpecifications: DataSpecification[]) => {
           return dataSpecifications
@@ -57,7 +53,6 @@ export class SdeMauroCoreService implements IMauroCoreService {
         })
       );
     } else {
-      console.log('NIGE - getFinalisedDataSpecifications - no user');
       return of([]);
     }
   }
@@ -66,7 +61,6 @@ export class SdeMauroCoreService implements IMauroCoreService {
     specificationId: Uuid,
     requestId: Uuid
   ): Observable<boolean> {
-    console.log('NIGE - attachDataSpecificationToRequest');
     return this.specificationSubmissionService.submit(
       specificationId,
       SubmissionType.AttachPdfToRequest,

@@ -38,7 +38,6 @@ export class AttachmentsService {
   ) {}
 
   attachmentsAreRequired(requestId: Uuid, attachmentType: AttachmentType): Observable<StepResult> {
-    console.log('NIGE - AttachmentsService - attachmentsAreRequired');
     return this.requestEndpoints.listAttachments(requestId).pipe(
       map((attachmentsList) => {
         const isRequired = !attachmentsList.some(

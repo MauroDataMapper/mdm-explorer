@@ -43,7 +43,6 @@ export class GeneratePdfStep implements ISubmissionStep {
   ) {}
 
   isRequired(input: Partial<ISubmissionState>): Observable<StepResult> {
-    console.log('NIGE - GeneratePdfStep - isRequired');
     return this.fileGenerationStepService
       .isRequired(input, this.name, AttachmentType.DataSpecificationPDF)
       .pipe(

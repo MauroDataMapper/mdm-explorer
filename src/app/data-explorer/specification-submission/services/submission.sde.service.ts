@@ -35,27 +35,21 @@ export class SubmissionSDEService {
    * status of the request for that Data Specification.
    */
   mapToDataSpecificationWithSDEStatusCheck(dataModel: DataModel): Observable<DataSpecification> {
-    console.log('NIGE - mapToDataSpecificationWithSDEStatusCheck');
     if (!dataModel.id) {
       return of(this.mapToDataSpecification(dataModel));
     }
-    console.log('NIGE - mapToDataSpecificationWithSDEStatusCheck - 2');
+
     return this.researcherRequestEndpoints.getRequestForDataSpecification(dataModel.id).pipe(
       map((requestResponse) => {
         let dataSpecificationStatus;
-        console.log(`NIGE - mapToDataSpecificationWithSDEStatusCheck - 3 ${dataModel.status}`);
         if (requestResponse) {
           dataSpecificationStatus =
             requestResponse?.status === 'DRAFT' ? 'attached to request' : 'submitted';
-          console.log(
-            `NIGE - mapToDataSpecificationWithSDEStatusCheck - 4 ${dataSpecificationStatus}`
-          );
           return {
             ...dataModel,
             status: dataSpecificationStatus as DataSpecificationStatus,
           } as DataSpecification;
         }
-        console.log(`NIGE - mapToDataSpecificationWithSDEStatusCheck - 5 ${dataModel.status}`);
         return this.mapToDataSpecification(dataModel);
       }),
       catchError((error) => {

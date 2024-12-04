@@ -223,7 +223,6 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
             wizardResponse.requestType === RequestType.NewProject ||
             wizardResponse.requestType === RequestType.ProjectChange
           ) {
-            console.log(`NIGE - wizardResponse.requestId ${wizardResponse.requestId}`);
             if (wizardResponse.requestId) {
               this.viewRequestForId(wizardResponse.requestId as Uuid);
               return EMPTY;
@@ -242,7 +241,6 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
         }),
         switchMap((result: boolean) => {
           if (!result) {
-            console.log('NIGE - result is false');
             return EMPTY;
           }
 
@@ -364,7 +362,6 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
   }
 
   viewRequest() {
-    console.log('NIGE: viewRequest');
     if (
       !this.dataSpecification ||
       !this.dataSpecification.id ||
@@ -388,7 +385,6 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
   }
 
   viewRequestForId(requestId: Uuid) {
-    console.log('NIGE: viewRequestForId');
     if (!requestId) {
       return;
     }
@@ -421,7 +417,6 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
                 ]
               : [];
 
-          console.log('NIGE: viewRequestForId: showRequestResponse');
           return this.requestDialogService.showRequestResponse(
             requestResponse,
             'RESEARCHER',
