@@ -633,6 +633,9 @@ export class DataSpecificationService {
           return EMPTY;
         }),
         switchMap(([dataSpecification, dataElements]) => {
+          this.broadcast.loading({
+            isLoading: false,
+          });
           this.broadcast.dispatch('data-specification-added');
 
           return this.dialogs
