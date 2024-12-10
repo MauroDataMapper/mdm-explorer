@@ -43,11 +43,11 @@ export class SubmitRequestStep implements ISubmissionStep {
   isRequired(input: Partial<ISubmissionState>): Observable<StepResult> {
     this.broadcastService.submittingDataSpecification('Submitting data request...');
 
-    if (!input.dataRequestId) {
-      return ErrorService.missingInputError(this.name, StepFunction.IsRequired, 'dataRequestId');
+    if (!input.requestId) {
+      return ErrorService.missingInputError(this.name, StepFunction.IsRequired, 'requestId');
     }
 
-    return this.requestEndpoints.getRequest(input.dataRequestId).pipe(
+    return this.requestEndpoints.getRequest(input.requestId).pipe(
       map((requestResponse) => {
         const stepResult: StepResult = {
           result: {},
@@ -59,12 +59,12 @@ export class SubmitRequestStep implements ISubmissionStep {
   }
 
   run(input: Partial<ISubmissionState>): Observable<StepResult> {
-    if (!input.dataRequestId) {
-      return ErrorService.missingInputError(this.name, StepFunction.Run, 'dataRequestId');
+    if (!input.requestId) {
+      return ErrorService.missingInputError(this.name, StepFunction.Run, 'requestId');
     }
 
     return this.requestEndpoints
-      .changeStatus(input.dataRequestId, { requestAction: 'REQUEST_SUBMISSION_APPROVAL' })
+      .changeStatus(input.requestId, { requestAction: 'REQUEST_SUBMISSION_APPROVAL' })
       .pipe(
         map((requestResponse) => {
           if (requestResponse.status !== 'AWAITING_APPROVAL') {
@@ -76,6 +76,6 @@ export class SubmitRequestStep implements ISubmissionStep {
   }
 
   getInputShape(): (keyof ISubmissionState)[] {
-    return ['dataRequestId', 'cancel'];
+    return ['requestId', 'cancel'];
   }
 }

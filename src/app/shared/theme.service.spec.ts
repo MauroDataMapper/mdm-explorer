@@ -300,10 +300,12 @@ describe('ThemeService', () => {
       expectCssVariable('--theme-color-page-contrast', '#003186');
       expectCssVariable('--theme-color-draftDataSpecification', '#008bce');
       expectCssVariable('--theme-color-draftDataSpecification-contrast', 'white');
-      expectCssVariable('--theme-color-submittedDataSpecification', '#0e8f48');
-      expectCssVariable('--theme-color-submittedDataSpecification-contrast', 'white');
       expectCssVariable('--theme-color-finalisedDataSpecification', '#b86c02');
       expectCssVariable('--theme-color-finalisedDataSpecification-contrast', 'white');
+      expectCssVariable('--theme-color-attachedDataSpecification', '#b86c02');
+      expectCssVariable('--theme-color-attachedDataSpecification-contrast', 'white');
+      expectCssVariable('--theme-color-submittedDataSpecification', '#0e8f48');
+      expectCssVariable('--theme-color-submittedDataSpecification-contrast', 'white');
       expectCssVariable('--theme-color-classRow', '#c4c4c4');
       expectCssVariable('--theme-color-classRow-contrast', '#003186');
       expectCssVariable('--theme-color-hyperlink', '#003752');

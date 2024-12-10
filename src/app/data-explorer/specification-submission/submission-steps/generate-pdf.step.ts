@@ -17,17 +17,19 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import {
   ExporterName,
   ISubmissionState,
   ISubmissionStep,
+  StepFunction,
   StepName,
   StepResult,
 } from '../type-declarations/submission.resource';
 import { AttachmentType } from '@maurodatamapper/sde-resources';
 import { FileGenerationStepService } from '../services/fileGenerationStep.service';
 import { BroadcastService } from 'src/app/core/broadcast.service';
+import { ErrorService } from '../services/error.service';
 
 @Injectable({
   providedIn: 'root',
@@ -41,13 +43,15 @@ export class GeneratePdfStep implements ISubmissionStep {
   ) {}
 
   isRequired(input: Partial<ISubmissionState>): Observable<StepResult> {
-    this.broadcastService.submittingDataSpecification('Generating pdf file...');
-
-    return this.fileGenerationStepService.isRequired(
-      input,
-      this.name,
-      AttachmentType.DataSpecificationPDF
-    );
+    return this.fileGenerationStepService
+      .isRequired(input, this.name, AttachmentType.DataSpecificationPDF)
+      .pipe(
+        tap((isRequired) => {
+          if (isRequired.isRequired) {
+            this.broadcastService.submittingDataSpecification('Generating pdf file...');
+          }
+        })
+      );
   }
 
   run(input: Partial<ISubmissionState>): Observable<StepResult> {

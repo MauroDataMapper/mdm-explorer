@@ -25,12 +25,12 @@ import {
 import { AttachmentType } from '@maurodatamapper/sde-resources';
 
 export type AttachmentsAreRequiredStubFn = (
-  dataRequestId: Uuid,
+  requestId: Uuid,
   attachmentType: AttachmentType
 ) => Observable<StepResult>;
 
 export type AttachFileStubFn = (
-  dataRequestId: Uuid,
+  requestId: Uuid,
   fileProperties: FileProperties,
   attachmentType: AttachmentType
 ) => Observable<StepResult>;

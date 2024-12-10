@@ -60,7 +60,8 @@ export type FileProperties = {
 
 export interface ISubmissionState {
   specificationId: Uuid;
-  dataRequestId: Uuid;
+  projectId: Uuid;
+  requestId: Uuid;
   specificationTitle: string;
   specificationDescription: string;
   fileProperties: FileProperties;
@@ -69,6 +70,7 @@ export interface ISubmissionState {
 }
 
 export enum StepName {
+  SetDataSpecificationStatus = 'SetDataSpecificationStatus',
   CreateDataRequest = 'Create data request',
   GenerateSqlFile = 'Generate sql file',
   AttachSqlFile = 'Attach sql file to data request',
@@ -85,4 +87,9 @@ export enum StepFunction {
 export enum ExporterName {
   DataModelSqlExporterService = 'DataModelSqlExporterService',
   DataModelPdfExporterService = 'DataModelPdfExporterService',
+}
+
+export enum SubmissionType {
+  DataRequest = 'DataRequest',
+  AttachPdfToRequest = 'AttachPdfToRequest',
 }

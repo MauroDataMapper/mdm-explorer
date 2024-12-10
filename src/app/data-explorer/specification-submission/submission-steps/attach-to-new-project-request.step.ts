@@ -34,7 +34,7 @@ import { ErrorService } from '../services/error.service';
 @Injectable({
   providedIn: 'root',
 })
-export class GenerateSqlStep implements ISubmissionStep {
+export class AttachToNewProjectRequestStep implements ISubmissionStep {
   name: StepName = StepName.GenerateSqlFile;
 
   constructor(

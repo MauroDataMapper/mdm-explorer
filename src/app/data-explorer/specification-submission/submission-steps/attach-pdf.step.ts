@@ -17,16 +17,18 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import {
   ISubmissionState,
   ISubmissionStep,
+  StepFunction,
   StepName,
   StepResult,
 } from '../type-declarations/submission.resource';
 import { AttachmentType } from '@maurodatamapper/sde-resources';
 import { FileAttachmentStepService } from '../services/fileAttachmentStep.service';
 import { BroadcastService } from 'src/app/core/broadcast.service';
+import { ErrorService } from '../services/error.service';
 
 @Injectable({
   providedIn: 'root',
@@ -40,13 +42,15 @@ export class AttachPdfStep implements ISubmissionStep {
   ) {}
 
   isRequired(input: Partial<ISubmissionState>): Observable<StepResult> {
-    this.broadcastService.submittingDataSpecification('Attaching pdf file...');
-
-    return this.fileAttachmentStepService.isRequired(
-      input,
-      this.name,
-      AttachmentType.DataSpecificationPDF
-    );
+    return this.fileAttachmentStepService
+      .isRequired(input, this.name, AttachmentType.DataSpecificationPDF)
+      .pipe(
+        tap((isRequired) => {
+          if (isRequired.isRequired) {
+            this.broadcastService.submittingDataSpecification('Attaching pdf file...');
+          }
+        })
+      );
   }
 
   run(input: Partial<ISubmissionState>): Observable<StepResult> {

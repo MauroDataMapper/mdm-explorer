@@ -52,7 +52,7 @@ describe('AttachPdfStep', () => {
   it('getInputShape should return expected fields', () => {
     const expectedInputStep = [
       'specificationId' as keyof ISubmissionState,
-      'dataRequestId' as keyof ISubmissionState,
+      'requestId' as keyof ISubmissionState,
     ];
     fileAttachmentStepServiceStub.getInputShape.mockReturnValueOnce(expectedInputStep);
 

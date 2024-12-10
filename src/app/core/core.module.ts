@@ -48,10 +48,12 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import {
   SDE_RESOURCES_CONFIG,
   SDE_REST_HANDLER_CONFIG,
+  MAURO_CORE_SERVICE,
   SdeResourcesModule,
 } from '@maurodatamapper/sde-resources';
 import { ResearcherSdeResourcesConfig } from '../secure-data-environment/configuration/researcher-sde-resources.config';
 import { environment } from 'src/environments/environment';
+import { SdeMauroCoreService } from './sde-mauro-core.service';
 
 const angularModules = [CommonModule, FormsModule, ReactiveFormsModule, RouterModule];
 const primeNgModules = [CarouselModule];
@@ -98,6 +100,10 @@ const materialModules = [
       useValue: {
         baseUrl: environment.sdeResearcherEndpoint,
       },
+    },
+    {
+      provide: MAURO_CORE_SERVICE,
+      useClass: SdeMauroCoreService,
     },
   ],
 })

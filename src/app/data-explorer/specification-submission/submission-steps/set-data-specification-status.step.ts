@@ -17,9 +17,8 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import {
-  ExporterName,
   ISubmissionState,
   ISubmissionStep,
   StepFunction,
@@ -27,40 +26,44 @@ import {
   StepResult,
 } from '../type-declarations/submission.resource';
 import { AttachmentType } from '@maurodatamapper/sde-resources';
-import { FileGenerationStepService } from '../services/fileGenerationStep.service';
+import { FileAttachmentStepService } from '../services/fileAttachmentStep.service';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { ErrorService } from '../services/error.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class GenerateSqlStep implements ISubmissionStep {
-  name: StepName = StepName.GenerateSqlFile;
+export class SetDataSpecificationStatusStep implements ISubmissionStep {
+  name: StepName = StepName.SetDataSpecificationStatus;
 
   constructor(
-    private fileGenerationStepService: FileGenerationStepService,
+    private fileAttachmentStepService: FileAttachmentStepService,
     private broadcastService: BroadcastService
   ) {}
 
   isRequired(input: Partial<ISubmissionState>): Observable<StepResult> {
-    this.broadcastService.submittingDataSpecification('Generating sql file...');
+    this.broadcastService.submittingDataSpecification('Setting Data Specification status...');
 
-    return this.fileGenerationStepService.isRequired(
+    if (!input.specificationId) {
+      return ErrorService.missingInputError(this.name, StepFunction.IsRequired, 'specificationId');
+    }
+
+    return this.fileAttachmentStepService.isRequired(
       input,
       this.name,
-      AttachmentType.DataSpecificationSQL
+      AttachmentType.DataSpecificationPDF
     );
   }
 
   run(input: Partial<ISubmissionState>): Observable<StepResult> {
-    return this.fileGenerationStepService.run(
+    return this.fileAttachmentStepService.run(
       input,
       this.name,
-      ExporterName.DataModelSqlExporterService
+      AttachmentType.DataSpecificationPDF
     );
   }
 
   getInputShape(): (keyof ISubmissionState)[] {
-    return this.fileGenerationStepService.getInputShape();
+    return this.fileAttachmentStepService.getInputShape();
   }
 }

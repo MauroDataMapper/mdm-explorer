@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { createMatDialogStub } from 'src/app/testing/stubs/mat-dialog.stub';
 import { CreateDataRequestStep } from './create-data-request.step';
-import { setupTestModuleForService } from 'src/app/testing/testing.helpers';
+import { ErrorResponse, setupTestModuleForService } from 'src/app/testing/testing.helpers';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import {
   MembershipEndpointsResearcher,
@@ -28,7 +28,7 @@ import {
   UserProjectDTO,
 } from '@maurodatamapper/sde-resources';
 import { DataSpecificationService } from '../../data-specification.service';
-import { Observable } from 'rxjs';
+import { catchError, map, Observable, of } from 'rxjs';
 import { DataSpecification } from '../../data-explorer.types';
 import { cold } from 'jest-marbles';
 import {
@@ -117,10 +117,27 @@ describe('CreateDataRequestStep', () => {
   });
 
   describe('isRequired', () => {
-    it('should return true if specificationId is not provided', () => {
+    it('should throw an error if specificationId is not provided', () => {
       const input = {};
-      const expected = cold('(a|)', { a: { isRequired: true } });
-      expect(step.isRequired(input)).toBeObservable(expected);
+
+      const expected$ = cold('(a|)', {
+        a: {
+          hasError: true,
+          errorMessage:
+            'Create data request (isRequired) expects specificationId, which was not provided.',
+        } as ErrorResponse,
+      });
+
+      const actual$ = step.isRequired(input).pipe(
+        map(() => {
+          return { hasError: false, errorMessage: 'No error occurred' } as ErrorResponse;
+        }),
+        catchError((error) => {
+          return of({ hasError: true, errorMessage: error.message } as ErrorResponse);
+        })
+      );
+
+      expect(actual$).toBeObservable(expected$);
     });
 
     it('should return false if a request for the specificationId exists', () => {
@@ -129,7 +146,7 @@ describe('CreateDataRequestStep', () => {
         cold('(a|)', { a: { id: 'request-id' } })
       );
       const expected$ = cold('(a|)', {
-        a: { isRequired: false, result: { dataRequestId: 'request-id' } },
+        a: { isRequired: false, result: { requestId: 'request-id' } },
       });
 
       const actual$ = step.isRequired(input);
@@ -149,7 +166,7 @@ describe('CreateDataRequestStep', () => {
     it('should throw an error if no projects are found', () => {
       // And for Asynchronous errors, we use the testScheduler.
       testScheduler.run(({ cold: coldAlias, expectObservable }) => {
-        const input = { specificationId: 'test-id' };
+        const input = { specificationId: 'test-id', projectId: 'no-proj' };
         membershipsEndpointsStub.listProjects.mockReturnValueOnce(
           coldAlias('#', {}, new NoProjectsFoundError(DEFAULT_NO_PROJECTS_MESSAGE))
         );
@@ -164,34 +181,9 @@ describe('CreateDataRequestStep', () => {
       });
     });
 
-    it('should not emit any values and just complete if the dialog is cancelled', () => {
-      testScheduler.run(({ cold: coldAlias, expectObservable }) => {
-        const input = { specificationId: 'test-id' };
-        membershipsEndpointsStub.listProjects.mockReturnValueOnce(
-          coldAlias('(a|)', {
-            a: [{ projectId: 'project-id', projectName: 'project-name' }] as UserProjectDTO[],
-          })
-        );
-
-        dialogServiceStub.openSelectProject.mockReturnValueOnce({
-          afterClosed: () =>
-            coldAlias('(a|)', { a: { projectId: 'project-id', isCancelled: true } }),
-        } as unknown as MatDialogRef<SelectProjectDialogResponse, any>);
-
-        const actual$ = step.run(input);
-
-        const expectedMarble = '(a|)';
-        const expectedValues = {
-          a: { result: { cancel: true } },
-        };
-
-        expectObservable(actual$).toBe(expectedMarble, expectedValues);
-      });
-    });
-
     it('should throw an error if the request creation fails', () => {
       testScheduler.run(({ cold: coldAlias, expectObservable }) => {
-        const input = { specificationId: 'test-id' };
+        const input = { specificationId: 'test-id', projectId: 'project-id' };
         membershipsEndpointsStub.listProjects.mockReturnValueOnce(
           coldAlias('(a|)', {
             a: [{ projectId: 'project-id', projectName: 'project-name' }] as UserProjectDTO[],
@@ -221,7 +213,7 @@ describe('CreateDataRequestStep', () => {
 
     it('should return the data request id if the request creation is successful', () => {
       testScheduler.run(({ cold: coldAlias, expectObservable }) => {
-        const input = { specificationId: 'test-id' };
+        const input = { specificationId: 'test-id', projectId: 'project-id' };
         membershipsEndpointsStub.listProjects.mockReturnValueOnce(
           coldAlias('(a|)', {
             a: [{ projectId: 'project-id', projectName: 'project-name' }] as UserProjectDTO[],
@@ -245,7 +237,7 @@ describe('CreateDataRequestStep', () => {
 
         const actual$ = step.run(input);
 
-        expectObservable(actual$).toBe('(a|)', { a: { result: { dataRequestId: 'request-id' } } });
+        expectObservable(actual$).toBe('(a|)', { a: { result: { requestId: 'request-id' } } });
       });
     });
   });

@@ -36,6 +36,7 @@ export class DataSpecificationStatusChipComponent {
       'mdm-data-specification-status-chip--draft': this.status === 'draft',
       'mdm-data-specification-status-chip--finalised': this.status === 'finalised',
       'mdm-data-specification-status-chip--submitted': this.status === 'submitted',
+      'mdm-data-specification-status-chip--attached': this.status === 'attached to request',
     };
   }
 }

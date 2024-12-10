@@ -47,19 +47,19 @@ class FileAttachmentsStepServiceTestHelper {
 
   static getStepInput(
     fileAttachmentStepService: FileAttachmentStepService,
-    dataRequestId: Uuid | undefined,
+    requestId: Uuid | undefined,
     fileProperties: FileProperties | undefined
   ) {
     // Although all of this could be mocked, it seems easier to use the actual service
     const stateService: SubmissionStateService = new SubmissionStateService();
-    stateService.set({ dataRequestId, fileProperties });
+    stateService.set({ requestId, fileProperties });
     return stateService.getStepInputFromShape(fileAttachmentStepService.getInputShape());
   }
 
   static executeIsRequiredErrorTest(
     attachmentsServiceStub: AttachmentsServiceStub,
     fileAttachmentStepService: FileAttachmentStepService,
-    dataRequestId: Uuid | undefined,
+    requestId: Uuid | undefined,
     fileProperties: FileProperties | undefined,
     attachmentType: AttachmentType,
     stepName: StepName
@@ -70,7 +70,7 @@ class FileAttachmentsStepServiceTestHelper {
 
     const stepInput = FileAttachmentsStepServiceTestHelper.getStepInput(
       fileAttachmentStepService,
-      dataRequestId,
+      requestId,
       fileProperties
     );
 
@@ -87,7 +87,7 @@ class FileAttachmentsStepServiceTestHelper {
   static executeRunErrorTest(
     attachmentsServiceStub: AttachmentsServiceStub,
     fileAttachmentStepService: FileAttachmentStepService,
-    dataRequestId: Uuid | undefined,
+    requestId: Uuid | undefined,
     fileProperties: FileProperties | undefined,
     attachmentType: AttachmentType,
     stepName: StepName
@@ -100,7 +100,7 @@ class FileAttachmentsStepServiceTestHelper {
 
     const stepInput = FileAttachmentsStepServiceTestHelper.getStepInput(
       fileAttachmentStepService,
-      dataRequestId,
+      requestId,
       fileProperties
     );
 
@@ -131,11 +131,11 @@ describe('FileAttachmentsStepService', () => {
   const missingFilePropertiesIsRequiredError =
     'Attach pdf to data request (isRequired) expects fileProperties, which was not provided.';
   const missingRequestIdIsRequiredError =
-    'Attach pdf to data request (isRequired) expects dataRequestId, which was not provided.';
+    'Attach pdf to data request (isRequired) expects requestId, which was not provided.';
   const missingFilePropertiesRunError =
     'Attach pdf to data request (run) expects fileProperties, which was not provided.';
   const missingRequestIdRunError =
-    'Attach pdf to data request (run) expects dataRequestId, which was not provided.';
+    'Attach pdf to data request (run) expects requestId, which was not provided.';
 
   beforeEach(() => {
     // Default endpoint call
@@ -158,13 +158,13 @@ describe('FileAttachmentsStepService', () => {
   });
 
   it('getInputShape should return expected fields', () => {
-    const expectedInputStep = ['dataRequestId', 'fileProperties', 'cancel', 'specificationId'];
+    const expectedInputStep = ['requestId', 'fileProperties', 'cancel', 'specificationId'];
     const inputStep = fileAttachmentStepService.getInputShape();
     expect(inputStep).toEqual(expectedInputStep);
   });
 
   it('isRequired should error if fileProperties parameter is missing', () => {
-    const dataRequestId = 'defined';
+    const requestId = 'defined';
     const fileProperties = undefined;
     const expectedHasError = true;
     const expectedErrorMessage = missingFilePropertiesIsRequiredError;
@@ -177,7 +177,7 @@ describe('FileAttachmentsStepService', () => {
     const actual$ = FileAttachmentsStepServiceTestHelper.executeIsRequiredErrorTest(
       attachmentsServiceStub,
       fileAttachmentStepService,
-      dataRequestId,
+      requestId,
       fileProperties,
       AttachmentType.DataSpecificationPDF,
       FileAttachmentsStepServiceTestHelper.StepNameForAttachmentType(
@@ -189,7 +189,7 @@ describe('FileAttachmentsStepService', () => {
   });
 
   it('isRequired should error if requestId parameter is missing', () => {
-    const dataRequestId = undefined;
+    const requestId = undefined;
     const fileProperties = { url: 'URl', filename: 'File' } as FileProperties;
     const expectedHasError = true;
     const expectedErrorMessage = missingRequestIdIsRequiredError;
@@ -202,7 +202,7 @@ describe('FileAttachmentsStepService', () => {
     const actual$ = FileAttachmentsStepServiceTestHelper.executeIsRequiredErrorTest(
       attachmentsServiceStub,
       fileAttachmentStepService,
-      dataRequestId,
+      requestId,
       fileProperties,
       AttachmentType.DataSpecificationPDF,
       FileAttachmentsStepServiceTestHelper.StepNameForAttachmentType(
@@ -214,7 +214,7 @@ describe('FileAttachmentsStepService', () => {
   });
 
   it('isRequired should error if both requestId and fileProperties parameters are missing', () => {
-    const dataRequestId = undefined;
+    const requestId = undefined;
     const fileProperties = undefined;
     const expectedHasError = true;
     const expectedErrorMessage = missingRequestIdIsRequiredError;
@@ -227,7 +227,7 @@ describe('FileAttachmentsStepService', () => {
     const actual$ = FileAttachmentsStepServiceTestHelper.executeIsRequiredErrorTest(
       attachmentsServiceStub,
       fileAttachmentStepService,
-      dataRequestId,
+      requestId,
       fileProperties,
       AttachmentType.DataSpecificationPDF,
       FileAttachmentsStepServiceTestHelper.StepNameForAttachmentType(
@@ -239,7 +239,7 @@ describe('FileAttachmentsStepService', () => {
   });
 
   it('isRequired should NOT error if both requestId and fileProperties parameters are provided', () => {
-    const dataRequestId = 'defined';
+    const requestId = 'defined';
     const fileProperties = { url: 'URl', filename: 'File' } as FileProperties;
     const expectedHasError = false;
     const expectedErrorMessage = 'No error occurred';
@@ -252,7 +252,7 @@ describe('FileAttachmentsStepService', () => {
     const actual$ = FileAttachmentsStepServiceTestHelper.executeIsRequiredErrorTest(
       attachmentsServiceStub,
       fileAttachmentStepService,
-      dataRequestId,
+      requestId,
       fileProperties,
       AttachmentType.DataSpecificationPDF,
       FileAttachmentsStepServiceTestHelper.StepNameForAttachmentType(
@@ -264,7 +264,7 @@ describe('FileAttachmentsStepService', () => {
   });
 
   it('run should error if fileProperties parameter is missing', () => {
-    const dataRequestId = 'defined';
+    const requestId = 'defined';
     const fileProperties = undefined;
     const expectedHasError = true;
     const expectedErrorMessage = missingFilePropertiesRunError;
@@ -277,7 +277,7 @@ describe('FileAttachmentsStepService', () => {
     const actual$ = FileAttachmentsStepServiceTestHelper.executeRunErrorTest(
       attachmentsServiceStub,
       fileAttachmentStepService,
-      dataRequestId,
+      requestId,
       fileProperties,
       AttachmentType.DataSpecificationPDF,
       FileAttachmentsStepServiceTestHelper.StepNameForAttachmentType(
@@ -289,7 +289,7 @@ describe('FileAttachmentsStepService', () => {
   });
 
   it('run should error if requestId parameter is missing', () => {
-    const dataRequestId = undefined;
+    const requestId = undefined;
     const fileProperties = { url: 'URl', filename: 'File' } as FileProperties;
     const expectedHasError = true;
     const expectedErrorMessage = missingRequestIdRunError;
@@ -302,7 +302,7 @@ describe('FileAttachmentsStepService', () => {
     const actual$ = FileAttachmentsStepServiceTestHelper.executeRunErrorTest(
       attachmentsServiceStub,
       fileAttachmentStepService,
-      dataRequestId,
+      requestId,
       fileProperties,
       AttachmentType.DataSpecificationPDF,
       FileAttachmentsStepServiceTestHelper.StepNameForAttachmentType(
@@ -314,7 +314,7 @@ describe('FileAttachmentsStepService', () => {
   });
 
   it('run should error if both requestId and fileProperties parameters are missing', () => {
-    const dataRequestId = undefined;
+    const requestId = undefined;
     const fileProperties = undefined;
     const expectedHasError = true;
     const expectedErrorMessage = missingRequestIdRunError;
@@ -327,7 +327,7 @@ describe('FileAttachmentsStepService', () => {
     const actual$ = FileAttachmentsStepServiceTestHelper.executeRunErrorTest(
       attachmentsServiceStub,
       fileAttachmentStepService,
-      dataRequestId,
+      requestId,
       fileProperties,
       AttachmentType.DataSpecificationPDF,
       FileAttachmentsStepServiceTestHelper.StepNameForAttachmentType(
@@ -339,7 +339,7 @@ describe('FileAttachmentsStepService', () => {
   });
 
   it('run should NOT error if both requestId and fileProperties parameters are provided', () => {
-    const dataRequestId = 'defined';
+    const requestId = 'defined';
     const fileProperties = { url: 'URl', filename: 'File' } as FileProperties;
     const expectedHasError = false;
     const expectedErrorMessage = 'No error occurred';
@@ -352,7 +352,7 @@ describe('FileAttachmentsStepService', () => {
     const actual$ = FileAttachmentsStepServiceTestHelper.executeRunErrorTest(
       attachmentsServiceStub,
       fileAttachmentStepService,
-      dataRequestId,
+      requestId,
       fileProperties,
       AttachmentType.DataSpecificationPDF,
       FileAttachmentsStepServiceTestHelper.StepNameForAttachmentType(

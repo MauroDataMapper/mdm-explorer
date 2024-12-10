@@ -69,10 +69,20 @@ import { SpecificationSubmissionService } from 'src/app/data-explorer/specificat
 import { DataSpecificationResearchPluginService } from 'src/app/mauro/data-specification-research-plugin.service';
 import { createDataSpecificationResearchPluginServiceStub } from 'src/app/testing/stubs/data-specification-research-plugin.stub';
 import { SubmissionSDEService } from 'src/app/data-explorer/specification-submission/services/submission.sde.service';
-import { RequestDialogService, RequestEndpointsResearcher } from '@maurodatamapper/sde-resources';
+import {
+  RequestDialogService,
+  RequestEndpoints,
+  RequestEndpointsResearcher,
+  RequestResponse,
+  RequestService,
+  SdeResourcesBroadcastService,
+} from '@maurodatamapper/sde-resources';
 import { createSubmissionSDEServiceStub } from 'src/app/testing/stubs/data-specification-submission/submission-sde-service.stub';
 import { createRequestEndpointsResearcherStub } from 'src/app/testing/stubs/sde/request-endpoints-researcher.stub';
 import { createRequestDialogServiceStub } from 'src/app/testing/stubs/sde/request-dialog-service.stub';
+import { createSdeRequestEndpointsSharedStub } from 'src/app/testing/stubs/sde/sde-request-endpoints-shared.stub';
+import { createRequestServiceStub } from 'src/app/testing/stubs/sde/request-service.stub';
+import { createSdeResourcesBroadcastServiceStub } from 'src/app/testing/stubs/sde/sde-resources-broadcast-service.stub';
 
 describe('MyDataSpecificationDetailComponent', () => {
   let harness: ComponentHarness<MyDataSpecificationDetailComponent>;
@@ -90,6 +100,9 @@ describe('MyDataSpecificationDetailComponent', () => {
   const submissionSDEServiceStub = createSubmissionSDEServiceStub();
   const researcherRequestEndpointsStub = createRequestEndpointsResearcherStub();
   const requestDialogServiceStub = createRequestDialogServiceStub();
+  const requestEndpointsStub = createSdeRequestEndpointsSharedStub();
+  const requestServiceStub = createRequestServiceStub();
+  const sdeResourcesBroadcastServiceStub = createSdeResourcesBroadcastServiceStub();
   const dataSpecificationId = '1';
   const activatedRoute: ActivatedRoute = {
     params: of({
@@ -160,6 +173,18 @@ describe('MyDataSpecificationDetailComponent', () => {
           provide: RequestDialogService,
           useValue: requestDialogServiceStub,
         },
+        {
+          provide: RequestEndpoints,
+          useValue: requestEndpointsStub,
+        },
+        {
+          provide: RequestService,
+          useValue: requestServiceStub,
+        },
+        {
+          provide: SdeResourcesBroadcastService,
+          useValue: sdeResourcesBroadcastServiceStub,
+        },
       ],
     });
   });
@@ -196,6 +221,10 @@ describe('MyDataSpecificationDetailComponent', () => {
   folderServiceStub.treeList.mockImplementation(() => {
     return of([]);
   });
+
+  sdeResourcesBroadcastServiceStub.onRequestDialogClosed.mockReturnValue(
+    of({ status: 'DRAFT' } as RequestResponse)
+  );
 
   describe('initialisation', () => {
     beforeEach(() => {
