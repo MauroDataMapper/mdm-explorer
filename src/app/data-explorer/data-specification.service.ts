@@ -625,9 +625,13 @@ export class DataSpecificationService {
             of(dataElements),
           ]);
         }),
-        catchError((error) => {
+        catchError((error: HttpErrorResponse) => {
+          const errorMessage = this.isDataSpecificationNameClashError(error)
+            ? 'A data specification with this name already exists. Please choose a different name.'
+            : error.message;
+
           this.toastr.error(
-            `There was a problem creating your data specification. ${error}`,
+            `There was a problem creating your data specification. ${errorMessage}`,
             'Data specification creation error'
           );
           return EMPTY;
@@ -862,5 +866,15 @@ export class DataSpecificationService {
         return of(!dataSpecifications.some((element) => element.label === name));
       })
     );
+  }
+
+  private isDataSpecificationNameClashError(error: HttpErrorResponse) {
+    if (error.status === 422 && error.error && Array.isArray(error.error.errors)) {
+      // Extract the first error message
+      return error.error.errors.some((err: { message: string }) =>
+        err.message?.includes('must be unique by branch name')
+      );
+    }
+    return false;
   }
 }
