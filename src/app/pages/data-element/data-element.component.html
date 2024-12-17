@@ -43,9 +43,7 @@ SPDX-License-Identifier: Apache-2.0
 
     <div *ngIf="identifiableData" class="mdm-data-element-detail__identifiable">
       <h3>
-        <mdm-identifiable-data-icon
-          [state]="identifiableData"
-        ></mdm-identifiable-data-icon>
+        <mdm-identifiable-data-icon [state]="identifiableData"></mdm-identifiable-data-icon>
       </h3>
     </div>
 
@@ -60,10 +58,8 @@ SPDX-License-Identifier: Apache-2.0
       <mat-card
         *ngIf="dataElement.description && dataElement.description.length > 0"
         class="mdm-data-element-card"
+        [innerHTML]="dataElement.description"
       >
-        <p>
-          {{ dataElement.description }}
-        </p>
       </mat-card>
 
       <mat-card class="mdm-data-element-card">
@@ -80,29 +76,19 @@ SPDX-License-Identifier: Apache-2.0
               </tr>
             </thead>
             <tbody>
-              <tr
-                *ngFor="
-                  let enumerationValue of dataElementDataTypeCasted?.enumerationValues
-                "
-              >
+              <tr *ngFor="let enumerationValue of dataElementDataTypeCasted?.enumerationValues">
                 <td>{{ enumerationValue.key }}</td>
                 <td>{{ enumerationValue.value }}</td>
               </tr>
             </tbody>
           </table>
         </div>
-        <div
-          *ngIf="
-            dataElementDataTypeCasted?.domainType === 'ModelDataType' && dataTypeModel
-          "
-        >
+        <div *ngIf="dataElementDataTypeCasted?.domainType === 'ModelDataType' && dataTypeModel">
           <p>
-            <span class="mdm-data-element-property-name">Model: </span
-            >{{ dataTypeModel.label }}
+            <span class="mdm-data-element-property-name">Model: </span>{{ dataTypeModel.label }}
           </p>
           <p>
-            <span class="mdm-data-element-property-name">Type: </span
-            >{{ dataTypeModel.domainType }}
+            <span class="mdm-data-element-property-name">Type: </span>{{ dataTypeModel.domainType }}
           </p>
         </div>
       </mat-card>

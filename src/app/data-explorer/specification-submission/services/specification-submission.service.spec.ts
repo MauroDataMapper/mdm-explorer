@@ -23,7 +23,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { createStateServiceStub } from '../../../testing/stubs/data-specification-submission/submission-state.stub';
 import { SubmissionStateService } from './submission-state.service';
 import { createStepStub } from '../../../testing/stubs/data-specification-submission/step.stub';
-import { CreateDataRequestStep } from '../submission-steps/create-data-request.step';
 import { of, throwError } from 'rxjs';
 import {
   ISubmissionState,
@@ -35,12 +34,13 @@ import { GenerateSqlStep } from '../submission-steps/generate-sql.step';
 import { AttachSqlStep } from '../submission-steps/attach-sql.step';
 import { GeneratePdfStep } from '../submission-steps/generate-pdf.step';
 import { AttachPdfStep } from '../submission-steps/attach-pdf.step';
-import { SubmitRequestStep } from '../submission-steps/submit-request.step';
 import { SimpleDialogComponent } from '../../simple-dialog/simple-dialog.component';
 import {
   MembershipEndpointsResearcher,
   RequestEndpointsResearcher,
+  RequestResponse,
   RequestService,
+  RequestType,
 } from '@maurodatamapper/sde-resources';
 import { createRequestEndpointsResearcherStub } from 'src/app/testing/stubs/sde/request-endpoints-researcher.stub';
 import { createRequestServiceStub } from 'src/app/testing/stubs/sde/request-service.stub';
@@ -50,15 +50,14 @@ describe('SpecificationSubmissionService', () => {
   let service: SpecificationSubmissionService;
   const matDialogStub = createMatDialogStub();
   const stateServiceStub = createStateServiceStub();
-  const createDataRequestStepStub = createStepStub(StepName.CreateDataRequest);
   const generateSqlStepStub = createStepStub(StepName.GenerateSqlFile);
   const attachSqlStepStub = createStepStub(StepName.AttachSqlFile);
   const generatePdfStepStub = createStepStub(StepName.GeneratePdfFile);
   const attachPdfStepStub = createStepStub(StepName.AttachPdfFile);
-  const submitDataRequestStepStub = createStepStub(StepName.SubmitDataRequest);
   const requestEndpointsResearcherStub = createRequestEndpointsResearcherStub();
   const membershipEndpointsResearcherStub = createMembershipEndpointsResearcherStub();
   const requestServiceStub = createRequestServiceStub();
+  const request = { status: 'DRAFT', type: RequestType.Data } as RequestResponse;
 
   beforeEach(() => {
     service = setupTestModuleForService(SpecificationSubmissionService, {
@@ -70,10 +69,6 @@ describe('SpecificationSubmissionService', () => {
         {
           provide: SubmissionStateService,
           useValue: stateServiceStub,
-        },
-        {
-          provide: CreateDataRequestStep,
-          useValue: createDataRequestStepStub,
         },
         {
           provide: GenerateSqlStep,
@@ -90,10 +85,6 @@ describe('SpecificationSubmissionService', () => {
         {
           provide: AttachPdfStep,
           useValue: attachPdfStepStub,
-        },
-        {
-          provide: SubmitRequestStep,
-          useValue: submitDataRequestStepStub,
         },
         {
           provide: RequestEndpointsResearcher,
@@ -128,88 +119,14 @@ describe('SpecificationSubmissionService', () => {
     const setSpy = jest.spyOn(stateServiceStub, 'set');
     const specificationId = 'test-id';
     jest
-      .spyOn(createDataRequestStepStub, 'isRequired')
+      .spyOn(generateSqlStepStub, 'isRequired')
       .mockReturnValue(of({ result: {}, isRequired: false }));
 
-    service.submit(specificationId, SubmissionType.DataRequest).subscribe();
+    service
+      .submit(specificationId, SubmissionType.AttachSqlAndPdfToRequest, request.id)
+      .subscribe();
     expect(setSpy).toHaveBeenCalledWith({ specificationId });
   });
-
-  /* This test keeps timing out and it is not clear why.
-  https://github.com/MauroDataMapper/mdm-explorer/issues/484 has been created to resolved this.
-  */
-  /*
-  it('should run the createDataRequest step and return a boolean', (done) => {
-    // Mock the returns
-    const expectedInputShape: (keyof Partial<ISubmissionState>)[] = ['specificationId', 'cancel'];
-    const expectedRunInput = { cancel: false };
-    const requestId = 'requestId';
-    const expectedRunResult = true;
-
-    createDataRequestStepStub.getInputShape.mockReturnValue(expectedInputShape);
-    stateServiceStub.getStepInputFromShape.mockReturnValue({ specificationId: 'test-id' });
-    stateServiceStub.getStepInputFromShape.mockReturnValue({ cancel: false });
-
-    // Set the spys
-    const isRequiredSpy = jest.spyOn(createDataRequestStepStub, 'isRequired');
-    const runSpy = jest.spyOn(createDataRequestStepStub, 'run');
-
-    isRequiredSpy.mockReturnValue(of({ result: {}, isRequired: true } as StepResult));
-    runSpy.mockReturnValue(
-      of({ result: { requestId, succeeded: true }, isRequired: false } as StepResult)
-    );
-
-    // Set the spys for subsequent steps
-    const isRequired$ = of({ result: {}, isRequired: false } as StepResult);
-    const run$ = of({
-      result: { requestId, succeeded: true },
-      isRequired: false,
-    } as StepResult);
-
-    // Generate SQL
-    generateSqlStepStub.getInputShape.mockReturnValueOnce(expectedInputShape);
-    const isRequiredSpyGenerateSQL = jest.spyOn(generateSqlStepStub, 'isRequired');
-    const runSpyGenerateSQL = jest.spyOn(generateSqlStepStub, 'run');
-    isRequiredSpyGenerateSQL.mockReturnValue(isRequired$);
-    runSpyGenerateSQL.mockReturnValue(run$);
-
-    // Attach SQL
-    attachSqlStepStub.getInputShape.mockReturnValueOnce(expectedInputShape);
-    const isRequiredSpyAttachSQL = jest.spyOn(attachSqlStepStub, 'isRequired');
-    const runSpyAttachSQL = jest.spyOn(attachSqlStepStub, 'run');
-    isRequiredSpyAttachSQL.mockReturnValue(isRequired$);
-    runSpyAttachSQL.mockReturnValue(run$);
-
-    // Generate PDF
-    generatePdfStepStub.getInputShape.mockReturnValueOnce(expectedInputShape);
-    const isRequiredSpyGeneratePDF = jest.spyOn(generatePdfStepStub, 'isRequired');
-    const runSpyGeneratePDF = jest.spyOn(generatePdfStepStub, 'run');
-    isRequiredSpyGeneratePDF.mockReturnValue(isRequired$);
-    runSpyGeneratePDF.mockReturnValue(run$);
-
-    // Attach PDF
-    attachPdfStepStub.getInputShape.mockReturnValueOnce(expectedInputShape);
-    const isRequiredSpyAttachPDF = jest.spyOn(attachPdfStepStub, 'isRequired');
-    const runSpyAttachPDF = jest.spyOn(attachPdfStepStub, 'run');
-    isRequiredSpyAttachPDF.mockReturnValue(isRequired$);
-    runSpyAttachPDF.mockReturnValue(run$);
-
-    // Submit Data Request
-    submitDataRequestStepStub.getInputShape.mockReturnValueOnce(expectedInputShape);
-    const isRequiredSpySubmitDataRequest = jest.spyOn(submitDataRequestStepStub, 'isRequired');
-    const runSpySubmitDataRequest = jest.spyOn(submitDataRequestStepStub, 'run');
-    isRequiredSpySubmitDataRequest.mockReturnValue(isRequired$);
-    runSpySubmitDataRequest.mockReturnValue(run$);
-
-    service.submit('test-id', SubmissionType.DataRequest).subscribe((result: boolean) => {
-      expect(result).toEqual(expectedRunResult);
-      done();
-    });
-
-    expect(isRequiredSpy).toHaveBeenCalled();
-    expect(runSpy).toHaveBeenCalledWith(expectedRunInput);
-  });
-  */
 
   it('should save the step result to the state', () => {
     const setSpy = jest.spyOn(stateServiceStub, 'set');
@@ -219,9 +136,9 @@ describe('SpecificationSubmissionService', () => {
       result: { specificationId: 'test-id' },
     } as StepResult;
 
-    jest.spyOn(createDataRequestStepStub, 'isRequired').mockReturnValue(of(stepResult));
+    jest.spyOn(generateSqlStepStub, 'isRequired').mockReturnValue(of(stepResult));
 
-    service.submit('test-id', SubmissionType.DataRequest).subscribe();
+    service.submit('test-id', SubmissionType.AttachSqlAndPdfToRequest, request.id).subscribe();
 
     // Check the first call
     expect(setSpy).toHaveBeenCalledWith({
@@ -243,13 +160,6 @@ describe('SpecificationSubmissionService', () => {
 
     stateServiceStub.getStepInputFromShape.mockReturnValue({ specificationId: 'test-id' });
 
-    // Create Data Request
-    createDataRequestStepStub.getInputShape.mockReturnValueOnce(expectedInputShape);
-    const isRequiredSpyCreateDataRequest = jest.spyOn(createDataRequestStepStub, 'isRequired');
-    const runSpyCreateDataRequest = jest.spyOn(createDataRequestStepStub, 'run');
-    isRequiredSpyCreateDataRequest.mockReturnValue(isRequired$);
-    runSpyCreateDataRequest.mockReturnValue(run$);
-
     // Generate SQL
     generateSqlStepStub.getInputShape.mockReturnValueOnce(expectedInputShape);
     const isRequiredSpyGenerateSQL = jest.spyOn(generateSqlStepStub, 'isRequired');
@@ -278,22 +188,14 @@ describe('SpecificationSubmissionService', () => {
     isRequiredSpyAttachPDF.mockReturnValue(isRequired$);
     runSpyAttachPDF.mockReturnValue(run$);
 
-    // Submit Data Request
-    submitDataRequestStepStub.getInputShape.mockReturnValueOnce(expectedInputShape);
-    const isRequiredSpySubmitDataRequest = jest.spyOn(submitDataRequestStepStub, 'isRequired');
-    const runSpySubmitDataRequest = jest.spyOn(submitDataRequestStepStub, 'run');
-    isRequiredSpySubmitDataRequest.mockReturnValue(isRequired$);
-    runSpySubmitDataRequest.mockReturnValue(run$);
-
     // Submit the Data Specification
-    service.submit('test-id', SubmissionType.DataRequest).subscribe((result: boolean) => {
-      expect(result).toEqual(expectedRunResult);
-    });
+    service
+      .submit('test-id', SubmissionType.AttachSqlAndPdfToRequest, request.id)
+      .subscribe((result: boolean) => {
+        expect(result).toEqual(expectedRunResult);
+      });
 
     // Check the results
-    expect(isRequiredSpyCreateDataRequest).toHaveBeenCalled();
-    expect(runSpyCreateDataRequest).toHaveBeenCalledWith(expectedRunInput);
-
     expect(isRequiredSpyGenerateSQL).toHaveBeenCalled();
     expect(runSpyGenerateSQL).toHaveBeenCalledWith(expectedRunInput);
 
@@ -305,9 +207,6 @@ describe('SpecificationSubmissionService', () => {
 
     expect(isRequiredSpyAttachPDF).toHaveBeenCalled();
     expect(runSpyAttachPDF).toHaveBeenCalledWith(expectedRunInput);
-
-    expect(isRequiredSpySubmitDataRequest).toHaveBeenCalled();
-    expect(runSpySubmitDataRequest).toHaveBeenCalledWith(expectedRunInput);
   });
 
   it('step run is not called when isRequired is false', () => {
@@ -323,13 +222,6 @@ describe('SpecificationSubmissionService', () => {
 
     stateServiceStub.getStepInputFromShape.mockReturnValue({ specificationId: 'test-id' });
 
-    // Create Data Request
-    createDataRequestStepStub.getInputShape.mockReturnValueOnce(expectedInputShape);
-    const isRequiredSpyCreateDataRequest = jest.spyOn(createDataRequestStepStub, 'isRequired');
-    const runSpyCreateDataRequest = jest.spyOn(createDataRequestStepStub, 'run');
-    isRequiredSpyCreateDataRequest.mockReturnValue(isRequired$);
-    runSpyCreateDataRequest.mockReturnValue(run$);
-
     // Generate SQL
     generateSqlStepStub.getInputShape.mockReturnValueOnce(expectedInputShape);
     const isRequiredSpyGenerateSQL = jest.spyOn(generateSqlStepStub, 'isRequired');
@@ -358,22 +250,14 @@ describe('SpecificationSubmissionService', () => {
     isRequiredSpyAttachPDF.mockReturnValue(isRequired$);
     runSpyAttachPDF.mockReturnValue(run$);
 
-    // Submit Data Request
-    submitDataRequestStepStub.getInputShape.mockReturnValueOnce(expectedInputShape);
-    const isRequiredSpySubmitDataRequest = jest.spyOn(submitDataRequestStepStub, 'isRequired');
-    const runSpySubmitDataRequest = jest.spyOn(submitDataRequestStepStub, 'run');
-    isRequiredSpySubmitDataRequest.mockReturnValue(isRequired$);
-    runSpySubmitDataRequest.mockReturnValue(run$);
-
     // Submit the Data Specification
-    service.submit('test-id', SubmissionType.DataRequest).subscribe((result: boolean) => {
-      expect(result).toEqual(expectedRunResult);
-    });
+    service
+      .submit('test-id', SubmissionType.AttachSqlAndPdfToRequest, request.id)
+      .subscribe((result: boolean) => {
+        expect(result).toEqual(expectedRunResult);
+      });
 
     // Check the results
-    expect(isRequiredSpyCreateDataRequest).toHaveBeenCalled();
-    expect(runSpyCreateDataRequest).toHaveBeenCalledTimes(0);
-
     expect(isRequiredSpyGenerateSQL).toHaveBeenCalled();
     expect(runSpyGenerateSQL).toHaveBeenCalledTimes(0);
 
@@ -385,15 +269,11 @@ describe('SpecificationSubmissionService', () => {
 
     expect(isRequiredSpyAttachPDF).toHaveBeenCalled();
     expect(runSpyAttachPDF).toHaveBeenCalledTimes(0);
-
-    expect(isRequiredSpySubmitDataRequest).toHaveBeenCalled();
-    expect(runSpySubmitDataRequest).toHaveBeenCalledTimes(0);
   });
 
   it('subsequent steps are not called when a step is cancelled', () => {
     // Mock the returns
     const expectedInputShape: (keyof Partial<ISubmissionState>)[] = ['specificationId'];
-    const expectedRunInput = { specificationId: 'test-id' };
     const requestId = 'requestId';
     const expectedRunResult = true;
     const isRequired$ = of({ result: {}, isRequired: true } as StepResult);
@@ -408,13 +288,6 @@ describe('SpecificationSubmissionService', () => {
       cancel: true,
     });
 
-    // Create Data Request
-    createDataRequestStepStub.getInputShape.mockReturnValueOnce(expectedInputShape);
-    const isRequiredSpyCreateDataRequest = jest.spyOn(createDataRequestStepStub, 'isRequired');
-    const runSpyCreateDataRequest = jest.spyOn(createDataRequestStepStub, 'run');
-    isRequiredSpyCreateDataRequest.mockReturnValue(isRequired$);
-    runSpyCreateDataRequest.mockReturnValue(run$);
-
     // Generate SQL
     generateSqlStepStub.getInputShape.mockReturnValueOnce(expectedInputShape);
     const isRequiredSpyGenerateSQL = jest.spyOn(generateSqlStepStub, 'isRequired');
@@ -443,24 +316,16 @@ describe('SpecificationSubmissionService', () => {
     isRequiredSpyAttachPDF.mockReturnValue(isRequired$);
     runSpyAttachPDF.mockReturnValue(run$);
 
-    // Submit Data Request
-    submitDataRequestStepStub.getInputShape.mockReturnValueOnce(expectedInputShape);
-    const isRequiredSpySubmitDataRequest = jest.spyOn(submitDataRequestStepStub, 'isRequired');
-    const runSpySubmitDataRequest = jest.spyOn(submitDataRequestStepStub, 'run');
-    isRequiredSpySubmitDataRequest.mockReturnValue(isRequired$);
-    runSpySubmitDataRequest.mockReturnValue(run$);
-
     // Submit the Data Specification
-    service.submit('test-id', SubmissionType.DataRequest).subscribe((result: boolean) => {
-      expect(result).toEqual(expectedRunResult);
-    });
+    service
+      .submit('test-id', SubmissionType.AttachSqlAndPdfToRequest, request.id)
+      .subscribe((result: boolean) => {
+        expect(result).toEqual(expectedRunResult);
+      });
 
     // Check the results
-    expect(isRequiredSpyCreateDataRequest).toHaveBeenCalled();
-    expect(runSpyCreateDataRequest).toHaveBeenCalledWith(expectedRunInput);
-
-    expect(isRequiredSpyGenerateSQL).toHaveBeenCalledTimes(0);
-    expect(runSpyGenerateSQL).toHaveBeenCalledTimes(0);
+    expect(isRequiredSpyGenerateSQL).toHaveBeenCalledTimes(1);
+    expect(runSpyGenerateSQL).toHaveBeenCalledTimes(1);
 
     expect(isRequiredSpyAttachSQL).toHaveBeenCalledTimes(0);
     expect(runSpyAttachSQL).toHaveBeenCalledTimes(0);
@@ -470,9 +335,6 @@ describe('SpecificationSubmissionService', () => {
 
     expect(isRequiredSpyAttachPDF).toHaveBeenCalledTimes(0);
     expect(runSpyAttachPDF).toHaveBeenCalledTimes(0);
-
-    expect(isRequiredSpySubmitDataRequest).toHaveBeenCalledTimes(0);
-    expect(runSpySubmitDataRequest).toHaveBeenCalledTimes(0);
   });
 
   it('should display a simpleDialog when an error is thrown', () => {
@@ -487,18 +349,20 @@ describe('SpecificationSubmissionService', () => {
       specificationId: 'test-id',
     });
 
-    // Create Data Request
-    createDataRequestStepStub.getInputShape.mockReturnValueOnce(expectedInputShape);
-    const isRequiredSpyCreateDataRequest = jest.spyOn(createDataRequestStepStub, 'isRequired');
-    const runSpyCreateDataRequest = jest.spyOn(createDataRequestStepStub, 'run');
+    // Generate SQL
+    generateSqlStepStub.getInputShape.mockReturnValueOnce(expectedInputShape);
+    const isRequiredSpyCreateDataRequest = jest.spyOn(generateSqlStepStub, 'isRequired');
+    const runSpyCreateDataRequest = jest.spyOn(generateSqlStepStub, 'run');
     const simpleDialogSpy = jest.spyOn(matDialogStub, 'open');
     isRequiredSpyCreateDataRequest.mockReturnValue(isRequired$);
     runSpyCreateDataRequest.mockReturnValue(run$);
 
     // Submit the Data Specification
-    service.submit('test-id', SubmissionType.DataRequest).subscribe((result: boolean) => {
-      expect(result).toEqual(expectedRunResult);
-    });
+    service
+      .submit('test-id', SubmissionType.AttachSqlAndPdfToRequest, request.id)
+      .subscribe((result: boolean) => {
+        expect(result).toEqual(expectedRunResult);
+      });
 
     expect(isRequiredSpyCreateDataRequest).toHaveBeenCalled();
     expect(runSpyCreateDataRequest).toHaveBeenCalledWith(expectedRunInput);

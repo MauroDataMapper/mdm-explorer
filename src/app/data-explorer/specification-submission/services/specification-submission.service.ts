@@ -25,7 +25,6 @@ import {
   RequestResponse,
   RequestService,
   SdeRequest,
-  UserProjectDTO,
   Uuid,
 } from '@maurodatamapper/sde-resources';
 import {
@@ -44,7 +43,6 @@ import { Observable } from 'rxjs/internal/Observable';
 import { of } from 'rxjs/internal/observable/of';
 import { switchMap } from 'rxjs/internal/operators/switchMap';
 import { SubmissionStateService } from './submission-state.service';
-import { CreateDataRequestStep } from '../submission-steps/create-data-request.step';
 import {
   ISubmissionStep,
   StepName,
@@ -55,7 +53,6 @@ import { GenerateSqlStep } from '../submission-steps/generate-sql.step';
 import { AttachSqlStep } from '../submission-steps/attach-sql.step';
 import { GeneratePdfStep } from '../submission-steps/generate-pdf.step';
 import { AttachPdfStep } from '../submission-steps/attach-pdf.step';
-import { SubmitRequestStep } from '../submission-steps/submit-request.step';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { DialogService } from '../../dialog.service';
 import {
@@ -71,33 +68,29 @@ import {
   providedIn: 'root',
 })
 export class SpecificationSubmissionService {
-  private dataRequestSubmissionSteps: ISubmissionStep[] = [];
-  private attachToRequestSubmissionSteps: ISubmissionStep[] = [];
+  private attachSqlAndPdfToRequestSubmissionSteps: ISubmissionStep[] = [];
+  private attachPdfToRequestSubmissionSteps: ISubmissionStep[] = [];
 
   constructor(
     private stateService: SubmissionStateService,
     private dialogService: DialogService,
     private broadcastService: BroadcastService,
-    private createDataRequestStep: CreateDataRequestStep,
     private generateSqlStep: GenerateSqlStep,
     private attachSqlStep: AttachSqlStep,
     private generatePdfStep: GeneratePdfStep,
     private attachPdfStep: AttachPdfStep,
-    private submitRequestStep: SubmitRequestStep,
     private researcherRequestEndpoints: RequestEndpointsResearcher,
     private membershipEndpoints: MembershipEndpointsResearcher,
     private requestsService: RequestService
   ) {
-    this.dataRequestSubmissionSteps = [
-      this.createDataRequestStep,
+    this.attachSqlAndPdfToRequestSubmissionSteps = [
       this.generateSqlStep,
       this.attachSqlStep,
       this.generatePdfStep,
       this.attachPdfStep,
-      this.submitRequestStep,
     ];
 
-    this.attachToRequestSubmissionSteps = [this.generatePdfStep, this.attachPdfStep];
+    this.attachPdfToRequestSubmissionSteps = [this.generatePdfStep, this.attachPdfStep];
   }
 
   chooseRequestType(specificationId: Uuid): Observable<SubmissionWizardDialogResponse> {
@@ -106,12 +99,12 @@ export class SpecificationSubmissionService {
       throw new Error('chooseRequestType: Specification ID is required.');
     }
 
-    const projects$ = this.membershipEndpoints.listProjects().pipe(
-      map((projects: UserProjectDTO[]) =>
-        projects.map<IdNamePair>((proj) => {
+    const dataRequests$ = this.requestsService.listDraftDataRequests().pipe(
+      map((requests: SdeRequest[]) =>
+        requests.map<IdNamePair>((request) => {
           return {
-            id: proj.projectId,
-            name: proj.projectName,
+            id: request.id,
+            name: request.title,
           };
         })
       )
@@ -151,18 +144,14 @@ export class SpecificationSubmissionService {
         } else {
           // If `requestId` is undefined, use `forkJoin` to wait for both `projects$` and `newProjectRequests$`
           return forkJoin({
-            projects: projects$,
+            dataRequests: dataRequests$,
             newProjectRequests: newProjectRequests$,
             projectChangeRequests: projectChangeRequests$,
           }).pipe(
-            map(({ projects, newProjectRequests, projectChangeRequests }) => {
-              if (projects.length === 0 && newProjectRequests.length === 0) {
-                throw new NoProjectsFoundError();
-              }
-
+            map(({ dataRequests, newProjectRequests, projectChangeRequests }) => {
               // Construct the dialog data with both projects and new project requests
               const dialogData: SubmissionWizardDialogData = {
-                projects,
+                dataRequests,
                 newProjectRequests,
                 projectChangeRequests,
               };
@@ -193,8 +182,7 @@ export class SpecificationSubmissionService {
   submit(
     specificationId: Uuid,
     submissionType: SubmissionType,
-    requestId: Uuid | undefined = undefined,
-    projectId: Uuid | undefined = undefined
+    requestId: Uuid
   ): Observable<boolean> {
     // Set initial state.
     this.stateService.clear();
@@ -202,12 +190,12 @@ export class SpecificationSubmissionService {
     let submissionSteps: ISubmissionStep[] = [];
 
     switch (submissionType) {
-      case SubmissionType.DataRequest:
-        submissionSteps = this.dataRequestSubmissionSteps;
-        this.stateService.set({ projectId });
+      case SubmissionType.AttachSqlAndPdfToRequest:
+        submissionSteps = this.attachSqlAndPdfToRequestSubmissionSteps;
+        this.stateService.set({ requestId });
         break;
       case SubmissionType.AttachPdfToRequest:
-        submissionSteps = this.attachToRequestSubmissionSteps;
+        submissionSteps = this.attachPdfToRequestSubmissionSteps;
         this.stateService.set({ requestId });
         break;
       default:

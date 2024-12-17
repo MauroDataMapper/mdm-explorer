@@ -20,10 +20,9 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { IdNamePair, RequestType, Uuid } from '@maurodatamapper/sde-resources';
-import { SelectProjectDialogResponse } from '../select-project-dialog/select-project-dialog.component';
 
 export interface SubmissionWizardDialogData {
-  projects: IdNamePair[];
+  dataRequests: IdNamePair[];
   newProjectRequests: IdNamePair[];
   projectChangeRequests: IdNamePair[];
 }
@@ -31,7 +30,6 @@ export interface SubmissionWizardDialogData {
 export interface SubmissionWizardDialogResponse {
   requestType: RequestType;
   requestId: Uuid | undefined;
-  projectId: Uuid | undefined;
 }
 
 enum WizardPage {
@@ -51,13 +49,13 @@ export class SpecificationSubmissionWizardComponent implements OnInit {
   currentPage = WizardPage.First; // Tracks the current page of the wizard
   selectedOption: number | null = null; // Tracks the selected radio option
 
-  projects: IdNamePair[];
+  dataRequests: IdNamePair[];
   newProjectRequests: IdNamePair[];
   projectChangeRequests: IdNamePair[];
 
-  selectProjectForm = new FormGroup({
+  selectDataRequestForm = new FormGroup({
     // eslint-disable-next-line @typescript-eslint/unbound-method
-    project: new FormControl<IdNamePair | null>(null, Validators.required),
+    dataRequest: new FormControl<IdNamePair | null>(null, Validators.required),
   });
 
   selectNewProjectRequestForm = new FormGroup({
@@ -74,7 +72,9 @@ export class SpecificationSubmissionWizardComponent implements OnInit {
     private dialogRef: MatDialogRef<SpecificationSubmissionWizardComponent>,
     @Inject(MAT_DIALOG_DATA) private data: SubmissionWizardDialogData
   ) {
-    this.projects = this.data.projects ?? [];
+    this.dataRequests = this.data.dataRequests ?? [];
+    const dataRequest: IdNamePair = { id: '', name: '<< Create Data Request >>' };
+    this.dataRequests.unshift(dataRequest);
 
     this.newProjectRequests = this.data.newProjectRequests ?? [];
     const newProject: IdNamePair = { id: '', name: '<< Create New Project Request >>' };
@@ -98,13 +98,8 @@ export class SpecificationSubmissionWizardComponent implements OnInit {
   }
 
   submitAttachToDataRequest() {
-    if (this.selectProjectForm.invalid || !this.selectProjectForm.controls.project.value) {
-      return;
-    }
-
     const response: SubmissionWizardDialogResponse = {
-      requestId: undefined,
-      projectId: this.selectProjectForm.controls.project.value?.id,
+      requestId: this.selectDataRequestForm.controls.dataRequest.value?.id,
       requestType: RequestType.Data,
     };
     this.dialogRef.close({ ...response });
@@ -113,7 +108,6 @@ export class SpecificationSubmissionWizardComponent implements OnInit {
   submitAttachToNewProjectRequest() {
     const response: SubmissionWizardDialogResponse = {
       requestId: this.selectNewProjectRequestForm.controls.newProjectRequest.value?.id,
-      projectId: undefined,
       requestType: RequestType.NewProject,
     };
     this.dialogRef.close({ ...response });
@@ -122,7 +116,6 @@ export class SpecificationSubmissionWizardComponent implements OnInit {
   submitAttachToProjectChangeRequest() {
     const response: SubmissionWizardDialogResponse = {
       requestId: this.selectProjectChangeRequestForm.controls.projectChangeRequest.value?.id,
-      projectId: undefined,
       requestType: RequestType.ProjectChange,
     };
     this.dialogRef.close({ ...response });
