@@ -17,12 +17,15 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
-import { catchError, EMPTY, finalize } from 'rxjs';
+import { catchError, EMPTY, finalize, forkJoin, map } from "rxjs";
 import { SecurityService } from '../security.service';
-import { LoginError, SignInErrorType } from '../security.types';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { AuthenticationEndpointsShared } from '@maurodatamapper/sde-resources';
+import { CatalogueUserService } from "../../mauro/catalogue-user.service";
+import { LoginError, SignInErrorType } from '../security.types';
+import { UserDetails, UserDetailsService } from "../user-details.service";
+import { ResearchPluginService } from "../../mauro/research-plugin.service";
 
 /**
  * Component to authorize a user session authenticated via an OpenID Connect provider.
@@ -52,9 +55,13 @@ export class OpenIdConnectAuthorizeComponent implements OnInit {
 
   constructor(
     private security: SecurityService,
+    private catalogueUserService: CatalogueUserService,
     private broadcast: BroadcastService,
     private stateRouter: StateRouterService,
-    private authenticationEndpoints: AuthenticationEndpointsShared
+    private authenticationEndpoints: AuthenticationEndpointsShared,
+    private researchPlugin: ResearchPluginService,
+    private userDetails: UserDetailsService,
+
   ) {}
 
   ngOnInit(): void {
@@ -72,12 +79,6 @@ export class OpenIdConnectAuthorizeComponent implements OnInit {
     const sessionState = params.get('session_state');
     const code = params.get('code');
 
-    if (!state || !sessionState || !code) {
-      this.authorizing = false;
-      this.errorMessage = 'OpenID Connect session state has not been provided.';
-      return;
-    }
-
     const providerId = localStorage.getItem('openIdConnectProviderId');
     if (!providerId) {
       throw new Error('Cannot retrieve OpenID Connect provider identifier.');
@@ -87,45 +88,73 @@ export class OpenIdConnectAuthorizeComponent implements OnInit {
     // straight after this
     const sdeProviderName = localStorage.getItem('sdeOpenIdConnectProviderName');
 
-    this.security
-      .authorizeOpenIdConnectSession({
-        providerId,
-        state,
-        sessionState,
-        code,
-      })
-      .pipe(
-        catchError((error: LoginError) => {
-          switch (error.type) {
-            case SignInErrorType.InvalidCredentials:
-              this.errorMessage = 'Invalid username or password!';
-              break;
-            case SignInErrorType.AlreadySignedIn:
-              this.errorMessage = 'A user is already signed in, please sign out first.';
-              break;
-            default:
-              this.errorMessage = 'Unable to sign in. Please try again later.';
-              break;
-          }
-
-          return EMPTY;
-        }),
-        finalize(() => (this.authorizing = false))
-      )
-      .subscribe((user) => {
-        if (!sdeProviderName) {
-          this.broadcast.userSignedIn(user);
-          this.stateRouter.navigateToKnownPath('/dashboard');
-          return;
-        }
-
-        // Auto single sign-on to SDE. There is a big assumption that the OpenID Connect
-        // provider that just succeeded for Mauro is configured exactly the same as for this
-        // SDE provider, so that the sign-in is seamless
-        const redirectUrl =
-          this.authenticationEndpoints.getOauthAuthorizationUrl(sdeProviderName);
-
-        window.open(redirectUrl.toString(), '_self');
+    if (!state || !sessionState || !code) {
+      forkJoin({
+        user: this.catalogueUserService.get('currentUser').pipe(
+          catchError(() => {
+            this.authorizing = false;
+            this.errorMessage = 'OpenID Connect session state has not been provided, and can\'t authenticate current user.';
+            return EMPTY;
+          })
+        ),
+        folder: this.researchPlugin.userFolder()
+      }).subscribe(({user, folder}) => {
+        const userDetails = {
+          id: user.id,
+          email: user.emailAddress,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: user.jobTitle
+        } as UserDetails;
+        userDetails.dataSpecificationFolder = folder;
+        this.userDetails.set(userDetails);
+        this.afterUserSignedIn(userDetails, sdeProviderName);
       });
+    } else {
+      this.security
+        .authorizeOpenIdConnectSession({
+          providerId,
+          state,
+          sessionState,
+          code,
+        })
+        .pipe(
+          catchError((error: LoginError) => {
+            switch (error.type) {
+              case SignInErrorType.InvalidCredentials:
+                this.errorMessage = 'Invalid username or password!';
+                break;
+              case SignInErrorType.AlreadySignedIn:
+                this.errorMessage = 'A user is already signed in, please sign out first.';
+                break;
+              default:
+                this.errorMessage = 'Unable to sign in. Please try again later.';
+                break;
+            }
+
+            return EMPTY;
+          }),
+          finalize(() => (this.authorizing = false))
+        )
+        .subscribe((user) => {
+          this.afterUserSignedIn(user, sdeProviderName);
+        });
+    }
+  }
+
+  afterUserSignedIn(user: UserDetails, sdeProviderName: string | null): void {
+    if (!sdeProviderName) {
+      this.broadcast.userSignedIn(user);
+      this.stateRouter.navigateToKnownPath('/dashboard');
+      return;
+    }
+
+    // Auto single sign-on to SDE. There is a big assumption that the OpenID Connect
+    // provider that just succeeded for Mauro is configured exactly the same as for this
+    // SDE provider, so that the sign-in is seamless
+    const redirectUrl =
+      this.authenticationEndpoints.getOauthAuthorizationUrl(sdeProviderName);
+
+    window.open(redirectUrl.toString(), '_self');
   }
 }
