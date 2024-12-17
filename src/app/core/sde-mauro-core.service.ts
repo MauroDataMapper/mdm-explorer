@@ -17,7 +17,12 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { IMauroCoreService, MauroDataSpecificationDTO } from '@maurodatamapper/sde-resources';
+import {
+  IMauroCoreService,
+  MauroDataSpecificationDTO,
+  RequestResponse,
+  RequestType,
+} from '@maurodatamapper/sde-resources';
 import { SecurityService } from '../security/security.service';
 import { DataSpecificationService } from '../data-explorer/data-specification.service';
 import { DataSpecification } from '../data-explorer/data-explorer.types';
@@ -59,12 +64,12 @@ export class SdeMauroCoreService implements IMauroCoreService {
 
   attachMauroDataSpecificationToRequest(
     specificationId: Uuid,
-    requestId: Uuid
+    request: RequestResponse
   ): Observable<boolean> {
-    return this.specificationSubmissionService.submit(
-      specificationId,
-      SubmissionType.AttachPdfToRequest,
-      requestId
-    );
+    const submissionType =
+      request.type === RequestType.Data
+        ? SubmissionType.AttachSqlAndPdfToRequest
+        : SubmissionType.AttachPdfToRequest;
+    return this.specificationSubmissionService.submit(specificationId, submissionType, request.id);
   }
 }

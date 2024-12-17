@@ -212,30 +212,16 @@ export class MyDataSpecificationDetailComponent implements OnInit, OnDestroy {
       .chooseRequestType(specificationId)
       .pipe(
         switchMap((wizardResponse: SubmissionWizardDialogResponse) => {
-          if (wizardResponse.requestType === RequestType.Data) {
-            return this.specificationSubmissionService.submit(
-              specificationId,
-              SubmissionType.DataRequest,
-              undefined,
-              wizardResponse.projectId
-            );
-          } else if (
-            wizardResponse.requestType === RequestType.NewProject ||
-            wizardResponse.requestType === RequestType.ProjectChange
-          ) {
-            if (wizardResponse.requestId) {
-              this.viewRequestForId(wizardResponse.requestId as Uuid);
-              return EMPTY;
-            } else {
-              this.requestDialogService.doCreateRequestDialog(
-                'RESEARCHER',
-                wizardResponse.requestType,
-                this.dataSpecification?.id,
-                `${this.dataSpecification?.label} (${this.dataSpecification?.modelVersion})`
-              );
-              return EMPTY;
-            }
+          if (wizardResponse.requestId) {
+            this.viewRequestForId(wizardResponse.requestId as Uuid);
+            return EMPTY;
           } else {
+            this.requestDialogService.doCreateRequestDialog(
+              'RESEARCHER',
+              wizardResponse.requestType,
+              this.dataSpecification?.id,
+              `${this.dataSpecification?.label} (${this.dataSpecification?.modelVersion})`
+            );
             return EMPTY;
           }
         }),

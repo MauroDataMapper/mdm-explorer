@@ -48,24 +48,21 @@ SPDX-License-Identifier: Apache-2.0
 
 <!-- Page 2: Select Project form -->
 <div *ngIf="currentPage === WizardPage.DataRequest">
-  <h1 mat-dialog-title>Create Data Request</h1>
+  <h1 mat-dialog-title>Attach to Data Request</h1>
   <mat-dialog-content>
-    <form [formGroup]="selectProjectForm" role="form" name="selectProjectForm">
+    <form [formGroup]="selectDataRequestForm" role="form" name="selectDataRequestForm">
       <div class="form-input">
-        <p>
-          Data Requests are automatically submitted. <br /><br />
-          Please select the project you would like to submit this data specification on behalf of.
-        </p>
+        <p>Please select the Data Request you would like to attach this data specification to.</p>
         <mat-form-field appearance="outline">
-          <mat-label>Project</mat-label>
-          <mat-select formControlName="project" required>
-            <mat-option *ngFor="let project of projects" [value]="project">{{
-              project.name
+          <mat-label>Data Request</mat-label>
+          <mat-select formControlName="dataRequest" required>
+            <mat-option *ngFor="let dataRequest of dataRequests" [value]="dataRequest">{{
+              dataRequest.name
             }}</mat-option>
           </mat-select>
         </mat-form-field>
-        <mat-error *ngIf="selectProjectForm.controls.project.errors?.['required']">
-          Please select a project
+        <mat-error *ngIf="selectDataRequestForm.controls.dataRequest.errors?.['required']">
+          Please select a Data Request
         </mat-error>
       </div>
     </form>
@@ -75,7 +72,7 @@ SPDX-License-Identifier: Apache-2.0
     <button
       mat-flat-button
       color="primary"
-      [disabled]="selectProjectForm.invalid"
+      [disabled]="selectDataRequestForm.invalid"
       (click)="submitAttachToDataRequest()"
     >
       Attach
