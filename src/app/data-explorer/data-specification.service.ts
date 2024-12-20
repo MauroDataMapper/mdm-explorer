@@ -671,7 +671,9 @@ export class DataSpecificationService {
       !dataSpecification ||
       !dataSpecification.id ||
       !dataSpecification.modelVersion ||
-      dataSpecification.status !== 'finalised'
+      (dataSpecification.status !== 'finalised' &&
+        dataSpecification.status !== 'attached to request' &&
+        dataSpecification.status !== 'submitted')
     ) {
       return EMPTY;
     }
