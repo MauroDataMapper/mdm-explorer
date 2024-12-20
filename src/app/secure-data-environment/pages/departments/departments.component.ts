@@ -53,7 +53,12 @@ export class DepartmentsComponent implements OnInit {
     this.sdeDepartmentService
       .getUsersDepartments()
       .pipe(
+        // NOTE: Use a forkJoin to retrieve the users organisation information too. Alternatively,
+        //       create a simple organisation card component.
         switchMap((userDepts: UserDepartmentDTO[]) => {
+          // NOTE: It is no longer necessary that a user have a department membership. However,
+          //       they will always have an organisation membership.
+          //
           // Theoretically, a user should always have an department. If they don't, trigger
           // a flag to show a message to the user.
           if (userDepts.length === 0) {
