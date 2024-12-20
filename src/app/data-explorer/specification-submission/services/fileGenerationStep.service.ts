@@ -48,11 +48,11 @@ export class FileGenerationStepService {
       return ErrorService.missingInputError(stepName, StepFunction.IsRequired, 'specificationId');
     }
 
-    if (!input.dataRequestId) {
-      return ErrorService.missingInputError(stepName, StepFunction.IsRequired, 'dataRequestId');
+    if (!input.requestId) {
+      return ErrorService.missingInputError(stepName, StepFunction.IsRequired, 'requestId');
     }
 
-    return this.attachmentsService.attachmentsAreRequired(input.dataRequestId, attachmentType);
+    return this.attachmentsService.attachmentsAreRequired(input.requestId, attachmentType);
   }
 
   run(
@@ -74,6 +74,6 @@ export class FileGenerationStepService {
   }
 
   getInputShape(): (keyof ISubmissionState)[] {
-    return ['specificationId', 'dataRequestId', 'cancel'];
+    return ['specificationId', 'requestId', 'cancel'];
   }
 }

@@ -180,7 +180,7 @@ export class QueryBuilderWrapperService {
           name: enumValue.key,
           value: enumValue.value,
         };
-      });
+      }).sort((a, b) => a.value.localeCompare(b.value));
     }
 
     return [];

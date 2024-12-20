@@ -17,51 +17,161 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Injectable } from '@angular/core';
-import { Uuid } from '@maurodatamapper/sde-resources';
-import { EMPTY, catchError, concatMap, finalize, from, map, tap } from 'rxjs';
+import {
+  IdNamePair,
+  MembershipEndpointsResearcher,
+  RequestType,
+  RequestEndpointsResearcher,
+  RequestResponse,
+  RequestService,
+  SdeRequest,
+  Uuid,
+} from '@maurodatamapper/sde-resources';
+import {
+  EMPTY,
+  catchError,
+  concatMap,
+  filter,
+  finalize,
+  forkJoin,
+  from,
+  map,
+  tap,
+  toArray,
+} from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
 import { of } from 'rxjs/internal/observable/of';
 import { switchMap } from 'rxjs/internal/operators/switchMap';
 import { SubmissionStateService } from './submission-state.service';
-import { CreateDataRequestStep } from '../submission-steps/create-data-request.step';
-import { ISubmissionStep, StepName, StepResult } from '../type-declarations/submission.resource';
+import {
+  ISubmissionStep,
+  StepName,
+  StepResult,
+  SubmissionType,
+} from '../type-declarations/submission.resource';
 import { GenerateSqlStep } from '../submission-steps/generate-sql.step';
 import { AttachSqlStep } from '../submission-steps/attach-sql.step';
 import { GeneratePdfStep } from '../submission-steps/generate-pdf.step';
 import { AttachPdfStep } from '../submission-steps/attach-pdf.step';
-import { SubmitRequestStep } from '../submission-steps/submit-request.step';
 import { BroadcastService } from 'src/app/core/broadcast.service';
 import { DialogService } from '../../dialog.service';
 import {
   DEFAULT_ERROR_MESSAGE,
   NoProjectsFoundError,
 } from '../type-declarations/submission.custom-errors';
+import {
+  SubmissionWizardDialogData,
+  SubmissionWizardDialogResponse,
+} from '../specification-submission-wizard/specification-submission-wizard.component';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SpecificationSubmissionService {
-  private submissionSteps: ISubmissionStep[] = [];
+  private attachSqlAndPdfToRequestSubmissionSteps: ISubmissionStep[] = [];
+  private attachPdfToRequestSubmissionSteps: ISubmissionStep[] = [];
 
   constructor(
     private stateService: SubmissionStateService,
     private dialogService: DialogService,
     private broadcastService: BroadcastService,
-    private createDataRequestStep: CreateDataRequestStep,
     private generateSqlStep: GenerateSqlStep,
     private attachSqlStep: AttachSqlStep,
     private generatePdfStep: GeneratePdfStep,
     private attachPdfStep: AttachPdfStep,
-    private submitRequestStep: SubmitRequestStep
+    private researcherRequestEndpoints: RequestEndpointsResearcher,
+    private membershipEndpoints: MembershipEndpointsResearcher,
+    private requestsService: RequestService
   ) {
-    this.submissionSteps = [
-      this.createDataRequestStep,
+    this.attachSqlAndPdfToRequestSubmissionSteps = [
       this.generateSqlStep,
       this.attachSqlStep,
       this.generatePdfStep,
       this.attachPdfStep,
-      this.submitRequestStep,
     ];
+
+    this.attachPdfToRequestSubmissionSteps = [this.generatePdfStep, this.attachPdfStep];
+  }
+
+  chooseRequestType(specificationId: Uuid): Observable<SubmissionWizardDialogResponse> {
+    // Choose request type
+    if (!specificationId) {
+      throw new Error('chooseRequestType: Specification ID is required.');
+    }
+
+    const dataRequests$ = this.requestsService.listDraftDataRequests().pipe(
+      map((requests: SdeRequest[]) =>
+        requests.map<IdNamePair>((request) => {
+          return {
+            id: request.id,
+            name: request.title,
+          };
+        })
+      )
+    );
+
+    const newProjectRequests$ = this.requestsService.listDraftNewProjectRequests().pipe(
+      map((requests: SdeRequest[]) =>
+        requests.map<IdNamePair>((request) => {
+          return {
+            id: request.id,
+            name: request.title,
+          };
+        })
+      )
+    );
+
+    const projectChangeRequests$ = this.requestsService.listDraftProjectChangeRequests().pipe(
+      map((requests: SdeRequest[]) =>
+        requests.map<IdNamePair>((request) => {
+          return {
+            id: request.id,
+            name: request.title,
+          };
+        })
+      )
+    );
+
+    return this.researcherRequestEndpoints.getRequestForDataSpecification(specificationId).pipe(
+      // First map operation to extract `request.id`
+      map((request: RequestResponse | undefined) => request?.id),
+
+      // Use switchMap to handle the response based on `requestId`
+      switchMap((requestId) => {
+        if (requestId !== undefined) {
+          // If `requestId` is defined, return the relevant response directly
+          return of({ requestType: RequestType.Data, requestId } as SubmissionWizardDialogResponse);
+        } else {
+          // If `requestId` is undefined, use `forkJoin` to wait for both `projects$` and `newProjectRequests$`
+          return forkJoin({
+            dataRequests: dataRequests$,
+            newProjectRequests: newProjectRequests$,
+            projectChangeRequests: projectChangeRequests$,
+          }).pipe(
+            map(({ dataRequests, newProjectRequests, projectChangeRequests }) => {
+              // Construct the dialog data with both projects and new project requests
+              const dialogData: SubmissionWizardDialogData = {
+                dataRequests,
+                newProjectRequests,
+                projectChangeRequests,
+              };
+              return dialogData;
+            }),
+
+            // Open the dialog with the combined data from projects and new project requests
+            switchMap((dialogData: SubmissionWizardDialogData) =>
+              this.dialogService
+                .openSubmissionWizard(dialogData)
+                .afterClosed()
+                .pipe(
+                  filter((response) => !!response && !response.isCancelled),
+                  map((response: SubmissionWizardDialogResponse) => response)
+                )
+            )
+          );
+        }
+      })
+    );
   }
 
   /**
@@ -69,13 +179,33 @@ export class SpecificationSubmissionService {
    * @param specificationId The ID of the specification to submit.
    * @returns An observable that emits a boolean value indicating whether the submission was successful.
    */
-  submit(specificationId: Uuid): Observable<boolean> {
+  submit(
+    specificationId: Uuid,
+    submissionType: SubmissionType,
+    requestId: Uuid
+  ): Observable<boolean> {
     // Set initial state.
     this.stateService.clear();
+
+    let submissionSteps: ISubmissionStep[] = [];
+
+    switch (submissionType) {
+      case SubmissionType.AttachSqlAndPdfToRequest:
+        submissionSteps = this.attachSqlAndPdfToRequestSubmissionSteps;
+        this.stateService.set({ requestId });
+        break;
+      case SubmissionType.AttachPdfToRequest:
+        submissionSteps = this.attachPdfToRequestSubmissionSteps;
+        this.stateService.set({ requestId });
+        break;
+      default:
+        throw new Error(`Submission type ${submissionType} is not supported.`);
+    }
+
     this.stateService.set({ specificationId });
 
     // Run each step, once at a time, ensuring it completes before running the next.
-    return from(this.submissionSteps).pipe(
+    return from(submissionSteps).pipe(
       concatMap((step: ISubmissionStep) => {
         // Retrieve the step input from the state.
         const stepInput = this.stateService.getStepInputFromShape(step.getInputShape());
@@ -111,8 +241,9 @@ export class SpecificationSubmissionService {
           })
         );
       }),
-      map((stepResult) => {
-        return stepResult.result.succeeded ?? false;
+      toArray(),
+      map((stepResults) => {
+        return stepResults.every((response) => response.result.succeeded);
       }),
       finalize(() => {
         this.broadcastService.loading({ isLoading: false });

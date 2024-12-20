@@ -22,19 +22,17 @@ import {
   ExporterName,
   ISubmissionState,
   ISubmissionStep,
-  StepFunction,
   StepName,
   StepResult,
 } from '../type-declarations/submission.resource';
 import { AttachmentType } from '@maurodatamapper/sde-resources';
 import { FileGenerationStepService } from '../services/fileGenerationStep.service';
 import { BroadcastService } from 'src/app/core/broadcast.service';
-import { ErrorService } from '../services/error.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class GenerateSqlStep implements ISubmissionStep {
+export class AttachToNewProjectRequestStep implements ISubmissionStep {
   name: StepName = StepName.GenerateSqlFile;
 
   constructor(

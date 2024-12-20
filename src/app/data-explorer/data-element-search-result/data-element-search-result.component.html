@@ -18,8 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 -->
 <mdm-header-and-content-box *ngIf="item">
   <div header-title class="mdm-data-element-search-result__header">
-    <mat-checkbox (change)="itemChecked($event)" [checked]="item.isSelected">
-    </mat-checkbox>
+    <mat-checkbox (change)="itemChecked($event)" [checked]="item.isSelected"> </mat-checkbox>
     <h3>
       <a [routerLink]="['/dataElement', item.model, item.dataClass, item.id]">
         {{ item.label }}
@@ -43,20 +42,18 @@ SPDX-License-Identifier: Apache-2.0
   </ng-container>
   <ng-container>
     <div class="mdm-data-element-search-result__content">
-      <div *ngIf="item.description" class="mdm-data-element-search-result__description">
-        {{ item.description }}
-      </div>
       <div
-        *ngIf="!item.description"
-        class="mdm-data-element-search-result__no-description"
-      >
+        *ngIf="item.description"
+        class="mdm-data-element-search-result__description"
+        [innerHTML]="item.description"
+        style="display: block"
+      ></div>
+      <div *ngIf="!item.description" class="mdm-data-element-search-result__no-description">
         No description available
       </div>
       <div class="mdm-data-element-search-result__footer">
         <span class="spacer"></span>
-        <mdm-identifiable-data-icon
-          [state]="item.identifiableData"
-        ></mdm-identifiable-data-icon>
+        <mdm-identifiable-data-icon [state]="item.identifiableData"></mdm-identifiable-data-icon>
       </div>
     </div>
   </ng-container>

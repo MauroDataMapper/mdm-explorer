@@ -67,6 +67,8 @@ import { ArrowFormatPipe } from './query-builder/pipes/arrow-format-pipe';
 import { SelectProjectDialogComponent } from './specification-submission/select-project-dialog/select-project-dialog.component';
 import { ReadOnlyMeqlPipe } from './pipes/readonly-meql.pipe';
 import { SimpleDialogComponent } from './simple-dialog/simple-dialog.component';
+import { SpecificationSubmissionService } from './specification-submission/services/specification-submission.service';
+import { SpecificationSubmissionWizardComponent } from './specification-submission/specification-submission-wizard/specification-submission-wizard.component';
 
 const queryBuilderModules = [
   QueryBuilderComponent,
@@ -120,6 +122,7 @@ const queryBuilderModules = [
     VersionSelectorComponent,
     SelectProjectDialogComponent,
     LetDirective,
+    SpecificationSubmissionWizardComponent,
     ...queryBuilderModules,
   ],
   imports: [CoreModule, SharedModule],

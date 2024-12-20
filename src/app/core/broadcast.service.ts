@@ -116,7 +116,7 @@ export class BroadcastService {
   submittingDataSpecification(message: string) {
     this.loading({
       isLoading: true,
-      caption: `Submitting your data specification - ${message}`,
+      caption: `Attaching your data specification - ${message}`,
       fillviewport: false,
     });
   }

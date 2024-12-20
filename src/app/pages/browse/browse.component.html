@@ -101,20 +101,13 @@ SPDX-License-Identifier: Apache-2.0
 </div>
 <!-- Dropdown Menu -->
 <mat-menu #menu="matMenu" xPosition="after" yPosition="below">
-  <button
-    mat-menu-item
-    (click)="createDataSpecification()"
-    clickable
-    class="mdm-browse__menu-add"
-  >
+  <button mat-menu-item (click)="createDataSpecification()" clickable class="mdm-browse__menu-add">
     <span><span [mdmArrow]="'plus'"></span> Copy to new data specification</span>
   </button>
 </mat-menu>
 <div *ngIf="selected && selected.label && selected.description" class="highlight-box">
   <div class="highlight-box__content">
     <h2>{{ selected.label }}</h2>
-    <div>
-      {{ selected.description }}
-    </div>
+    <div [innerHTML]="selected.description"></div>
   </div>
 </div>

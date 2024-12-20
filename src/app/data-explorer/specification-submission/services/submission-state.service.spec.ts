@@ -48,7 +48,7 @@ describe('SubmissionStepService', () => {
   it('only update fields that match', () => {
     const initialState: Partial<ISubmissionState> = {
       specificationId: '123',
-      dataRequestId: '456',
+      requestId: '456',
     };
     service.set(initialState);
 
@@ -56,28 +56,28 @@ describe('SubmissionStepService', () => {
     service.set(newState);
 
     const state: ISubmissionState = service.get();
-    expect(state).toEqual({ specificationId: '456', dataRequestId: '456' });
+    expect(state).toEqual({ specificationId: '456', requestId: '456' });
   });
 
   describe('getStepInputFromShape', () => {
     it('should return the correct input for the given shape', () => {
       service.set({
         specificationId: 'test-id',
-        dataRequestId: 'dataRequest-id',
+        requestId: 'request-id',
         specificationDescription: 'desc',
       });
-      const input = service.getStepInputFromShape(['specificationId', 'dataRequestId']);
-      expect(input).toEqual({ specificationId: 'test-id', dataRequestId: 'dataRequest-id' });
+      const input = service.getStepInputFromShape(['specificationId', 'requestId']);
+      expect(input).toEqual({ specificationId: 'test-id', requestId: 'request-id' });
     });
 
     it('should return an empty object if no fields are specified', () => {
-      service.set({ specificationId: 'test-id', dataRequestId: 'dataRequest-id' });
+      service.set({ specificationId: 'test-id', requestId: 'dataRequest-id' });
       const input = service.getStepInputFromShape([]);
       expect(input).toEqual({});
     });
 
     it('should return an empty object if the state is empty', () => {
-      const input = service.getStepInputFromShape(['specificationId', 'dataRequestId']);
+      const input = service.getStepInputFromShape(['specificationId', 'requestId']);
       expect(input).toEqual({});
     });
   });

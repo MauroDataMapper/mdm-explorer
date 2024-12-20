@@ -403,9 +403,9 @@ export class QueryBuilderComponent
     if (this.entities && entity) {
       return this.fields?.filter((field) => {
         return field && field.entity === entity;
-      });
+      }).sort((a, b) => a.name.localeCompare(b.name));
     } else {
-      return this.fields;
+      return this.fields?.sort((a, b) => a.name.localeCompare(b.name));
     }
   }
 

@@ -16,17 +16,20 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Pipe, PipeTransform } from '@angular/core';
+import { UserDepartmentDTO, UserProjectDTO } from '@maurodatamapper/sde-resources';
+import { Observable } from 'rxjs';
 
-@Pipe({ name: 'readOnlyMeql', pure: false })
-export class ReadOnlyMeqlPipe implements PipeTransform {
-  transform(status: string, isEmpty: boolean, currentUserOwnsDataSpec: boolean): boolean {
-    return (
-      status === 'finalised' ||
-      status === 'attached to request' ||
-      status === 'submitted' ||
-      isEmpty ||
-      !currentUserOwnsDataSpec
-    );
-  }
+export type ListDepartmentsFn = () => Observable<UserDepartmentDTO[]>;
+export type ListProjectsFn = () => Observable<UserProjectDTO[]>;
+
+export interface MembershipEndpointsResearcherStub {
+  listDepartments: jest.MockedFunction<ListDepartmentsFn>;
+  listProjects: jest.MockedFunction<ListProjectsFn>;
 }
+
+export const createMembershipEndpointsResearcherStub = (): MembershipEndpointsResearcherStub => {
+  return {
+    listDepartments: jest.fn() as jest.MockedFunction<ListDepartmentsFn>,
+    listProjects: jest.fn() as jest.MockedFunction<ListProjectsFn>,
+  };
+};
