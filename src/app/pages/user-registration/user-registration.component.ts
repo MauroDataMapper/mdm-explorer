@@ -17,8 +17,14 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { DisplayValuePair } from '@maurodatamapper/sde-resources';
-import { Observable, of } from 'rxjs';
+import {
+  DisplayValuePair,
+  IdNamePair,
+  PublicEndpointsResearcher,
+  RequestAccountDetails,
+  Uuid,
+} from '@maurodatamapper/sde-resources';
+import { map } from 'rxjs';
 import { UserRegistrationFormData } from './user-registration-form/user-registration-form.component';
 
 @Component({
@@ -29,28 +35,69 @@ import { UserRegistrationFormData } from './user-registration-form/user-registra
 })
 export class UserRegistrationComponent implements OnInit {
   organisationOptions: DisplayValuePair[] = [];
+  departmentOptions: DisplayValuePair[] = [];
+  constructor(private publicEndpointsResearcher: PublicEndpointsResearcher) {}
 
   ngOnInit(): void {
-    this.mockGetOrganisationOptions().subscribe((options) => {
-      this.organisationOptions = options;
-    });
-  }
+    this.publicEndpointsResearcher
+      .listOrganisationNames()
+      .pipe(
+        map((finalised: IdNamePair[]) => {
+          const mapped = finalised.map((spec) => ({
+            value: spec.id,
+            displayValue: spec.name,
+          })) as DisplayValuePair[];
 
-  /**
-   * Mockup of eventual API call to get organisation options. Replace with getOrganisations when
-   * API is available.
-   * @returns
-   */
-  mockGetOrganisationOptions(): Observable<DisplayValuePair[]> {
-    // TODO: Replace with actual API call
-    return of([
-      { displayValue: 'Org 1', value: 'org1' },
-      { displayValue: 'Org 2', value: 'org2' },
-      { displayValue: 'Org 3', value: 'org3' },
-    ]);
+          return mapped;
+        })
+      )
+      .subscribe((options) => {
+        this.organisationOptions = options;
+      });
   }
 
   handleFormSubmission(formData: UserRegistrationFormData): void {
     console.log('Form submitted', formData);
+    const requestAccountDetails = {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      phoneNumber: formData.phoneNumber,
+      jobTitle: formData.jobTitle,
+      orcidId: formData.orcidId,
+      gmcNumber: formData.gmcNumber,
+      nmcNumber: formData.nmcNumber,
+      hcpcNumber: formData.hcpcNumber,
+      arNumber: formData.arNumber,
+      organisationId: formData.organisationId,
+      organisationFriendlyName: formData.organisationFriendlyName,
+      organisationLegalName: formData.organisationLegalName,
+      organisationWebsite: formData.organisationWebsite,
+      organisationCountryOfRegistration: formData.organisationCountryOfRegistration,
+      organisationType: formData.organisationType,
+      organisationIsSmb: formData.organisationIsSmb,
+      departmentId: formData.departmentId,
+      departmentName: formData.departmentName,
+      joinExistingOrganisation: formData.joinExistingOrganisation,
+    } as RequestAccountDetails;
+    this.publicEndpointsResearcher.requestUserAccount(requestAccountDetails).subscribe();
+  }
+
+  handleOrganisationChanged(organisationId: Uuid) {
+    this.publicEndpointsResearcher
+      .listDepartmentNames(organisationId)
+      .pipe(
+        map((finalised: IdNamePair[]) => {
+          const mapped = finalised.map((spec) => ({
+            value: spec.id,
+            displayValue: spec.name,
+          })) as DisplayValuePair[];
+
+          return mapped;
+        })
+      )
+      .subscribe((options) => {
+        this.departmentOptions = options;
+      });
   }
 }

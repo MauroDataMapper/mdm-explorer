@@ -222,8 +222,12 @@ SPDX-License-Identifier: Apache-2.0
     <div *ngIf="!isCreatingNewOrganisation">
       <mat-form-field [appearance]="formFieldAppearance">
         <mat-label>Organisation</mat-label>
-        <mat-select formControlName="organisation" required>
-          <mat-option *ngFor="let option of organisationOptions" [value]="option.value">
+        <mat-select
+          formControlName="organisation"
+          (selectionChange)="onOrganisationChange($event)"
+          required
+        >
+          <mat-option *ngFor="let option of organisationOptions" [value]="option">
             {{ option.displayValue }}
           </mat-option>
         </mat-select>
@@ -239,8 +243,8 @@ SPDX-License-Identifier: Apache-2.0
           <div class="form-input">
             <mat-form-field [appearance]="formFieldAppearance">
               <mat-label>Organisation Name</mat-label>
-              <input matInput type="text" formControlName="organisationName" required />
-              <mat-error *ngIf="organisationDetails.organisationName.errors?.required"
+              <input matInput type="text" formControlName="organisationFriendlyName" required />
+              <mat-error *ngIf="organisationDetails.organisationFriendlyName.errors?.required"
                 >Organisation name is required</mat-error
               >
             </mat-form-field>
@@ -275,8 +279,14 @@ SPDX-License-Identifier: Apache-2.0
           <div class="form-input">
             <mat-form-field [appearance]="formFieldAppearance">
               <mat-label>Organisations country of origin</mat-label>
-              <input matInput type="text" formControlName="organisationCountryOfOrigin" required />
-              <mat-error *ngIf="organisationDetails.organisationCountryOfOrigin.errors?.required"
+              <input
+                matInput
+                type="text"
+                formControlName="organisationCountryOfRegistration"
+                required
+              />
+              <mat-error
+                *ngIf="organisationDetails.organisationCountryOfRegistration.errors?.required"
                 >Country of origin is required</mat-error
               >
             </mat-form-field>
@@ -322,7 +332,7 @@ SPDX-License-Identifier: Apache-2.0
     <mat-form-field *ngIf="!isCreatingNewOrganisation" [appearance]="formFieldAppearance">
       <mat-label>Department</mat-label>
       <mat-select formControlName="department">
-        <mat-option *ngFor="let department of mockedDepartments" [value]="department.value">
+        <mat-option *ngFor="let department of departmentOptions" [value]="department">
           {{ department.displayValue }}
         </mat-option>
       </mat-select>

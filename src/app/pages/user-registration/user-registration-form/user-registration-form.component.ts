@@ -20,7 +20,9 @@ SPDX-License-Identifier: Apache-2.0
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatFormFieldAppearance } from '@angular/material/form-field';
-import { DisplayValuePair } from '@maurodatamapper/sde-resources';
+import { MatSelectChange } from '@angular/material/select';
+import { Uuid } from '@maurodatamapper/mdm-resources';
+import { DisplayValuePair, IdNamePair } from '@maurodatamapper/sde-resources';
 import { ToastrService } from 'ngx-toastr';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { DialogService } from 'src/app/data-explorer/dialog.service';
@@ -37,14 +39,15 @@ export interface UserRegistrationFormData {
   hcpcNumber: string;
   arNumber: string;
   organisationId: string;
-  organisationName: string;
+  organisationFriendlyName: string;
   organisationLegalName: string;
   organisationWebsite: string;
-  organisationCountryOfOrigin: string;
+  organisationCountryOfRegistration: string;
   organisationType: OrganisationType;
   organisationIsSmb: boolean;
   departmentId: string;
   departmentName: string;
+  joinExistingOrganisation: boolean;
 }
 
 export type OrganisationType = 'NOT_SELECTED' | 'UNIVERSITY' | 'HEALTHTECH';
@@ -65,7 +68,9 @@ export const ORGANISATION_TYPE_OPTIONS: OrganisationTypeOption[] = [
 })
 export class UserRegistrationFormComponent {
   @Input() organisationOptions: DisplayValuePair[] = [];
+  @Input() departmentOptions: DisplayValuePair[] = [];
   @Output() formSubmitted = new EventEmitter<UserRegistrationFormData>();
+  @Output() organisationChanged = new EventEmitter<Uuid>();
 
   formFieldAppearance: MatFormFieldAppearance = 'outline';
   isCreatingNewOrganisation = false;
@@ -90,10 +95,10 @@ export class UserRegistrationFormComponent {
     }),
     organisationDetails: this.formBuilder.group({
       organisation: ['', Validators.required],
-      organisationName: null,
+      organisationFriendlyName: null,
       organisationLegalName: null,
       organisationWebsite: null,
-      organisationCountryOfOrigin: null,
+      organisationCountryOfRegistration: null,
       organisationType: null,
       organisationIsSmb: null,
     }),
@@ -102,12 +107,6 @@ export class UserRegistrationFormComponent {
       departmentName: null,
     }),
   });
-
-  mockedDepartments: DisplayValuePair[] = [
-    { displayValue: 'HR', value: 'hr' },
-    { displayValue: 'Engineering', value: 'engineering' },
-    { displayValue: 'Marketing', value: 'marketing' },
-  ];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -140,7 +139,33 @@ export class UserRegistrationFormComponent {
       ...this.registrationForm.get('personalDetails')?.value,
       ...this.registrationForm.get('organisationDetails')?.value,
       ...this.registrationForm.get('departmentDetails')?.value,
+      organisationId: null,
+      organisationFriendlyName: null,
+      departmentId: null,
+      departmentName: null,
     } as UserRegistrationFormData;
+
+    const organisation = this.isCreatingNewOrganisation
+      ? null
+      : (this.registrationForm.get('organisationDetails.organisation')?.value as DisplayValuePair);
+
+    if (organisation) {
+      formData.organisationId = organisation.value;
+      formData.organisationFriendlyName = organisation.displayValue;
+    }
+
+    const department = this.isCreatingNewOrganisation
+      ? null
+      : (this.registrationForm.get('departmentDetails.department')?.value as DisplayValuePair);
+
+    if (department) {
+      formData.departmentId = department.value;
+      formData.departmentName = department.displayValue;
+    }
+
+    formData.joinExistingOrganisation = !this.isCreatingNewOrganisation;
+
+    console.log('NIGE - formData', formData);
 
     this.formSubmitted.emit(formData);
 
@@ -175,7 +200,7 @@ export class UserRegistrationFormComponent {
       this.registrationForm.get('organisationDetails.organisation')?.clearValidators();
       this.registrationForm.get('departmentDetails.department')?.clearValidators();
       this.registrationForm
-        .get('organisationDetails.organisationName')
+        .get('organisationDetails.organisationFriendlyName')
         ?.setValidators(Validators.required);
       this.registrationForm
         .get('organisationDetails.organisationLegalName')
@@ -184,7 +209,7 @@ export class UserRegistrationFormComponent {
         .get('organisationDetails.organisationWebsite')
         ?.setValidators(Validators.required);
       this.registrationForm
-        .get('organisationDetails.organisationCountryOfOrigin')
+        .get('organisationDetails.organisationCountryOfRegistration')
         ?.setValidators(Validators.required);
       this.registrationForm
         .get('organisationDetails.organisationType')
@@ -199,11 +224,11 @@ export class UserRegistrationFormComponent {
       this.registrationForm
         .get('organisationDetails.organisation')
         ?.setValidators(Validators.required);
-      this.registrationForm.get('organisationDetails.organisationName')?.clearValidators();
+      this.registrationForm.get('organisationDetails.organisationFriendlyName')?.clearValidators();
       this.registrationForm.get('organisationDetails.organisationLegalName')?.clearValidators();
       this.registrationForm.get('organisationDetails.organisationWebsite')?.clearValidators();
       this.registrationForm
-        .get('organisationDetails.organisationCountryOfOrigin')
+        .get('organisationDetails.organisationCountryOfRegistration')
         ?.clearValidators();
       this.registrationForm.get('organisationDetails.organisationType')?.clearValidators();
       this.registrationForm.get('organisationDetails.organisationIsSmb')?.clearValidators();
@@ -212,17 +237,23 @@ export class UserRegistrationFormComponent {
     }
 
     this.registrationForm.get('organisationDetails.organisation')?.updateValueAndValidity();
-    this.registrationForm.get('organisationDetails.organisationName')?.updateValueAndValidity();
+    this.registrationForm
+      .get('organisationDetails.organisationFriendlyName')
+      ?.updateValueAndValidity();
     this.registrationForm
       .get('organisationDetails.organisationLegalName')
       ?.updateValueAndValidity();
     this.registrationForm.get('organisationDetails.organisationWebsite')?.updateValueAndValidity();
     this.registrationForm
-      .get('organisationDetails.organisationCountryOfOrigin')
+      .get('organisationDetails.organisationCountryOfRegistration')
       ?.updateValueAndValidity();
     this.registrationForm.get('organisationDetails.organisationType')?.updateValueAndValidity();
     this.registrationForm.get('organisationDetails.organisationIsSmb')?.updateValueAndValidity();
     this.registrationForm.get('departmentDetails.department')?.updateValueAndValidity();
     this.registrationForm.get('departmentDetails.departmentName')?.updateValueAndValidity();
+  }
+
+  onOrganisationChange(change: MatSelectChange) {
+    this.organisationChanged.emit(change.value.value as Uuid);
   }
 }

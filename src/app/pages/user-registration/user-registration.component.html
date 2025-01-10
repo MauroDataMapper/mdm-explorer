@@ -22,7 +22,9 @@ SPDX-License-Identifier: Apache-2.0
     <p>Please fill out the required personal and organisational information below.</p>
     <mdm-user-registration-form
       [organisationOptions]="organisationOptions"
+      [departmentOptions]="departmentOptions"
       (formSubmitted)="handleFormSubmission($event)"
+      (organisationChanged)="handleOrganisationChanged($event)"
     ></mdm-user-registration-form>
   </div>
 </div>
