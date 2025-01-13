@@ -22,7 +22,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatFormFieldAppearance } from '@angular/material/form-field';
 import { MatSelectChange } from '@angular/material/select';
 import { Uuid } from '@maurodatamapper/mdm-resources';
-import { DisplayValuePair, IdNamePair } from '@maurodatamapper/sde-resources';
+import { DisplayValuePair } from '@maurodatamapper/sde-resources';
 import { ToastrService } from 'ngx-toastr';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { DialogService } from 'src/app/data-explorer/dialog.service';
@@ -100,7 +100,7 @@ export class UserRegistrationFormComponent {
       organisationWebsite: null,
       organisationCountryOfRegistration: null,
       organisationType: null,
-      organisationIsSmb: null,
+      organisationIsSmb: false,
     }),
     departmentDetails: this.formBuilder.group({
       department: ['', Validators.required],
@@ -140,9 +140,11 @@ export class UserRegistrationFormComponent {
       ...this.registrationForm.get('organisationDetails')?.value,
       ...this.registrationForm.get('departmentDetails')?.value,
       organisationId: null,
-      organisationFriendlyName: null,
+      organisationFriendlyName: this.registrationForm.get(
+        'organisationDetails.organisationFriendlyName'
+      )?.value,
       departmentId: null,
-      departmentName: null,
+      departmentName: this.registrationForm.get('departmentDetails.departmentName')?.value,
     } as UserRegistrationFormData;
 
     const organisation = this.isCreatingNewOrganisation
