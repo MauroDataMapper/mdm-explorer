@@ -39,10 +39,12 @@ export class SdeRequestsComponent implements OnInit {
 
   private userCanAuthoriseRequests() {
     forkJoin({
+      organisation: this.membershipEndpointsResearcher.getOrganisation(),
       departments: this.membershipEndpointsResearcher.listDepartments(),
       projects: this.membershipEndpointsResearcher.listProjects(),
-    }).subscribe(({ departments, projects }) => {
+    }).subscribe(({ organisation, departments, projects }) => {
       this.canAuthorise =
+        !!(organisation.role === 'APPROVER') ||
         !!departments.find((department) => department.role === 'APPROVER') ||
         !!projects.find((project) => project.role === 'MANAGER');
     });

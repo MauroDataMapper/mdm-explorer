@@ -21,23 +21,32 @@ import {
   Department,
   DepartmentMemberService,
   ListColumn,
+  MEMBER_DISPLAY_COLUMNS_FOR_ORG_MEMBER_LIST,
+  MEMBER_DISPLAY_COLUMNS_FOR_DEPT_MEMBER_LIST,
+  UserOrganisationDTO,
   RequestFilterMode,
   UserDepartmentDTO,
   Uuid,
 } from '@maurodatamapper/sde-resources';
 import { SdeDepartmentService } from '../../services/sde-department.service';
+import { SdeOrganisationService } from '../../services/sde-organisation.service';
 import { switchMap, EMPTY, of, forkJoin } from 'rxjs';
-
 @Component({
   selector: 'mdm-departments',
   templateUrl: './departments.component.html',
   styleUrls: ['./departments.component.scss'],
 })
 export class DepartmentsComponent implements OnInit {
+  displayColumns: ListColumn[] = MEMBER_DISPLAY_COLUMNS_FOR_DEPT_MEMBER_LIST;
+
+  organisation: UserOrganisationDTO | undefined = undefined;
   selectedDepartment: Department | undefined = undefined;
   selectedDepartmentId = this.selectedDepartment?.id;
+  displayColumnsForOrganisationMemberList: ListColumn[] =
+    MEMBER_DISPLAY_COLUMNS_FOR_ORG_MEMBER_LIST;
   displayColumnsForDepartmentMemberList: ListColumn[] = [];
   myDepartments: UserDepartmentDTO[] = [];
+  userHasOrganisation = true;
   userHasDepartments = true;
   userIsApproverForSelectedDepartment = false;
 
@@ -45,16 +54,29 @@ export class DepartmentsComponent implements OnInit {
   myRequestsListConfig: RequestFilterMode = RequestFilterMode.MyDepartmentRequests;
 
   constructor(
+    private sdeOrganisationService: SdeOrganisationService,
     private sdeDepartmentService: SdeDepartmentService,
     private departmentMemberService: DepartmentMemberService
   ) {}
 
   ngOnInit(): void {
+    this.sdeOrganisationService
+      .getUsersOrganisation()
+      .pipe(
+        switchMap((userOrg: UserOrganisationDTO) => {
+          if (userOrg === undefined) {
+            this.userHasOrganisation = false;
+            return EMPTY;
+          }
+          this.organisation = userOrg;
+
+          return forkJoin([this.sdeOrganisationService.get(), of(userOrg)]);
+        })
+      )
+      .subscribe(() => {});
     this.sdeDepartmentService
       .getUsersDepartments()
       .pipe(
-        // NOTE: Use a forkJoin to retrieve the users organisation information too. Alternatively,
-        //       create a simple organisation card component.
         switchMap((userDepts: UserDepartmentDTO[]) => {
           // NOTE: It is no longer necessary that a user have a department membership. However,
           //       they will always have an organisation membership.
@@ -65,7 +87,6 @@ export class DepartmentsComponent implements OnInit {
             this.userHasDepartments = false;
             return EMPTY;
           }
-
           this.myDepartments = userDepts;
           const initialDeptValue = this.myDepartments[0] as UserDepartmentDTO;
 
@@ -81,8 +102,8 @@ export class DepartmentsComponent implements OnInit {
   }
 
   onDepartmentSelectEvent(value: UserDepartmentDTO) {
-    const selectedOrgId = value.departmentId as Uuid;
-    this.sdeDepartmentService.get(selectedOrgId).subscribe((dept: Department | undefined) => {
+    const selectedDepId = value.departmentId as Uuid;
+    this.sdeDepartmentService.get(selectedDepId).subscribe((dept: Department | undefined) => {
       this.setSelectedDepartmentAndDisplayColumns(dept, this.myDepartments);
     });
   }
