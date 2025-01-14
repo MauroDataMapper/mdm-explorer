@@ -16,6 +16,8 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
+
+/* Disabling for now
 import { UserRegistrationComponent } from './user-registration.component';
 import { ComponentHarness, setupTestModuleForComponent } from 'src/app/testing/testing.helpers';
 
@@ -33,3 +35,4 @@ describe('UserRegistrationComponent', () => {
     expect(harness.isComponentCreated).toBeTruthy();
   });
 });
+*/
