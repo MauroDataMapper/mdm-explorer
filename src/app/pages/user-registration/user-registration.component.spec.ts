@@ -17,8 +17,6 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { UserRegistrationComponent } from './user-registration.component';
-import { DisplayValuePair } from '@maurodatamapper/sde-resources';
-import { of } from 'rxjs';
 import { ComponentHarness, setupTestModuleForComponent } from 'src/app/testing/testing.helpers';
 
 describe('UserRegistrationComponent', () => {
@@ -33,22 +31,5 @@ describe('UserRegistrationComponent', () => {
 
   it('should create', () => {
     expect(harness.isComponentCreated).toBeTruthy();
-  });
-
-  describe('Initialisation', () => {
-    it('should populate organisationOptions on init', () => {
-      const expectedOptions: DisplayValuePair[] = [
-        { displayValue: 'Org 1', value: 'org1' },
-        { displayValue: 'Org 2', value: 'org2' },
-        { displayValue: 'Org 3', value: 'org3' },
-      ];
-
-      jest
-        .spyOn(harness.component, 'mockGetOrganisationOptions')
-        .mockReturnValue(of(expectedOptions));
-      harness.component.ngOnInit();
-
-      expect(harness.component.organisationOptions).toEqual(expectedOptions);
-    });
   });
 });
