@@ -61,6 +61,8 @@ SPDX-License-Identifier: Apache-2.0
             <sde-organisation-member-list
               [organisation]="organisation"
               [displayColumns]="displayColumnsForOrganisationMemberList"
+              [canAddRows]="false"
+              [canDeleteRows]="false"
             ></sde-organisation-member-list>
             <div class="help-text mt-2">
               <i class="bi bi-info-circle-fill info-icon"></i>
@@ -116,6 +118,8 @@ SPDX-License-Identifier: Apache-2.0
               <sde-department-member-list
                 [department]="selectedDepartment"
                 [displayColumns]="displayColumnsForDepartmentMemberList"
+                [canAddRows]="false"
+                [canDeleteRows]="false"
               ></sde-department-member-list>
               <div class="help-text mt-2">
                 <i class="bi bi-info-circle-fill info-icon"></i>
