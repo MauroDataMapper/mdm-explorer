@@ -59,7 +59,7 @@ SPDX-License-Identifier: Apache-2.0
           <div *ngIf="organisation != undefined" class="medium-top-spacer">
             <h2>Organisation Members</h2>
             <sde-organisation-member-list
-              [organisation]="organisation"
+              [organisation]="organisationForList"
               [displayColumns]="displayColumnsForOrganisationMemberList"
               [canAddRows]="false"
               [canDeleteRows]="false"
