@@ -30,6 +30,7 @@ describe('SdeRequestsComponent', () => {
   beforeEach(async () => {
     // Create a mock instance using Jasmine spy object
     const mockMembershipEndpointsResearcher = {
+      getOrganisation: jest.fn(),
       listDepartments: jest.fn(),
       listProjects: jest.fn(),
     };
