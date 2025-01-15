@@ -27,6 +27,8 @@ import {
   RequestFilterMode,
   UserDepartmentDTO,
   Uuid,
+  Organisation,
+  OrganisationType,
 } from '@maurodatamapper/sde-resources';
 import { SdeDepartmentService } from '../../services/sde-department.service';
 import { SdeOrganisationService } from '../../services/sde-organisation.service';
@@ -40,6 +42,15 @@ export class DepartmentsComponent implements OnInit {
   displayColumns: ListColumn[] = MEMBER_DISPLAY_COLUMNS_FOR_DEPT_MEMBER_LIST;
 
   organisation: UserOrganisationDTO | undefined = undefined;
+  organisationForList: Organisation = {
+    id: 'uuid',
+    organisationFriendlyName: 'uuid',
+    organisationLegalName: 'uuid',
+    organisationType: OrganisationType.UNIVERSITY,
+    organisationWebsite: 'uuid',
+    countryOfRegistration: 'uuid',
+    smallMediumBusinessStatus: false,
+  } as Organisation;
   selectedDepartment: Department | undefined = undefined;
   selectedDepartmentId = this.selectedDepartment?.id;
   displayColumnsForOrganisationMemberList: ListColumn[] =
@@ -69,6 +80,15 @@ export class DepartmentsComponent implements OnInit {
             return EMPTY;
           }
           this.organisation = userOrg;
+          this.organisationForList = {
+            id: userOrg.organisationId,
+            organisationFriendlyName: userOrg.organisationFriendlyName,
+            organisationLegalName: userOrg.organisationFriendlyName,
+            organisationType: OrganisationType.UNIVERSITY,
+            organisationWebsite: 'uuid',
+            countryOfRegistration: 'uuid',
+            smallMediumBusinessStatus: false,
+          } as Organisation;
 
           return of();
         })
