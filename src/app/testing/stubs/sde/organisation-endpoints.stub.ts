@@ -17,37 +17,78 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 
-import { Organisation, OrganisationMemberDTO, Uuid } from '@maurodatamapper/sde-resources';
+import {
+  ApiBodyAddOrganisationDTO,
+  DepartmentDetailsDTO,
+  Organisation,
+  OrganisationMemberDTO,
+  Uuid,
+} from '@maurodatamapper/sde-resources';
 import { Observable } from 'rxjs';
+
+export type GetOrganisationFn = () => Observable<Organisation>;
+export type GetOrganisationMockedFn = jest.MockedFunction<GetOrganisationFn>;
+
+export type CreateOrganisationFn = (
+  organisation: ApiBodyAddOrganisationDTO
+) => Observable<Organisation>;
+export type CreateOrganisationMockedFn = jest.MockedFunction<CreateOrganisationFn>;
+
+export type UpdateOrganisationFn = (organisation: Organisation) => Observable<Organisation>;
+export type UpdateOrganisationMockedFn = jest.MockedFunction<UpdateOrganisationFn>;
 
 export type ListOrganisationsFn = () => Observable<Organisation[]>;
 export type ListOrganisationsMockedFn = jest.MockedFunction<ListOrganisationsFn>;
 
-export type GetOrganisationFn = (departmentId: Uuid) => Observable<Organisation>;
-export type GetOrganisationMockedFn = jest.MockedFunction<GetOrganisationFn>;
+export type ListOrganisationDepartmentsFn = (
+  organisationId: Uuid
+) => Observable<DepartmentDetailsDTO[]>;
+export type ListOrganisationDepartmentsMockedFn =
+  jest.MockedFunction<ListOrganisationDepartmentsFn>;
 
 export type ListOrganisationMembersFn = (departmentId: Uuid) => Observable<OrganisationMemberDTO[]>;
 export type ListOrganisationMembersMockedFn = jest.MockedFunction<ListOrganisationMembersFn>;
 
-export type ListOrganisationApproversAndProjectPeersFn = (
-  departmentId: Uuid
-) => Observable<OrganisationMemberDTO[]>;
-export type ListOrganisationApproversAndProjectPeersMockedFn =
-  jest.MockedFunction<ListOrganisationApproversAndProjectPeersFn>;
+export type GetOrganisationMembershipFn = (
+  organisationId: Uuid,
+  userId: Uuid
+) => Observable<OrganisationMemberDTO>;
+export type GetOrganisationMembershipMockedFn = jest.MockedFunction<GetOrganisationMembershipFn>;
+
+export type CreateOrganisationMembershipFn = (
+  member: OrganisationMemberDTO
+) => Observable<OrganisationMemberDTO>;
+export type CreateOrganisationMembershipMockedFn =
+  jest.MockedFunction<CreateOrganisationMembershipFn>;
+
+export type UpdateOrganisationMembershipFn = (
+  member: OrganisationMemberDTO
+) => Observable<OrganisationMemberDTO>;
+export type UpdateOrganisationMembershipMockedFn =
+  jest.MockedFunction<UpdateOrganisationMembershipFn>;
 
 export interface SdeOrganisationEndpointsStub {
-  listOrganisations: ListOrganisationsMockedFn;
   getOrganisation: GetOrganisationMockedFn;
+  createOrganisation: CreateOrganisationMockedFn;
+  updateOrganisation: UpdateOrganisationMockedFn;
+  listOrganisations: ListOrganisationsMockedFn;
+  listOrganisationDepartments: ListOrganisationDepartmentsMockedFn;
   listOrganisationMembers: ListOrganisationMembersMockedFn;
-  listOrganisationApproversAndProjectPeers: ListOrganisationApproversAndProjectPeersMockedFn;
+  getOrganisationMembership: GetOrganisationMembershipMockedFn;
+  createOrganisationMembership: CreateOrganisationMembershipMockedFn;
+  updateOrganisationMembership: UpdateOrganisationMembershipMockedFn;
 }
 
 export const createSdeOrganisationEndpointsStub = (): SdeOrganisationEndpointsStub => {
   return {
-    listOrganisations: jest.fn() as ListOrganisationsMockedFn,
     getOrganisation: jest.fn() as GetOrganisationMockedFn,
+    createOrganisation: jest.fn() as CreateOrganisationMockedFn,
+    updateOrganisation: jest.fn() as UpdateOrganisationMockedFn,
+    listOrganisations: jest.fn() as ListOrganisationsMockedFn,
+    listOrganisationDepartments: jest.fn() as ListOrganisationDepartmentsMockedFn,
     listOrganisationMembers: jest.fn() as ListOrganisationMembersMockedFn,
-    listOrganisationApproversAndProjectPeers:
-      jest.fn() as ListOrganisationApproversAndProjectPeersMockedFn,
+    getOrganisationMembership: jest.fn() as GetOrganisationMembershipMockedFn,
+    createOrganisationMembership: jest.fn() as CreateOrganisationMembershipMockedFn,
+    updateOrganisationMembership: jest.fn() as UpdateOrganisationMembershipMockedFn,
   };
 };
