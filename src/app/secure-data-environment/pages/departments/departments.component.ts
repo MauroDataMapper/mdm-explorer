@@ -70,7 +70,7 @@ export class DepartmentsComponent implements OnInit {
           }
           this.organisation = userOrg;
 
-          return forkJoin([this.sdeOrganisationService.get(), of(userOrg)]);
+          return of();
         })
       )
       .subscribe(() => {});
