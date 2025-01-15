@@ -41,35 +41,14 @@ describe('SdeOrganisationService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('add an organisation to the cache', () => {
-    const expectedOrg = { id: 'test-org-id' } as Organisation;
-
-    service.addOrganisationToCache(expectedOrg);
-
-    expect(service.organisations).toContain(expectedOrg);
-  });
-
-  it('should return cached organisation data when available', () => {
-    const orgId = 'test-org-id';
-    const expectedOrg = { id: orgId } as Organisation;
-
-    service.addOrganisationToCache(expectedOrg);
-
-    service.get(orgId).subscribe((org) => {
-      expect(org).toEqual(expectedOrg);
-      expect(organisationEndpointsStub.getOrganisation).not.toHaveBeenCalled();
-    });
-  });
-
   it('should fetch organisation data when not cached and add that org to the cache', () => {
     const orgId = 'test-org-id';
     const expectedOrg = { id: orgId } as Organisation;
 
     organisationEndpointsStub.getOrganisation.mockReturnValueOnce(of(expectedOrg));
 
-    service.get(orgId).subscribe((org) => {
+    service.get().subscribe((org) => {
       expect(org).toEqual(expectedOrg);
-      expect(service.organisations).toContain(expectedOrg);
     });
   });
 });
