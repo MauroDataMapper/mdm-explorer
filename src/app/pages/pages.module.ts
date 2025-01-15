@@ -50,6 +50,7 @@ import { TemplateDataSpecificationDetailComponent } from './template-data-specif
 import { SdeMainComponent } from './sde-main/sde-main.component';
 import { SecureDataEnvironmentModule } from '../secure-data-environment/secure-data-environment.module';
 import { SdeAuthenticationFinalizeComponent } from './sde-authentication-finalize/sde-authentication-finalize.component';
+import { UserRegistrationComponent } from './user-registration/user-registration.component';
 
 @NgModule({
   declarations: [
@@ -60,6 +61,7 @@ import { SdeAuthenticationFinalizeComponent } from './sde-authentication-finaliz
     ServerErrorComponent,
     MyBookmarksComponent,
     SignInComponent,
+    UserRegistrationComponent,
     ForgotPasswordComponent,
     StaticContentComponent,
     BrowseComponent,
