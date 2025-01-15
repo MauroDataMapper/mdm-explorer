@@ -16,19 +16,26 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { UserDepartmentDTO, UserProjectDTO } from '@maurodatamapper/sde-resources';
+import {
+  UserDepartmentDTO,
+  UserOrganisationDTO,
+  UserProjectDTO,
+} from '@maurodatamapper/sde-resources';
 import { Observable } from 'rxjs';
 
+export type GetOrganisationFn = () => Observable<UserOrganisationDTO>;
 export type ListDepartmentsFn = () => Observable<UserDepartmentDTO[]>;
 export type ListProjectsFn = () => Observable<UserProjectDTO[]>;
 
 export interface MembershipEndpointsResearcherStub {
+  getOrganisation: jest.MockedFunction<GetOrganisationFn>;
   listDepartments: jest.MockedFunction<ListDepartmentsFn>;
   listProjects: jest.MockedFunction<ListProjectsFn>;
 }
 
 export const createMembershipEndpointsResearcherStub = (): MembershipEndpointsResearcherStub => {
   return {
+    getOrganisation: jest.fn() as jest.MockedFunction<GetOrganisationFn>,
     listDepartments: jest.fn() as jest.MockedFunction<ListDepartmentsFn>,
     listProjects: jest.fn() as jest.MockedFunction<ListProjectsFn>,
   };
