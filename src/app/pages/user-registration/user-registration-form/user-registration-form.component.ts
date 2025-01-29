@@ -181,7 +181,8 @@ export class UserRegistrationFormComponent {
     this.dialogService
       .openSuccess({
         heading: 'Form submission successful',
-        message: 'User registration complete. Please check your email for further instructions.',
+        message:
+          'User registration complete. The SDE Admin team will now process your request and be in touch.',
       })
       .afterClosed()
       .subscribe(() => {
