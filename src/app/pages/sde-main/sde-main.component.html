@@ -25,11 +25,11 @@ SPDX-License-Identifier: Apache-2.0
         <mdm-sde-requests></mdm-sde-requests>
       </mat-tab>
 
-      <mat-tab label="Organisation">
+      <mat-tab *ngIf="!restrictAccess" label="Organisation">
         <mdm-departments></mdm-departments>
       </mat-tab>
 
-      <mat-tab label="Projects">
+      <mat-tab *ngIf="!restrictAccess" label="Projects">
         <div class="medium-top-spacer flex-container__card">
           <sde-requests-list [useConfig]="requestsNeedingApprovalListConfig"></sde-requests-list>
           <div class="help-text mt-2">

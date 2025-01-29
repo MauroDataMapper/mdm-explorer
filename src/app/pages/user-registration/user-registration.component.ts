@@ -78,7 +78,9 @@ export class UserRegistrationComponent implements OnInit {
       organisationIsSmb: formData.organisationIsSmb,
       departmentId: formData.departmentId,
       departmentName: formData.departmentName,
+      departmentDescription: formData.departmentDescription,
       joinExistingOrganisation: formData.joinExistingOrganisation,
+      joinExistingDepartment: formData.joinExistingDepartment,
     } as RequestAccountDetails;
     this.publicEndpointsResearcher.requestUserAccount(requestAccountDetails).subscribe();
   }

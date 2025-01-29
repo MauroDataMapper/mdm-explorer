@@ -80,15 +80,17 @@ export class DepartmentsComponent implements OnInit {
             return EMPTY;
           }
           this.organisation = userOrg;
-          this.organisationForList = {
-            id: userOrg.organisationId,
-            organisationFriendlyName: userOrg.organisationFriendlyName,
-            organisationLegalName: userOrg.organisationFriendlyName,
-            organisationType: OrganisationType.UNIVERSITY,
-            organisationWebsite: 'uuid',
-            countryOfRegistration: 'uuid',
-            smallMediumBusinessStatus: false,
-          } as Organisation;
+          if (userOrg) {
+            this.organisationForList = {
+              id: userOrg.organisationId,
+              organisationFriendlyName: userOrg.organisationFriendlyName,
+              organisationLegalName: userOrg.organisationFriendlyName,
+              organisationType: OrganisationType.UNIVERSITY,
+              organisationWebsite: 'uuid',
+              countryOfRegistration: 'uuid',
+              smallMediumBusinessStatus: false,
+            } as Organisation;
+          }
 
           return of();
         })

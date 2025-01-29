@@ -33,7 +33,6 @@ export class DepartmentListComponent implements OnInit {
   displayColumns: ListColumn[] = [
     { displayHeader: 'Name', fieldName: 'departmentName' },
     { displayHeader: 'Role', fieldName: 'role' },
-    { displayHeader: 'End date', fieldName: 'endDate' },
   ];
 
   clickableColumns: string[] = [];

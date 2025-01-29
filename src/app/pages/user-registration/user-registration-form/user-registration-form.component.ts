@@ -47,7 +47,9 @@ export interface UserRegistrationFormData {
   organisationIsSmb: boolean;
   departmentId: string;
   departmentName: string;
+  departmentDescription: string;
   joinExistingOrganisation: boolean;
+  joinExistingDepartment: boolean;
 }
 
 export type OrganisationType = 'NOT_SELECTED' | 'UNIVERSITY' | 'HEALTHTECH';
@@ -74,6 +76,7 @@ export class UserRegistrationFormComponent {
 
   formFieldAppearance: MatFormFieldAppearance = 'outline';
   isCreatingNewOrganisation = false;
+  isCreatingNewDepartment = false;
 
   organisationTypeOptions = ORGANISATION_TYPE_OPTIONS;
 
@@ -105,6 +108,7 @@ export class UserRegistrationFormComponent {
     departmentDetails: this.formBuilder.group({
       department: ['', Validators.required],
       departmentName: null,
+      departmentDescription: null,
     }),
   });
 
@@ -145,6 +149,8 @@ export class UserRegistrationFormComponent {
       )?.value,
       departmentId: null,
       departmentName: this.registrationForm.get('departmentDetails.departmentName')?.value,
+      departmentDescription: this.registrationForm.get('departmentDetails.departmentDescription')
+        ?.value,
     } as UserRegistrationFormData;
 
     const organisation = this.isCreatingNewOrganisation
@@ -163,11 +169,11 @@ export class UserRegistrationFormComponent {
     if (department) {
       formData.departmentId = department.value;
       formData.departmentName = department.displayValue;
+      formData.departmentDescription = department.displayValue; // This will be ignored when updating
     }
 
     formData.joinExistingOrganisation = !this.isCreatingNewOrganisation;
-
-    console.log('NIGE - formData', formData);
+    formData.joinExistingDepartment = !this.isCreatingNewDepartment;
 
     this.formSubmitted.emit(formData);
 
@@ -222,6 +228,9 @@ export class UserRegistrationFormComponent {
       this.registrationForm
         .get('departmentDetails.departmentName')
         ?.setValidators(Validators.required);
+      this.registrationForm
+        .get('departmentDetails.departmentDescription')
+        ?.setValidators(Validators.required);
     } else {
       this.registrationForm
         .get('organisationDetails.organisation')
@@ -236,6 +245,7 @@ export class UserRegistrationFormComponent {
       this.registrationForm.get('organisationDetails.organisationIsSmb')?.clearValidators();
       this.registrationForm.get('departmentDetails.department')?.setValidators(Validators.required);
       this.registrationForm.get('departmentDetails.departmentName')?.clearValidators();
+      this.registrationForm.get('departmentDetails.departmentDescription')?.clearValidators();
     }
 
     this.registrationForm.get('organisationDetails.organisation')?.updateValueAndValidity();
@@ -253,6 +263,28 @@ export class UserRegistrationFormComponent {
     this.registrationForm.get('organisationDetails.organisationIsSmb')?.updateValueAndValidity();
     this.registrationForm.get('departmentDetails.department')?.updateValueAndValidity();
     this.registrationForm.get('departmentDetails.departmentName')?.updateValueAndValidity();
+    this.registrationForm.get('departmentDetails.departmentDescription')?.updateValueAndValidity();
+  }
+
+  toggleDepartmentCreation(value: boolean) {
+    this.isCreatingNewDepartment = value;
+    if (this.isCreatingNewDepartment) {
+      this.registrationForm.get('departmentDetails.department')?.clearValidators();
+      this.registrationForm
+        .get('departmentDetails.departmentName')
+        ?.setValidators(Validators.required);
+      this.registrationForm
+        .get('departmentDetails.departmentDescription')
+        ?.setValidators(Validators.required);
+    } else {
+      this.registrationForm.get('departmentDetails.department')?.setValidators(Validators.required);
+      this.registrationForm.get('departmentDetails.departmentName')?.clearValidators();
+      this.registrationForm.get('departmentDetails.departmentDescription')?.clearValidators();
+    }
+
+    this.registrationForm.get('departmentDetails.department')?.updateValueAndValidity();
+    this.registrationForm.get('departmentDetails.departmentName')?.updateValueAndValidity();
+    this.registrationForm.get('departmentDetails.departmentDescription')?.updateValueAndValidity();
   }
 
   onOrganisationChange(change: MatSelectChange) {

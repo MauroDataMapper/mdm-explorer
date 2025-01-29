@@ -320,16 +320,48 @@ SPDX-License-Identifier: Apache-2.0
     Every organisation must have at least one department, please enter the name of the department at
     your organisation that you would like to be affiliated with.
   </p>
-  <p *ngIf="!isCreatingNewOrganisation">Please select which department you would like to join.</p>
+  <p>Would you like to join an existing organisation or create a new one?</p>
+  <div *ngIf="!isCreatingNewOrganisation" class="mb-lg-3">
+    <mat-radio-group
+      [value]="isCreatingNewDepartment"
+      (change)="toggleDepartmentCreation($event.value)"
+    >
+      <div class="row">
+        <div class="col text-left">
+          <mat-radio-button [value]="false">Join existing department</mat-radio-button>
+        </div>
+        <div class="col text-right">
+          <mat-radio-button [value]="true">Create new department</mat-radio-button>
+        </div>
+      </div>
+    </mat-radio-group>
+  </div>
+  <p *ngIf="!isCreatingNewDepartment">Please select which department you would like to join.</p>
   <div formGroupName="departmentDetails">
-    <mat-form-field *ngIf="isCreatingNewOrganisation" [appearance]="formFieldAppearance">
+    <mat-form-field
+      *ngIf="isCreatingNewOrganisation || isCreatingNewDepartment"
+      [appearance]="formFieldAppearance"
+    >
       <mat-label>Department Name</mat-label>
       <input matInput formControlName="departmentName" />
       <mat-error *ngIf="departmentDetails.departmentName.invalid"
         >Department Name is required</mat-error
       >
     </mat-form-field>
-    <mat-form-field *ngIf="!isCreatingNewOrganisation" [appearance]="formFieldAppearance">
+    <mat-form-field
+      *ngIf="isCreatingNewOrganisation || isCreatingNewDepartment"
+      [appearance]="formFieldAppearance"
+    >
+      <mat-label>Department Description</mat-label>
+      <input matInput formControlName="departmentDescription" />
+      <mat-error *ngIf="departmentDetails.departmentDescription.invalid"
+        >Department Description is required</mat-error
+      >
+    </mat-form-field>
+    <mat-form-field
+      *ngIf="!isCreatingNewOrganisation && !isCreatingNewDepartment"
+      [appearance]="formFieldAppearance"
+    >
       <mat-label>Department</mat-label>
       <mat-select formControlName="department">
         <mat-option *ngFor="let department of departmentOptions" [value]="department">
