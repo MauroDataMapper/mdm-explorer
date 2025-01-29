@@ -18,17 +18,17 @@ SPDX-License-Identifier: Apache-2.0
 */
 
 import { SdeMainComponent } from './sde-main.component';
-import {
-  ComponentHarness,
-  setupTestModuleForComponent,
-} from 'src/app/testing/testing.helpers';
+import { ComponentHarness, setupTestModuleForComponent } from 'src/app/testing/testing.helpers';
 import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
 import { SecurityService } from 'src/app/security/security.service';
+import { MembershipEndpointsResearcher } from '@maurodatamapper/sde-resources';
+import { createMembershipEndpointsResearcherStub } from 'src/app/testing/stubs/sde/memberships-endpoints-researcher.stub';
 
 describe('SdeMainComponent', () => {
   let harness: ComponentHarness<SdeMainComponent>;
 
   const securityStub = createSecurityServiceStub();
+  const membershipEndpointsResearcherStub = createMembershipEndpointsResearcherStub();
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(SdeMainComponent, {
@@ -36,6 +36,10 @@ describe('SdeMainComponent', () => {
         {
           provide: SecurityService,
           useValue: securityStub,
+        },
+        {
+          provide: MembershipEndpointsResearcher,
+          useValue: membershipEndpointsResearcherStub,
         },
       ],
     });
