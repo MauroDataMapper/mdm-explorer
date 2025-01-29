@@ -27,6 +27,10 @@ $header-text: $color-primary-contrast;
 $data-specification-count-color: $color-dataSpecificationCount;
 $link-color: $header-text;
 
+.invisible {
+  display: none !important;
+}
+
 .mdm-header {
   position: relative;
   z-index: 2;
@@ -228,3 +232,4 @@ $link-color: $header-text;
   color: $color-applicationTypeBanner-text;
   font-weight: 500;
 }
+

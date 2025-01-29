@@ -44,6 +44,8 @@ export interface HeaderLink {
    */
   onlySignedIn?: boolean;
 
+  onlyOrganisationMember?: boolean;
+
   arrow?: ArrowDirection;
 
   /**
@@ -114,11 +116,21 @@ export class HeaderComponent {
    */
   @Input() signedInUser?: UserDetails | null;
 
+  /**
+   * if the signed in sde user has an Organisation Membership
+   * {@Link OrganisationMemberGuard}
+   */
+  @Input() organisationMember?: boolean | null;
+
   get includeSignIn() {
     return !!this.signInLink;
   }
 
   get isSignedIn() {
     return !!this.signedInUser;
+  }
+
+  get isOrganisationMember() {
+    return this.organisationMember ?? false;
   }
 }

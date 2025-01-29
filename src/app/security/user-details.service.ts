@@ -44,7 +44,7 @@ export interface UserDetails {
   providedIn: 'root',
 })
 export class UserDetailsService {
-  constructor() { }
+  constructor() {}
 
   /**
    * Gets the current user in use, or null if there is no current user.
@@ -81,15 +81,10 @@ export class UserDetailsService {
     localStorage.setItem('lastName', user.lastName);
     localStorage.setItem('email', user.email);
     localStorage.setItem('role', user.role ?? '');
-    localStorage.setItem(
-      'needsToResetPassword',
-      (user.needsToResetPassword ?? false).toString()
-    );
-    localStorage.setItem(
-      'dataSpecificationFolder',
-      JSON.stringify(user.dataSpecificationFolder)
-    );
+    localStorage.setItem('needsToResetPassword', (user.needsToResetPassword ?? false).toString());
+    localStorage.setItem('dataSpecificationFolder', JSON.stringify(user.dataSpecificationFolder));
     localStorage.setItem('sdeAuthToken', user.sdeAuthToken ?? '');
+    localStorage.setItem('organisationMembership', false.toString());
   }
 
   /**
@@ -127,6 +122,14 @@ export class UserDetailsService {
     localStorage.setItem('sdePreferredName', user.preferredName ?? '');
   }
 
+  sdeSetUserOrganisationMembership(status: boolean) {
+    localStorage.setItem('sdeOrganisationMembership', status.toString());
+  }
+
+  sdeGetUserOrganisationMembership(): boolean {
+    return localStorage.getItem('sdeOrganisationMembership') === 'true';
+  }
+
   hasSdeResearchUser(): boolean {
     return !!localStorage.getItem('sdeUserId');
   }
@@ -135,5 +138,6 @@ export class UserDetailsService {
     localStorage.removeItem('sdeUserId');
     localStorage.removeItem('sdeEmail');
     localStorage.removeItem('sdePreferredName');
+    localStorage.removeItem('organisationMembership');
   }
 }

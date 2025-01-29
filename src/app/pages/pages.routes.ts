@@ -44,6 +44,7 @@ import { TemplateDataSpecificationDetailComponent } from './template-data-specif
 import { SdeMainComponent } from './sde-main/sde-main.component';
 import { SdeAuthenticationFinalizeComponent } from './sde-authentication-finalize/sde-authentication-finalize.component';
 import { UserRegistrationComponent } from './user-registration/user-registration.component';
+import { OrganisationMemberGuard } from '../shared/guards/organisation-member.guard';
 
 export const buildStaticContentRoute = (path: string, staticAssetPath: string): Route => {
   return {
@@ -131,17 +132,17 @@ export const routes: Route[] = [
   {
     path: 'browse',
     component: BrowseComponent,
-    canActivate: [AuthorizedGuard],
+    canActivate: [OrganisationMemberGuard],
   },
   {
     path: 'search',
     component: SearchComponent,
-    canActivate: [AuthorizedGuard],
+    canActivate: [OrganisationMemberGuard],
   },
   {
     path: 'search/listing',
     component: SearchListingComponent,
-    canActivate: [AuthorizedGuard],
+    canActivate: [OrganisationMemberGuard],
   },
   {
     path: 'account',
@@ -156,7 +157,7 @@ export const routes: Route[] = [
   {
     path: 'bookmarks',
     component: MyBookmarksComponent,
-    canActivate: [AuthorizedGuard],
+    canActivate: [OrganisationMemberGuard],
   },
   {
     path: 'dataElement/:dataModelId/:dataClassId/:dataElementId',
@@ -166,28 +167,28 @@ export const routes: Route[] = [
   {
     path: 'dataSpecifications',
     component: MyDataSpecificationsComponent,
-    canActivate: [AuthorizedGuard],
+    canActivate: [OrganisationMemberGuard],
   },
   {
     path: 'dataSpecifications/:dataSpecificationId/queries/:queryType',
     component: DataSpecificationQueryComponent,
-    canActivate: [AuthorizedGuard],
+    canActivate: [OrganisationMemberGuard],
     canDeactivate: [ModelPageDirtyGuard],
   },
   {
     path: 'dataSpecifications/:dataSpecificationId',
     component: MyDataSpecificationDetailComponent,
-    canActivate: [AuthorizedGuard],
+    canActivate: [OrganisationMemberGuard],
   },
   {
     path: 'templates',
     component: TemplateDataSpecificationsComponent,
-    canActivate: [AuthorizedGuard],
+    canActivate: [OrganisationMemberGuard],
   },
   {
     path: 'templates/:dataSpecificationId',
     component: TemplateDataSpecificationDetailComponent,
-    canActivate: [AuthorizedGuard],
+    canActivate: [OrganisationMemberGuard],
   },
   {
     path: 'sde',

@@ -184,6 +184,10 @@ export class SecurityService {
     return this.userDetails.hasSdeResearchUser();
   }
 
+  isOrganisationMember(): boolean {
+    return this.userDetails.sdeGetUserOrganisationMembership();
+  }
+
   /**
    * Gets the details of the current signed in user, or will get null if no user is signed in.
    *

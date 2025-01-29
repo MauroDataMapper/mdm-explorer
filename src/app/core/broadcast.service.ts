@@ -30,6 +30,8 @@ export type BroadcastEvent =
   | 'http-server-error'
   | 'user-signed-in'
   | 'user-signed-out'
+  | 'sde-user-signed-in'
+  | 'sde-user-signed-out'
   | 'sign-out-user'
   | 'data-specification-added'
   | 'data-specification-finalised'
@@ -98,6 +100,17 @@ export class BroadcastService {
    */
   onUserSignedIn(): Observable<UserDetails> {
     return this.on<UserDetails>('user-signed-in');
+  }
+
+  /**
+   * pair of methods to alert that the sdeUser has signed in to the sde system
+   */
+  sdeOnUserOrganisationStatusUpdated(): Observable<boolean> {
+    return this.on<boolean>('sde-user-signed-in');
+  }
+
+  sdeUserOrganisationStatusUpdated(status: boolean) {
+    this.dispatch<boolean>('sde-user-signed-in', status);
   }
 
   loading(payload: LoadingBroadcastPayload) {

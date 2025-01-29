@@ -17,7 +17,8 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component } from '@angular/core';
-import { ResearchUser, User } from '@maurodatamapper/sde-resources';
+import { ResearchUser, SdeUserService, User } from '@maurodatamapper/sde-resources';
+import { BroadcastService } from 'src/app/core/broadcast.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { UserDetailsService } from 'src/app/security/user-details.service';
 
@@ -28,13 +29,20 @@ import { UserDetailsService } from 'src/app/security/user-details.service';
 })
 export class SdeAuthenticationFinalizeComponent {
   constructor(
+    private broadcast: BroadcastService,
     private userDetails: UserDetailsService,
+    private sdeUserService: SdeUserService,
     private stateRouter: StateRouterService
   ) {}
 
   signInSuccess(user: User | ResearchUser) {
     this.userDetails.setSdeResearchUser(user as ResearchUser);
-    this.stateRouter.navigateToKnownPath('/dashboard');
+    // sets the user current org membership status
+    this.sdeUserService.isSdeUserAMemberOfAnOrganisation(user.id).subscribe((isMember) => {
+      this.userDetails.sdeSetUserOrganisationMembership(isMember);
+      this.broadcast.sdeUserOrganisationStatusUpdated(isMember);
+      this.stateRouter.navigateToKnownPath('/dashboard');
+    });
   }
 
   signOut() {
