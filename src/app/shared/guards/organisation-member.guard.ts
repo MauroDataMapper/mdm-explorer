@@ -20,7 +20,7 @@ import { Inject, Injectable } from '@angular/core';
 import { Router, UrlTree } from '@angular/router';
 import { map, Observable } from 'rxjs';
 import { AuthorizedGuard } from '../../security/guards/authorized.guard';
-import { UserService } from '@maurodatamapper/sde-resources';
+import { SdeUserService } from '@maurodatamapper/sde-resources';
 import { AUTHORIZATION_REDIRECT_URL } from '../../security/security.types';
 import { SecurityService } from '../../security/security.service';
 import { UserDetailsService } from 'src/app/security/user-details.service';
@@ -32,7 +32,7 @@ export class OrganisationMemberGuard extends AuthorizedGuard {
   constructor(
     protected override security: SecurityService,
     protected override router: Router,
-    protected userService: UserService,
+    protected userService: SdeUserService,
     protected detailsService: UserDetailsService,
     @Inject(AUTHORIZATION_REDIRECT_URL) protected override redirectUrl: string
   ) {
@@ -43,23 +43,28 @@ export class OrganisationMemberGuard extends AuthorizedGuard {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    if (!this.getSecurityService().isSignedIn) {
+    if (!this.getSecurityService().isSignedInToSde) {
       return this.redirect(this.getAuthorizationRedirectUrl());
     }
 
     if (this.getSecurityService().isOrganisationMember()) {
       return true;
     } else {
-      return this.userService.isCurrentUserAMemberOfAnOrganisation().pipe(
-        map((bool: boolean) => {
-          if (bool) {
-            this.detailsService.sdeSetUserOrganisationMembership(bool);
-            return true;
-          }
-          // redirect to requests page
-          return this.redirect('/sde');
-        })
-      );
+      const sdeUser = this.getSecurityService().getSignedinSdeUser();
+      if (sdeUser) {
+        return this.userService.isSdeUserAMemberOfAnOrganisation(sdeUser.id).pipe(
+          map((bool: boolean) => {
+            if (bool) {
+              this.detailsService.sdeSetUserOrganisationMembership(bool);
+              return true;
+            }
+            // redirect to requests page
+            return this.redirect('/sde');
+          })
+        );
+      } else {
+        return this.redirect('/sde');
+      }
     }
   }
 }
