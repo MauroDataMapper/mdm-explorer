@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Inject, Injectable } from '@angular/core';
 import { Router, UrlTree } from '@angular/router';
-import { map, Observable } from 'rxjs';
+import { map, Observable, of, switchMap } from 'rxjs';
 import { AuthorizedGuard } from '../../security/guards/authorized.guard';
 import { SdeUserService } from '@maurodatamapper/sde-resources';
 import { AUTHORIZATION_REDIRECT_URL } from '../../security/security.types';
@@ -53,17 +53,17 @@ export class OrganisationMemberGuard extends AuthorizedGuard {
       const sdeUser = this.getSecurityService().getSignedinSdeUser();
       if (sdeUser) {
         return this.userService.isSdeUserAMemberOfAnOrganisation(sdeUser.id).pipe(
-          map((bool: boolean) => {
+          switchMap((bool: boolean) => {
             if (bool) {
               this.detailsService.sdeSetUserOrganisationMembership(bool);
-              return true;
+              return of(true);
             }
             // redirect to requests page
-            return this.redirect('/sde');
+            return of(this.redirect('/sde'));
           })
         );
       } else {
-        return this.redirect('/sde');
+        return of(this.redirect(this.getAuthorizationRedirectUrl()));
       }
     }
   }

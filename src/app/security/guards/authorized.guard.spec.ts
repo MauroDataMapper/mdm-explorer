@@ -24,55 +24,57 @@ import { AUTHORIZATION_REDIRECT_URL } from '../security.types';
 
 import { AuthorizedGuard } from './authorized.guard';
 
-describe('AuthorizedGuard', () => {
-  let guard: AuthorizedGuard;
 
-  const redirectUrl = 'some/where/else';
-  const securityStub = createSecurityServiceStub();
+    describe('AuthorizedGuard', () => {
+      let guard: AuthorizedGuard;
 
-  const routerStub = {
-    parseUrl: jest.fn(),
-  };
+      const redirectUrl = 'some/where/else';
+      const securityStub = createSecurityServiceStub();
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [
-        {
-          provide: SecurityService,
-          useValue: securityStub,
-        },
-        {
-          provide: Router,
-          useValue: routerStub,
-        },
-        {
-          provide: AUTHORIZATION_REDIRECT_URL,
-          useValue: redirectUrl,
-        },
-      ],
+      const routerStub = {
+        parseUrl: jest.fn(),
+      };
+
+      beforeEach(() => {
+        TestBed.configureTestingModule({
+          providers: [
+            {
+              provide: SecurityService,
+              useValue: securityStub,
+            },
+            {
+              provide: Router,
+              useValue: routerStub,
+            },
+            {
+              provide: AUTHORIZATION_REDIRECT_URL,
+              useValue: redirectUrl,
+            },
+          ],
+        });
+        guard = TestBed.inject(AuthorizedGuard);
+      });
+
+      it('should be created', () => {
+        expect(guard).toBeTruthy();
+      });
+
+      it('should allow activation when user is signed in', () => {
+        securityStub.isSignedIn.mockImplementationOnce(() => true);
+        const actual = guard.canActivate();
+        expect(actual).toBe(true);
+      });
+
+      it('should redirect when user is not signed in', () => {
+        const expectedUrlTree: UrlTree = {
+          fragment: redirectUrl,
+        } as UrlTree;
+
+        securityStub.isSignedIn.mockImplementationOnce(() => false);
+        routerStub.parseUrl.mockImplementationOnce(() => expectedUrlTree);
+
+        const actual = guard.canActivate();
+        expect(actual).toBe(expectedUrlTree);
+      });
     });
-    guard = TestBed.inject(AuthorizedGuard);
-  });
 
-  it('should be created', () => {
-    expect(guard).toBeTruthy();
-  });
-
-  it('should allow activation when user is signed in', () => {
-    securityStub.isSignedIn.mockImplementationOnce(() => true);
-    const actual = guard.canActivate();
-    expect(actual).toBe(true);
-  });
-
-  it('should redirect when user is not signed in', () => {
-    const expectedUrlTree: UrlTree = {
-      fragment: redirectUrl,
-    } as UrlTree;
-
-    securityStub.isSignedIn.mockImplementationOnce(() => false);
-    routerStub.parseUrl.mockImplementationOnce(() => expectedUrlTree);
-
-    const actual = guard.canActivate();
-    expect(actual).toBe(expectedUrlTree);
-  });
-});
