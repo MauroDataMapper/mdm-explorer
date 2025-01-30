@@ -44,7 +44,7 @@ export class SdeRequestsComponent implements OnInit {
       projects: this.membershipEndpointsResearcher.listProjects(),
     }).subscribe(({ organisation, departments, projects }) => {
       this.canAuthorise =
-        !!(organisation.role === 'APPROVER') ||
+        !!(organisation?.role === 'APPROVER') ||
         !!departments.find((department) => department.role === 'APPROVER') ||
         !!projects.find((project) => project.role === 'MANAGER');
     });

@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, OnInit } from '@angular/core';
-import { RequestFilterMode } from '@maurodatamapper/sde-resources';
+import { MembershipEndpointsResearcher, RequestFilterMode } from '@maurodatamapper/sde-resources';
 import { SecurityService } from 'src/app/security/security.service';
 
 @Component({
@@ -26,11 +26,20 @@ import { SecurityService } from 'src/app/security/security.service';
 })
 export class SdeMainComponent implements OnInit {
   signedIn = false;
+  restrictAccess = true;
   requestsNeedingApprovalListConfig: RequestFilterMode = RequestFilterMode.CanAuthorise;
 
-  constructor(private security: SecurityService) {}
+  constructor(
+    private security: SecurityService,
+    private membershipEndpointsResearcher: MembershipEndpointsResearcher
+  ) {}
 
   ngOnInit(): void {
     this.signedIn = this.security.isSignedInToSde();
+    if (this.signedIn) {
+      this.membershipEndpointsResearcher.getOrganisation().subscribe((organisation) => {
+        this.restrictAccess = organisation === null;
+      });
+    }
   }
 }
