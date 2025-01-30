@@ -20,6 +20,7 @@ SPDX-License-Identifier: Apache-2.0
 <div *ngIf="currentPage === 1">
   <h1 mat-dialog-title>Attach to Request</h1>
   <mat-dialog-content>
+    <p>THIS FEATURE IS IN DEVELOPMENT</p>
     <p>Please choose which type of request you want to attach this Data Specification to:</p>
     <mat-radio-group [(ngModel)]="selectedOption">
       <mat-radio-button [value]="WizardPage.NewProjectRequest" class="spaced-radio"
@@ -35,6 +36,7 @@ SPDX-License-Identifier: Apache-2.0
   </mat-dialog-content>
   <mat-dialog-actions align="end">
     <button mat-stroked-button color="primary" (click)="close()">Cancel</button>
+    <!--
     <button
       mat-flat-button
       color="primary"
@@ -42,7 +44,7 @@ SPDX-License-Identifier: Apache-2.0
       [disabled]="!selectedOption"
     >
       Next
-    </button>
+    </button>-->
   </mat-dialog-actions>
 </div>
 
