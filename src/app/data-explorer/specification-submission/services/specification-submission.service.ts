@@ -132,6 +132,19 @@ export class SpecificationSubmissionService {
       )
     );
 
+    const newProjectEnquiryRequests$ = this.requestsService
+      .listDraftNewProjectEnquiryRequests()
+      .pipe(
+        map((requests: SdeRequest[]) =>
+          requests.map<IdNamePair>((request) => {
+            return {
+              id: request.id,
+              name: request.title,
+            };
+          })
+        )
+      );
+
     return this.researcherRequestEndpoints.getRequestForDataSpecification(specificationId).pipe(
       // First map operation to extract `request.id`
       map((request: RequestResponse | undefined) => request?.id),
@@ -147,16 +160,25 @@ export class SpecificationSubmissionService {
             dataRequests: dataRequests$,
             newProjectRequests: newProjectRequests$,
             projectChangeRequests: projectChangeRequests$,
+            newProjectEnquiryRequests: newProjectEnquiryRequests$,
           }).pipe(
-            map(({ dataRequests, newProjectRequests, projectChangeRequests }) => {
-              // Construct the dialog data with both projects and new project requests
-              const dialogData: SubmissionWizardDialogData = {
+            map(
+              ({
                 dataRequests,
                 newProjectRequests,
                 projectChangeRequests,
-              };
-              return dialogData;
-            }),
+                newProjectEnquiryRequests,
+              }) => {
+                // Construct the dialog data with both projects and new project requests
+                const dialogData: SubmissionWizardDialogData = {
+                  dataRequests,
+                  newProjectRequests,
+                  projectChangeRequests,
+                  newProjectEnquiryRequests,
+                };
+                return dialogData;
+              }
+            ),
 
             // Open the dialog with the combined data from projects and new project requests
             switchMap((dialogData: SubmissionWizardDialogData) =>
