@@ -162,7 +162,7 @@ export class UserRegistrationFormComponent {
       formData.organisationFriendlyName = organisation.displayValue;
     }
 
-    const department = this.isCreatingNewOrganisation
+    const department = this.isCreatingNewDepartment
       ? null
       : (this.registrationForm.get('departmentDetails.department')?.value as DisplayValuePair);
 
