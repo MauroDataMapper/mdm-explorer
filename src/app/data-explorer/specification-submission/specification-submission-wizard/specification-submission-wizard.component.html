@@ -20,23 +20,26 @@ SPDX-License-Identifier: Apache-2.0
 <div *ngIf="currentPage === 1">
   <h1 mat-dialog-title>Attach to Request</h1>
   <mat-dialog-content>
-    <p>THIS FEATURE IS IN DEVELOPMENT</p>
     <p>Please choose which type of request you want to attach this Data Specification to:</p>
     <mat-radio-group [(ngModel)]="selectedOption">
+      <mat-radio-button [value]="WizardPage.ProjectEnquiryRequest" class="spaced-radio"
+        >Project Enquiry Request</mat-radio-button
+      ><br />
+      <!--
       <mat-radio-button [value]="WizardPage.NewProjectRequest" class="spaced-radio"
         >New Project Request</mat-radio-button
       ><br />
       <mat-radio-button [value]="WizardPage.ProjectChangeRequest" class="spaced-radio"
         >Project Change Request</mat-radio-button
-      ><br />
+      ><br />-->
       <mat-radio-button [value]="WizardPage.DataRequest" class="spaced-radio"
         >Data Request</mat-radio-button
       ><br />
+      -->
     </mat-radio-group>
   </mat-dialog-content>
   <mat-dialog-actions align="end">
     <button mat-stroked-button color="primary" (click)="close()">Cancel</button>
-    <!--
     <button
       mat-flat-button
       color="primary"
@@ -44,7 +47,7 @@ SPDX-License-Identifier: Apache-2.0
       [disabled]="!selectedOption"
     >
       Next
-    </button>-->
+    </button>
   </mat-dialog-actions>
 </div>
 
@@ -161,6 +164,55 @@ SPDX-License-Identifier: Apache-2.0
       color="primary"
       [disabled]="selectProjectChangeRequestForm.invalid"
       (click)="submitAttachToProjectChangeRequest()"
+    >
+      Attach
+    </button>
+  </mat-dialog-actions>
+</div>
+
+<!-- Page 5: Option 1 Content -->
+<div *ngIf="currentPage === WizardPage.ProjectEnquiryRequest">
+  <h1 mat-dialog-title>Attach to New Project Enquiry Request</h1>
+  <mat-dialog-content>
+    <form
+      [formGroup]="selectNewProjectEnquiryRequestForm"
+      role="form"
+      name="selectProjectChangeRequestForm"
+    >
+      <div class="form-input">
+        <p>
+          Please select the New Project Enquiry Request you would like to attach this data
+          specification to.
+        </p>
+        <mat-form-field appearance="outline">
+          <mat-label>New Project Enquiry Request</mat-label>
+          <mat-select formControlName="newProjectEnquiryRequest" required>
+            <mat-option
+              *ngFor="let newProjectEnquiryRequest of newProjectEnquiryRequests"
+              [value]="newProjectEnquiryRequest"
+              >{{ newProjectEnquiryRequest.name }}</mat-option
+            >
+          </mat-select>
+        </mat-form-field>
+        <mat-error
+          *ngIf="
+            selectNewProjectEnquiryRequestForm.controls.newProjectEnquiryRequest.errors?.[
+              'required'
+            ]
+          "
+        >
+          Please select a New Project Enquiry Request
+        </mat-error>
+      </div>
+    </form>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-stroked-button color="primary" (click)="goToPage(1)">Back</button>
+    <button
+      mat-flat-button
+      color="primary"
+      [disabled]="selectNewProjectEnquiryRequestForm.invalid"
+      (click)="submitAttachToNewProjectEnquiryRequest()"
     >
       Attach
     </button>

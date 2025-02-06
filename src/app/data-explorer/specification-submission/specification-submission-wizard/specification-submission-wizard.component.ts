@@ -25,6 +25,7 @@ export interface SubmissionWizardDialogData {
   dataRequests: IdNamePair[];
   newProjectRequests: IdNamePair[];
   projectChangeRequests: IdNamePair[];
+  newProjectEnquiryRequests: IdNamePair[];
 }
 
 export interface SubmissionWizardDialogResponse {
@@ -37,6 +38,7 @@ enum WizardPage {
   DataRequest = 2,
   NewProjectRequest = 3,
   ProjectChangeRequest = 4,
+  ProjectEnquiryRequest = 5,
 }
 
 @Component({
@@ -52,6 +54,7 @@ export class SpecificationSubmissionWizardComponent implements OnInit {
   dataRequests: IdNamePair[];
   newProjectRequests: IdNamePair[];
   projectChangeRequests: IdNamePair[];
+  newProjectEnquiryRequests: IdNamePair[];
 
   selectDataRequestForm = new FormGroup({
     // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -66,6 +69,11 @@ export class SpecificationSubmissionWizardComponent implements OnInit {
   selectProjectChangeRequestForm = new FormGroup({
     // eslint-disable-next-line @typescript-eslint/unbound-method
     projectChangeRequest: new FormControl<IdNamePair | null>(null, Validators.required),
+  });
+
+  selectNewProjectEnquiryRequestForm = new FormGroup({
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    newProjectEnquiryRequest: new FormControl<IdNamePair | null>(null, Validators.required),
   });
 
   constructor(
@@ -83,6 +91,13 @@ export class SpecificationSubmissionWizardComponent implements OnInit {
     this.projectChangeRequests = this.data.projectChangeRequests ?? [];
     const newProjectChange: IdNamePair = { id: '', name: '<< Create Project Change Request >>' };
     this.projectChangeRequests.unshift(newProjectChange);
+
+    this.newProjectEnquiryRequests = this.data.newProjectEnquiryRequests ?? [];
+    const newProjectEnquiryChange: IdNamePair = {
+      id: '',
+      name: '<< Create New Project Enquiry Request >>',
+    };
+    this.newProjectEnquiryRequests.unshift(newProjectEnquiryChange);
   }
 
   ngOnInit(): void {}
@@ -117,6 +132,15 @@ export class SpecificationSubmissionWizardComponent implements OnInit {
     const response: SubmissionWizardDialogResponse = {
       requestId: this.selectProjectChangeRequestForm.controls.projectChangeRequest.value?.id,
       requestType: RequestType.ProjectChange,
+    };
+    this.dialogRef.close({ ...response });
+  }
+
+  submitAttachToNewProjectEnquiryRequest() {
+    const response: SubmissionWizardDialogResponse = {
+      requestId:
+        this.selectNewProjectEnquiryRequestForm.controls.newProjectEnquiryRequest.value?.id,
+      requestType: RequestType.NewProjectEnquiry,
     };
     this.dialogRef.close({ ...response });
   }
