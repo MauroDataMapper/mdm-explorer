@@ -255,10 +255,10 @@ export class AppComponent implements OnInit, OnDestroy {
     this.broadcast
       .sdeOnUserOrganisationStatusUpdated()
       .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(() => this.setControlValues(this.userDetails.sdeGetUserOrganisationMembership()));
+      .subscribe(() => this.setControlValues());
 
     this.signedInUser = user;
-
+    this.setControlValues();
     this.subscribeHttpErrorEvent('http-not-authorized', '/not-authorized');
     this.subscribeHttpErrorEvent('http-not-found', '/not-found');
     this.subscribeHttpErrorEvent('http-not-implemented', '/not-implemented');
@@ -333,6 +333,10 @@ export class AppComponent implements OnInit, OnDestroy {
     this.signedInUserProfileImageSrc = user
       ? `${environment.mauroCoreEndpoint}/catalogueUsers/${user.id}/image`
       : undefined;
+
+    if (user) {
+      this.setControlValues();
+    }
   }
 
   private getDraftDataSpecificationCount() {
@@ -411,8 +415,8 @@ export class AppComponent implements OnInit, OnDestroy {
       });
   }
 
-  private setControlValues(isOrganisationMember: boolean) {
-    this.organisationMember = isOrganisationMember;
+  private setControlValues() {
+    this.organisationMember = this.userDetails.sdeGetUserOrganisationMembership() ?? false;
     // set other values here
   }
 }

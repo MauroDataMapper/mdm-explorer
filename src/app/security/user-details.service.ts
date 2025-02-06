@@ -84,7 +84,6 @@ export class UserDetailsService {
     localStorage.setItem('needsToResetPassword', (user.needsToResetPassword ?? false).toString());
     localStorage.setItem('dataSpecificationFolder', JSON.stringify(user.dataSpecificationFolder));
     localStorage.setItem('sdeAuthToken', user.sdeAuthToken ?? '');
-    localStorage.setItem('organisationMembership', false.toString());
   }
 
   /**
@@ -100,6 +99,7 @@ export class UserDetailsService {
     localStorage.removeItem('needsToResetPassword');
     localStorage.removeItem('dataSpecificationFolder');
     localStorage.removeItem('sdeAuthToken');
+    localStorage.removeItem('sdeOrganisationMembership');
   }
 
   getSdeResearchUser(): SdeUserDetails | null {
@@ -127,7 +127,8 @@ export class UserDetailsService {
   }
 
   sdeGetUserOrganisationMembership(): boolean {
-    return localStorage.getItem('sdeOrganisationMembership') === 'true';
+    const membership = localStorage.getItem('sdeOrganisationMembership');
+    return membership === 'true';
   }
 
   hasSdeResearchUser(): boolean {
@@ -138,6 +139,6 @@ export class UserDetailsService {
     localStorage.removeItem('sdeUserId');
     localStorage.removeItem('sdeEmail');
     localStorage.removeItem('sdePreferredName');
-    localStorage.removeItem('organisationMembership');
+    localStorage.removeItem('sdeOrganisationMembership');
   }
 }

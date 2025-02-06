@@ -36,7 +36,6 @@ export class AuthorizedGuard implements CanActivate {
     if (this.security.isSignedIn()) {
       return true;
     }
-
     return this.redirect(this.redirectUrl);
   }
 
