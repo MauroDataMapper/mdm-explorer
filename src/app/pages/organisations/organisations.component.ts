@@ -16,27 +16,21 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { MatTabChangeEvent, MatTabGroup } from '@angular/material/tabs';
-import { MembershipEndpointsResearcher, RequestFilterMode } from '@maurodatamapper/sde-resources';
+import { Component, OnInit } from '@angular/core';
+import { MembershipEndpointsResearcher } from '@maurodatamapper/sde-resources';
 import { SecurityService } from 'src/app/security/security.service';
 
 @Component({
-  templateUrl: './sde-main.component.html',
-  styleUrls: ['./sde-main.component.scss'],
+  templateUrl: './organisations.component.html'
 })
-export class SdeMainComponent implements OnInit, AfterViewInit {
+export class OrganisationsComponent implements OnInit {
   signedIn = false;
   restrictAccess = true;
-  requestsNeedingApprovalListConfig: RequestFilterMode = RequestFilterMode.CanAuthorise;
-  currentTabIndex = 1;
 
   constructor(
     private security: SecurityService,
     private membershipEndpointsResearcher: MembershipEndpointsResearcher
   ) { }
-
-  ngAfterViewInit(): void {}
 
   ngOnInit(): void {
     this.signedIn = this.security.isSignedInToSde();
@@ -45,13 +39,5 @@ export class SdeMainComponent implements OnInit, AfterViewInit {
         this.restrictAccess = organisation === null;
       });
     }
-  }
-
-  getSelectedIndex(): number {
-    return this.currentTabIndex;
-  }
-
-  onTabChange(event: MatTabChangeEvent) {
-    this.currentTabIndex = event.index;
   }
 }

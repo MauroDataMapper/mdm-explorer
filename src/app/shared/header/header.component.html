@@ -27,10 +27,7 @@ SPDX-License-Identifier: Apache-2.0
   </div>
   <div class="mdm-header__logo--align-right">
     <a [routerLink]="logoLink?.routerLink ?? ''">
-      <img
-        [src]="logoLink?.customRightImageSrc || logoLink?.defaultRightImageSrc"
-        [alt]="logoLink?.label"
-      />
+      <img [src]="logoLink?.customRightImageSrc || logoLink?.defaultRightImageSrc" [alt]="logoLink?.label" />
     </a>
   </div>
 </header>
@@ -38,61 +35,45 @@ SPDX-License-Identifier: Apache-2.0
   <div class="mdm-header__links">
     <nav class="mdm-header__links--main" role="navigation" aria-label="Site navigation">
       <ul>
+        <!-- Include a menu if there are links -->
         <li *ngFor="let link of links">
             <a [ngClass]="{'invisible': ((link.onlySignedIn && !isSignedIn) || (link.onlyOrganisationMember && !isOrganisationMember))}"
-            [routerLink]="link.routerLink"
-            routerLinkActive="active"
-          >
-            <span
-              >{{ link.label }} <span [mdmArrow]="link.arrow" [matMenuTriggerFor]="menu"> </span
-            ></span>
-          </a>
-
-          <!-- Lazily rendered dropdown menu.  -->
-          <mat-menu #menu="matMenu" xPosition="after" yPosition="below">
-            <ng-template matMenuContent>
-              <a
-                *ngFor="let menuItem of link.menuLinks"
-                [routerLink]="menuItem.routerLink"
-                mat-menu-item
-                >{{ menuItem.label }}</a
-              >
-            </ng-template>
-          </mat-menu>
+              <span [matMenuTriggerFor]="menu" style="cursor: pointer">{{ link.label }} <span [mdmArrow]="link.arrow">
+                </span></span>
+            </a>
+            <!-- Lazily rendered dropdown menu.  -->
+            <mat-menu #menu="matMenu" xPosition="after" yPosition="below">
+              <ng-template matMenuContent>
+                <a *ngFor="let menuItem of link.menuLinks" [routerLink]="menuItem.routerLink" mat-menu-item>{{
+                  menuItem.label }}</a>
+              </ng-template>
+            </mat-menu>
+          </ng-container>
+          <ng-template #noLinks>
+            <a *ngIf="!link.onlySignedIn || (link.onlySignedIn && isSignedIn)" [routerLink]="link.routerLink"
+              routerLinkActive="active">
+              <span>{{ link.label }} <span [mdmArrow]="link.arrow"> </span></span>
+            </a>
+          </ng-template>
         </li>
       </ul>
     </nav>
-    <nav
-      *ngIf="isSignedIn"
-      class="mdm-header__links--right"
-      role="navigation"
-      aria-label="User navigation"
-    >
+    <nav *ngIf="isSignedIn" class="mdm-header__links--right" role="navigation" aria-label="User navigation">
       <ul>
         <li *ngFor="let rightLink of rightLinks">
-          <a
-            [id]="rightLink.routerLink"
+          <a [id]="rightLink.routerLink" *ngIf="!rightLink.onlySignedIn || (rightLink.onlySignedIn && isSignedIn)"
+            [routerLink]="rightLink.routerLink" routerLinkActive="active">
            [ngClass]="{'invisible': (( rightLink.onlySignedIn ||rightLink.onlySignedIn && !isSignedIn) || (rightLink.onlyOrganisationMember && !isOrganisationMember))}"
-            [routerLink]="rightLink.routerLink"
-            routerLinkActive="active"
-          >
-            <span class="far fa-bookmark" style="font-size: x-large"></span
-            ><span [mdmArrow]="rightLink.arrow"> {{ rightLink?.label }} </span>
+              rightLink?.label }} </span>
           </a>
         </li>
         <li>
-          <a
-            [id]="accountLink.routerLink"
+          <a [id]="accountLink.routerLink" *ngIf="!accountLink.onlySignedIn || (accountLink.onlySignedIn && isSignedIn)"
+            [routerLink]="accountLink.routerLink" routerLinkActive="active">
             [ngClass]="{'invisible': ((accountLink.onlySignedIn && !isSignedIn) || (accountLink.onlyOrganisationMember && !isOrganisationMember))}"
-            [routerLink]="accountLink.routerLink"
-            routerLinkActive="active"
-          >
             <span class="fas fa-cart-shopping" style="font-size: x-large"></span>
-            <span
-              *ngIf="draftDataSpecificationCount > 0"
-              class="mdm-header__links--data-specification-count"
-              >{{ draftDataSpecificationCount }}</span
-            >
+            <span *ngIf="draftDataSpecificationCount > 0" class="mdm-header__links--data-specification-count">{{
+              draftDataSpecificationCount }}</span>
             <span [mdmArrow]="accountLink.arrow"> {{ accountLink.label }} </span>
           </a>
         </li>
@@ -105,24 +86,11 @@ SPDX-License-Identifier: Apache-2.0
         </div>
         <div *ngIf="isSignedIn" class="mdm-header__user--sign-out">
           <a class="mdm-header__containOverlay" routerLink="/account">
-            <img
-              *ngIf="signedInUserProfileImageSrc"
-              [src]="signedInUserProfileImageSrc"
-              alt="User profile"
-              width="40"
-              height="40"
-            />
-            <img
-              *ngIf="!signedInUserProfileImageSrc"
-              src="assets/images/BlackDisk.svg"
-              alt="User profile"
-              width="40"
-              height="40"
-            />
-            <div
-              *ngIf="!signedInUserProfileImageSrc"
-              class="mdm-header__user--name mdm-header__overlayUserInitials"
-            >
+            <img *ngIf="signedInUserProfileImageSrc" [src]="signedInUserProfileImageSrc" alt="User profile" width="40"
+              height="40" />
+            <img *ngIf="!signedInUserProfileImageSrc" src="assets/images/BlackDisk.svg" alt="User profile" width="40"
+              height="40" />
+            <div *ngIf="!signedInUserProfileImageSrc" class="mdm-header__user--name mdm-header__overlayUserInitials">
               {{ signedInUser?.firstName?.charAt(0) }}{{ signedInUser?.lastName?.charAt(0) }}
             </div>
           </a>

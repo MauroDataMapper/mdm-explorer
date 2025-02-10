@@ -51,6 +51,8 @@ import { SdeMainComponent } from './sde-main/sde-main.component';
 import { SecureDataEnvironmentModule } from '../secure-data-environment/secure-data-environment.module';
 import { SdeAuthenticationFinalizeComponent } from './sde-authentication-finalize/sde-authentication-finalize.component';
 import { UserRegistrationComponent } from './user-registration/user-registration.component';
+import { OrganisationsComponent } from './organisations/organisations.component';
+import { ProjectsComponent } from './projects/projects.component';
 
 @NgModule({
   declarations: [
@@ -81,6 +83,8 @@ import { UserRegistrationComponent } from './user-registration/user-registration
     TemplateDataSpecificationDetailComponent,
     SdeMainComponent,
     SdeAuthenticationFinalizeComponent,
+    OrganisationsComponent,
+    ProjectsComponent,
   ],
   imports: [
     CoreModule,

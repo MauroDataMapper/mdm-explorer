@@ -45,6 +45,7 @@ import { SdeMainComponent } from './sde-main/sde-main.component';
 import { SdeAuthenticationFinalizeComponent } from './sde-authentication-finalize/sde-authentication-finalize.component';
 import { UserRegistrationComponent } from './user-registration/user-registration.component';
 import { OrganisationMemberGuard } from '../shared/guards/organisation-member.guard';
+import { ProjectsComponent } from './projects/projects.component';
 
 export const buildStaticContentRoute = (path: string, staticAssetPath: string): Route => {
   return {
@@ -199,4 +200,14 @@ export const routes: Route[] = [
     path: 'sde/auth/finalize/:action',
     component: SdeAuthenticationFinalizeComponent,
   },
+  {
+    path: 'organisations',
+    component: OrganisationsComponent,
+    canActivate: [AuthorizedGuard],
+  },
+  {
+    path: 'projects',
+    component: ProjectsComponent,
+    canActivate: [AuthorizedGuard],
+  }
 ];

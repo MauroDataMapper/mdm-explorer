@@ -1,4 +1,4 @@
-<!--
+/*
 Copyright 2022-2023 University of Oxford
 and Health and Social Care Information Centre, also known as NHS Digital
 
@@ -15,12 +15,27 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
--->
-<div class="container sde-main">
-  <div class="main-row hero">
-    <h1>Requests</h1>
-    <mdm-sde-sign-in *ngIf="!signedIn"></mdm-sde-sign-in>
-    <mdm-sde-requests></mdm-sde-requests>
-        <sde-project-page [isReadOnly]="true"></sde-project-page>
-  </div>
-</div>
+*/
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { ProjectsComponent } from './projects.component';
+
+describe('ProjectsComponent', () => {
+  let component: ProjectsComponent;
+  let fixture: ComponentFixture<ProjectsComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [ProjectsComponent]
+    })
+      .compileComponents();
+
+    fixture = TestBed.createComponent(ProjectsComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
