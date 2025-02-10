@@ -16,26 +16,38 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { SecurityService } from 'src/app/security/security.service';
+import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
+import { MembershipEndpointsResearcher } from '@maurodatamapper/sde-resources';
+import {
+  ComponentHarness,
+  setupTestModuleForComponent,
+} from 'src/app/testing/testing.helpers';
 
 import { OrganisationsComponent } from './organisations.component';
+import { createMembershipEndpointsResearcherStub } from 'src/app/testing/stubs/sde/memberships-endpoints-researcher.stub';
 
-describe('OrganisationsComponent', () => {
-  let component: OrganisationsComponent;
-  let fixture: ComponentFixture<OrganisationsComponent>;
+describe('ProjectsComponent', () => {
+  let harness: ComponentHarness<OrganisationsComponent>;
+  const securityStub = createSecurityServiceStub();
+  const membershipEndpointsResearcherStub = createMembershipEndpointsResearcherStub();
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [OrganisationsComponent]
-    })
-      .compileComponents();
-
-    fixture = TestBed.createComponent(OrganisationsComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    harness = await setupTestModuleForComponent(OrganisationsComponent, {
+      providers: [
+        {
+          provide: SecurityService,
+          useValue: securityStub,
+        },
+        {
+          provide: MembershipEndpointsResearcher,
+          useValue: membershipEndpointsResearcherStub,
+        },
+      ],
+    });
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(harness.isComponentCreated).toBeTruthy();
   });
 });

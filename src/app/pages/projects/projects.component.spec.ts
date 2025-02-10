@@ -16,26 +16,38 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { SecurityService } from 'src/app/security/security.service';
+import { createSecurityServiceStub } from 'src/app/testing/stubs/security.stub';
+import { MembershipEndpointsResearcher } from '@maurodatamapper/sde-resources';
+import {
+  ComponentHarness,
+  setupTestModuleForComponent,
+} from 'src/app/testing/testing.helpers';
 
 import { ProjectsComponent } from './projects.component';
+import { createMembershipEndpointsResearcherStub } from 'src/app/testing/stubs/sde/memberships-endpoints-researcher.stub';
 
 describe('ProjectsComponent', () => {
-  let component: ProjectsComponent;
-  let fixture: ComponentFixture<ProjectsComponent>;
+  let harness: ComponentHarness<ProjectsComponent>;
+  const securityStub = createSecurityServiceStub();
+  const membershipEndpointsResearcherStub = createMembershipEndpointsResearcherStub();
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ProjectsComponent]
-    })
-      .compileComponents();
-
-    fixture = TestBed.createComponent(ProjectsComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    harness = await setupTestModuleForComponent(ProjectsComponent, {
+      providers: [
+        {
+          provide: SecurityService,
+          useValue: securityStub,
+        },
+        {
+          provide: MembershipEndpointsResearcher,
+          useValue: membershipEndpointsResearcherStub,
+        },
+      ],
+    });
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(harness.isComponentCreated).toBeTruthy();
   });
 });
