@@ -28,8 +28,8 @@ SPDX-License-Identifier: Apache-2.0
     With selected ...
   </button>
   <mat-menu #menu="matMenu">
-    <ng-container *ngIf="ready">
-      <section>
+    <ng-container *ngIf="ready && sourceTargetIntersections.dataSpecifications.length > 0">
+      <section class="mt-2">
         <ul
           *ngFor="let item of sourceTargetIntersections.dataSpecifications; let i = index"
         >
@@ -47,9 +47,11 @@ SPDX-License-Identifier: Apache-2.0
         </ul>
       </section>
       <mat-divider *ngIf="ready"></mat-divider>
+      <p class="text-center">or</p>
     </ng-container>
-    <p class="text-center">or</p>
-    <section>
+
+    <section class="mt-2">
+
       <button
         class="w-100"
         mat-flat-button
@@ -59,6 +61,7 @@ SPDX-License-Identifier: Apache-2.0
       >
         Create new data specification
       </button>
+
     </section>
     <ng-container *ngIf="showRemoveFromBookmarks">
       <section class="mt-4">
