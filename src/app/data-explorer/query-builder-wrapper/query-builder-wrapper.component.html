@@ -40,6 +40,31 @@ SPDX-License-Identifier: Apache-2.0
           <mat-icon>remove</mat-icon>
         </button>
       </ng-container>
+
+      <ng-container
+        *queryEntity="
+          let rule;
+          let entities = entities;
+          let onChange = onChange;
+        "
+      >
+        <mat-form-field appearance="outline" class="query-builder-entity mat-form-field-no-padding">
+        <mat-select [(ngModel)]="rule.entity" (ngModelChange)="onChange($event, rule)">
+          <mat-option
+            *ngFor="let entity of entities"
+            [value]="entity.value"
+            [matTooltip]="descriptions[rule.entity]"
+            matTooltipClass="mdm-selection-item-tooltip"
+            matTooltipPosition="right"
+          >
+            {{ entity.name }}
+          </mat-option>
+        </mat-select>
+        </mat-form-field>
+
+
+      </ng-container>
+
       <!-- Field Selector -->
       <ng-container
         *queryField="

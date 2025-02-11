@@ -94,11 +94,6 @@ import {
   AfterViewInit,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import {
-  EntitySelectorDialogComponent,
-  EntitySelectorDialogData,
-  EntitySelectorDialogResponse,
-} from './dialogs/entity-selector-dialog/entity-selector-dialog.component';
 
 export const CONTROL_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
@@ -548,37 +543,10 @@ export class QueryBuilderComponent
     }
 
     if (this.ruleSetLevel === 0) {
-      const filteredEntities = this.getFilteredEntityList(this.data, this.entities);
-
-      if (filteredEntities?.length ?? 0 > 0) {
-        let entity: Entity | undefined;
-        const data: EntitySelectorDialogData = {
-          heading: 'Add Rule Set',
-          entities: filteredEntities ?? [],
-        };
-
-        const dialogRef = this.matDialog.open<
-          EntitySelectorDialogComponent,
-          EntitySelectorDialogData,
-          EntitySelectorDialogResponse
-        >(EntitySelectorDialogComponent, {
-          maxWidth: 700,
-          data,
-        });
-
-        dialogRef.afterClosed().subscribe((result) => {
-          if (result?.result) {
-            const selectedEntity = result.selectedEntity;
-            if (selectedEntity) {
-              entity = selectedEntity;
-            }
-            this.addRuleSetInternal(parent, entity?.name);
-
-            this.isRuleSetAvailable = this.ruleSetAvailable();
-          }
-        });
-      }
-    } else {
+      this.addRuleSetInternal(parent, parent?.entity);
+      this.isRuleSetAvailable = this.ruleSetAvailable();
+    }
+    else {
       this.addRuleSetInternal(parent, parent?.entity);
     }
   }
@@ -913,11 +881,13 @@ export class QueryBuilderComponent
   }
 
   showAddRuleButton(): boolean {
-    return !(this.isDataQuery && this.ruleSetLevel === 0) || this.ruleSetLevel > 0;
+    // return !(this.isDataQuery && this.ruleSetLevel === 0) || this.ruleSetLevel > 0;
+    return !(this.isDataQuery) || this.ruleSetLevel >= 0;
   }
 
   showOrRadioButton(): boolean {
-    return !(this.isDataQuery && this.ruleSetLevel === 0) || this.ruleSetLevel > 0;
+    // return !(this.isDataQuery && this.ruleSetLevel === 0) || this.ruleSetLevel > 0;
+    return !(this.isDataQuery) || this.ruleSetLevel >= 0;
   }
 
   onRemoveRulesetEvent() {

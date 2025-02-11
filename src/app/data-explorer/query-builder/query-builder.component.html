@@ -58,13 +58,13 @@ SPDX-License-Identifier: Apache-2.0
         [disabled]="!(config.fields | hasFields) || !isRuleSetAvailable"
       >
         <mat-icon>add_circle_outline</mat-icon>
-        Rule Set
+        Brackets
       </button>
       <ng-container *ngIf="!!parentValue && allowRuleset">
         <button
           type="button"
           mat-button
-          matTooltip="Remove Rule Set"
+          matTooltip="Remove Brackets"
           *ngIf="removeRuleSet"
           (click)="removeRuleSet()"
           [disabled]="!(config.fields | hasFields)"
@@ -86,7 +86,6 @@ SPDX-License-Identifier: Apache-2.0
     </mat-radio-group>
   </ng-template>
 
-  <div *ngIf="!isDataQuery">{{ data.entity | arrowFormat }}</div>
 </div>
 
 <div
@@ -129,16 +128,11 @@ SPDX-License-Identifier: Apache-2.0
                   </div>
                 </ng-template>
 
-                <!-- Leaving this code in play to make it easier to restore if ever required. 
-                Condition used to be: entities?.length ?? 0 > 0
-                -->
-                <div *ngIf="false" class="q-inline-block-display">
                   <ng-container *ngIf="getEntityTemplate() as template; else defaultEntity">
                     <ng-container
                       *ngTemplateOutlet="template; context: getEntityContext(rule)"
                     ></ng-container>
                   </ng-container>
-                </div>
 
                 <ng-template #defaultEntity>
                   <div [ngClass]="getClassNames('entityControlSize')">
@@ -153,6 +147,7 @@ SPDX-License-Identifier: Apache-2.0
                       </option>
                     </select>
                   </div>
+
                 </ng-template>
 
                 <ng-container *ngIf="getFieldTemplate() as template; else defaultField">
