@@ -46,6 +46,7 @@ import { SdeAuthenticationFinalizeComponent } from './sde-authentication-finaliz
 import { UserRegistrationComponent } from './user-registration/user-registration.component';
 import { OrganisationMemberGuard } from '../shared/guards/organisation-member.guard';
 import { ProjectsComponent } from './projects/projects.component';
+import { OrganisationsComponent } from './organisations/organisations.component';
 
 export const buildStaticContentRoute = (path: string, staticAssetPath: string): Route => {
   return {
