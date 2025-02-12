@@ -25,7 +25,9 @@ import {
 import { createStateRouterStub } from 'src/app/testing/stubs/state-router.stub';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import { UserDetailsService } from 'src/app/security/user-details.service';
-import { ResearchUser } from '@maurodatamapper/sde-resources';
+import { ResearchUser, SdeUserService } from '@maurodatamapper/sde-resources';
+import { of } from 'rxjs';
+import { BroadcastService } from 'src/app/core/broadcast.service';
 
 describe('SdeAuthenticationFinalizeComponent', () => {
   let harness: ComponentHarness<SdeAuthenticationFinalizeComponent>;
@@ -34,6 +36,13 @@ describe('SdeAuthenticationFinalizeComponent', () => {
   const userDetailsStub = {
     setSdeResearchUser: jest.fn(),
     clearSdeResearchUser: jest.fn(),
+    sdeSetUserOrganisationMembership: jest.fn(),
+  };
+  const sdeUserServiceStub = {
+    isSdeUserAMemberOfAnOrganisation: jest.fn(),
+  };
+  const broadcastStub = {
+    sdeUserOrganisationStatusUpdated: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -47,6 +56,14 @@ describe('SdeAuthenticationFinalizeComponent', () => {
           provide: UserDetailsService,
           useValue: userDetailsStub,
         },
+        {
+          provide: SdeUserService,
+          useValue: sdeUserServiceStub,
+        },
+        {
+          provide: BroadcastService,
+          useValue: broadcastStub,
+        },
       ],
     });
   });
@@ -55,12 +72,17 @@ describe('SdeAuthenticationFinalizeComponent', () => {
     stateRouterStub.navigateTo.mockClear();
     userDetailsStub.clearSdeResearchUser.mockClear();
     userDetailsStub.setSdeResearchUser.mockClear();
+    userDetailsStub.sdeSetUserOrganisationMembership.mockClear();
+    sdeUserServiceStub.isSdeUserAMemberOfAnOrganisation.mockClear();
+    broadcastStub.sdeUserOrganisationStatusUpdated.mockClear();
   });
 
   describe('sign-in-success', () => {
-    it('should get user details then redirect', () => {
+    it('should get user details, set org membership, broadcast status, and redirect', fakeAsync(() => {
       const userDetailsSpy = jest.spyOn(userDetailsStub, 'setSdeResearchUser');
       const stateRouterSpy = jest.spyOn(stateRouterStub, 'navigateToKnownPath');
+      const sdeUserServiceSpy = jest.spyOn(sdeUserServiceStub, 'isSdeUserAMemberOfAnOrganisation');
+      const broadcastSpy = jest.spyOn(broadcastStub, 'sdeUserOrganisationStatusUpdated');
 
       const expectedUser = {
         id: '1234',
@@ -68,11 +90,18 @@ describe('SdeAuthenticationFinalizeComponent', () => {
         isDeleted: false,
       } as ResearchUser;
 
+      sdeUserServiceSpy.mockReturnValue(of(true));
+
       harness.component.signInSuccess(expectedUser);
 
+      tick();
+
       expect(userDetailsSpy).toHaveBeenCalledWith(expectedUser);
+      expect(sdeUserServiceSpy).toHaveBeenCalledWith(expectedUser.id);
+      expect(userDetailsStub.sdeSetUserOrganisationMembership).toHaveBeenCalledWith(true);
+      expect(broadcastSpy).toHaveBeenCalledWith(true);
       expect(stateRouterSpy).toHaveBeenCalledWith('/dashboard');
-    });
+    }));
   });
 
   describe('sign-out', () => {
@@ -89,3 +118,4 @@ describe('SdeAuthenticationFinalizeComponent', () => {
     }));
   });
 });
+

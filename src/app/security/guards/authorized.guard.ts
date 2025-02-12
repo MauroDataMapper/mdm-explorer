@@ -27,20 +27,31 @@ import { AUTHORIZATION_REDIRECT_URL } from '../security.types';
 })
 export class AuthorizedGuard implements CanActivate {
   constructor(
-    private security: SecurityService,
-    private router: Router,
-    @Inject(AUTHORIZATION_REDIRECT_URL) private redirectUrl: string
+    protected security: SecurityService,
+    protected router: Router,
+    @Inject(AUTHORIZATION_REDIRECT_URL) protected redirectUrl: string
   ) {}
 
-  canActivate():
-    | Observable<boolean | UrlTree>
-    | Promise<boolean | UrlTree>
-    | boolean
-    | UrlTree {
+  canActivate(): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     if (this.security.isSignedIn()) {
       return true;
     }
+    return this.redirect(this.redirectUrl);
+  }
 
-    return this.router.parseUrl(this.redirectUrl);
+  redirect(path: string): UrlTree {
+    return this.router.parseUrl(path);
+  }
+
+  protected getRouter(): Router {
+    return this.router;
+  }
+
+  protected getAuthorizationRedirectUrl(): string {
+    return this.redirectUrl;
+  }
+
+  protected getSecurityService(): SecurityService {
+    return this.security;
   }
 }

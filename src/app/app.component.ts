@@ -64,6 +64,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   signedInUser?: UserDetails | null;
 
+  organisationMember?: boolean | null;
+
   logoLink: HeaderImageLink = {
     label: 'Secure Data Environment User Portal',
     routerLink: '',
@@ -102,12 +104,12 @@ export class AppComponent implements OnInit, OnDestroy {
     {
       label: 'Browse',
       routerLink: '/browse',
-      onlySignedIn: true,
+      onlyOrganisationMember: true,
     },
     {
       label: 'Search',
       routerLink: '/search',
-      onlySignedIn: true,
+      onlyOrganisationMember: true,
     },
     /* Temporarily removed
     {
@@ -134,6 +136,7 @@ export class AppComponent implements OnInit, OnDestroy {
       routerLink: '/bookmarks',
       defaultImageSrc: '',
       defaultRightImageSrc: '',
+      onlyOrganisationMember: true,
     },
   ];
 
@@ -141,6 +144,7 @@ export class AppComponent implements OnInit, OnDestroy {
     label: 'My Data Specifications',
     routerLink: '/dataSpecifications',
     arrow: 'angle-down',
+    onlyOrganisationMember: true,
   };
 
   signInLink: HeaderLink = {
@@ -248,8 +252,13 @@ export class AppComponent implements OnInit, OnDestroy {
       );
     }
 
-    this.signedInUser = user;
+    this.broadcast
+      .sdeOnUserOrganisationStatusUpdated()
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(() => this.setControlValues());
 
+    this.signedInUser = user;
+    this.setControlValues();
     this.subscribeHttpErrorEvent('http-not-authorized', '/not-authorized');
     this.subscribeHttpErrorEvent('http-not-found', '/not-found');
     this.subscribeHttpErrorEvent('http-not-implemented', '/not-implemented');
@@ -324,6 +333,10 @@ export class AppComponent implements OnInit, OnDestroy {
     this.signedInUserProfileImageSrc = user
       ? `${environment.mauroCoreEndpoint}/catalogueUsers/${user.id}/image`
       : undefined;
+
+    if (user) {
+      this.setControlValues();
+    }
   }
 
   private getDraftDataSpecificationCount() {
@@ -400,5 +413,10 @@ export class AppComponent implements OnInit, OnDestroy {
         this.toastr.info('Your session has expired! Please sign in.');
         this.signOutUser();
       });
+  }
+
+  private setControlValues() {
+    this.organisationMember = this.userDetails.sdeGetUserOrganisationMembership() ?? false;
+    // set other values here
   }
 }

@@ -132,18 +132,16 @@ export class SpecificationSubmissionService {
       )
     );
 
-    const newProjectEnquiryRequests$ = this.requestsService
-      .listDraftNewProjectEnquiryRequests()
-      .pipe(
-        map((requests: SdeRequest[]) =>
-          requests.map<IdNamePair>((request) => {
-            return {
-              id: request.id,
-              name: request.title,
-            };
-          })
-        )
-      );
+    const newProjectEnquiryRequests$ = this.requestsService.listDraftNewProjectRequests().pipe(
+      map((requests: SdeRequest[]) =>
+        requests.map<IdNamePair>((request) => {
+          return {
+            id: request.id,
+            name: request.title,
+          };
+        })
+      )
+    );
 
     return this.researcherRequestEndpoints.getRequestForDataSpecification(specificationId).pipe(
       // First map operation to extract `request.id`

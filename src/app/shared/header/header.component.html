@@ -39,8 +39,7 @@ SPDX-License-Identifier: Apache-2.0
     <nav class="mdm-header__links--main" role="navigation" aria-label="Site navigation">
       <ul>
         <li *ngFor="let link of links">
-          <a
-            *ngIf="!link.onlySignedIn || (link.onlySignedIn && isSignedIn)"
+            <a [ngClass]="{'invisible': ((link.onlySignedIn && !isSignedIn) || (link.onlyOrganisationMember && !isOrganisationMember))}"
             [routerLink]="link.routerLink"
             routerLinkActive="active"
           >
@@ -73,7 +72,7 @@ SPDX-License-Identifier: Apache-2.0
         <li *ngFor="let rightLink of rightLinks">
           <a
             [id]="rightLink.routerLink"
-            *ngIf="!rightLink.onlySignedIn || (rightLink.onlySignedIn && isSignedIn)"
+           [ngClass]="{'invisible': (( rightLink.onlySignedIn ||rightLink.onlySignedIn && !isSignedIn) || (rightLink.onlyOrganisationMember && !isOrganisationMember))}"
             [routerLink]="rightLink.routerLink"
             routerLinkActive="active"
           >
@@ -84,7 +83,7 @@ SPDX-License-Identifier: Apache-2.0
         <li>
           <a
             [id]="accountLink.routerLink"
-            *ngIf="!accountLink.onlySignedIn || (accountLink.onlySignedIn && isSignedIn)"
+            [ngClass]="{'invisible': ((accountLink.onlySignedIn && !isSignedIn) || (accountLink.onlyOrganisationMember && !isOrganisationMember))}"
             [routerLink]="accountLink.routerLink"
             routerLinkActive="active"
           >
