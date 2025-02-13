@@ -39,26 +39,27 @@ SPDX-License-Identifier: Apache-2.0
     <nav class="mdm-header__links--main" role="navigation" aria-label="Site navigation">
       <ul>
         <li *ngFor="let link of links">
+          <ng-container *ngIf="link.menuLinks && link.menuLinks.length > 0; else noLinks">
             <a [ngClass]="{'invisible': ((link.onlySignedIn && !isSignedIn) || (link.onlyOrganisationMember && !isOrganisationMember))}"
-            [routerLink]="link.routerLink"
-            routerLinkActive="active"
-          >
-            <span
-              >{{ link.label }} <span [mdmArrow]="link.arrow" [matMenuTriggerFor]="menu"> </span
-            ></span>
-          </a>
-
-          <!-- Lazily rendered dropdown menu.  -->
-          <mat-menu #menu="matMenu" xPosition="after" yPosition="below">
-            <ng-template matMenuContent>
-              <a
-                *ngFor="let menuItem of link.menuLinks"
-                [routerLink]="menuItem.routerLink"
-                mat-menu-item
-                >{{ menuItem.label }}</a
-              >
-            </ng-template>
-          </mat-menu>
+              routerLinkActive="active">
+              <span [matMenuTriggerFor]="menu" style="cursor: pointer">{{ link.label }} <span [mdmArrow]="link.arrow">
+                </span></span>
+            </a>
+            <!-- Lazily rendered dropdown menu.  -->
+            <mat-menu #menu="matMenu" xPosition="after" yPosition="below">
+              <ng-template matMenuContent>
+                <a *ngFor="let menuItem of link.menuLinks" [routerLink]="menuItem.routerLink" mat-menu-item>{{
+                  menuItem.label }}</a>
+              </ng-template>
+            </mat-menu>
+          </ng-container>
+          <ng-template #noLinks>
+            <a [ngClass]="{'invisible': ((link.onlySignedIn && !isSignedIn) || (link.onlyOrganisationMember && !isOrganisationMember))}"
+              [routerLink]="link.routerLink"
+              routerLinkActive="active">
+              <span>{{ link.label }} <span [mdmArrow]="link.arrow"> </span></span>
+            </a>
+          </ng-template>
         </li>
       </ul>
     </nav>

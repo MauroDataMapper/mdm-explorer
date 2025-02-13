@@ -96,11 +96,7 @@ export class AppComponent implements OnInit, OnDestroy {
     },
   ];
 
-  headerLinks: HeaderLink[] = [
-    {
-      label: 'About',
-      routerLink: '/about',
-    },
+  catalogueMenuLinks: HeaderLink[] = [
     {
       label: 'Browse',
       routerLink: '/browse',
@@ -110,6 +106,29 @@ export class AppComponent implements OnInit, OnDestroy {
       label: 'Search',
       routerLink: '/search',
       onlyOrganisationMember: true,
+    }
+  ];
+
+  headerLinks: HeaderLink[] = [
+    {
+      label: 'Home',
+      routerLink: '/home',
+    },
+    {
+      label: 'Organisations',
+      routerLink: '/organisations',
+    },
+    {
+      label: 'Projects',
+      routerLink: '/projects',
+      onlySignedIn: true,
+    },
+    {
+      label: 'Catalogue',
+      routerLink: '',
+      arrow: 'angle-down',
+      menuLinks: this.catalogueMenuLinks,
+      onlySignedIn: true
     },
     /* Temporarily removed
     {
@@ -121,6 +140,10 @@ export class AppComponent implements OnInit, OnDestroy {
       label: 'Requests',
       routerLink: '/sde',
       onlySignedIn: true,
+    },
+    {
+      label: 'About',
+      routerLink: '/about',
     },
     {
       label: 'Help',
@@ -236,7 +259,7 @@ export class AppComponent implements OnInit, OnDestroy {
             (this.draftDataSpecificationsCount = draftDataSpecificationsCount)
         )
       )
-      .subscribe(() => {});
+      .subscribe(() => { });
 
     this.broadcast
       .on('sign-out-user')
@@ -363,7 +386,7 @@ export class AppComponent implements OnInit, OnDestroy {
             (this.draftDataSpecificationsCount = draftDataSpecificationsCount)
         )
       )
-      .subscribe(() => {});
+      .subscribe(() => { });
 
     this.broadcast
       .on('data-specification-finalised')
@@ -375,7 +398,7 @@ export class AppComponent implements OnInit, OnDestroy {
             (this.draftDataSpecificationsCount = draftDataSpecificationsCount)
         )
       )
-      .subscribe(() => {});
+      .subscribe(() => { });
   }
 
   private setupIdleTimer() {
@@ -383,7 +406,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.userIdle
       .onTimerStart()
       .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(() => {});
+      .subscribe(() => { });
 
     let lastCheck = new Date();
     this.userIdle
