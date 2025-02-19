@@ -209,6 +209,6 @@ export const routes: Route[] = [
   {
     path: 'projects',
     component: ProjectsComponent,
-    canActivate: [AuthorizedGuard],
-  }
+    canActivate: [OrganisationMemberGuard],
+  },
 ];
