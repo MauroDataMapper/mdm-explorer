@@ -27,9 +27,13 @@ import {
   ListColumn,
   Department,
   DepartmentMemberService,
+  DepartmentContactService,
   UserDepartmentDTO,
+  Contact,
+  MEMBER_DISPLAY_COLUMNS_FOR_DEPT_CONTACT_LIST,
 } from '@maurodatamapper/sde-resources';
 import { createDepartmentMemberServiceStub } from '../../../testing/stubs/sde/department-member.service.stub';
+import { createDepartmentContactServiceStub } from 'src/app/testing/stubs/sde/department-contact.service.stub';
 import { of } from 'rxjs';
 import { SdeOrganisationService } from '../../services/sde-organisation.service';
 
@@ -38,6 +42,7 @@ describe('DepartmentsComponent', () => {
   const sdeOrganisationService = createSdeOrganisationServiceStub();
   const sdeDepartmentServiceStub = createSdeDepartmentServiceStub();
   const departmentMemberService = createDepartmentMemberServiceStub();
+  const departmentContactServiceStub = createDepartmentContactServiceStub();
 
   beforeEach(async () => {
     harness = await setupTestModuleForComponent(DepartmentsComponent, {
@@ -53,6 +58,10 @@ describe('DepartmentsComponent', () => {
         {
           provide: DepartmentMemberService,
           useValue: departmentMemberService,
+        },
+        {
+          provide: DepartmentContactService,
+          useValue: departmentContactServiceStub,
         },
       ],
     });
@@ -73,18 +82,27 @@ describe('DepartmentsComponent', () => {
       expect(harness.component.selectedDepartment).toBeUndefined();
       expect(harness.component.userHasDepartments).toBe(false);
       expect(harness.component.displayColumnsForDepartmentMemberList).toEqual([]);
+      expect(harness.component.displayColumnsForDepartmentContactList).toEqual([]);
     });
 
     it('should initialise for an APPROVER', () => {
       const userDepts = [{ departmentId: '1', role: 'APPROVER' } as UserDepartmentDTO];
+      const contactDepts = [
+        { id: '10', fullName: 'Test Contact', email: 'contact@email.com' } as Contact,
+      ];
       const expectedDept = { id: '1' } as Department;
       const expectedDisplayColumns = APPROVER_DISPLAY_COLUMNS_FOR_DEPT_MEMBER_LIST;
+      const expectedDisplayContactsColumn = MEMBER_DISPLAY_COLUMNS_FOR_DEPT_CONTACT_LIST;
 
       sdeOrganisationService.getUsersOrganisation.mockReturnValueOnce(of([]));
       sdeDepartmentServiceStub.getUsersDepartments.mockReturnValueOnce(of(userDepts));
+      departmentContactServiceStub.list.mockReturnValue(of(contactDepts));
       sdeDepartmentServiceStub.get.mockReturnValueOnce(of(expectedDept));
       departmentMemberService.getDisplayColumnsForResearcher.mockReturnValueOnce(
         APPROVER_DISPLAY_COLUMNS_FOR_DEPT_MEMBER_LIST as ListColumn[]
+      );
+      departmentContactServiceStub.getDisplayColumnsForResearcher.mockReturnValueOnce(
+        MEMBER_DISPLAY_COLUMNS_FOR_DEPT_CONTACT_LIST as ListColumn[]
       );
 
       harness.detectChanges();
@@ -93,12 +111,16 @@ describe('DepartmentsComponent', () => {
       expect(harness.component.selectedDepartment).toEqual(expectedDept);
       expect(harness.component.userHasDepartments).toBe(true);
       expect(harness.component.displayColumnsForDepartmentMemberList).toBe(expectedDisplayColumns);
+      expect(harness.component.displayColumnsForDepartmentContactList).toBe(
+        expectedDisplayContactsColumn
+      );
     });
 
     it('should initialise for a MEMBER', () => {
       const userDepts = [{ departmentId: '1', role: 'MEMBER' } as UserDepartmentDTO];
       const expectedDept = { id: '1' } as Department;
       const expectedDisplayColumns = MEMBER_DISPLAY_COLUMNS_FOR_DEPT_MEMBER_LIST;
+      const expectedDisplayContactsColumn = MEMBER_DISPLAY_COLUMNS_FOR_DEPT_CONTACT_LIST;
 
       sdeOrganisationService.getUsersOrganisation.mockReturnValueOnce(of([]));
       sdeDepartmentServiceStub.getUsersDepartments.mockReturnValueOnce(of(userDepts));
@@ -106,6 +128,9 @@ describe('DepartmentsComponent', () => {
       departmentMemberService.getDisplayColumnsForResearcher.mockReturnValueOnce(
         MEMBER_DISPLAY_COLUMNS_FOR_DEPT_MEMBER_LIST as ListColumn[]
       );
+      departmentContactServiceStub.getDisplayColumnsForResearcher.mockReturnValueOnce(
+        MEMBER_DISPLAY_COLUMNS_FOR_DEPT_CONTACT_LIST as ListColumn[]
+      );
 
       harness.detectChanges();
 
@@ -113,6 +138,9 @@ describe('DepartmentsComponent', () => {
       expect(harness.component.selectedDepartment).toEqual(expectedDept);
       expect(harness.component.userHasDepartments).toBe(true);
       expect(harness.component.displayColumnsForDepartmentMemberList).toBe(expectedDisplayColumns);
+      expect(harness.component.displayColumnsForDepartmentContactList).toBe(
+        expectedDisplayContactsColumn
+      );
     });
   });
 });
