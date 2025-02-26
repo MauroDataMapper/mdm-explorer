@@ -129,6 +129,23 @@ SPDX-License-Identifier: Apache-2.0
                 </span>
               </div>
             </div>
+            <!-- Display contacts available for current department. -->
+            <div class="medium-top-spacer">
+              <h2>Department Contacts</h2>
+              <sde-department-contact-list
+                [department]="selectedDepartment"
+                [displayColumns]="displayColumnsForDepartmentContactList"
+                [canAddRows]="userIsApproverForSelectedDepartment"
+                [canDeleteRows]="userIsApproverForSelectedDepartment"
+              ></sde-department-contact-list>
+              <div class="help-text mt-2">
+                <i class="bi bi-info-circle-fill info-icon"></i>
+                <span>
+                  The department contact list displays all contacts at the selected department that
+                  can be selected by researcher when a new project request is raised.
+                </span>
+              </div>
+            </div>
             <!-- Display users department requests. -->
             <div class="medium-top-spacer">
               <sde-requests-list

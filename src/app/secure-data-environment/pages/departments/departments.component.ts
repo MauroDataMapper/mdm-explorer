@@ -29,6 +29,7 @@ import {
   Uuid,
   Organisation,
   OrganisationType,
+  DepartmentContactService,
 } from '@maurodatamapper/sde-resources';
 import { SdeDepartmentService } from '../../services/sde-department.service';
 import { SdeOrganisationService } from '../../services/sde-organisation.service';
@@ -56,6 +57,7 @@ export class DepartmentsComponent implements OnInit {
   displayColumnsForOrganisationMemberList: ListColumn[] =
     MEMBER_DISPLAY_COLUMNS_FOR_ORG_MEMBER_LIST;
   displayColumnsForDepartmentMemberList: ListColumn[] = [];
+  displayColumnsForDepartmentContactList: ListColumn[] = [];
   myDepartments: UserDepartmentDTO[] = [];
   userHasOrganisation = true;
   userHasDepartments = true;
@@ -67,7 +69,8 @@ export class DepartmentsComponent implements OnInit {
   constructor(
     private sdeOrganisationService: SdeOrganisationService,
     private sdeDepartmentService: SdeDepartmentService,
-    private departmentMemberService: DepartmentMemberService
+    private departmentMemberService: DepartmentMemberService,
+    private departmentContactService: DepartmentContactService
   ) {}
 
   ngOnInit(): void {
@@ -155,5 +158,8 @@ export class DepartmentsComponent implements OnInit {
 
     this.displayColumnsForDepartmentMemberList =
       this.departmentMemberService.getDisplayColumnsForResearcher(userRoleAtSelectedDept);
+
+    this.displayColumnsForDepartmentContactList =
+      this.departmentContactService.getDisplayColumnsForResearcher(userRoleAtSelectedDept);
   }
 }
