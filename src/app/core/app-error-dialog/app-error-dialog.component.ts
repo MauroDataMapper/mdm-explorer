@@ -18,6 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { BroadcastService } from 'src/app/core/broadcast.service';
 
 export interface AppErrorDialogData {
   error: any;
@@ -31,9 +32,32 @@ export interface AppErrorDialogData {
 export class AppErrorDialogComponent implements OnInit {
   error: any;
 
-  constructor(@Inject(MAT_DIALOG_DATA) private data: AppErrorDialogData) {}
+  title = 'Application error';
+  subText = 'We\'re sorry, but this application encountered an error which prevents it from operating.';
+  suggestionText = 'Attempt to rectify the error (or contact your administrator), then reload this page to try again.';
+  buttonText = '';
+  signOutUrl?: string;
+
+  constructor(
+    @Inject(MAT_DIALOG_DATA) private data: AppErrorDialogData,
+    private broadcast: BroadcastService,
+  ) { }
 
   ngOnInit(): void {
     this.error = this.data.error;
+
+    // If this error looks like the user has lost access then tell them and 
+    // sign out the user when the dialog closes.
+    if (this.error.status === 400 || this.error.status === 401) {
+      this.title = 'Not signed in';
+      this.subText = 'It appears that you have been automatically signed out and will now need to sign in again to continue';
+      this.suggestionText = '';
+      this.error.message = '';
+      this.buttonText = 'Close';
+    }
+  }
+
+  signOut() {
+    this.broadcast.dispatch('sign-out-user');
   }
 }
