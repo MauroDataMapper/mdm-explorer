@@ -17,18 +17,13 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 -->
 <div>
-  <h1>Application error</h1>
+  <h1>{{ title }}</h1>
   <div mat-dialog-content>
-    <p>
-      We're sorry, but this application encountered an error which prevents it from
-      operating.
-    </p>
+    <p>{{ subText }}</p>
     <p *ngIf="error.message" class="error-message">
       {{ error.message }}
     </p>
-    <p>
-      Attempt to rectify the error (or contact your administrator), then reload this page
-      to try again.
-    </p>
+    <p>{{ suggestionText }}</p>
+    <button *ngIf="buttonText" mat-flat-button color="primary" (click)="signOut()">{{ buttonText }}</button>
   </div>
 </div>
