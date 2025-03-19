@@ -77,6 +77,7 @@ import { EditDataSpecificationDialogOptions as EditDataSpecificationDialogOption
 import { ShareDataSpecificationDialogInputOutput } from './share-data-specification-dialog/share-data-specification-dialog.component';
 import { CoreTableProfileService } from './core-table-profile.service';
 import { SubmissionSDEService } from './specification-submission/services/submission.sde.service';
+import { DataSpecificationResearchPluginService } from '../mauro/data-specification-research-plugin.service';
 
 /**
  * A collection of data specifications and their intersections with target models.
@@ -101,7 +102,8 @@ export class DataSpecificationService {
     private rules: RulesService,
     private researchPlugin: ResearchPluginService,
     private coreTableProfileService: CoreTableProfileService,
-    private submissionSDEService: SubmissionSDEService
+    private submissionSDEService: SubmissionSDEService,
+    private dataSpecificationResearchPluginService: DataSpecificationResearchPluginService
   ) {}
 
   /**
@@ -688,38 +690,118 @@ export class DataSpecificationService {
             return EMPTY;
           }
 
-          this.broadcast.loading({
-            isLoading: true,
-            caption: 'Copying to new data specification ...',
-          });
+          return this.fork(dataSpecification, response.name, options, true);
+        })
+      );
+  }
 
-          return this.dataModels.createFork(dataSpecification, { label: response.name });
-        }),
-        catchError(() => {
-          this.toastr.error(
-            'There was a problem creating your data specification. Please try again or contact us for support.',
-            'Copying error'
-          );
-          return EMPTY;
-        }),
-        switchMap((nextDraftModel) => {
-          if (options?.targetFolder?.id && nextDraftModel.id) {
-            return this.dataModels.moveToFolder(nextDraftModel.id, options.targetFolder.id);
-          }
+  /**
+   * Fork a finalised data specification to create a new copy to base further work on.
+   *
+   * @param dataSpecification The original data specification to fork from.
+   * @param options Options that may be passed to control the process.
+   * @returns An observable returning the new forked {@link DataSpecification}. If the user cancelled the operation, then nothing further would happen.
+   */
+  fork(
+    dataSpecification: DataSpecification,
+    newName: string,
+    options?: ForkDataSpecificationOptions,
+    includePostscript: boolean = false,
+    showConfirmation: boolean = true
+  ) {
+    if (
+      !dataSpecification ||
+      !dataSpecification.id ||
+      !dataSpecification.modelVersion ||
+      (dataSpecification.status !== 'finalised' &&
+        dataSpecification.status !== 'attached to request' &&
+        dataSpecification.status !== 'submitted')
+    ) {
+      return EMPTY;
+    }
 
-          return of(nextDraftModel);
-        }),
-        map((nextDraftModel) => this.submissionSDEService.mapToDataSpecification(nextDraftModel)),
-        map((nextDataSpecification) => {
-          this.broadcast.dispatch('data-specification-added');
+    const postscript = includePostscript
+      ? ' Modify this data specification by searching or browsing our catalogue before submitting again.'
+      : '';
+
+    const $loadBroadcast = of(
+      this.broadcast.loading({
+        isLoading: true,
+        caption: 'Copying to new data specification ...',
+      })
+    );
+
+    return forkJoin([
+      this.dataModels.createFork(dataSpecification, { label: newName }),
+      $loadBroadcast,
+    ]).pipe(
+      catchError(() => {
+        this.toastr.error(
+          'There was a problem creating your data specification. Please try again or contact us for support.',
+          'Copying error'
+        );
+        return EMPTY;
+      }),
+      switchMap(([nextDraftModel, _]) => {
+        if (options?.targetFolder?.id && nextDraftModel.id) {
+          return this.dataModels.moveToFolder(nextDraftModel.id, options.targetFolder.id);
+        }
+
+        return of(nextDraftModel);
+      }),
+      map((nextDraftModel) => this.submissionSDEService.mapToDataSpecification(nextDraftModel)),
+      map((nextDataSpecification) => {
+        this.broadcast.dispatch('data-specification-added');
+        if (showConfirmation) {
           this.dialogs.openSuccess({
             heading: 'Data specification copied',
-            message: `Your new data specification "${nextDataSpecification.label}" has been successfully created. Modify this data specification by searching or browsing our catalogue before submitting again.`,
+            message: `Your new data specification "${nextDataSpecification.label}" has been successfully created.${postscript}`,
           });
-          return nextDataSpecification;
-        }),
-        finalize(() => this.broadcast.loading({ isLoading: false }))
-      );
+        }
+        return nextDataSpecification;
+      }),
+      finalize(() => this.broadcast.loading({ isLoading: false }))
+    );
+  }
+
+  /**
+   * Finalise a data specification.
+   *
+   * @param dataSpecification The data specification to be finalised.
+   * @returns An observable returning the finalised data specification.
+   */
+  finalise(dataSpecification: DataSpecification): Observable<DataSpecification> {
+    if (!dataSpecification || !dataSpecification.id || dataSpecification.status !== 'draft') {
+      console.log('NIGE - Returning Empty', dataSpecification);
+      return EMPTY;
+    }
+
+    const $loadBroadcast = of(
+      this.broadcast.loading({
+        isLoading: true,
+        caption: 'Finalising data specification ...',
+      })
+    );
+
+    return forkJoin([
+      this.dataSpecificationResearchPluginService.finaliseDataSpecification(dataSpecification.id),
+      $loadBroadcast,
+    ]).pipe(
+      catchError(() => {
+        this.toastr.error(
+          'There was a problem creating your data specification. Please try again or contact us for support.',
+          'Copying error'
+        );
+        return EMPTY;
+      }),
+      switchMap(([finalisedDataSpecification, _]) => {
+        return of(finalisedDataSpecification);
+      }),
+      map((finalisedDataSpecification) =>
+        this.submissionSDEService.mapToDataSpecification(finalisedDataSpecification)
+      ),
+      finalize(() => this.broadcast.loading({ isLoading: false }))
+    );
   }
 
   /**

@@ -22,14 +22,19 @@ import {
   MauroDataSpecificationDTO,
   RequestResponse,
   RequestType,
+  Uuid,
+  RequestEndpointsResearcher,
+  ProjectEndpointsResearcher,
 } from '@maurodatamapper/sde-resources';
 import { SecurityService } from '../security/security.service';
 import { DataSpecificationService } from '../data-explorer/data-specification.service';
 import { DataSpecification } from '../data-explorer/data-explorer.types';
-import { map, Observable, of } from 'rxjs';
-import { Uuid } from '@maurodatamapper/mdm-resources';
+import { catchError, EMPTY, forkJoin, map, Observable, of, switchMap } from 'rxjs';
 import { SpecificationSubmissionService } from '../data-explorer/specification-submission/services/specification-submission.service';
 import { SubmissionType } from '../data-explorer/specification-submission/type-declarations/submission.resource';
+import { DataSpecificationResearchPluginService } from '../mauro/data-specification-research-plugin.service';
+import { SubmissionSDEService } from '../data-explorer/specification-submission/services/submission.sde.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable({
   providedIn: 'root',
@@ -38,7 +43,11 @@ export class SdeMauroCoreService implements IMauroCoreService {
   constructor(
     private security: SecurityService,
     private dataSpecification: DataSpecificationService,
-    private specificationSubmissionService: SpecificationSubmissionService
+    private specificationSubmissionService: SpecificationSubmissionService,
+    private dataSpecificationService: DataSpecificationService,
+    private researcherRequestEndpoints: RequestEndpointsResearcher,
+    private projectRequestEndpoints: ProjectEndpointsResearcher,
+    private toastr: ToastrService
   ) {}
 
   getFinalisedDataSpecifications(): Observable<MauroDataSpecificationDTO[]> {
@@ -71,5 +80,80 @@ export class SdeMauroCoreService implements IMauroCoreService {
         ? SubmissionType.AttachSqlAndPdfToRequest
         : SubmissionType.AttachPdfToRequest;
     return this.specificationSubmissionService.submit(specificationId, submissionType, request.id);
+  }
+
+  copyMauroDataSpecification(
+    specificationId: Uuid
+  ): Observable<MauroDataSpecificationDTO | undefined> {
+    // Returning EMPTY exists the Observable stack so we want to return of(undefined) instead
+    // in most cases.
+
+    // Need to check if we need to copy first
+    return forkJoin([
+      this.projectRequestEndpoints.getProjectForDataSpecification(specificationId),
+      this.researcherRequestEndpoints.getRequestForDataSpecification(specificationId),
+    ]).pipe(
+      switchMap(([project, request]) => {
+        console.log('NIGE - copyMauroDataSpecification - 1', project, request);
+        if (!project && !request) {
+          return forkJoin([of(undefined), of(undefined)]);
+        }
+
+        return forkJoin([
+          this.dataSpecificationService.get(specificationId),
+          this.dataSpecificationService.getDataSpecificationFolder(),
+        ]);
+      }),
+      switchMap(([dataSpecification, dataSpecificationFolder]) => {
+        console.log('NIGE - copyMauroDataSpecification - 2');
+        if (!dataSpecification || !dataSpecificationFolder) {
+          return of(undefined);
+        }
+
+        // We have to be careful with the date format otherwise DITA errors occur when generating the PDF.
+        // This format is a workaround.
+        const date = new Date();
+        const formattedDate = date
+          .toISOString()
+          .replace(/[.:]/g, '-')
+          .replace(/[T]/g, ' ')
+          .replace(/[Z]/g, '');
+
+        return this.dataSpecificationService.fork(
+          dataSpecification,
+          `${dataSpecification.label} [COPY - ${formattedDate}]`,
+          {
+            targetFolder: dataSpecificationFolder,
+          },
+          false,
+          false
+        );
+      }),
+      switchMap((newDataSpecification) => {
+        console.log('NIGE - copyMauroDataSpecification - 3');
+        if (!newDataSpecification) {
+          return of(undefined);
+        }
+        return this.dataSpecificationService.finalise(newDataSpecification);
+      }),
+      switchMap((newDataSpecification) => {
+        console.log('NIGE - copyMauroDataSpecification - 4');
+        if (!newDataSpecification) {
+          return of(undefined);
+        }
+
+        return of({
+          mauroId: newDataSpecification.id as Uuid,
+          name: `${newDataSpecification.label} (${newDataSpecification.modelVersion})`,
+        } as MauroDataSpecificationDTO);
+      }),
+      catchError((error) => {
+        this.toastr.error(
+          `There was a problem copying the data specification. ${error}`,
+          'Data specification copying error'
+        );
+        return EMPTY;
+      })
+    );
   }
 }
