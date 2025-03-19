@@ -75,6 +75,8 @@ import { CoreTableProfileService } from './core-table-profile.service';
 import { createCoreTableProfileStub } from '../testing/stubs/core-table-profile.stub';
 import { SubmissionSDEService } from './specification-submission/services/submission.sde.service';
 import { createSubmissionSDEServiceStub } from '../testing/stubs/data-specification-submission/submission-sde-service.stub';
+import { DataSpecificationResearchPluginService } from '../mauro/data-specification-research-plugin.service';
+import { createDataSpecificationResearchPluginServiceStub } from '../testing/stubs/data-specification-research-plugin.stub';
 
 describe('DataSpecificationService', () => {
   let service: DataSpecificationService;
@@ -89,6 +91,8 @@ describe('DataSpecificationService', () => {
   const rulesStub = createRulesServiceStub();
   const coreTableProfileStub = createCoreTableProfileStub();
   const submissionSDEServiceStub = createSubmissionSDEServiceStub();
+  const dataSpecificationResearchPluginServiceStub =
+    createDataSpecificationResearchPluginServiceStub();
 
   beforeEach(() => {
     service = setupTestModuleForService(DataSpecificationService, {
@@ -136,6 +140,10 @@ describe('DataSpecificationService', () => {
         {
           provide: SubmissionSDEService,
           useValue: submissionSDEServiceStub,
+        },
+        {
+          provide: DataSpecificationResearchPluginService,
+          useValue: dataSpecificationResearchPluginServiceStub,
         },
       ],
     });
