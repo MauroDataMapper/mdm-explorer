@@ -983,7 +983,7 @@ describe('DataSpecificationService', () => {
       dialogStub.usage.afterClosed.mockImplementationOnce(() => of('continue'));
 
       dataModelsStub.createFork.mockImplementationOnce(() =>
-        cold('--a|', { a: forkedDataSpecification })
+        cold('a|', { a: forkedDataSpecification })
       );
 
       submissionSDEServiceStub.mapToDataSpecification.mockImplementationOnce((dataModel) => {
@@ -991,7 +991,8 @@ describe('DataSpecificationService', () => {
         return forkedDataSpecification;
       });
 
-      const expected$ = cold('--a|', { a: forkedDataSpecification });
+      const expected$ = cold('-(a|)', { a: forkedDataSpecification });
+
       const actual$ = service.forkWithDialogs(originalDataSpecification);
       expect(actual$).toBeObservable(expected$);
 
@@ -1028,7 +1029,7 @@ describe('DataSpecificationService', () => {
         return forkedDataSpecification;
       });
 
-      const expected$ = cold('----a|', { a: forkedDataSpecification });
+      const expected$ = cold('-----a|', { a: forkedDataSpecification });
       const actual$ = service.forkWithDialogs(originalDataSpecification, options);
       expect(actual$).toBeObservable(expected$);
     });
