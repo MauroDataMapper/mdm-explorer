@@ -707,7 +707,8 @@ export class DataSpecificationService {
     newName: string,
     options?: ForkDataSpecificationOptions,
     includePostscript: boolean = false,
-    showConfirmation: boolean = true
+    showConfirmation: boolean = true,
+    closeLoadingDialog: boolean = true
   ) {
     if (
       !dataSpecification ||
@@ -760,7 +761,11 @@ export class DataSpecificationService {
         }
         return nextDataSpecification;
       }),
-      finalize(() => this.broadcast.loading({ isLoading: false }))
+      finalize(() => {
+        if (closeLoadingDialog) {
+          this.broadcast.loading({ isLoading: false });
+        }
+      })
     );
   }
 
@@ -770,7 +775,10 @@ export class DataSpecificationService {
    * @param dataSpecification The data specification to be finalised.
    * @returns An observable returning the finalised data specification.
    */
-  finalise(dataSpecification: DataSpecification): Observable<DataSpecification> {
+  finalise(
+    dataSpecification: DataSpecification,
+    closeLoadingDialog: boolean = true
+  ): Observable<DataSpecification> {
     if (!dataSpecification || !dataSpecification.id || dataSpecification.status !== 'draft') {
       console.log('NIGE - Returning Empty', dataSpecification);
       return EMPTY;
@@ -800,7 +808,11 @@ export class DataSpecificationService {
       map((finalisedDataSpecification) =>
         this.submissionSDEService.mapToDataSpecification(finalisedDataSpecification)
       ),
-      finalize(() => this.broadcast.loading({ isLoading: false }))
+      finalize(() => {
+        if (closeLoadingDialog) {
+          this.broadcast.loading({ isLoading: false });
+        }
+      })
     );
   }
 

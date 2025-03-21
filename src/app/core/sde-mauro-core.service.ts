@@ -126,6 +126,7 @@ export class SdeMauroCoreService implements IMauroCoreService {
             targetFolder: dataSpecificationFolder,
           },
           false,
+          false,
           false
         );
       }),

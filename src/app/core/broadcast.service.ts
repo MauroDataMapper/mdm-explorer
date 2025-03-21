@@ -130,7 +130,7 @@ export class BroadcastService {
     this.loading({
       isLoading: true,
       caption: `Attaching your data specification - ${message}`,
-      fillviewport: false,
+      fillviewport: true,
     });
   }
 }
