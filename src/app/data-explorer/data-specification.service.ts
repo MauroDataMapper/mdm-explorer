@@ -780,7 +780,6 @@ export class DataSpecificationService {
     closeLoadingDialog: boolean = true
   ): Observable<DataSpecification> {
     if (!dataSpecification || !dataSpecification.id || dataSpecification.status !== 'draft') {
-      console.log('NIGE - Returning Empty', dataSpecification);
       return EMPTY;
     }
 

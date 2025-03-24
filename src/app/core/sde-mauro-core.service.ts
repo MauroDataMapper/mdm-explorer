@@ -94,7 +94,6 @@ export class SdeMauroCoreService implements IMauroCoreService {
       this.researcherRequestEndpoints.getRequestForDataSpecification(specificationId),
     ]).pipe(
       switchMap(([project, request]) => {
-        console.log('NIGE - copyMauroDataSpecification - 1', project, request);
         if (!project && !request) {
           return forkJoin([of(undefined), of(undefined)]);
         }
@@ -105,7 +104,6 @@ export class SdeMauroCoreService implements IMauroCoreService {
         ]);
       }),
       switchMap(([dataSpecification, dataSpecificationFolder]) => {
-        console.log('NIGE - copyMauroDataSpecification - 2');
         if (!dataSpecification || !dataSpecificationFolder) {
           return of(undefined);
         }
@@ -131,14 +129,12 @@ export class SdeMauroCoreService implements IMauroCoreService {
         );
       }),
       switchMap((newDataSpecification) => {
-        console.log('NIGE - copyMauroDataSpecification - 3');
         if (!newDataSpecification) {
           return of(undefined);
         }
         return this.dataSpecificationService.finalise(newDataSpecification);
       }),
       switchMap((newDataSpecification) => {
-        console.log('NIGE - copyMauroDataSpecification - 4');
         if (!newDataSpecification) {
           return of(undefined);
         }
