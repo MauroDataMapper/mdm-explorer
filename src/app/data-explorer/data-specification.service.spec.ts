@@ -75,6 +75,8 @@ import { CoreTableProfileService } from './core-table-profile.service';
 import { createCoreTableProfileStub } from '../testing/stubs/core-table-profile.stub';
 import { SubmissionSDEService } from './specification-submission/services/submission.sde.service';
 import { createSubmissionSDEServiceStub } from '../testing/stubs/data-specification-submission/submission-sde-service.stub';
+import { DataSpecificationResearchPluginService } from '../mauro/data-specification-research-plugin.service';
+import { createDataSpecificationResearchPluginServiceStub } from '../testing/stubs/data-specification-research-plugin.stub';
 
 describe('DataSpecificationService', () => {
   let service: DataSpecificationService;
@@ -89,6 +91,8 @@ describe('DataSpecificationService', () => {
   const rulesStub = createRulesServiceStub();
   const coreTableProfileStub = createCoreTableProfileStub();
   const submissionSDEServiceStub = createSubmissionSDEServiceStub();
+  const dataSpecificationResearchPluginServiceStub =
+    createDataSpecificationResearchPluginServiceStub();
 
   beforeEach(() => {
     service = setupTestModuleForService(DataSpecificationService, {
@@ -136,6 +140,10 @@ describe('DataSpecificationService', () => {
         {
           provide: SubmissionSDEService,
           useValue: submissionSDEServiceStub,
+        },
+        {
+          provide: DataSpecificationResearchPluginService,
+          useValue: dataSpecificationResearchPluginServiceStub,
         },
       ],
     });
@@ -975,7 +983,7 @@ describe('DataSpecificationService', () => {
       dialogStub.usage.afterClosed.mockImplementationOnce(() => of('continue'));
 
       dataModelsStub.createFork.mockImplementationOnce(() =>
-        cold('--a|', { a: forkedDataSpecification })
+        cold('a|', { a: forkedDataSpecification })
       );
 
       submissionSDEServiceStub.mapToDataSpecification.mockImplementationOnce((dataModel) => {
@@ -983,7 +991,8 @@ describe('DataSpecificationService', () => {
         return forkedDataSpecification;
       });
 
-      const expected$ = cold('--a|', { a: forkedDataSpecification });
+      const expected$ = cold('-(a|)', { a: forkedDataSpecification });
+
       const actual$ = service.forkWithDialogs(originalDataSpecification);
       expect(actual$).toBeObservable(expected$);
 
@@ -1020,7 +1029,7 @@ describe('DataSpecificationService', () => {
         return forkedDataSpecification;
       });
 
-      const expected$ = cold('----a|', { a: forkedDataSpecification });
+      const expected$ = cold('-----a|', { a: forkedDataSpecification });
       const actual$ = service.forkWithDialogs(originalDataSpecification, options);
       expect(actual$).toBeObservable(expected$);
     });
