@@ -92,4 +92,5 @@ export enum ExporterName {
 export enum SubmissionType {
   AttachSqlAndPdfToRequest = 'AttachSqlAndPdfToRequest',
   AttachPdfToRequest = 'AttachPdfToRequest',
+  CopyDataSpecThenAttachPdfToRequest = 'CopyDataSpecThenAttachPdfToRequest',
 }

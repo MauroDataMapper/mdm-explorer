@@ -70,6 +70,7 @@ import {
 export class SpecificationSubmissionService {
   private attachSqlAndPdfToRequestSubmissionSteps: ISubmissionStep[] = [];
   private attachPdfToRequestSubmissionSteps: ISubmissionStep[] = [];
+  private copyDataSpecThenAttachPdfToRequestSubmissionSteps: ISubmissionStep[] = [];
 
   constructor(
     private stateService: SubmissionStateService,
@@ -83,6 +84,7 @@ export class SpecificationSubmissionService {
     private membershipEndpoints: MembershipEndpointsResearcher,
     private requestsService: RequestService
   ) {
+    // Generate SQL and PDF and attach
     this.attachSqlAndPdfToRequestSubmissionSteps = [
       this.generateSqlStep,
       this.attachSqlStep,
@@ -90,7 +92,14 @@ export class SpecificationSubmissionService {
       this.attachPdfStep,
     ];
 
+    // Generate PDF and attach
     this.attachPdfToRequestSubmissionSteps = [this.generatePdfStep, this.attachPdfStep];
+
+    // Copy Data Specification, generate PDF and attach
+    this.copyDataSpecThenAttachPdfToRequestSubmissionSteps = [
+      this.generatePdfStep,
+      this.attachPdfStep,
+    ];
   }
 
   chooseRequestType(specificationId: Uuid): Observable<SubmissionWizardDialogResponse> {
@@ -218,6 +227,10 @@ export class SpecificationSubmissionService {
         submissionSteps = this.attachPdfToRequestSubmissionSteps;
         this.stateService.set({ requestId });
         break;
+      case SubmissionType.CopyDataSpecThenAttachPdfToRequest:
+        submissionSteps = this.copyDataSpecThenAttachPdfToRequestSubmissionSteps;
+        this.stateService.set({ requestId });
+        break;
       default:
         throw new Error(`Submission type ${submissionType} is not supported.`);
     }
@@ -273,7 +286,9 @@ export class SpecificationSubmissionService {
 
   private handleSubmissionError(error: Error, stepName: StepName): void {
     // Log the true error to the console no matter what.
-    console.error(`Error running step ${stepName}. Step failed with error message: ${error}`);
+    console.error(
+      `Error running step ${stepName}. Step failed with error message: ${error.message}`
+    );
 
     const userFriendlyErrorMessage = this.getUserFriendlyErrorMessage(error, stepName);
     this.dialogService.openSimple({
