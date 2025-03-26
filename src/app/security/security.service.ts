@@ -42,8 +42,6 @@ import { MdmEndpointsService } from '../mauro/mdm-endpoints.service';
 import { MdmHttpError } from '../mauro/mauro.types';
 import {
   AuthenticatedSessionError,
-  AuthToken,
-  EMPTY_AUTH_TOKEN,
   LoginError,
   OpenIdConnectConfiguration,
   OpenIdConnectSession,
@@ -108,17 +106,6 @@ export class SecurityService {
             return user;
           })
         );
-      })
-    );
-  }
-
-  signInToSde(email: string): Observable<AuthToken> {
-    return this.sdeUserService.getSdeAuthToken(email).pipe(
-      catchError((error: HttpErrorResponse): Observable<AuthToken> => {
-        console.log(`Status: ${error.status} | Message: ${error.message}`);
-
-        // If error, then print the error and set the token to the empty string.
-        return of(EMPTY_AUTH_TOKEN);
       })
     );
   }
