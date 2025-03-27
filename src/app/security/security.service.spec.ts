@@ -31,8 +31,6 @@ import {
 } from '../testing/stubs/mdm-endpoints.stub';
 import { setupTestModuleForService } from '../testing/testing.helpers';
 import {
-  AuthToken,
-  EMPTY_AUTH_TOKEN,
   OpenIdConnectConfiguration,
   OpenIdConnectSession,
   OPENID_CONNECT_CONFIG,
@@ -173,9 +171,7 @@ describe('SecurityService', () => {
 
   describe('sign out', () => {
     it('should sign out user', () => {
-      endpointsStub.security.logout.mockImplementationOnce(() =>
-        cold('--a|', { a: EMPTY })
-      );
+      endpointsStub.security.logout.mockImplementationOnce(() => cold('--a|', { a: EMPTY }));
 
       const expected$ = cold('--a|', { a: undefined });
       const actual$ = service.signOut();
@@ -196,34 +192,6 @@ describe('SecurityService', () => {
       expect(actual$).toSatisfyOnFlush(() => {
         expect(userDetailsStub.clear).toHaveBeenCalled();
       });
-    });
-  });
-
-  describe('sign in to sde', () => {
-    it('should sign in to sde', () => {
-      const emailAssociatedWithSDE = 'test@email.com';
-      const expected = { token: 'valid-token' } as AuthToken;
-
-      sdeUserServiceStub.getSdeAuthToken.mockReturnValueOnce(
-        cold('--a|', { a: expected })
-      );
-
-      const actual$ = service.signInToSde(emailAssociatedWithSDE);
-
-      expect(actual$).toBeObservable(cold('--a|', { a: expected }));
-    });
-
-    it('should return empty token if sde sign in fails', () => {
-      const emailNOTAssociatedWithSDE = 'test@email.com';
-      const expected = EMPTY_AUTH_TOKEN;
-
-      sdeUserServiceStub.getSdeAuthToken.mockReturnValueOnce(
-        cold('--#', new HttpErrorResponse({}))
-      );
-
-      const actual$ = service.signInToSde(emailNOTAssociatedWithSDE);
-
-      expect(actual$).toBeObservable(cold('--(a|)', { a: expected }));
     });
   });
 
@@ -254,24 +222,21 @@ describe('SecurityService', () => {
   });
 
   describe('isAuthenticated', () => {
-    it.each([true, false])(
-      'should return %o for an authenticated session',
-      (authenticated) => {
-        endpointsStub.session.isAuthenticated.mockImplementationOnce(() =>
-          cold('--a|', {
-            a: {
-              body: {
-                authenticatedSession: authenticated,
-              },
+    it.each([true, false])('should return %o for an authenticated session', (authenticated) => {
+      endpointsStub.session.isAuthenticated.mockImplementationOnce(() =>
+        cold('--a|', {
+          a: {
+            body: {
+              authenticatedSession: authenticated,
             },
-          })
-        );
+          },
+        })
+      );
 
-        const expected$ = cold('--a|', { a: authenticated });
-        const actual$ = service.isAuthenticated();
-        expect(actual$).toBeObservable(expected$);
-      }
-    );
+      const expected$ = cold('--a|', { a: authenticated });
+      const actual$ = service.isAuthenticated();
+      expect(actual$).toBeObservable(expected$);
+    });
 
     it('should throw error if authentication fails', () => {
       endpointsStub.session.isAuthenticated.mockImplementationOnce(() =>
@@ -294,10 +259,7 @@ describe('SecurityService', () => {
       };
 
       const expectedUrl = new URL(provider.authorizationEndpoint);
-      expectedUrl.searchParams.append(
-        'redirect_uri',
-        openIdConnectConfig.redirectUrl.toString()
-      );
+      expectedUrl.searchParams.append('redirect_uri', openIdConnectConfig.redirectUrl.toString());
 
       const actualUrl = service.getOpenIdConnectAuthorizationUrl(provider);
       expect(actualUrl).toEqual(expectedUrl);
