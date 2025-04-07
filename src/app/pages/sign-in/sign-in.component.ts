@@ -88,8 +88,9 @@ export class SignInComponent implements OnInit {
       .pipe(
         catchError((error) => {
           this.toastr.error(
-            `Unable to authenticate with ${provider.label} because of a communication error.<br/><br/>Please contact your administrator for further support.`,
-            'Error', {enableHtml: true }
+            `Unable to authenticate with ${provider.label} via the sde-core backend because of a communication error.<br/><br/>Please contact your administrator for further support.`,
+            'Error',
+            { enableHtml: true }
           );
           return [];
         }),
