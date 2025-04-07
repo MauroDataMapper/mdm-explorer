@@ -86,7 +86,14 @@ export class SignInComponent implements OnInit {
     this.authenticationEndpoints
       .listOauthProviders()
       .pipe(
-        catchError(() => []),
+        catchError((error) => {
+          this.toastr.error(
+            `Unable to authenticate with ${provider.label} via the sde-core backend because of a communication error.<br/><br/>Please contact your administrator for further support.`,
+            'Error',
+            { enableHtml: true }
+          );
+          return [];
+        }),
         map((sdeProviders) =>
           // Big assumption - that Mauro and SDE have OpenID Connect providers are configured
           // with _exactly_ the same labels! If not, the SDE single sign-on won't automatically
