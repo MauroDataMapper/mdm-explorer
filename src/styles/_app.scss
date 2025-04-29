@@ -41,6 +41,16 @@ button.mat-icon-button {
   background-color: $color-white;
 }
 
+:root
+{
+  --theme-mat-typography-font-family: "Frutiger", Arial, Roboto, "Helvetica Neue", sans-serif !important;
+}
+
+body, .mat-typography, h1, h2, h3, p, input, button, textarea, select
+{
+  font-family: var(--theme-mat-typography-font-family), sans-serif !important;
+}
+
 .mat-calendar-body-cell:hover .mat-calendar-body-cell-content,
 .mat-calendar-body-cell.mat-calendar-body-active .mat-calendar-body-cell-content,
 .mat-calendar-body-cell .mat-calendar-body-today
