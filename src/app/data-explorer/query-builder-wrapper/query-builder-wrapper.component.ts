@@ -64,10 +64,10 @@ export class QueryBuilderWrapperComponent implements OnInit {
     // non-default data types require specifying operators in order to populate the operator drop down.
     // Is also used to extend some default operators
     /* eslint-disable */
-    string: ['=', '!=', 'contains', 'like', 'startswith', 'endswith'],
-    integer: ['=', '!=', '<', '<=', '>', '>='],
-    decimal: ['=', '!=', '<', '<=', '>', '>='],
-    datetime: ['=', '!=', '>', '<', '=>', '=<'],
+    string:   ['=', '!=', 'contains', 'like', 'startswith', 'endswith'],
+    integer:  ['=', '!=', '<', '<=', '>', '>='],
+    decimal:  ['=', '!=', '<', '<=', '>', '>='],
+    datetime: ['=', '!=', '<', '<=', '>', '>='],
     terminology: ['in', 'not in'],
     /* eslint-enable */
   };
