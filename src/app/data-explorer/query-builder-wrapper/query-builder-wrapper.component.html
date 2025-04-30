@@ -17,8 +17,6 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 -->
 <div class="query-builder-wrapper">
-  <mdm-meql-output [query]="query"></mdm-meql-output>
-
   <mat-card class="mdm-data-element-card">
     <query-builder
       [(ngModel)]="query"
@@ -241,4 +239,10 @@ SPDX-License-Identifier: Apache-2.0
       </ng-container>
     </query-builder>
   </mat-card>
+  <div class="query-builder-query-text">
+  <details>
+    <summary>Show/Hide Query</summary>
+  <mdm-meql-output [query]="query"></mdm-meql-output>
+  </details>
+  </div>
 </div>
