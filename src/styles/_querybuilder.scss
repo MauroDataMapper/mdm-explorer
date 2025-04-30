@@ -37,3 +37,53 @@ SPDX-License-Identifier: Apache-2.0
   /* Override width of rule entity selector which uses this class in an encapsulating div */
   width: 25%;
 }
+
+.query-builder-wrapper {
+  mdm-meql-output textarea
+  {
+    padding: 16px;
+    padding-left: 26px;
+    margin-bottom: 16px;
+    border-top-right-radius: 4px !important;
+    border-top-left-radius: 4px !important;
+    border-width:0;
+    box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+  }
+
+  mat-card
+  {
+    border-top-right-radius: 0 !important;
+    border-top-left-radius: 0 !important;
+  }
+
+}
+
+.mdm-data-specification-query__query-editor
+{
+  margin-bottom: 5em;
+}
+
+.mdm-header-and-content-box__header, .mdm-data-specification-query__header
+{
+  border-bottom-right-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+.mdm-data-specification-query__description
+{
+  border-top-right-radius: 0 !important;
+  border-top-left-radius: 0 !important;
+}
+
+h2.mdm-data-specification-query__query-header
+{
+  padding: 0;
+  margin: 0 !important;
+  margin-bottom: 9px !important;
+}
+
+.mdm-data-specification-query__query-editor
+{
+  padding: 16px !important;
+  background-color: var(--bs-gray-200) !important;
+}

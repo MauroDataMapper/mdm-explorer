@@ -40,3 +40,28 @@ button.mat-icon-button {
 .mat-checkbox-inner-container {
   background-color: $color-white;
 }
+
+.mat-calendar-body-cell:hover .mat-calendar-body-cell-content,
+.mat-calendar-body-cell.mat-calendar-body-active .mat-calendar-body-cell-content,
+.mat-calendar-body-cell .mat-calendar-body-today
+{
+  color: white !important;
+}
+
+.mat-calendar-body-cell .mat-calendar-body-today.mat-focus-indicator,
+.mat-calendar-body-cell.mat-calendar-body-active .mat-calendar-body-cell-content.mat-focus-indicator
+{
+  background-color: var(--bs-gray-600);
+}
+
+.hero h1
+{
+  margin:0 !important;
+}
+
+@media (min-width: 1400px) {
+  .container
+  {
+    max-width: 86vw !important;
+  }
+}
