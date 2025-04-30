@@ -82,8 +82,12 @@ h2.mdm-data-specification-query__query-header
   margin-bottom: 9px !important;
 }
 
-.mdm-data-specification-query__query-editor
-{
+.mdm-data-specification-query__query-editor {
   padding: 16px !important;
   background-color: var(--bs-gray-200) !important;
+}
+
+.query-builder-wrapper .query-builder-query-text
+{
+  margin-top: 16px;
 }
