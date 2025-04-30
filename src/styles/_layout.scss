@@ -133,7 +133,7 @@ Highlights a box area behind other page components, e.g. a form
 */
 .highlight-box {
   border-radius: $border-radius;
-  background-color: $color-highlight-box;
+  background-color: var(--bs-gray-200);
   margin-bottom: 2em;
 
   &__header,

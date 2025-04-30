@@ -37,11 +37,11 @@ $row-border-radius: 4px;
   margin-bottom: 0.2em;
 
   &__default_padding {
-    padding: $row-padding-default;
+    margin: $row-padding-default;
   }
 
   &__nested_padding {
-    padding: $row-padding-nested;
+    margin: $row-padding-nested;
   }
 
   &__header-link {
@@ -50,6 +50,8 @@ $row-border-radius: 4px;
     margin: 0.5em 1em;
     vertical-align: bottom; //middle;
     align-items: center;
+    color: inherit;
+    margin-left: 8em;
   }
 
   &__breadcrumb-container {
@@ -69,11 +71,11 @@ $row-border-radius: 4px;
     justify-content: space-between;
     align-items: center;
     padding: $row-header-padding;
-    background-color: $row-header-background-color;
-    color: $row-header-color;
+    background-color: color-mix(in oklab, var(--bs-gray-400) 50%, var(--theme-color-primary) 50%);
+    color: white;
     border-radius: $row-border-radius;
-    border-width: 2px;
-    border-color: $row-header-border-color;
+    border-width: 1px;
+    border-color: rgba(233,236,239,0.1);
     border-style: solid;
 
     &-left-container {
@@ -100,6 +102,7 @@ $row-border-radius: 4px;
       @include respond-to-tablet {
         margin: 5px 0;
       }
+      background-color: color-mix(in oklab, var(--theme-color-draftDataSpecification) 90%, var(--theme-color-primary) 10%) !important;
     }
 
     &-button-panel {

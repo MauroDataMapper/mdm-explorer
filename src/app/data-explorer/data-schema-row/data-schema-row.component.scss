@@ -23,13 +23,13 @@ $row-header-color: $color-primary-contrast;
 $row-header-border-color: $color-primary;
 $row-header-padding: 0.2em 1.2em;
 
-$row-padding: 0.75em 1.2em;
+$row-padding: 1em 1em 0.5em 1em;
 $row-footer-padding: 0.75em 1.2em;
 $row-footer-content-color: $color-accent-light;
 $row-border-radius: 4px;
 
 .mdm-data-schema-row {
-  margin-bottom: 0.2em;
+  margin-bottom: 1.6em;
   padding: $row-padding;
 
   h3 {
@@ -59,8 +59,8 @@ $row-border-radius: 4px;
     background-color: $row-header-background-color;
     color: $row-header-color;
     border-radius: $row-border-radius;
-    border-width: 2px;
-    border-color: $row-header-border-color;
+    border-width: 1px;
+    border-color: rgba(233,236,239,0.1);
     border-style: solid;
 
     &-left-container {
@@ -87,6 +87,7 @@ $row-border-radius: 4px;
       @include respond-to-tablet {
         margin: 5px 0;
       }
+      background-color: color-mix(in oklab, var(--theme-color-draftDataSpecification) 90%, var(--theme-color-primary) 10%) !important;
     }
 
     &-button-updown {
