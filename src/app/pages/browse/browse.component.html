@@ -114,8 +114,21 @@ SPDX-License-Identifier: Apache-2.0
 </div>
 <!-- Dropdown Menu -->
 <mat-menu #menu="matMenu" xPosition="after" yPosition="below">
+  <ng-container *ngIf="ready">
+    <section>
+          <button *ngFor="let item of openDataSpecifications; let i = index"
+                  mat-menu-item
+                  (click)="onClickAddSelectedToDataSpecification(item)"
+                  class="mdm-browse__menu-add">
+            <span><span [mdmArrow]="'plus'"></span> Add to {{ item.label }}</span>
+          </button>
+    </section>
+    <mat-divider *ngIf="ready"></mat-divider>
+  </ng-container>
+  <section>
   <button mat-menu-item (click)="createDataSpecification()" clickable class="mdm-browse__menu-add">
     <span><span [mdmArrow]="'plus'"></span> Copy to new data specification</span>
   </button>
+  </section>
 </mat-menu>
 
