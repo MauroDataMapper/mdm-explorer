@@ -33,6 +33,32 @@ export class SummaryMetadataChartComponent implements OnInit {
   @Input() summaryMetadataReport?: SummaryMetadataReport;
 
   public displayChart = false;
+  colours:string[]=
+    [
+      '#F0561D99',
+      '#5E40BE99',
+      '#37A3A399',
+      '#DCA61499',
+      '#63993D99',
+      '#CA6C0F99',
+      '#0066CC99',
+
+      '#F0561D99',
+      '#B6A6E999',
+      '#9AD8D899',
+      '#FFE07299',
+      '#AFDC8F99',
+      '#F8AE5499',
+      '#92C5F999',
+
+      '#731F0099',
+      '#21134D99',
+      '#004D4D99',
+      '#96640F99',
+      '#204D0099',
+      '#732E0099',
+      '#00336699',
+    ];
 
   public barChartOptions: ChartOptions = {
     responsive: true,
@@ -74,8 +100,15 @@ export class SummaryMetadataChartComponent implements OnInit {
       }
     }
 
+    const backgroundColor:any[] = new Array(data.length);
+
+    for(let dp=0;dp<data.length;dp++)
+    {
+      backgroundColor[dp]= this.colours[dp % this.colours.length];
+    }
+
     this.barChartData = {
-      datasets: [{ data }],
+      datasets: [{ data, backgroundColor, borderColor:backgroundColor }],
       labels,
     };
 
