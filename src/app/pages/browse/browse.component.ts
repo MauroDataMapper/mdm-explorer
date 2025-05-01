@@ -16,24 +16,27 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from "@angular/core";
 import { MatSelectionListChange } from '@angular/material/list';
-import { DataClass } from '@maurodatamapper/mdm-resources';
+import { DataClass, DataModel, DataModelSubsetPayload  } from '@maurodatamapper/mdm-resources';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, of, switchMap } from 'rxjs';
+import { catchError, EMPTY, finalize, of, switchMap } from "rxjs";
 import { DataModelService } from 'src/app/mauro/data-model.service';
 import { StateRouterService } from 'src/app/core/state-router.service';
 import {
   DataElementDto,
   DataElementInstance,
-  DataElementSearchParameters,
+  DataElementSearchParameters, DataElementSearchResult, DataSpecification,
   mapSearchParametersToParams,
-} from 'src/app/data-explorer/data-explorer.types';
+} from "src/app/data-explorer/data-explorer.types";
 import { UserDetails } from 'src/app/security/user-details.service';
-import { DataSpecificationService } from 'src/app/data-explorer/data-specification.service';
+import {
+  DataSpecificationService,
+} from "src/app/data-explorer/data-specification.service";
 import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service';
 import { SecurityService } from 'src/app/security/security.service';
 import { Uuid } from '@maurodatamapper/mdm-resources';
+import { DialogService } from "../../data-explorer/dialog.service";
 
 @Component({
   selector: 'mdm-browse',
@@ -51,6 +54,10 @@ export class BrowseComponent implements OnInit {
   parentDataClasses: DataClass[] = [];
   childDataClasses: DataClass[] = [];
   selected?: DataClass;
+  openDataSpecifications: DataSpecification[] = [];
+  ready = false;
+  dataElements:  DataElementInstance[] = [];
+
   private user: UserDetails | null;
 
   constructor(
@@ -59,7 +66,8 @@ export class BrowseComponent implements OnInit {
     private dataModels: DataModelService,
     private toastr: ToastrService,
     private stateRouter: StateRouterService,
-    security: SecurityService
+    security: SecurityService,
+    private dialogs: DialogService
   ) {
     this.user = security.getSignedInUser();
   }
@@ -88,6 +96,18 @@ export class BrowseComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadParentDataClasses();
+
+    if (this.user && this.dataSpecification) {
+      const observableDataSpecification = this.dataSpecification.list();
+      if(observableDataSpecification) {
+        observableDataSpecification.subscribe((dataSpecifications: DataSpecification[]) => {
+          this.openDataSpecifications = [
+            ...dataSpecifications.filter((dataSpecification) => dataSpecification.status === "draft"),
+          ];
+          this.ready = true;
+        });
+      }
+    }
   }
 
   createDataSpecification() {
@@ -192,5 +212,74 @@ export class BrowseComponent implements OnInit {
         })
       )
       .subscribe((dataClasses) => (this.childDataClasses = dataClasses));
+  }
+
+  onClickAddSelectedToDataSpecification(item: DataModel) {
+
+    if (!this.user) {
+      this.toastr.error('You must be signed in in order to create data specifications.');
+      return;
+    }
+
+    if (!this.selected) {
+      this.toastr.error('You must have selected an element to create a data specification with.');
+      return;
+    }
+
+    const getDataElements = () => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return this.dataModels.getDataElementsForDataClass(this.selected!).pipe(
+        switchMap((dataElements: DataElementDto[]) => {
+          const dataElementInstances = dataElements.map((de) => {
+            return {
+              ...de,
+              isBookmarked: false,
+            } as DataElementInstance;
+          });
+          return of(dataElementInstances);
+        })
+      );
+    };
+
+    const addDataElementsToModel = (dataElementInstances: DataElementInstance[]) =>
+    {
+      this.dataElements=dataElementInstances;
+
+      const sourceDataModelId = this.dataElements.length > 0 ? this.dataElements[0].model : null;
+
+      const targetDataModelId = item.id;
+
+      // A payload for subsetting. We only handle additions here, not deletions.
+      const datamodelSubsetPayload: DataModelSubsetPayload = {
+        additions: this.dataElements.map((de) => de.id),
+        deletions: [],
+      };
+
+      if (sourceDataModelId && targetDataModelId && datamodelSubsetPayload.additions.length > 0)
+      {
+
+        this.dataModels
+          .copySubset(sourceDataModelId, targetDataModelId, datamodelSubsetPayload)
+          .subscribe(() => {
+            // Really this is an update rather than add, but broadcasting data-specification-added has the effect we want
+            // i.e. forcing intersections to be refreshed
+            return this.dialogs
+              .openDataSpecificationUpdated({
+                dataSpecification: item,
+                addedElements: this.dataElements,
+              })
+              .afterClosed()
+              .subscribe((action :  'continue' | 'view-data-specifications' | 'view-data-specification-detail' | undefined) => {
+                if (action === 'view-data-specifications') {
+                  this.stateRouter.navigateToKnownPath('/dataSpecifications');
+                } else if (action === 'view-data-specification-detail') {
+                  this.stateRouter.navigateTo(['/dataSpecifications', item.id]);
+                }
+              });
+          }); // eslint-disable-line @typescript-eslint/no-unsafe-argument
+      }
+    };
+
+    getDataElements().subscribe(addDataElementsToModel);
   }
 }
