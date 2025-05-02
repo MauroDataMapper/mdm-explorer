@@ -85,6 +85,19 @@ SPDX-License-Identifier: Apache-2.0
             </mat-list-option>
           </mat-selection-list>
         </div>
+        <div class="mdm-browse__list">
+          <label
+            class="mdm-browse__list-label"
+            id="selectedDescription"
+            [innerHtml]="(childDataClasses && childDataClasses.length)? 'Details':'&#160;'"
+          ></label>
+          <div class="highlight-box">
+            <div *ngIf="selected && selected.label && selected.description"  class="highlight-box__content">
+              <h2>{{ selected.label }}</h2>
+              <div [innerHTML]="selected.description"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="highlight-box__actions">
@@ -105,9 +118,4 @@ SPDX-License-Identifier: Apache-2.0
     <span><span [mdmArrow]="'plus'"></span> Copy to new data specification</span>
   </button>
 </mat-menu>
-<div *ngIf="selected && selected.label && selected.description" class="highlight-box">
-  <div class="highlight-box__content">
-    <h2>{{ selected.label }}</h2>
-    <div [innerHTML]="selected.description"></div>
-  </div>
-</div>
+
