@@ -23,13 +23,13 @@ $row-header-color: $color-classRow-contrast;
 $row-header-border-color: $color-classRow;
 $row-header-padding: 0.2em 1.2em;
 
-$row-padding: 0.75em 0em; //0.75em 1.2em;
+$row-padding: 0.75em 0 0 0; //0.75em 1.2em;
 $row-footer-padding: 0.75em 1.2em;
 $row-footer-content-color: $color-accent-light;
 $row-border-radius: 4px;
 
 .mdm-data-class-row {
-  margin-bottom: 0.2em;
+  margin-bottom: 0;
   padding: $row-padding;
 
   h3 {
@@ -37,6 +37,7 @@ $row-border-radius: 4px;
     font-weight: 500;
     margin: 0 1em;
     vertical-align: middle;
+    margin-left: 4em;
   }
 
   &__show {
@@ -64,11 +65,11 @@ $row-border-radius: 4px;
     justify-content: space-between;
     align-items: center;
     padding: $row-header-padding;
-    background-color: $row-header-background-color;
-    color: $row-header-color;
+    background-color: color-mix(in oklab, var(--bs-gray-400) 25%, var(--theme-color-primary) 75%);
+    color: white;
     border-radius: $row-border-radius;
-    border-width: 2px;
-    border-color: $row-header-border-color;
+    border-width: 1px;
+    border-color: rgba(233,236,239,0.1);
     border-style: solid;
 
     &-left-container {
@@ -95,6 +96,7 @@ $row-border-radius: 4px;
       @include respond-to-tablet {
         margin: 5px 0;
       }
+      background-color: color-mix(in oklab, var(--theme-color-draftDataSpecification) 90%, var(--theme-color-primary) 10%) !important;
     }
 
     &-button-panel {
