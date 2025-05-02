@@ -37,6 +37,7 @@ import { DataExplorerService } from 'src/app/data-explorer/data-explorer.service
 import { SecurityService } from 'src/app/security/security.service';
 import { Uuid } from '@maurodatamapper/mdm-resources';
 import { DialogService } from "../../data-explorer/dialog.service";
+import { BroadcastService } from "../../core/broadcast.service";
 
 @Component({
   selector: 'mdm-browse',
@@ -67,7 +68,8 @@ export class BrowseComponent implements OnInit {
     private toastr: ToastrService,
     private stateRouter: StateRouterService,
     security: SecurityService,
-    private dialogs: DialogService
+    private dialogs: DialogService,
+    private broadcast: BroadcastService
   ) {
     this.user = security.getSignedInUser();
   }
@@ -245,6 +247,11 @@ export class BrowseComponent implements OnInit {
     {
       this.dataElements=dataElementInstances;
 
+      this.broadcast.loading({
+        isLoading: true,
+        caption: 'Updating your data specification...',
+      });
+
       const sourceDataModelId = this.dataElements.length > 0 ? this.dataElements[0].model : null;
 
       const targetDataModelId = item.id;
@@ -260,9 +267,13 @@ export class BrowseComponent implements OnInit {
 
         this.dataModels
           .copySubset(sourceDataModelId, targetDataModelId, datamodelSubsetPayload)
+          .pipe(finalize(() => this.broadcast.loading({ isLoading: false })))
           .subscribe(() => {
             // Really this is an update rather than add, but broadcasting data-specification-added has the effect we want
             // i.e. forcing intersections to be refreshed
+
+            this.broadcast.dispatch('data-specification-added');
+
             return this.dialogs
               .openDataSpecificationUpdated({
                 dataSpecification: item,
