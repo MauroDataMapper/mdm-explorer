@@ -37,6 +37,14 @@ SPDX-License-Identifier: Apache-2.0
         </a>
       </div>
       <div class="mdm-data-element-row__breadcrumb-container">
+        <button
+          mat-icon-button
+          matTooltip="{{ getDescription() }}"
+          matTooltipClass="mdm-data-element-icon-tooltip"
+          aria-label="Button that displays further information about this data element"
+        >
+    <span class="fa-solid fa-info-circle"></span>
+  </button>
         <mdm-breadcrumb
           class="mdm-data-element-row__breadcrumb"
           [item]="item"

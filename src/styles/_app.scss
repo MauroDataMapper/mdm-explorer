@@ -92,10 +92,27 @@ h1,h2,h3,h4
   color: var(--theme-color-page-contrast);
 }
 
-sde-data-dialog, mat-card
-{
-  h1,h2,h3,h4
-  {
+sde-data-dialog, mat-card {
+  h1, h2, h3, h4 {
     color: inherit;
   }
+}
+
+.mdm-data-element-icon-tooltip {
+  color: white;
+  font-size: inherit !important;
+  font-weight: normal;
+  padding: 1.1em;
+  margin-top: 2em;
+  white-space: pre-line;
+  text-align: left;
+  min-width: max-content;
+  background-color: #616161 !important;
+  max-height: 90vh;
+  overflow: scroll !important;
+}
+
+.mat-checkbox-frame
+{
+  border-radius:0 !important;
 }

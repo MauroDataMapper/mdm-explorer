@@ -101,11 +101,8 @@ SPDX-License-Identifier: Apache-2.0
     </button>
   </ng-container>
   <ng-container>
-    <div *ngIf="dataSpecification.description">
-      <p>{{ dataSpecification.description }}</p>
-    </div>
-    <div *ngIf="!dataSpecification.description">
-      <p>No description provided</p>
+    <div>
+      <p *ngIf="dataSpecification.description">{{ dataSpecification.description }}</p>
     </div>
     <mdm-data-specification-status-chip
       *ngIf="showStatus"
