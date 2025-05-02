@@ -18,6 +18,11 @@ SPDX-License-Identifier: Apache-2.0
 */
 @import "../../../styles/base/all";
 
+::ng-deep mdm-data-schema-row mdm-data-element-in-data-specification button
+{
+  background-color: color-mix(in oklab, var(--theme-color-draftDataSpecification) 90%, var(--theme-color-primary) 10%) !important;
+}
+
 ul {
   list-style-type: none;
   margin-top: 4px;
