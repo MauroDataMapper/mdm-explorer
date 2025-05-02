@@ -111,7 +111,7 @@ export const defaultTheme: Theme = {
     // Default typography settings taken from
     // https://github.com/angular/components/blob/main/src/material/core/typography/_typography.scss
     typography: {
-      fontFamily: 'Roboto, "Helvetica Neue", sans-serif',
+      fontFamily: '"Frutiger", Arial, Roboto, "Helvetica Neue", sans-serif',
       body1: {
         fontSize: '14px',
         lineHeight: '20px',
