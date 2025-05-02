@@ -32,6 +32,8 @@ $search-filters-clear-button-width: 40px;
 .mdm-search-filters {
   &__header {
     border-radius: $search-filters-border-radius;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
     padding: $search-filters-header-padding;
     background-color: $search-filters-heading-background-color;
     color: $search-filters-heading-color;
@@ -45,6 +47,8 @@ $search-filters-clear-button-width: 40px;
 
   &__controls {
     border-radius: $search-filters-border-radius;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
     padding: $search-filters-content-padding;
     background-color: $search-filters-content-color;
 

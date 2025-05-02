@@ -49,9 +49,10 @@ SPDX-License-Identifier: Apache-2.0
         <div class="mdm-search-listing__sort-row">
           <div class="vertically-aligned">
             <ng-container *ngIf="source === 'browse'">
-              {{ resultSet?.totalResults }} results for
-              <mdm-breadcrumb [item]="root" style="font-weight: 500"></mdm-breadcrumb>
-
+              <strong>
+              <span style="color: color-mix(in oklab, #003187 50%, #999 50%)">{{ resultSet?.totalResults }} results for</span>
+              <mdm-breadcrumb [item]="root"></mdm-breadcrumb>
+              </strong>
             </ng-container>
             <ng-container *ngIf="source === 'search'">
               {{ resultSet?.totalResults }} results found
@@ -62,7 +63,7 @@ SPDX-License-Identifier: Apache-2.0
               <mat-label>Page size</mat-label>
               <mat-select [value]="pageSize" (selectionChange)="pageSizeChanged($event)">
                 <mat-option *ngFor="let option of pageSizeOptions" [value]="option"
-                  >{{ option }} items</mat-option
+                >{{ option }} items</mat-option
                 >
               </mat-select>
             </mat-form-field>
@@ -72,6 +73,15 @@ SPDX-License-Identifier: Apache-2.0
               (valueChange)="selectSortBy($event)"
             ></mdm-sort-by>
           </div>
+          <div class="vertically-aligned">
+          <mdm-pagination *ngIf="resultSet"
+                          [currentPage]="resultSet.page"
+                          [pageSize]="resultSet.pageSize"
+                          [totalResults]="resultSet.totalResults"
+                          (selected)="selectPage($event)"
+          ></mdm-pagination>
+          </div>
+
         </div>
       </div>
     </div>

@@ -62,23 +62,14 @@ SPDX-License-Identifier: Apache-2.0
 
     <div class="mdm-data-specification-query__description-container">
       <div
-        *ngIf="dataSpecification.description"
         class="mdm-data-specification-query__description"
       >
-        <p>{{ dataSpecification.description }}</p>
+        <p *ngIf="dataSpecification.description">{{ dataSpecification.description }}</p>
         <mdm-data-specification-status-chip
           [status]="dataSpecification.status"
         ></mdm-data-specification-status-chip>
       </div>
-      <div
-        *ngIf="!dataSpecification.description"
-        class="mdm-data-specification-query__description"
-      >
-        <p>No description provided</p>
-        <mdm-data-specification-status-chip
-          [status]="dataSpecification.status"
-        ></mdm-data-specification-status-chip>
-      </div>
+
     </div>
 
     <div *ngIf="dataElements" class="mdm-data-specification-query__query-editor">

@@ -77,4 +77,13 @@ export class DataElementRowComponent
       this.deleteItemEvent.emit({ dataElement: this.item });
     }
   }
+
+  getDescription() : string
+  {
+    if(this.item && this.item.description)
+    {
+      return this.item.description.replace(/<[^>]*>/g, '');
+    }
+    return '';
+  }
 }
