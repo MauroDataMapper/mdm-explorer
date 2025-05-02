@@ -16,7 +16,7 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 */
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Uuid } from '@maurodatamapper/mdm-resources';
 import {
   SummaryMetadata,
@@ -34,13 +34,14 @@ export class SummaryMetadataComponent implements OnInit {
 
   summaryMetadata: SummaryMetadata[] = [];
 
-  constructor(private summaryMetadataService: SummaryMetadataService) {}
+  constructor(private summaryMetadataService: SummaryMetadataService, private cdRef: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.summaryMetadataService
       .list(this.catalogueItemDomainType, this.catalogueItemId)
       .subscribe((data) => {
-        this.summaryMetadata = data.items;
+        this.summaryMetadata = [...data.items];
+        this.cdRef.detectChanges();
       });
   }
 }
