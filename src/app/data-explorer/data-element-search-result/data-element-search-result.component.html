@@ -46,10 +46,17 @@ SPDX-License-Identifier: Apache-2.0
         *ngIf="item.description"
         class="mdm-data-element-search-result__description"
         [innerHTML]="item.description"
-        style="display: block"
+        style="display: inline-block; flex-grow:1"
       ></div>
       <div *ngIf="!item.description" class="mdm-data-element-search-result__no-description">
         No description available
+      </div>
+      <div class="mdm-data-element-search-result__description" style="display: inline-block; max-width:60%; min-width: 40%; margin-left: 16px; align-self: center">
+      <mdm-summary-metadata
+        [catalogueItemDomainType]="'dataElement'"
+        [catalogueItemId]="item.id"
+      >
+      </mdm-summary-metadata>
       </div>
       <div class="mdm-data-element-search-result__footer">
         <span class="spacer"></span>
