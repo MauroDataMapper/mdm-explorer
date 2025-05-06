@@ -95,10 +95,6 @@ export const routes: Route[] = [
     component: HomeComponent,
   },
   {
-    path: 'contact',
-    component: ContactSupportComponent,
-  },
-  {
     path: 'not-implemented',
     component: NotImplementedComponent,
   },
