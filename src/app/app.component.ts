@@ -89,11 +89,7 @@ export class AppComponent implements OnInit, OnDestroy {
     {
       label: 'FAQs',
       routerLink: '',
-    },
-    {
-      label: 'Contact and support',
-      routerLink: '/contact',
-    },
+    }
   ];
 
   catalogueMenuLinks: HeaderLink[] = [
