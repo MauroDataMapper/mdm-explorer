@@ -52,6 +52,7 @@ SPDX-License-Identifier: Apache-2.0
 .header-content h2 {
   margin: 0; /* Remove default margin */
   flex-grow: 1; /* Allow <h2> to grow and take available space */
+  color: inherit;
 }
 
 .header-content i {
