@@ -44,6 +44,12 @@ button.mat-icon-button {
 :root
 {
   --theme-mat-typography-font-family: "Frutiger", Arial, Roboto, "Helvetica Neue", sans-serif !important;
+  --theme-color-accent: var(--bs-gray-600) !important;
+  --theme-color-accent-light: var(--bs-gray-200) !important;
+  --theme-color-accent-dark: var(--bs-gray-700) !important;
+  --theme-color-accent-contrast: var(--bs-gray-900) !important;
+  --theme-color-primary-light: color-mix(in oklab, var(--theme-color-primary) 90%, #CCFFEE 10%) !important;
+  --theme-color-primary-dark: color-mix(in oklab, var(--theme-color-primary) 80%, #003322 20%) !important;
 }
 
 body, .mat-typography, h1, h2, h3, p, input, button, textarea, select
@@ -73,5 +79,23 @@ body, .mat-typography, h1, h2, h3, p, input, button, textarea, select
   .container
   {
     max-width: 86vw !important;
+  }
+}
+
+body
+{
+  color: var(--bs-body-color);
+}
+
+h1,h2,h3,h4
+{
+  color: var(--theme-color-page-contrast);
+}
+
+sde-data-dialog, mat-card
+{
+  h1,h2,h3,h4
+  {
+    color: inherit;
   }
 }
