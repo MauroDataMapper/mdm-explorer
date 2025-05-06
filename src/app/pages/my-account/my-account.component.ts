@@ -44,6 +44,8 @@ export class MyAccountComponent implements OnInit {
   basicInfoMode: MyAccountViewStatus = 'view';
   contactInfoMode: MyAccountViewStatus = 'view';
 
+  readOnly=true;
+
   constructor(
     private security: SecurityService,
     private catalogueUser: CatalogueUserService,
