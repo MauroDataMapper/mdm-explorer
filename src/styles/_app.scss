@@ -41,7 +41,7 @@ button.mat-icon-button {
   background-color: $color-white;
 }
 
-:root
+:root, .dataRowHeader
 {
   --theme-mat-typography-font-family: "Frutiger", Arial, Roboto, "Helvetica Neue", sans-serif !important;
   --theme-color-accent: var(--bs-gray-600) !important;
@@ -122,12 +122,12 @@ body
   color: var(--bs-body-color);
 }
 
-h1,h2,h3,h4
+h1,h2,h3,h4, .dataRowHeader label
 {
   color: var(--theme-color-page-contrast);
 }
 
-sde-data-dialog, mat-card {
+sde-data-dialog, mat-card, mdm-data-schema-row {
   h1, h2, h3, h4 {
     color: inherit;
   }
@@ -150,4 +150,26 @@ sde-data-dialog, mat-card {
 .mat-checkbox-frame
 {
   border-radius:0 !important;
+}
+
+.dataRowHeader
+{
+  --theme-color-accent-light: var(--bs-gray-100) !important;
+}
+
+.dataRowHeader, .dataRowData
+{
+  border-color: rgba(0,0,0,0.2) !important;
+}
+
+.dataRowHeader.dataRowHeaderFullWidth
+{
+  border: 0 !important;
+  padding-bottom: 10px !important;
+  font-size: 112%;
+}
+
+.dataRowData.dataRowDataFullWidth
+{
+  border: 0 !important;
 }
