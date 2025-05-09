@@ -16,11 +16,11 @@ limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<h2>Profile</h2>
+<h2>Additional Information</h2>
 
 <table *ngIf="profile" class="table" aria-label="Profile">
   <tbody>
-    <ng-container *ngFor="let profileSection of profile.sections">
+    <ng-container *ngFor="let profileSection of populatedSections">
       <tr class="mdm-data-element-profile-section-name">
         <th scope="row" colspan="2">{{ profileSection.name }}</th>
       </tr>
