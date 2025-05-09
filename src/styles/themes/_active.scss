@@ -213,7 +213,7 @@ $active-theme: mat.define-light-theme(
   font-family: Frutiger;
   font-style: normal;
   font-weight: 400;
-  src: url(/assets/FrutigerLTW01-55Roman-Rt59Fia2.woff2) format("woff2")
+  src: url(/brand-assets/FrutigerLTW01-55Roman-Rt59Fia2.woff2) format("woff2")
 }
 
 @font-face {
@@ -221,5 +221,5 @@ $active-theme: mat.define-light-theme(
   font-family: Frutiger;
   font-style: normal;
   font-weight: 700;
-  src: url(/assets/FrutigerLTW01-65Bold-ejEw4qW0.woff2) format("woff2")
+  src: url(/brand-assets/FrutigerLTW01-65Bold-ejEw4qW0.woff2) format("woff2")
 }

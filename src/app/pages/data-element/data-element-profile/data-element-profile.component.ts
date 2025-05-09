@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 */
 import { Component, Input } from '@angular/core';
-import { Profile } from '@maurodatamapper/mdm-resources';
+import { Profile, ProfileSection } from "@maurodatamapper/mdm-resources";
 
 @Component({
   selector: 'mdm-data-element-profile',
@@ -26,4 +26,10 @@ import { Profile } from '@maurodatamapper/mdm-resources';
 })
 export class DataElementProfileComponent {
   @Input() profile?: Profile;
+
+  get populatedSections(): ProfileSection[] | undefined {
+    return this.profile?.sections.filter(section =>
+      section.fields.some(field => field.currentValue)
+    );
+  }
 }

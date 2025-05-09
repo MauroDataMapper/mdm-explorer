@@ -59,13 +59,14 @@ h1 {
     align-items: center;
     padding: $detail-header-padding;
     background-color: $detail-identifiable-background-color;
-    color: $color-primary;
+    color: $color-primary-contrast;
 
     h3 {
       display: inline-block;
       font-weight: 500;
       margin: 0 1em;
       vertical-align: middle;
+      color: $color-primary-contrast;
     }
   }
 

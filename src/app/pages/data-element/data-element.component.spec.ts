@@ -239,7 +239,7 @@ describe('DataElementComponent', () => {
       dom.querySelectorAll('h2') as NodeList
     ) as HTMLElement[];
     const profileContainer = headingContainers.find((heading) =>
-      heading.innerHTML.includes('Profile')
+      heading.innerHTML.includes('Additional Information')
     );
     expect(profileContainer).toBeTruthy();
     // any further details of the profile display should be tested within the data-element-profile.component tests
