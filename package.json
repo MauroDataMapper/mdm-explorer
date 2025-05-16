@@ -18,7 +18,7 @@
     "eslint-junit": "eslint . --ext ts -f ./node_modules/eslint-junit/index.js",
     "license-check": "license-check-and-add -f license-check.json",
     "license-check add": "npm run license-check add",
-    "dist": "nx build --configuration production --output-path=dist/mdm-explorer-$npm_package_version",
+    "dist": "nx build --configuration=production --output-path=dist/mdm-explorer-$npm_package_version",
     "dist-archive": "tar zcvf dist/mdm-explorer-${npm_package_version}.tgz -C dist mdm-explorer-$npm_package_version",
     "sonar": "sonar-scanner -Dsonar.projectVersion=$npm_package_version",
     "pr-checks": "npm run license-check check && npm run eslint && npm run test"
