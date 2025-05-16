@@ -247,3 +247,6 @@ eslint_report.xml
 
 # Angular
 .angular/cache/**
+
+# Nx cache
+.nx/cache

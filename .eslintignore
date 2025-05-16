@@ -5,4 +5,4 @@ dist
 # don't lint nyc coverage output
 coverage
 # don't lint external source code included as part of this repo
-src/app/external/**/*.*
+apps/sde-admin-ui/src/app/external/**/*.*

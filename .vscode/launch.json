@@ -15,11 +15,7 @@
       "name": "ng test: all",
       "program": "${workspaceFolder}/node_modules/@angular/cli/bin/ng",
       "cwd": "${workspaceFolder}",
-      "args": [
-        "test",
-        "--test-match=\"**/+(*.)+(spec|test).+(ts|js)?(x)\"",
-        "--run-in-band"
-      ],
+      "args": ["test", "--test-match=\"**/+(*.)+(spec|test).+(ts|js)?(x)\"", "--run-in-band"],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },

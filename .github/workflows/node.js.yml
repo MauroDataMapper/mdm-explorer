@@ -2,9 +2,9 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "**" ]
+    branches: ["**"]
   pull_request:
-    branches: [ "**" ]
+    branches: ["**"]
 
 jobs:
   build:
@@ -21,7 +21,7 @@ jobs:
       - name: Install and configure
         uses: actions/setup-node@v4
         with:
-          node-version: '16.10.0'
+          node-version: "16.10.0"
 
       - name: Install tools
         run: |
@@ -29,18 +29,18 @@ jobs:
           npm i -g @angular/cli@14
           npm i -g symlinked
           npm i -g npm-check
+          npm i -g nx
 
       - name: Check tool versions
         run: |
           node --version
           npm --version
-
+          nx --version
 
       - name: Clean install dependencies
         run: |
           npm config set registry https://registry.npmjs.org/
           npm install
-
 
       #########
       #     Link a local copy of mdm-resources
@@ -85,7 +85,6 @@ jobs:
           cd dist/sde-resources
           npm link
 
-
       # Back in the (default) mdm-explorer directory
       - name: Link mdm-resources
         if: success() && github.ref != 'refs/heads/main'
@@ -99,7 +98,7 @@ jobs:
         run: npm run license-check check
 
       - name: Run tests
-        run: npm run test-with-coverage-serial
+        run: npm run test-with-coverage-serial mdm-resources
 
       - name: Report Test results
         uses: dorny/test-reporter@v1
@@ -107,7 +106,7 @@ jobs:
         with:
           working-directory: ./mdm-explorer
           name: Test Results
-          path: 'test-report/junit.xml'
+          path: "test-report/junit.xml"
           reporter: java-junit
 
       # Can't successfully get Megalinter to run in another folder.
@@ -137,20 +136,22 @@ jobs:
       - name: Run ESLint
         run: npm run eslint-junit || true # Always succeed, even with linting errors
 
-
       - name: Report ESLint results
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
           working-directory: ./mdm-explorer
           name: ESLint Results
-          path: 'eslint/eslint-junit.xml'
+          path: "eslint/eslint-junit.xml"
           reporter: java-junit
           fail-on-error: false
 
+      - name: Build distribution with original theme
+        run: npm run dist mdm-explorer
 
       - name: Build distribution with original theme
-        run: npm run dist
+        run: npm run dist-archive
+
 
       - name: Archive distribution artifacts
         if: success() && ( github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' )
@@ -171,4 +172,8 @@ jobs:
           to: "build/github-actions"
           type: "stream"
           topic: "${{github.repository}}"
-          content: "${{ job.status == 'success' && ':check_mark:' || ':cross_mark:' }} ${{github.repository}} : **${{github.ref}}**\nGitHub Actions build result: **${{ job.status }}**\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+          content:
+            "${{ job.status == 'success' && ':check_mark:' || ':cross_mark:' }}
+            ${{github.repository}} : **${{github.ref}}**\nGitHub Actions build result: **${{
+            job.status }}**\n${{ github.event.pull_request.html_url || github.event.head_commit.url
+            }}"

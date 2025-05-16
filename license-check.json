@@ -8,7 +8,7 @@
     ".idea",
     "test-report.*",
     "test-report/**/*.*",
-    ".browserslistrc",
+    "**/.browserslistrc",
     ".prettierignore",
     ".scannerwork",
     ".DS_Store",
@@ -31,7 +31,9 @@
     "**/*.woff",
     "**/*.woff2",
     "sonar-project.properties",
-    "src/app/external/**/*.*"
+    "apps/mdm-explorer/src/app/external/**/*.*",
+    ".nx",
+    "**/.gitkeep"
   ],
   "license": "NOTICE",
   "licenseFormats": {

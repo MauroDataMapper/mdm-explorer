@@ -1,0 +1,57 @@
+/*
+Copyright 2022-2023 University of Oxford
+and Health and Social Care Information Centre, also known as NHS Digital
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+SPDX-License-Identifier: Apache-2.0
+*/
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { MatTabChangeEvent, MatTabGroup } from '@angular/material/tabs';
+import { MembershipEndpointsResearcher, RequestFilterMode } from '@maurodatamapper/sde-resources';
+import { SecurityService } from '@maurodatamapper/mdm-explorer/app/security/security.service';
+
+@Component({
+  templateUrl: './sde-main.component.html',
+  styleUrls: ['./sde-main.component.scss'],
+})
+export class SdeMainComponent implements OnInit, AfterViewInit {
+  signedIn = false;
+  restrictAccess = true;
+  requestsNeedingApprovalListConfig: RequestFilterMode = RequestFilterMode.CanAuthorise;
+  currentTabIndex = 1;
+
+  constructor(
+    private security: SecurityService,
+    private membershipEndpointsResearcher: MembershipEndpointsResearcher
+  ) {}
+
+  ngAfterViewInit(): void {}
+
+  ngOnInit(): void {
+    this.signedIn = this.security.isSignedInToSde();
+    if (this.signedIn) {
+      this.membershipEndpointsResearcher.getOrganisation().subscribe((organisation) => {
+        this.restrictAccess = organisation === null;
+      });
+    }
+  }
+
+  getSelectedIndex(): number {
+    return this.currentTabIndex;
+  }
+
+  onTabChange(event: MatTabChangeEvent) {
+    this.currentTabIndex = event.index;
+  }
+}
