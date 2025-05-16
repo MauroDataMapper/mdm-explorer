@@ -98,7 +98,7 @@ jobs:
         run: npm run license-check check
 
       - name: Run tests
-        run: npm run test-with-coverage-serial mdm-resources
+        run: npm run test-with-coverage-serial mdm-explorer
 
       - name: Report Test results
         uses: dorny/test-reporter@v1
