@@ -243,8 +243,7 @@ export class DataElementComponent implements OnInit {
       id: profile.id,
       domainType: profile.domainType,
       label: profile.label,
-      sections: profile.sections
-        .map((section) => {
+      sections: profile.sections?.map((section) => {
           return {
             name: section.name,
             description: section.description,
