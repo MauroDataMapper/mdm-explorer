@@ -266,12 +266,12 @@ export class DataSpecificationService {
       map((dataModel) => {
         // Flatten every Data Element into one array. Each Data Element will
         // include a breadcrumb to locate where it came from
-        const dataClasses = dataModel.childDataClasses ?? [];
+        const dataClasses: DataClass[] = dataModel.dataClasses ?? dataModel.childDataClasses ?? [];
 
         return dataClasses.flatMap((parentDataClass) => {
           const parentElements = parentDataClass.dataElements ?? [];
           const childElements =
-            parentDataClass.dataClasses?.flatMap((childDataClass) => {
+            parentDataClass.dataClasses?.flatMap((childDataClass: DataClass) => {
               return childDataClass.dataElements ?? [];
             }) ?? [];
           return parentElements.concat(childElements);
