@@ -152,15 +152,7 @@ export class DataElementInDataSpecificationComponent implements OnInit, OnDestro
         caption: 'Updating your data specification...',
       });
 
-      this.explorer
-        .getRootDataModel()
-        .pipe(
-          switchMap((rootModel: DataModelDetail) => {
-            return this.dataModelService.elementsInAnotherModel(
-              rootModel,
-              this.dataElementSearchResultsToDataElementDTOs(dataElements)
-            );
-          }),
+      of(this.dataElementSearchResultsToDataElementDTOs(dataElements)).pipe(
           switchMap((rootDataElements) => {
             // Elements cannot be copied to themselves, so if the source and target model is the same,
             // use the root model as the source instead.

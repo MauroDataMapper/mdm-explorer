@@ -296,9 +296,6 @@ export class DataSpecificationService {
       (dataElementInstance) => dataElementInstance as DataElementDto
     );
     return of(items).pipe(
-      switchMap((dataElements: DataElementDto[]) => {
-        return this.dataModels.elementsInAnotherModel(targetModel, dataElements);
-      }),
       switchMap((dataElements: DataElementDto[]) => from(dataElements)),
       filter((item) => item !== null),
       concatMap((item: DataElementDto) => {
